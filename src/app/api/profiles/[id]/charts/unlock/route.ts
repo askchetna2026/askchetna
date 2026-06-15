@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
+import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
+import { recordAnalyticsEvent } from '@/lib/analytics/server';
+import { maybeSendLowCreditLifecycleEmail } from '@/lib/lifecycleEmails';
 
 const VARGA_DEFINITIONS: Record<string, { title: string }> = {
     'D1': { title: 'D1 (Rashi Chart)' },
@@ -113,6 +116,32 @@ export async function POST(
                 }
             })
         ]);
+
+        await recordAnalyticsEvent({
+            type: ANALYTICS_EVENTS.CREDIT_USED,
+            path: `/chart?profile=${id}`,
+            userId: session.user.id,
+            metadata: {
+                feature: 'chart_unlock',
+                chartKey,
+                creditsUsed: isAdmin ? 0 : cost,
+                profileId: id,
+                profileName: profile.name,
+                isAdminBypass: isAdmin
+            }
+        });
+
+        if (!isAdmin) {
+            const remainingCredits = totalCredits - cost;
+            void maybeSendLowCreditLifecycleEmail({
+                userId: session.user.id,
+                remainingCredits,
+                source: 'chart_unlock_low_credit_email',
+                returnTo: `/chart?profileId=${id}`,
+            }).catch((emailError) => {
+                console.error('Low credit lifecycle email failed:', emailError);
+            });
+        }
 
         return NextResponse.json({ success: true, unlockedCharts: [...unlockedCharts, chartKey] });
 

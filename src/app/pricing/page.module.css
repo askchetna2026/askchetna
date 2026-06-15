@@ -23,6 +23,69 @@
     line-height: 1.7;
 }
 
+.contextBanner {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    align-items: flex-start;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.08), rgba(255, 255, 255, 0.02));
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: var(--radius-lg);
+    padding: 28px 32px;
+    margin-bottom: 40px;
+}
+
+.contextBadge {
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent-gold);
+    font-size: 0.78rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.contextTitle {
+    font-size: 1.7rem;
+    color: var(--primary);
+    margin-bottom: 12px;
+}
+
+.contextText,
+.contextRecommendation {
+    color: var(--secondary);
+    line-height: 1.7;
+    margin: 0;
+}
+
+.contextRecommendation {
+    margin-top: 10px;
+}
+
+.contextActions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-width: 180px;
+}
+
+.secondaryLink {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: var(--foreground);
+    border: 1px solid var(--border-soft);
+    padding: 12px 18px;
+    border-radius: 999px;
+    transition: all 0.2s ease;
+}
+
+.secondaryLink:hover {
+    border-color: var(--accent-gold);
+    color: var(--accent-gold);
+}
+
 /* Pricing Cards */
 .pricingGrid {
     display: grid;
@@ -72,6 +135,12 @@
     color: var(--secondary);
     font-size: 1rem;
     margin-bottom: 24px;
+}
+
+.recommendedNote {
+    color: var(--accent-gold);
+    font-size: 0.9rem;
+    margin: -8px 0 20px;
 }
 
 .features {
@@ -173,6 +242,17 @@
 
     .pricingGrid {
         grid-template-columns: 1fr;
+    }
+
+    .contextBanner {
+        flex-direction: column;
+        padding: 24px 20px;
+    }
+
+    .contextActions {
+        min-width: 0;
+        width: 100%;
+        justify-content: flex-start;
     }
 
     .price {

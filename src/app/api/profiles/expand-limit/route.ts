@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
+import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
+import { recordAnalyticsEvent } from '@/lib/analytics/server';
+import { maybeSendLowCreditLifecycleEmail } from '@/lib/lifecycleEmails';
 
 export async function POST() {
     try {
@@ -23,6 +26,7 @@ export async function POST() {
         const maxProfilesDefault = parseInt(process.env.MAX_ACTIVE_PROFILES || '5');
         const currentLimitRecord = await prisma.userProfileLimit.findFirst({
             where: { userId: session.user.id },
+            orderBy: { purchasedAt: 'desc' }
         });
         const extraSlots = currentLimitRecord?.extraSlots || 0;
 
@@ -100,15 +104,39 @@ export async function POST() {
                 },
             });
 
-            return limitRecord;
+            return {
+                limitRecord,
+                remainingCredits: totalCredits - EXPANSION_COST,
+            };
         });
 
-        const newLimit = maxProfilesDefault + result.extraSlots;
+        const newLimit = maxProfilesDefault + result.limitRecord.extraSlots;
+
+        await recordAnalyticsEvent({
+            type: ANALYTICS_EVENTS.CREDIT_USED,
+            path: '/dashboard/profiles',
+            userId: session.user.id,
+            metadata: {
+                feature: 'profile_limit_expansion',
+                creditsUsed: EXPANSION_COST,
+                extraSlots: result.limitRecord.extraSlots,
+                newLimit,
+            }
+        });
+
+        void maybeSendLowCreditLifecycleEmail({
+            userId: session.user.id,
+            remainingCredits: result.remainingCredits,
+            source: 'profile_expansion_low_credit_email',
+            returnTo: '/dashboard',
+        }).catch((emailError) => {
+            console.error('Low credit lifecycle email failed:', emailError);
+        });
 
         return NextResponse.json({
             success: true,
             newLimit,
-            extraSlots: result.extraSlots,
+            extraSlots: result.limitRecord.extraSlots,
             creditsUsed: EXPANSION_COST,
         });
     } catch (error) {

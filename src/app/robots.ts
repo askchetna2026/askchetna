@@ -1,6 +1,5 @@
 import type { MetadataRoute } from 'next';
-
-const BASE_URL = process.env.NEXTAUTH_URL || 'https://askchetna.com';
+import { absoluteUrl } from '@/lib/site';
 
 export default function robots(): MetadataRoute.Robots {
     return {
@@ -9,6 +8,6 @@ export default function robots(): MetadataRoute.Robots {
             allow: '/',
             disallow: ['/api/', '/admin', '/dashboard', '/onboarding'],
         },
-        sitemap: `${BASE_URL}/sitemap.xml`,
+        sitemap: absoluteUrl('/sitemap.xml'),
     };
 }

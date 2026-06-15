@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
+import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
+import { recordAnalyticsEvent } from '@/lib/analytics/server';
+import { maybeSendLowCreditLifecycleEmail } from '@/lib/lifecycleEmails';
 
 export async function POST() {
     try {
@@ -57,6 +60,27 @@ export async function POST() {
         ]);
 
         const remaining = creditPack.questionsTotal - creditPack.questionsUsed - 1;
+
+        await recordAnalyticsEvent({
+            type: ANALYTICS_EVENTS.CREDIT_USED,
+            path: '/api/credits/use',
+            userId: session.user.id,
+            metadata: {
+                feature: 'generic_credit_use',
+                creditsUsed: 1,
+                packId: creditPack.id,
+                remaining,
+            }
+        });
+
+        void maybeSendLowCreditLifecycleEmail({
+            userId: session.user.id,
+            remainingCredits: remaining,
+            source: 'generic_credit_low_email',
+            returnTo: '/dashboard',
+        }).catch((emailError) => {
+            console.error('Low credit lifecycle email failed:', emailError);
+        });
 
         return NextResponse.json({
             success: true,

@@ -1,0 +1,262 @@
+.pageShell {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 72px 24px 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 72px;
+}
+
+.hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+    gap: 28px;
+    align-items: stretch;
+}
+
+.heroText,
+.proofCard,
+.benefitCard,
+.storyCard,
+.faqCard,
+.linkCard {
+    border-radius: 28px;
+    border: 1px solid rgba(212, 175, 55, 0.14);
+    background:
+        radial-gradient(circle at top right, rgba(212, 175, 55, 0.09), transparent 34%),
+        linear-gradient(180deg, rgba(18, 22, 64, 0.74), rgba(11, 15, 47, 0.92));
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.22);
+}
+
+.heroText {
+    padding: 40px;
+}
+
+.eyebrow,
+.sectionEyebrow {
+    display: inline-flex;
+    width: fit-content;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background: rgba(212, 175, 55, 0.12);
+    color: var(--accent-gold);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.title {
+    margin: 18px 0 16px;
+    color: var(--foreground);
+    font-family: var(--font-heading);
+    font-size: clamp(2.5rem, 5vw, 4.3rem);
+    line-height: 1.05;
+}
+
+.description {
+    margin: 0;
+    color: var(--foreground);
+    opacity: 0.92;
+    font-size: 1.08rem;
+    line-height: 1.8;
+    max-width: 64ch;
+}
+
+.heroActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 28px;
+}
+
+.primaryButton,
+.secondaryButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    padding: 0 20px;
+    border-radius: 16px;
+    font-weight: 800;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.primaryButton {
+    background: var(--accent-gold);
+    color: #0d122d;
+}
+
+.secondaryButton {
+    border: 1px solid rgba(212, 175, 55, 0.22);
+    color: var(--foreground);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.primaryButton:hover,
+.secondaryButton:hover,
+.linkCard:hover {
+    transform: translateY(-2px);
+}
+
+.primaryButton:hover {
+    box-shadow: 0 12px 28px rgba(212, 175, 55, 0.24);
+    filter: brightness(1.04);
+}
+
+.secondaryButton:hover {
+    box-shadow: 0 12px 28px rgba(255, 255, 255, 0.06);
+}
+
+.proofCard {
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 16px;
+}
+
+.proofTitle {
+    margin: 0;
+    color: var(--foreground);
+    font-family: var(--font-heading);
+    font-size: 1.45rem;
+}
+
+.proofList {
+    margin: 0;
+    padding-left: 20px;
+    color: var(--foreground);
+    opacity: 0.9;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    line-height: 1.65;
+}
+
+.sectionHeader {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 760px;
+}
+
+.sectionTitle {
+    margin: 0;
+    font-family: var(--font-heading);
+    color: var(--foreground);
+    font-size: clamp(1.8rem, 3vw, 2.7rem);
+    line-height: 1.15;
+}
+
+.benefitsSection,
+.faqSection,
+.linksSection {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+.benefitsGrid,
+.faqList,
+.linksGrid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.benefitCard,
+.faqCard,
+.linkCard {
+    padding: 28px;
+}
+
+.benefitCard h3,
+.storyCard h2,
+.faqCard h3,
+.linkCard h3 {
+    margin: 0 0 12px;
+    color: var(--foreground);
+    font-family: var(--font-heading);
+    font-size: 1.35rem;
+    line-height: 1.2;
+}
+
+.benefitCard p,
+.storyCard p,
+.faqCard p,
+.linkCard p {
+    margin: 0;
+    color: var(--foreground);
+    opacity: 0.88;
+    line-height: 1.75;
+}
+
+.sectionStack {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.storyCard {
+    padding: 30px;
+}
+
+.linkCard {
+    text-decoration: none;
+}
+
+.linkCard span {
+    display: inline-flex;
+    margin-top: 18px;
+    color: var(--accent-gold);
+    font-size: 0.86rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+@media (max-width: 1100px) {
+    .hero,
+    .benefitsGrid,
+    .sectionStack,
+    .faqList,
+    .linksGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .pageShell {
+        padding: 48px 16px 72px;
+        gap: 48px;
+    }
+
+    .heroText,
+    .proofCard,
+    .benefitCard,
+    .storyCard,
+    .faqCard,
+    .linkCard {
+        border-radius: 22px;
+    }
+
+    .heroText,
+    .proofCard,
+    .benefitCard,
+    .storyCard,
+    .faqCard,
+    .linkCard {
+        padding: 22px;
+    }
+
+    .heroActions {
+        flex-direction: column;
+    }
+
+    .primaryButton,
+    .secondaryButton {
+        width: 100%;
+    }
+}

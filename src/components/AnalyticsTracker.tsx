@@ -1,41 +1,25 @@
-
 'use client';
 
 import { useEffect, useRef } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
+import { trackEvent } from '@/lib/analytics/client';
 
 export default function AnalyticsTracker() {
     const pathname = usePathname();
     const searchParams = useSearchParams();
-    const { data: session } = useSession();
     const hasTracked = useRef<string | null>(null);
 
     useEffect(() => {
-        const url = pathname + searchParams.toString();
+        const search = searchParams.toString();
+        const url = search ? `${pathname}?${search}` : pathname;
 
         // Prevent duplicate tracking for same URL in strict mode/re-renders
         if (hasTracked.current === url) return;
         hasTracked.current = url;
 
-        trackPageView(pathname);
-    }, [pathname, searchParams, session]); // Re-track if user logs in on same page? Maybe overcounting, but safer for attribution.
-
-    const trackPageView = async (path: string) => {
-        try {
-            await fetch('/api/analytics/track', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    type: 'PAGE_VIEW',
-                    path,
-                    // userId and location handled by server
-                })
-            });
-        } catch (e) {
-            // silent fail
-        }
-    };
+        void trackEvent(ANALYTICS_EVENTS.PAGE_VIEW, { path: url });
+    }, [pathname, searchParams]);
 
     return null; // Renderless component
 }

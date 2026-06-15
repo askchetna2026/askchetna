@@ -22,8 +22,9 @@ export async function GET() {
         });
 
         // Get user's profile limit
-        const limitRecord = await (prisma as any).userProfileLimit.findFirst({
+        const limitRecord = await prisma.userProfileLimit.findFirst({
             where: { userId: session.user.id },
+            orderBy: { purchasedAt: 'desc' }
         });
 
         const maxProfiles = parseInt(process.env.MAX_ACTIVE_PROFILES || '5');

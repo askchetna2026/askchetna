@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState, use } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import {
     ArrowLeft,
@@ -10,57 +10,85 @@ import {
     FileText,
     Download,
     Crown,
-    ChevronRight,
     ShieldCheck,
     Zap,
-    Star,
-    Compass
 } from 'lucide-react';
 import styles from './page.module.css';
 import ChartDisplay from '@/components/ChartDisplay';
 import ProfileGuard from '@/components/ProfileGuard';
+import { buildPricingUrl } from '@/lib/monetization';
 
 interface ReportPageProps {
     params: Promise<{ id: string }>;
 }
 
+type ReportPageProfile = {
+    id: string;
+    name: string;
+    chartData: any;
+};
+
+type ReportPageReport = {
+    id?: string;
+    status?: 'pending' | 'purchased' | 'generated';
+    content?: Record<string, unknown> | null;
+    updatedAt?: string;
+};
+
 function ReportContent({ params }: ReportPageProps) {
     const { id } = use(params);
-    const router = useRouter();
+    const searchParams = useSearchParams();
     const [loading, setLoading] = useState(true);
-    const [profile, setProfile] = useState<any>(null);
-    const [report, setReport] = useState<any>(null);
+    const [profile, setProfile] = useState<ReportPageProfile | null>(null);
+    const [report, setReport] = useState<ReportPageReport | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [purchaseError, setPurchaseError] = useState<string | null>(null);
+
+    const hasPurchaseSuccess = searchParams.get('purchase') === 'success';
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const res = await fetch(`/api/reports/${id}`);
-                if (!res.ok) throw new Error('Failed to load report data');
+                if (!res.ok) {
+                    throw new Error('Failed to load report data');
+                }
+
                 const data = await res.json();
                 setProfile(data.profile);
                 setReport(data.report);
-            } catch (err: any) {
-                setError(err.message);
+            } catch (err: unknown) {
+                setError(err instanceof Error ? err.message : 'Failed to load report data');
             } finally {
                 setLoading(false);
             }
         };
-        fetchData();
+
+        void fetchData();
     }, [id]);
 
     const handlePurchase = async () => {
         try {
             setLoading(true);
+            setPurchaseError(null);
             const res = await fetch(`/api/reports/${id}/purchase`, { method: 'POST' });
             const data = await res.json();
 
-            if (!res.ok) throw new Error(data.message || data.error || 'Purchase failed');
+            if (!res.ok) {
+                if (res.status === 402) {
+                    setPurchaseError(data.message || 'You need more credits to unlock this report.');
+                    return;
+                }
 
-            alert('Congratulations! Your premium report is now unlocked.');
-            window.location.reload();
-        } catch (err: any) {
-            alert(err.message);
+                throw new Error(data.message || data.error || 'Purchase failed');
+            }
+
+            setReport((current) => ({
+                ...current,
+                status: 'purchased',
+            }));
+        } catch (err: unknown) {
+            alert(err instanceof Error ? err.message : 'Purchase failed');
         } finally {
             setLoading(false);
         }
@@ -72,20 +100,37 @@ function ReportContent({ params }: ReportPageProps) {
             const res = await fetch(`/api/reports/${id}/generate`, { method: 'POST' });
             const data = await res.json();
 
-            if (!res.ok) throw new Error(data.error || 'Generation failed');
+            if (!res.ok) {
+                throw new Error(data.error || 'Generation failed');
+            }
 
-            setReport({ ...report, status: 'generated', content: data.content });
-        } catch (err: any) {
-            alert(err.message);
+            setReport((current) => ({
+                ...current,
+                status: 'generated',
+                content: data.content,
+                updatedAt: new Date().toISOString(),
+            }));
+        } catch (err: unknown) {
+            alert(err instanceof Error ? err.message : 'Generation failed');
         } finally {
             setLoading(false);
         }
     };
 
-    if (loading && !profile) return <div className={styles.loading}>Retrieving cosmic data...</div>;
-    if (error) return <div className={styles.error}>{error}</div>;
+    if (loading && !profile) {
+        return <div className={styles.loading}>Retrieving cosmic data...</div>;
+    }
 
-    const isPurchased = report?.status === 'purchased' || report?.status === 'generated';
+    if (error || !profile || !report) {
+        return <div className={styles.error}>{error || 'Failed to load report data'}</div>;
+    }
+
+    const isPurchased = report.status === 'purchased' || report.status === 'generated';
+    const reportPricingUrl = buildPricingUrl({
+        intent: 'report',
+        source: purchaseError ? 'report_unlock_blocked' : 'report_paywall',
+        returnTo: `/report/${id}`,
+    });
 
     return (
         <div className={styles.reportPage}>
@@ -101,7 +146,6 @@ function ReportContent({ params }: ReportPageProps) {
             </header>
 
             <main className={styles.main}>
-                {/* Cover Section */}
                 <section className={styles.cover}>
                     <div className={styles.orb}></div>
                     <h1 className={styles.title}>The Life Guidance Report</h1>
@@ -109,7 +153,12 @@ function ReportContent({ params }: ReportPageProps) {
                     <div className={styles.divider}></div>
                 </section>
 
-                {/* Free Preview / High-Level Charts */}
+                {hasPurchaseSuccess && (
+                    <section className={styles.purchaseNotice}>
+                        <strong>Credits added.</strong> You&apos;re ready to unlock this report whenever you want to continue.
+                    </section>
+                )}
+
                 <section className={styles.vargasGrid}>
                     <div className={styles.vargaCard}>
                         <h3>D1: The Physical Self</h3>
@@ -122,32 +171,30 @@ function ReportContent({ params }: ReportPageProps) {
                     <div className={styles.vargaCard}>
                         <h3>D9: The Soul Journey</h3>
                         <div className={styles.chartWrapper}>
-                            {/* Transform array-based varga data to record-based for ChartDisplay */}
                             <ChartDisplay data={{
-                                planets: Object.fromEntries(profile.chartData?.vargas?.d9?.planets?.map((p: any) => [p.name, p]) || []),
+                                planets: Object.fromEntries(profile.chartData?.vargas?.d9?.planets?.map((planet: any) => [planet.name, planet]) || []),
                                 houses: profile.chartData?.houses,
                                 ascendant: profile.chartData?.vargas?.d9?.ascendant?.longitude,
-                                navamsaAscendant: profile.chartData?.vargas?.d9?.ascendant?.rasi?.toString()
+                                navamsaAscendant: profile.chartData?.vargas?.d9?.ascendant?.rasi?.toString(),
                             }} />
                         </div>
                         <p className={styles.vargaDesc}>Your inner strength and marital destiny.</p>
                     </div>
 
                     <div className={styles.vargaCard}>
-                        <h3>D10: Career & Status</h3>
+                        <h3>D10: Career &amp; Status</h3>
                         <div className={styles.chartWrapper}>
                             <ChartDisplay data={{
-                                planets: Object.fromEntries(profile.chartData?.vargas?.d10?.planets?.map((p: any) => [p.name, p]) || []),
+                                planets: Object.fromEntries(profile.chartData?.vargas?.d10?.planets?.map((planet: any) => [planet.name, planet]) || []),
                                 houses: profile.chartData?.houses,
                                 ascendant: profile.chartData?.vargas?.d10?.ascendant?.longitude,
-                                navamsaAscendant: profile.chartData?.vargas?.d10?.ascendant?.rasi?.toString()
+                                navamsaAscendant: profile.chartData?.vargas?.d10?.ascendant?.rasi?.toString(),
                             }} />
                         </div>
                         <p className={styles.vargaDesc}>Professional growth and public recognition.</p>
                     </div>
                 </section>
 
-                {/* Purchase CTA / Full Report Content */}
                 {!isPurchased ? (
                     <section className={styles.paywall}>
                         <div className={styles.lockIcon}>
@@ -156,13 +203,13 @@ function ReportContent({ params }: ReportPageProps) {
                         <h2>Unveil Your Full Cosmic Blueprint</h2>
                         <p>
                             Your surface chart is just the beginning. The full 18-page report delves deep into
-                            your soul's purpose, career pitfalls, and relationship karma.
+                            your soul&apos;s purpose, career pitfalls, and relationship karma.
                         </p>
 
                         <div className={styles.featureList}>
                             <div className={styles.featureItem}>
                                 <Sparkles size={18} />
-                                <span>Deep analysis of D9 (Navmansha) & D10 (Dashmansha)</span>
+                                <span>Deep analysis of D9 (Navmansha) &amp; D10 (Dashmansha)</span>
                             </div>
                             <div className={styles.featureItem}>
                                 <ShieldCheck size={18} />
@@ -178,11 +225,29 @@ function ReportContent({ params }: ReportPageProps) {
                             <Crown size={20} />
                             {loading ? 'Processing...' : 'Unlock Full Report (99 Credits)'}
                         </button>
+
+                        {purchaseError ? (
+                            <div className={styles.purchaseHelpBox}>
+                                <p>{purchaseError}</p>
+                                <div className={styles.purchaseActions}>
+                                    <Link href={reportPricingUrl} className={styles.purchaseSecondaryLink}>
+                                        Top Up and Return
+                                    </Link>
+                                    <Link href="/clarity" className={styles.purchaseSecondaryLink}>
+                                        Start Smaller with Clarity
+                                    </Link>
+                                </div>
+                            </div>
+                        ) : (
+                            <p className={styles.topUpHint}>
+                                Need more credits first? <Link href={reportPricingUrl}>Top up and come right back.</Link>
+                            </p>
+                        )}
+
                         <p className={styles.refundNote}>Valid for Life • Secure Cosmic Insights</p>
                     </section>
                 ) : (
                     <section className={styles.reportContent}>
-                        {/* This will render the AI generated content */}
                         <div className={styles.generationStatus}>
                             {report.status === 'purchased' ? (
                                 <div className={styles.startGen}>
@@ -195,7 +260,6 @@ function ReportContent({ params }: ReportPageProps) {
                                 </div>
                             ) : (
                                 <div className={styles.fullReport}>
-                                    {/* Request Information Line Item */}
                                     <div className={styles.statusLine}>
                                         <div className={styles.statusInfo}>
                                             <FileText size={20} className={styles.statusIcon} />
@@ -215,7 +279,6 @@ function ReportContent({ params }: ReportPageProps) {
                                         </div>
                                     </div>
 
-                                    {/* Content Check: If empty/legacy, show prompt to regenerate */}
                                     {!report.content?.chapter1_SoulPurpose ? (
                                         <div className={styles.emptyContentState}>
                                             <h3>Report Generation Required</h3>

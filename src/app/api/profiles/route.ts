@@ -1,6 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
+
+type CreateProfileRequestBody = {
+    name?: string;
+    dateOfBirth?: string;
+    timeOfBirth?: string;
+    placeOfBirth?: string;
+    latitude?: number;
+    longitude?: number;
+    timezone?: string;
+    gender?: string;
+    chartData?: Prisma.InputJsonValue;
+};
 
 export async function GET() {
     try {
@@ -39,12 +52,18 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        const body = await req.json();
+        const body = await req.json() as CreateProfileRequestBody;
         const { name, dateOfBirth, timeOfBirth, placeOfBirth, latitude, longitude, timezone, gender, chartData } = body;
 
-        if (!name || !dateOfBirth || !placeOfBirth || !gender) {
+        const hasCoordinates =
+            typeof latitude === 'number' &&
+            Number.isFinite(latitude) &&
+            typeof longitude === 'number' &&
+            Number.isFinite(longitude);
+
+        if (!name || !dateOfBirth || !timeOfBirth || !placeOfBirth || !gender || !hasCoordinates) {
             return NextResponse.json(
-                { error: 'Missing required fields (name, dob, pob, gender)' },
+                { error: 'Missing required fields (name, dob, time, pob, latitude, longitude, gender)' },
                 { status: 400 }
             );
         }
@@ -58,12 +77,17 @@ export async function POST(req: NextRequest) {
             orderBy: { createdAt: 'asc' }, // Oldest first
         });
 
-        // Get max allowed active profiles from env (default: 5)
+        const limitRecord = await prisma.userProfileLimit.findFirst({
+            where: { userId: session.user.id },
+            orderBy: { purchasedAt: 'desc' }
+        });
         const maxActiveProfiles = parseInt(process.env.MAX_ACTIVE_PROFILES || '5');
+        const extraSlots = limitRecord?.extraSlots || 0;
+        const totalLimit = Math.min(maxActiveProfiles + extraSlots, 10);
 
         // If at or over limit, deactivate the oldest profile(s)
-        if (activeProfiles.length >= maxActiveProfiles) {
-            const profilesToDeactivate = activeProfiles.slice(0, activeProfiles.length - maxActiveProfiles + 1);
+        if (activeProfiles.length >= totalLimit) {
+            const profilesToDeactivate = activeProfiles.slice(0, activeProfiles.length - totalLimit + 1);
 
             for (const profile of profilesToDeactivate) {
                 await prisma.profile.update({
@@ -71,9 +95,9 @@ export async function POST(req: NextRequest) {
                     data: {
                         isActive: false,
                         disabledAt: new Date(),
-                        disabledReason: `Exceeded max active profiles limit (${maxActiveProfiles})`,
+                        disabledReason: `Exceeded max active profiles limit (${totalLimit})`,
                     },
-                } as any);
+                });
             }
         }
 
@@ -88,10 +112,10 @@ export async function POST(req: NextRequest) {
                 longitude,
                 timezone: timezone || 'UTC',
                 gender,
-                chartData: chartData || {},
+                chartData: chartData ?? {},
                 isActive: true,
             },
-        } as any);
+        });
 
         return NextResponse.json(profile, { status: 201 });
     } catch (error) {

@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
+import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
+import { recordAnalyticsEvent } from '@/lib/analytics/server';
+import { maybeSendLowCreditLifecycleEmail } from '@/lib/lifecycleEmails';
 
 const REPORT_COST = 99;
 
@@ -48,7 +51,7 @@ export async function POST(
             });
         }
 
-        await prisma.$transaction(async (tx) => {
+        const purchaseResult = await prisma.$transaction(async (tx) => {
             const creditPacks = await tx.creditPack.findMany({
                 where: {
                     userId: session.user.id,
@@ -106,6 +109,31 @@ export async function POST(
                     }
                 }
             });
+
+            return {
+                remainingCredits: totalAvailable - REPORT_COST,
+            };
+        });
+
+        await recordAnalyticsEvent({
+            type: ANALYTICS_EVENTS.CREDIT_USED,
+            path: `/report/${profile.id}`,
+            userId: session.user.id,
+            metadata: {
+                feature: 'premium_report_unlock',
+                creditsUsed: REPORT_COST,
+                profileId: profile.id,
+                reportId: report.id,
+            }
+        });
+
+        void maybeSendLowCreditLifecycleEmail({
+            userId: session.user.id,
+            remainingCredits: purchaseResult.remainingCredits,
+            source: 'report_low_credit_email',
+            returnTo: `/report/${profile.id}`,
+        }).catch((emailError) => {
+            console.error('Low credit lifecycle email failed:', emailError);
         });
 
         return NextResponse.json({

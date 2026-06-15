@@ -27,6 +27,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { PlusCircle, ArrowLeft, Lock, Info, CheckCircle, Sparkles, Zap, Loader2, Download, Clock, Compass, Copy, Share2 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { PAYMENTS_ENABLED, PAYMENTS_PAUSED_MESSAGE } from '@/lib/paymentConfig';
+import { buildPricingUrl } from '@/lib/monetization';
 import Term from '@/components/Term';
 import DisclaimerNote from '@/components/DisclaimerNote';
 import ShareChartCard from '@/components/ShareChartCard';
@@ -55,6 +56,7 @@ export default function ChartPageContent() {
     const [serviceCosts, setServiceCosts] = useState<Record<string, number>>({});
     const [confirmModal, setConfirmModal] = useState<{ show: boolean; chartKey: string; cost: number } | null>(null);
     const [noCreditsModal, setNoCreditsModal] = useState(false);
+    const [blockedUnlockContext, setBlockedUnlockContext] = useState<{ chartKey: string; cost: number } | null>(null);
     const [initializing, setInitializing] = useState(false);
     const [activeCategory, setActiveCategory] = useState('Abundance');
     const [isExporting, setIsExporting] = useState(false);
@@ -209,7 +211,7 @@ export default function ChartPageContent() {
 
     const confirmUnlock = async () => {
         if (!confirmModal || !profile) return;
-        const { chartKey } = confirmModal;
+        const { chartKey, cost } = confirmModal;
         setConfirmModal(null);
         setUnlocking(chartKey);
 
@@ -223,11 +225,13 @@ export default function ChartPageContent() {
             if (res.ok) {
                 const data = await res.json();
                 setProfile({ ...profile, unlockedCharts: data.unlockedCharts });
+                setBlockedUnlockContext(null);
                 // Automatically open the chart details after unlock
                 setActiveChart(chartKey);
             } else {
                 const err = await res.json();
                 if (res.status === 402) {
+                    setBlockedUnlockContext({ chartKey, cost });
                     setNoCreditsModal(true);
                 } else {
                     alert('Unlock failed: ' + (err.error || 'Unknown error'));
@@ -357,6 +361,20 @@ export default function ChartPageContent() {
     const freeCharts = ['D1', 'D9', 'Moon'];
     const unlockedCharts = (profile?.unlockedCharts as string[]) || [];
     const hasVargas = !!profile?.chartData?.vargas;
+    const hasPurchaseSuccess = searchParams.get('purchase') === 'success';
+    const purchaseIntent = searchParams.get('purchaseIntent');
+    const currentProfileId = selectedProfile?.id ?? profile?.id ?? searchParams.get('profileId');
+    const chartReturnTo = currentProfileId ? `/chart?profileId=${currentProfileId}` : '/chart';
+    const highlightedChartKey = blockedUnlockContext?.chartKey ?? searchParams.get('focus');
+    const highlightedChartTitle = highlightedChartKey
+        ? (VARGA_DEFINITIONS[highlightedChartKey]?.title || highlightedChartKey)
+        : null;
+    const chartUnlockPricingUrl = buildPricingUrl({
+        intent: 'chart_unlock',
+        source: blockedUnlockContext ? 'chart_unlock_blocked' : 'chart_unlock_topup',
+        returnTo: chartReturnTo,
+        focus: highlightedChartKey,
+    });
 
     const renderVargaCard = (key: string, isTrinity = false) => {
         const info = VARGA_DEFINITIONS[key] || { title: key, definition: 'Advanced divisional analysis', tips: 'Refining cosmic insights' };
@@ -462,6 +480,41 @@ export default function ChartPageContent() {
                                     if ((m == 1 && da >= 20) || (m == 2 && da <= 18)) return "Aquarius";
                                     return "Pisces";
                                 })(new Date(profile.dateOfBirth))}</div>
+                            </div>
+                        )}
+
+                        {hasPurchaseSuccess && purchaseIntent === 'chart_unlock' && (
+                            <div className={styles.purchaseNotice}>
+                                <div className={styles.purchaseNoticeText}>
+                                    <strong>Credits added.</strong>{' '}
+                                    {highlightedChartTitle
+                                        ? `You can now return to ${highlightedChartTitle} and unlock its premium interpretation.`
+                                        : 'You can now continue unlocking premium chart interpretations without leaving this flow.'}
+                                </div>
+                                {highlightedChartKey && (
+                                    <button
+                                        type="button"
+                                        className={styles.purchaseNoticeBtn}
+                                        onClick={() => handleUnlockChart(highlightedChartKey)}
+                                    >
+                                        Resume Unlock
+                                    </button>
+                                )}
+                            </div>
+                        )}
+
+                        {hasPurchaseSuccess && purchaseIntent === 'profile_expansion' && (
+                            <div className={styles.purchaseNotice}>
+                                <div className={styles.purchaseNoticeText}>
+                                    <strong>Credits added.</strong> You can now expand your profile capacity and continue working across more charts.
+                                </div>
+                                <button
+                                    type="button"
+                                    className={styles.purchaseNoticeBtn}
+                                    onClick={() => void openNewProfileModal()}
+                                >
+                                    Add Profile
+                                </button>
                             </div>
                         )}
                     </div>
@@ -622,14 +675,17 @@ export default function ChartPageContent() {
 	                                >
 	                                    Close
 	                                </button>
-	                                {PAYMENTS_ENABLED && (
-	                                    <button
-	                                        onClick={() => router.push('/pricing')}
-	                                        className={styles.btnPremium}
-	                                    >
-	                                        Get Credits
-	                                    </button>
-	                                )}
+                                {PAYMENTS_ENABLED && (
+                                    <button
+                                        onClick={() => {
+                                            setNoCreditsModal(false);
+                                            router.push(chartUnlockPricingUrl);
+                                        }}
+                                        className={styles.btnPremium}
+                                    >
+                                        Top Up and Return
+                                    </button>
+                                )}
 	                            </div>
                         </motion.div>
                     </motion.div>

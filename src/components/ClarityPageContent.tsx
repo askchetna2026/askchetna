@@ -8,6 +8,7 @@ import { Send, Sparkles, MessageSquare, History, ArrowLeft, Bookmark, Share2, Sh
 import styles from '../app/clarity/page.module.css';
 
 import ProfileGuard from '@/components/ProfileGuard';
+import { buildPricingUrl } from '@/lib/monetization';
 import { PAYMENTS_ENABLED, PAYMENTS_PAUSED_MESSAGE } from '@/lib/paymentConfig';
 
 const LOADING_MESSAGES = [
@@ -22,6 +23,7 @@ export default function ClarityPageContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const initialQuery = searchParams.get('q') || '';
+    const hasPurchaseSuccess = searchParams.get('purchase') === 'success';
 
     const [question, setQuestion] = useState(initialQuery);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -179,6 +181,13 @@ export default function ClarityPageContent() {
         }
     };
 
+    const clarityPricingUrl = buildPricingUrl({
+        intent: 'clarity',
+        source: error?.includes('credits') ? 'clarity_credit_block' : 'clarity_topup',
+        returnTo: '/clarity',
+    });
+    const lowCreditMode = credits !== null && credits > 0 && credits <= 2;
+
     return (
         <ProfileGuard>
             <div className={`container ${styles.pageContainer}`}>
@@ -193,6 +202,43 @@ export default function ClarityPageContent() {
                         </div>
                     )}
                 </div>
+
+                {hasPurchaseSuccess && PAYMENTS_ENABLED && (
+                    <div className={styles.rulesBox} style={{ marginBottom: '20px', borderColor: 'rgba(var(--accent-gold-rgb), 0.35)' }}>
+                        <h3>Credits Added</h3>
+                        <p style={{ marginBottom: '16px' }}>
+                            Your account is topped up. If the question still feels alive, this is a good moment to keep going.
+                        </p>
+                        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                            <button
+                                type="button"
+                                className={styles.actionLink}
+                                onClick={() => {
+                                    const input = document.querySelector('textarea');
+                                    if (input instanceof HTMLTextAreaElement) {
+                                        input.focus();
+                                    }
+                                }}
+                            >
+                                Continue Asking
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {lowCreditMode && !error && (
+                    <div className={styles.rulesBox} style={{ marginBottom: '20px' }}>
+                        <h3>Low Credit Reminder</h3>
+                        <p style={{ marginBottom: '16px' }}>
+                            You have {credits} credit{credits === 1 ? '' : 's'} left. If you want room for follow-up questions, this is a good time to top up before you lose the thread.
+                        </p>
+                        {PAYMENTS_ENABLED && (
+                            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                                <Link href={clarityPricingUrl} className={styles.actionLink}>Top Up for More Clarity</Link>
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 <motion.h1 
                     className={styles.title}
@@ -223,7 +269,7 @@ export default function ClarityPageContent() {
                             <div style={{ display: 'flex', gap: '12px', marginTop: '16px', justifyContent: 'center' }}>
                                 {error.includes('credits') && (
                                     PAYMENTS_ENABLED ? (
-                                        <Link href="/pricing" className={styles.actionLink}>Buy Credits</Link>
+                                        <Link href={clarityPricingUrl} className={styles.actionLink}>Buy Credits</Link>
                                     ) : null
                                 )}
                                 {error.includes('chart') && (

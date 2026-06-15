@@ -98,6 +98,19 @@
     margin: 30px auto;
 }
 
+.purchaseNotice {
+    margin: 0 auto 28px;
+    max-width: 760px;
+    padding: 16px 20px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 215, 0, 0.24);
+    background: rgba(255, 215, 0, 0.08);
+    color: #fff;
+    text-align: center;
+    font-family: var(--font-inter), sans-serif;
+    line-height: 1.6;
+}
+
 .vargasGrid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -212,6 +225,57 @@
 .purchaseBtn:hover {
     transform: scale(1.05);
     box-shadow: 0 10px 20px rgba(255, 215, 0, 0.3);
+}
+
+.purchaseHelpBox {
+    max-width: 620px;
+    margin: 0 auto 20px;
+    padding: 18px 22px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.purchaseHelpBox p,
+.topUpHint {
+    font-family: var(--font-inter), sans-serif;
+    margin: 0 auto 14px;
+    color: rgba(255, 255, 255, 0.82);
+}
+
+.purchaseActions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.purchaseSecondaryLink {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: #ffd700;
+    border: 1px solid rgba(255, 215, 0, 0.28);
+    padding: 12px 18px;
+    border-radius: 999px;
+    transition: all 0.2s ease;
+    font-family: var(--font-inter), sans-serif;
+}
+
+.purchaseSecondaryLink:hover,
+.topUpHint a:hover {
+    color: #fff;
+    border-color: rgba(255, 215, 0, 0.45);
+}
+
+.topUpHint {
+    margin-top: 16px;
+    font-size: 0.95rem;
+}
+
+.topUpHint a {
+    color: #ffd700;
 }
 
 .refundNote {

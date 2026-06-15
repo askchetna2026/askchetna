@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og';
 
-export const alt = 'AskChetna — Astrology for Awareness, Not Prediction';
+export const alt = 'AskChetna - Astrology for Awareness, Not Prediction';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -23,7 +23,7 @@ export default function OpengraphImage() {
                 }}
             >
                 <div style={{ fontSize: 40, letterSpacing: 8, color: '#d4af37', display: 'flex' }}>
-                    ✦ ASKCHETNA ✦
+                    ASKCHETNA
                 </div>
                 <div style={{ fontSize: 72, fontWeight: 700, marginTop: 32, lineHeight: 1.15, display: 'flex' }}>
                     Astrology for Awareness

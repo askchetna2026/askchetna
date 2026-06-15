@@ -439,6 +439,73 @@
     box-shadow: var(--glass-shadow);
 }
 
+.lifecycleSection {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.lifecycleActionGroup {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.lifecycleMessage {
+    background: rgba(var(--accent-gold-rgb), 0.12);
+    border: 1px solid rgba(var(--accent-gold-rgb), 0.24);
+    color: var(--foreground);
+    border-radius: var(--radius-sm);
+    padding: 0.9rem 1rem;
+}
+
+.lifecycleStatusCard {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--glass-shadow);
+    padding: 1.25rem;
+}
+
+.lifecycleStatusGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+}
+
+.monoText {
+    font-family: "Courier New", monospace;
+    font-size: 0.9rem;
+    word-break: break-all;
+}
+
+.campaignSummaryGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
+.campaignSummaryCard {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--glass-shadow);
+    padding: 1.25rem;
+}
+
+.campaignMeta {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.statusInline {
+    min-width: 72px;
+    text-transform: uppercase;
+}
+
 .formGroup {
     margin-bottom: 1.5rem;
 }
@@ -475,6 +542,62 @@
 .geoItem strong {
     font-size: 1.1rem;
     color: var(--foreground);
+}
+
+.funnelGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.funnelCard {
+    background: var(--card-bg);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-sm);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.funnelLabel {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.funnelValue {
+    font-size: 1.5rem;
+    font-family: var(--font-heading);
+    color: var(--foreground);
+}
+
+.topPageList {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.topPageItem,
+.emptyPanel {
+    background: var(--card-bg);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-sm);
+    padding: 0.9rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: center;
+}
+
+.topPagePath {
+    color: var(--foreground);
+    word-break: break-all;
+}
+
+.emptyPanel {
+    color: var(--text-muted);
+    justify-content: flex-start;
 }
 
 .filterBar {
@@ -544,6 +667,14 @@
     .filterGroup {
         flex: 1;
         min-width: 140px;
+    }
+
+    .lifecycleActionGroup {
+        width: 100%;
+    }
+
+    .lifecycleStatusGrid {
+        grid-template-columns: 1fr;
     }
 
     .inputSm,

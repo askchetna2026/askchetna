@@ -1,11 +1,13 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import styles from './page.module.css';
 import { Mail, AlertCircle } from 'lucide-react';
+import { getVisitorId, trackEvent } from '@/lib/analytics/client';
+import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 
 // Force dynamic rendering to avoid build errors with useSearchParams
 export const dynamic = 'force-dynamic';
@@ -14,8 +16,9 @@ function LoginContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const callbackUrl = searchParams.get('callbackUrl') || '/';
+    const forcedSignup = searchParams.get('mode') === 'signup';
 
-    const [isLogin, setIsLogin] = useState(true);
+    const [isLogin, setIsLogin] = useState(!forcedSignup);
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -24,6 +27,13 @@ function LoginContent() {
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (forcedSignup) {
+            setIsLogin(false);
+            setError('');
+        }
+    }, [forcedSignup]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -46,6 +56,15 @@ function LoginContent() {
                     router.refresh();
                 }
             } else {
+                void trackEvent(ANALYTICS_EVENTS.SIGNUP_STARTED, {
+                    path: '/login',
+                    metadata: {
+                        method: 'email',
+                        subscribed: formData.isSubscribed,
+                        callbackUrl,
+                    },
+                });
+
                 // Register new user
                 const response = await fetch('/api/auth/register', {
                     method: 'POST',
@@ -54,7 +73,8 @@ function LoginContent() {
                         email: formData.email,
                         password: formData.password,
                         name: formData.name,
-                        isSubscribed: formData.isSubscribed
+                        isSubscribed: formData.isSubscribed,
+                        visitorId: getVisitorId(),
                     }),
                 });
 

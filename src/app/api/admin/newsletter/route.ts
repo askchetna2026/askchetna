@@ -12,13 +12,24 @@ export async function POST(req: NextRequest) {
     try {
         const { subject, content } = await req.json();
 
-        // 1. Get all subscribed users
-        const subscribers = await prisma.user.findMany({
-            where: { isSubscribed: true },
-            select: { email: true }
-        });
+        const [userSubscribers, leadSubscribers] = await Promise.all([
+            prisma.user.findMany({
+                where: { isSubscribed: true },
+                select: { email: true }
+            }),
+            prisma.newsletterSubscriber.findMany({
+                where: { isSubscribed: true },
+                select: { email: true }
+            })
+        ]);
 
-        const emails = subscribers.map(u => u.email).filter((e): e is string => !!e);
+        const emails = Array.from(
+            new Set(
+                [...userSubscribers, ...leadSubscribers]
+                    .map((subscriber) => subscriber.email?.trim().toLowerCase())
+                    .filter((email): email is string => !!email)
+            )
+        );
 
         // 2. Send email
         const result = await sendNewsletter(emails, subject, content);

@@ -1,11 +1,20 @@
-
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import Script from 'next/script';
-import styles from '@/app/pricing/page.module.css'; // Assuming shared styles or move to component specific
+import styles from '@/app/pricing/page.module.css';
+import { getVisitorId, trackEvent } from '@/lib/analytics/client';
+import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
+import {
+    getPricingContext,
+    isMonetizationIntent,
+    resolvePostPurchasePath,
+    sanitizeInternalReturnTo,
+    type MonetizationIntent,
+} from '@/lib/monetization';
 
 declare global {
     interface Window {
@@ -21,7 +30,7 @@ interface PricingPlan {
     key: string;
     name: string;
     description: string | null;
-    price: number; // in paise
+    price: number;
     currency: string;
     credits: number;
 }
@@ -30,27 +39,141 @@ interface PricingClientProps {
     plans: PricingPlan[];
 }
 
+const FAQ_ITEMS = [
+    {
+        question: 'Do credits expire?',
+        answer: 'No. Credit packs can be used at your own pace and do not expire.',
+    },
+    {
+        question: 'Do I need a subscription?',
+        answer: 'No. AskChetna uses one-time credit purchases, so people can explore when they need clarity without recurring charges.',
+    },
+    {
+        question: 'What happens after I pay?',
+        answer: 'Your credits are added to your account automatically and can be used for chart-aware AI reflection sessions.',
+    },
+];
+
+function pickRecommendedPlan(plans: PricingPlan[], intent: MonetizationIntent) {
+    const byCreditsAsc = [...plans].sort((a, b) => a.credits - b.credits || a.price - b.price);
+    const byCreditsDesc = [...byCreditsAsc].reverse();
+
+    switch (intent) {
+        case 'clarity':
+            return byCreditsAsc.find((plan) => plan.credits >= 5) || byCreditsAsc.find((plan) => plan.credits > 1) || byCreditsAsc[0] || null;
+        case 'chart_unlock':
+            return byCreditsAsc.find((plan) => plan.credits >= 5) || byCreditsDesc[0] || null;
+        case 'report':
+            return byCreditsDesc[0] || null;
+        case 'profile_expansion':
+            return byCreditsAsc.find((plan) => plan.credits >= 50) || byCreditsDesc[0] || null;
+        case 'top_up':
+        default:
+            return byCreditsAsc.find((plan) => plan.credits >= 10) || byCreditsAsc.find((plan) => plan.credits >= 5) || byCreditsAsc[0] || null;
+    }
+}
+
+function getButtonLabel(plan: PricingPlan, intent: MonetizationIntent) {
+    if (plan.credits === 1) {
+        return intent === 'clarity' ? 'Resume Questioning' : 'Ask Now';
+    }
+
+    if (intent === 'report') {
+        return 'Top Up for Report';
+    }
+
+    if (intent === 'chart_unlock') {
+        return 'Unlock More Charts';
+    }
+
+    if (intent === 'profile_expansion') {
+        return 'Prepare for Expansion';
+    }
+
+    return 'Get Credits';
+}
+
 export default function PricingClient({ plans }: PricingClientProps) {
     const { data: session } = useSession();
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [loading, setLoading] = useState<string | null>(null);
+    const hasTrackedPricingView = useRef(false);
+
+    const intentParam = searchParams.get('intent');
+    const intent = isMonetizationIntent(intentParam) ? intentParam : null;
+    const effectiveIntent: MonetizationIntent = intent || 'top_up';
+    const source = searchParams.get('source');
+    const focus = searchParams.get('focus');
+    const returnTo = sanitizeInternalReturnTo(searchParams.get('returnTo'));
+    const pricingContext = getPricingContext(effectiveIntent, focus);
+
+    useEffect(() => {
+        if (hasTrackedPricingView.current) {
+            return;
+        }
+
+        hasTrackedPricingView.current = true;
+
+        void trackEvent(ANALYTICS_EVENTS.PRICING_VIEWED, {
+            path: `/pricing${typeof window !== 'undefined' ? window.location.search : ''}`,
+            metadata: {
+                loggedIn: !!session?.user?.id,
+                intent: effectiveIntent,
+                source,
+                focus,
+                returnTo,
+                plansShown: plans.map((plan) => ({
+                    key: plan.key,
+                    credits: plan.credits,
+                    price: plan.price,
+                })),
+            },
+        });
+    }, [effectiveIntent, focus, plans, returnTo, session?.user?.id, source]);
+
+    const sortedPlans = [...plans].sort((a, b) => a.price - b.price);
+    const recommendedPlan = pickRecommendedPlan(sortedPlans, effectiveIntent);
 
     const handlePurchase = async (plan: PricingPlan) => {
+        void trackEvent(ANALYTICS_EVENTS.CHECKOUT_STARTED, {
+            path: `/pricing${typeof window !== 'undefined' ? window.location.search : ''}`,
+            metadata: {
+                planKey: plan.key,
+                planName: plan.name,
+                credits: plan.credits,
+                price: plan.price,
+                currency: plan.currency,
+                loggedIn: !!session?.user?.id,
+                intent: effectiveIntent,
+                source,
+                focus,
+                returnTo,
+            },
+        });
+
         if (!session) {
-            router.push('/login?callbackUrl=/pricing');
+            const callbackUrl = typeof window !== 'undefined'
+                ? `${window.location.pathname}${window.location.search}`
+                : '/pricing';
+            router.push(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
             return;
         }
 
         setLoading(plan.key);
 
         try {
-            // Create order
             const response = await fetch('/api/payment/create-order', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     productKey: plan.key,
-                    productName: plan.name
+                    productName: plan.name,
+                    visitorId: getVisitorId(),
+                    intent: effectiveIntent,
+                    source,
+                    focus,
+                    returnTo,
                 }),
             });
 
@@ -60,7 +183,6 @@ export default function PricingClient({ plans }: PricingClientProps) {
                 throw new Error(order.error || 'Failed to create order');
             }
 
-            // Initialize Razorpay checkout
             const options = {
                 key: order.keyId,
                 amount: order.amount,
@@ -69,8 +191,8 @@ export default function PricingClient({ plans }: PricingClientProps) {
                 description: plan.name,
                 order_id: order.orderId,
                 handler: function () {
-                    alert('Payment successful! Credits added to your account.');
-                    router.push('/clarity');
+                    router.push(resolvePostPurchasePath(effectiveIntent, returnTo));
+                    router.refresh();
                 },
                 prefill: {
                     email: session.user?.email || '',
@@ -96,39 +218,60 @@ export default function PricingClient({ plans }: PricingClientProps) {
         }
     };
 
-    // Sort plans: Single Question first, then Packs by price
-    const sortedPlans = [...plans].sort((a, b) => a.price - b.price);
-
     return (
         <>
             <Script src="https://checkout.razorpay.com/v1/checkout.js" />
 
             <div className={styles.container}>
                 <div className={styles.header}>
-                    <span className="cosmic-label mb-2 block">Value & Exchange · Dana</span>
+                    <span className="cosmic-label mb-2 block">Value & Exchange Â· Dana</span>
                     <h1 className="mystic-text text-5xl mb-4">Sacred Exchange</h1>
                     <div className="sacred-divider mb-8"></div>
                     <p className={styles.subtitle}>
-                        AskChetna follows a simple and transparent pricing model. You pay only for what you choose to explore — no subscriptions, no pressure.
+                        AskChetna follows a simple and transparent pricing model. You pay only for what you choose to explore - no subscriptions, no pressure.
                     </p>
+                </div>
+
+                <div className={styles.contextBanner}>
+                    <div>
+                        <span className={styles.contextBadge}>{pricingContext.badge}</span>
+                        <h2 className={styles.contextTitle}>{pricingContext.title}</h2>
+                        <p className={styles.contextText}>{pricingContext.description}</p>
+                        <p className={styles.contextRecommendation}>{pricingContext.recommendation}</p>
+                    </div>
+                    <div className={styles.contextActions}>
+                        {returnTo && (
+                            <Link href={returnTo} className={styles.secondaryLink}>
+                                Return to your flow
+                            </Link>
+                        )}
+                    </div>
                 </div>
 
                 <div className={styles.pricingGrid}>
                     {sortedPlans.map((plan) => {
-                        const isFeatured = plan.credits === 5; // Highlight 5-pack as featured if desired
+                        const isRecommended = plan.key === recommendedPlan?.key;
                         return (
-                            <div key={plan.key} className={`${styles.priceCard} ${isFeatured ? styles.featured : ''} sacred-card`}>
-                                <div className={styles.cardLabel}>{plan.credits === 1 ? 'Single Question' : 'Credit Pack'}</div>
+                            <div key={plan.key} className={`${styles.priceCard} ${isRecommended ? styles.featured : ''} sacred-card`}>
+                                <div className={styles.cardLabel}>
+                                    {isRecommended ? 'Recommended Next Step' : plan.credits === 1 ? 'Single Question' : 'Credit Pack'}
+                                </div>
                                 <div className={styles.price}>₹{plan.price / 100}</div>
                                 <div className={styles.priceUnit}>
                                     {plan.credits === 1 ? 'per question' : `${plan.credits} questions`}
                                 </div>
+                                {isRecommended && (
+                                    <p className={styles.recommendedNote}>
+                                        Best fit for your current goal.
+                                    </p>
+                                )}
                                 <ul className={styles.features}>
                                     {plan.description && <li>{plan.description}</li>}
                                     {plan.credits > 1 ? (
                                         <>
                                             <li>Use at your own pace</li>
                                             <li>No expiry date</li>
+                                            <li>Return straight to your current flow after checkout</li>
                                         </>
                                     ) : (
                                         <>
@@ -142,7 +285,7 @@ export default function PricingClient({ plans }: PricingClientProps) {
                                     className="primary-btn-cosmic w-full"
                                     disabled={loading === plan.key}
                                 >
-                                    {loading === plan.key ? 'Processing...' : (plan.credits > 1 ? 'Get Credits' : 'Ask Now')}
+                                    {loading === plan.key ? 'Processing...' : getButtonLabel(plan, effectiveIntent)}
                                 </button>
                             </div>
                         );
@@ -171,8 +314,19 @@ export default function PricingClient({ plans }: PricingClientProps) {
 
                 <div className={styles.noteBox}>
                     <p>
-                        <strong>A Gentle Reminder:</strong> AskChetna encourages thoughtful use. More questions do not mean better answers — clarity comes from reflection and action.
+                        <strong>A Gentle Reminder:</strong> AskChetna encourages thoughtful use. More questions do not mean better answers - clarity comes from reflection and action.
                     </p>
+                </div>
+
+                <div className={styles.infoSection}>
+                    <h2 className="mystic-text text-2xl mb-4">Frequently Asked Questions</h2>
+                    <ul>
+                        {FAQ_ITEMS.map((item) => (
+                            <li key={item.question}>
+                                <strong>{item.question}</strong> {item.answer}
+                            </li>
+                        ))}
+                    </ul>
                 </div>
             </div>
         </>

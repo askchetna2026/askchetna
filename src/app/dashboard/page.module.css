@@ -128,6 +128,35 @@
     background: rgba(var(--foreground-rgb), 0.08);
 }
 
+.noticeActions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.noticeActionBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 16px;
+    border-radius: 999px;
+    border: none;
+    background: var(--accent-gold);
+    color: var(--bg-primary);
+    font-size: 0.88rem;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.noticeActionBtn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(var(--accent-gold-rgb), 0.22);
+    text-decoration: none;
+}
+
 /* Layout */
 .layout {
     display: flex;
@@ -1378,6 +1407,14 @@
         justify-content: center;
     }
 
+    .noticeActions {
+        width: 100%;
+    }
+
+    .noticeActionBtn {
+        width: 100%;
+    }
+
     .profileGrid {
         grid-template-columns: 1fr;
         gap: 20px;
@@ -1478,6 +1515,10 @@
 
     .welcomeBonusNoticeText {
         font-size: 0.9rem;
+    }
+
+    .noticeActions {
+        width: 100%;
     }
 
     .tableWrapper {

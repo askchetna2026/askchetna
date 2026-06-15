@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useSession } from 'next-auth/react';
@@ -11,7 +11,11 @@ import EnergyWidget from '@/components/EnergyWidget';
 import JournalWidget from '@/components/JournalWidget';
 import PanchangWidget from '@/components/PanchangWidget';
 import CosmicMandala from '@/components/CosmicMandala';
+import NewsletterSignupCard from '@/components/NewsletterSignupCard';
 import { useProfile } from '@/context/ProfileContext';
+import { trackEvent } from '@/lib/analytics/client';
+import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
+import { HOME_TOPIC_LINKS } from '@/lib/seoLandingPages';
 
 // Zodiac signs with their Sanskrit names and glyphs
 const ZODIAC_SIGNS = [
@@ -42,10 +46,13 @@ const NAVAGRAHA = [
   { glyph: '☋', name: 'Ketu', en: 'South Node' },
 ];
 
+const NEWSLETTER_SIGNUP_HREF = '/login?mode=signup&callbackUrl=/dashboard';
+
 export default function Home() {
   const { data: session, status } = useSession();
   const { openNewProfileModal } = useProfile();
   const isLoggedIn = status === 'authenticated';
+  const hasTrackedLandingView = useRef(false);
 
   const [teaserDob, setTeaserDob] = useState('');
   const [teaserLoading, setTeaserLoading] = useState(false);
@@ -62,6 +69,19 @@ export default function Home() {
       .catch(() => { });
   }, [isLoggedIn]);
 
+  useEffect(() => {
+    if (isLoggedIn || hasTrackedLandingView.current) {
+      return;
+    }
+
+    hasTrackedLandingView.current = true;
+    void trackEvent(ANALYTICS_EVENTS.LANDING_VIEW, {
+      metadata: {
+        loggedIn: false,
+      },
+    });
+  }, [isLoggedIn]);
+
   const postTeaser = (content: string) => {
     const clean = content.replace(/\s+/g, ' ').trim();
     return clean.length > 110 ? `${clean.slice(0, 109)}…` : clean;
@@ -72,6 +92,13 @@ export default function Home() {
       setTeaserError('Please select a birth date.');
       return;
     }
+
+    void trackEvent(ANALYTICS_EVENTS.TEASER_STARTED, {
+      metadata: {
+        birthDate: teaserDob,
+      },
+    });
+
     setTeaserLoading(true);
     setTeaserError('');
     setTeaserResult(null);
@@ -83,8 +110,15 @@ export default function Home() {
       }
       const data = await res.json();
       setTeaserResult(data);
-    } catch (err: any) {
-      setTeaserError(err.message || 'Failed to load teaser reading.');
+      void trackEvent(ANALYTICS_EVENTS.TEASER_COMPLETED, {
+        metadata: {
+          birthDate: teaserDob,
+          sign: data?.sign || null,
+          sanskritName: data?.sanskritName || null,
+        },
+      });
+    } catch (err: unknown) {
+      setTeaserError(err instanceof Error ? err.message : 'Failed to load teaser reading.');
     } finally {
       setTeaserLoading(false);
     }
@@ -240,7 +274,7 @@ export default function Home() {
                               <p className={styles.teaserResultText}>{teaserResult.reading}</p>
                               <div className={styles.teaserUnlockOffer}>
                                   <span>Want to see your full Navamsa, Dasha timeline, and ask AI detailed questions?</span>
-                                  <Link href="/login" className={styles.teaserUnlockLink}>Sign Up Free (Get 10 Credits) <ArrowRight size={14} /></Link>
+                                  <Link href={NEWSLETTER_SIGNUP_HREF} className={styles.teaserUnlockLink}>Sign Up Free (Get 10 Credits) <ArrowRight size={14} /></Link>
                               </div>
                           </motion.div>
                       )}
@@ -394,7 +428,7 @@ export default function Home() {
 
               <div className={styles.testimonialCard}>
                 <p className={styles.testimonialQuote}>
-                  &ldquo;Chetna doesn't tell you what to do or predict the future. It helps you look at your repeating patterns so you can make active choices.&rdquo;
+                  &ldquo;Chetna doesn&apos;t tell you what to do or predict the future. It helps you look at your repeating patterns so you can make active choices.&rdquo;
                 </p>
                 <span className={styles.testimonialAuthor}>Arjun, 34, Bangalore</span>
               </div>
@@ -490,7 +524,7 @@ export default function Home() {
                 <p className={styles.featureText}>
                   Learn which planetary seasons govern your current years, showing what to build and what to release.
                   <span style={{ display: 'block', marginTop: '12px', fontSize: '0.85rem', fontStyle: 'italic', opacity: 0.85 }}>
-                    Scenario: Entering a Saturn phase? It's time for slow discipline, not reckless expansion. Knowing this timeline saves you from burn-out.
+                    Scenario: Entering a Saturn phase? It&apos;s time for slow discipline, not reckless expansion. Knowing this timeline saves you from burn-out.
                   </span>
                 </p>
               </motion.div>
@@ -597,7 +631,7 @@ export default function Home() {
                 <ul className={styles.doesNotList}>
                   <li className={styles.doesNotItem}>Use fear-based astrology to influence decisions</li>
                   <li className={styles.doesNotItem}>Force or prescribe remedies, rituals</li>
-                  <li className={styles.doesNotItem}>Tell you what will or won't happen in your life</li>
+                  <li className={styles.doesNotItem}>Tell you what will or won&apos;t happen in your life</li>
                   <li className={styles.doesNotItem}>Label time periods as good or bad</li>
                 </ul>
                 <p className={styles.doesNotSummary}>
@@ -605,6 +639,36 @@ export default function Home() {
                 </p>
               </div>
             </div>
+          </section>
+
+          <section className={styles.pathwaysSection}>
+            <div className={styles.sectionHeader}>
+              <span className="cosmic-label">❋ Paths Into the Work ❋</span>
+              <h2 className="mystic-text">Explore by the Question You Are Carrying</h2>
+              <div className="sacred-divider"></div>
+              <p className={styles.pathwaysIntro}>
+                Start with the part of life that already feels charged. These focused pages are built for searchers who want clearer entry points into love, work, timing, and reflective AI astrology.
+              </p>
+            </div>
+
+            <div className={styles.pathwaysGrid}>
+              {HOME_TOPIC_LINKS.map((item) => (
+                <Link key={item.href} href={item.href} className={styles.pathwayCard}>
+                  <h3 className={styles.pathwayTitle}>{item.title}</h3>
+                  <p className={styles.pathwayDescription}>{item.description}</p>
+                  <span className={styles.pathwayLink}>Explore Topic <ArrowRight size={14} /></span>
+                </Link>
+              ))}
+            </div>
+          </section>
+
+          <section className={styles.newsletterSection}>
+            <NewsletterSignupCard
+              title="Get practical cosmic notes for the weeks when you need perspective"
+              description="Join the list for grounded astrology reflections, timing insights, and product updates that help you keep learning between readings."
+              source="homepage_growth_section"
+              signupHref={NEWSLETTER_SIGNUP_HREF}
+            />
           </section>
         </>
       )}

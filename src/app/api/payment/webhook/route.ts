@@ -1,9 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import prisma from '@/lib/prisma';
+import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
+import { getRequestLocation, recordAnalyticsEvent } from '@/lib/analytics/server';
+import { isMonetizationIntent } from '@/lib/monetization';
+import { sendTopUpSuccessLifecycleEmail } from '@/lib/lifecycleEmails';
 
 export async function POST(req: NextRequest) {
     try {
+        if (!process.env.RAZORPAY_WEBHOOK_SECRET) {
+            console.error('Razorpay webhook secret is missing from environment variables');
+            return NextResponse.json(
+                { error: 'Webhook configuration missing' },
+                { status: 500 }
+            );
+        }
+
         const body = await req.text();
         const signature = req.headers.get('x-razorpay-signature');
 
@@ -16,7 +28,7 @@ export async function POST(req: NextRequest) {
 
         // Verify signature
         const expectedSignature = crypto
-            .createHmac('sha256', process.env.RAZORPAY_WEBHOOK_SECRET!)
+            .createHmac('sha256', process.env.RAZORPAY_WEBHOOK_SECRET)
             .update(body)
             .digest('hex');
 
@@ -38,6 +50,7 @@ export async function POST(req: NextRequest) {
             const payment = event.payload.payment.entity;
             const userId = payment.notes?.userId as string | undefined;
             const productType = (payment.notes?.productType || payment.notes?.productKey) as string | undefined;
+            const visitorId = payment.notes?.visitorId as string | undefined;
 
             if (!userId || !productType) {
                 return NextResponse.json(
@@ -46,46 +59,100 @@ export async function POST(req: NextRequest) {
                 );
             }
 
-            // Create credit pack or mark question as paid
-            if (productType === 'CREDIT_PACK_5' || productType === 'CREDIT_PACK_10' || productType === 'SINGLE_QUESTION') {
-                let questionsTotal = 1;
-                if (productType === 'CREDIT_PACK_5') questionsTotal = 5;
-                if (productType === 'CREDIT_PACK_10') questionsTotal = 10;
+            const existingPack = await prisma.creditPack.findFirst({
+                where: { paymentId: payment.id }
+            });
 
-                // Idempotency check
-                const existingPack = await prisma.creditPack.findFirst({
-                    where: { paymentId: payment.id }
-                });
-
-                if (existingPack) {
-                    return NextResponse.json({ success: true, note: 'Duplicate' });
-                }
-
-                await prisma.$transaction([
-                    prisma.creditPack.create({
-                        data: {
-                            userId,
-                            packType: productType,
-                            questionsTotal,
-                            questionsUsed: 0,
-                            paymentId: payment.id,
-                            amount: payment.amount,
-                        },
-                    }),
-                    prisma.creditTransaction.create({
-                        data: {
-                            userId,
-                            amount: questionsTotal,
-                            description: `Purchased ${questionsTotal} credit${questionsTotal > 1 ? 's' : ''} via Razorpay`,
-                            metadata: {
-                                paymentId: payment.id,
-                                productType,
-                                razorpayOrderId: payment.order_id || null
-                            }
-                        }
-                    })
-                ]);
+            if (existingPack) {
+                return NextResponse.json({ success: true, note: 'Duplicate' });
             }
+
+            const plan = await prisma.pricingPlan.findUnique({
+                where: { key: productType }
+            });
+
+            if (!plan) {
+                return NextResponse.json(
+                    { error: `Unknown pricing plan: ${productType}` },
+                    { status: 400 }
+                );
+            }
+
+            if (plan.credits < 1) {
+                return NextResponse.json(
+                    { error: `Pricing plan ${productType} does not map to a credit pack.` },
+                    { status: 400 }
+                );
+            }
+
+            if (payment.amount !== plan.price || payment.currency !== plan.currency) {
+                return NextResponse.json(
+                    { error: 'Payment amount or currency does not match the pricing plan.' },
+                    { status: 400 }
+                );
+            }
+
+            await prisma.$transaction([
+                prisma.creditPack.create({
+                    data: {
+                        userId,
+                        packType: plan.key,
+                        questionsTotal: plan.credits,
+                        questionsUsed: 0,
+                        paymentId: payment.id,
+                        amount: payment.amount,
+                    },
+                }),
+                prisma.creditTransaction.create({
+                    data: {
+                        userId,
+                        amount: plan.credits,
+                        description: `Purchased ${plan.name}`,
+                        metadata: {
+                            paymentId: payment.id,
+                            productType: plan.key,
+                            planName: plan.name,
+                            planCredits: plan.credits,
+                            razorpayOrderId: payment.order_id || null
+                        }
+                    }
+                })
+            ]);
+
+            const location = getRequestLocation(req.headers);
+            await recordAnalyticsEvent({
+                type: ANALYTICS_EVENTS.PAYMENT_SUCCESS,
+                path: '/api/payment/webhook',
+                userId,
+                visitorId: visitorId || null,
+                country: location.country,
+                city: location.city,
+                metadata: {
+                    paymentId: payment.id,
+                    orderId: payment.order_id || null,
+                    planKey: plan.key,
+                    planName: plan.name,
+                    credits: plan.credits,
+                    amount: payment.amount,
+                    currency: payment.currency,
+                }
+            });
+
+            const checkoutIntent = payment.notes?.intent;
+            const lifecycleIntent =
+                typeof checkoutIntent === 'string' && isMonetizationIntent(checkoutIntent)
+                    ? checkoutIntent
+                    : undefined;
+
+            void sendTopUpSuccessLifecycleEmail({
+                userId,
+                paymentId: payment.id,
+                planName: plan.name,
+                credits: plan.credits,
+                intent: lifecycleIntent,
+            }).catch((emailError) => {
+                console.error('Top-up lifecycle email failed:', emailError);
+            });
 
             return NextResponse.json({ success: true });
         }

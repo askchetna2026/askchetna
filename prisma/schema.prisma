@@ -36,6 +36,7 @@ model User {
   topics        Topic[]
   posts         Post[]
   profileLimits UserProfileLimit[]
+  lifecycleEmails LifecycleEmail[]
 }
 
 // OAuth account info (for NextAuth)
@@ -197,6 +198,7 @@ model AnalyticsEvent {
   type      String   // PAGE_VIEW, FEATURE_USE
   path      String?
   userId    String?  // Optional, for logged-out users
+  visitorId String?
   country   String?
   city      String?
   metadata  Json?
@@ -204,6 +206,8 @@ model AnalyticsEvent {
 
   @@index([createdAt])
   @@index([type])
+  @@index([type, createdAt])
+  @@index([visitorId])
 }
 
 // Admin Newsletters
@@ -213,6 +217,18 @@ model Newsletter {
   content        String   @db.Text
   recipientsCount Int
   sentAt         DateTime @default(now())
+}
+
+model NewsletterSubscriber {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  isSubscribed   Boolean  @default(true)
+  subscribedAt   DateTime @default(now())
+  unsubscribedAt DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([isSubscribed])
 }
 
 // Export Records
@@ -301,4 +317,39 @@ model UserProfileLimit {
   purchasedAt DateTime @default(now())
   
   @@index([userId])
+}
+
+model LifecycleEmail {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  campaignKey String
+  dedupeKey   String   @unique
+  subject     String
+  status      String   @default("pending")
+  metadata    Json?
+  sentAt      DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId, campaignKey])
+  @@index([campaignKey, createdAt])
+}
+
+model LifecycleAutomationRun {
+  id          String   @id @default(cuid())
+  batchKey    String
+  campaignKey String
+  triggerType String
+  status      String   @default("completed")
+  attempted   Int      @default(0)
+  sent        Int      @default(0)
+  skipped     Int      @default(0)
+  failed      Int      @default(0)
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  @@index([campaignKey, createdAt])
+  @@index([triggerType, createdAt])
+  @@index([batchKey])
 }

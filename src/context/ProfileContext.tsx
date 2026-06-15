@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { buildPricingUrl } from '@/lib/monetization';
 
 interface ProfileContextType {
     isDrawerOpen: boolean;
@@ -61,6 +62,18 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
                 setIsDrawerOpen(true);
             } else {
                 const data = await res.json();
+                if (res.status === 402 && typeof window !== 'undefined') {
+                    const returnUrl = new URL(window.location.href);
+                    returnUrl.searchParams.delete('purchase');
+                    returnUrl.searchParams.delete('purchaseIntent');
+
+                    window.location.assign(buildPricingUrl({
+                        intent: 'profile_expansion',
+                        source: 'profile_limit_blocked',
+                        returnTo: `${returnUrl.pathname}${returnUrl.search}`,
+                    }));
+                    return;
+                }
                 alert(data.error || 'Failed to expand limit');
             }
         } catch (error) {

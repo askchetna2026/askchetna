@@ -1,7 +1,6 @@
 import type { MetadataRoute } from 'next';
 import prisma from '@/lib/prisma';
-
-const BASE_URL = process.env.NEXTAUTH_URL || 'https://askchetna.com';
+import { absoluteUrl } from '@/lib/site';
 
 export const revalidate = 3600;
 
@@ -13,6 +12,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         { path: '/', priority: 1.0, changeFrequency: 'weekly' },
         { path: '/about', priority: 0.8, changeFrequency: 'monthly' },
         { path: '/blog', priority: 0.9, changeFrequency: 'weekly' },
+        { path: '/ai-astrologer', priority: 0.8, changeFrequency: 'monthly' },
+        { path: '/relationship-astrology', priority: 0.8, changeFrequency: 'monthly' },
+        { path: '/career-astrology', priority: 0.8, changeFrequency: 'monthly' },
+        { path: '/dasha-timeline', priority: 0.8, changeFrequency: 'monthly' },
         { path: '/glossary', priority: 0.7, changeFrequency: 'monthly' },
         { path: '/how-it-works', priority: 0.6, changeFrequency: 'monthly' },
         { path: '/how-we-calculate', priority: 0.6, changeFrequency: 'monthly' },
@@ -28,7 +31,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ];
 
     const staticEntries: MetadataRoute.Sitemap = routes.map((r) => ({
-        url: `${BASE_URL}${r.path}`,
+        url: absoluteUrl(r.path),
         lastModified: now,
         changeFrequency: r.changeFrequency,
         priority: r.priority,
@@ -39,7 +42,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     try {
         const posts = await prisma.blogPost.findMany({ select: { id: true, updatedAt: true } });
         postEntries = posts.map((p) => ({
-            url: `${BASE_URL}/blog/${p.id}`,
+            url: absoluteUrl(`/blog/${p.id}`),
             lastModified: p.updatedAt,
             changeFrequency: 'monthly' as const,
             priority: 0.6,

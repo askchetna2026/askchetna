@@ -13,6 +13,10 @@ const newsletterFromEmail = process.env.NEWSLETTER_MAIL_FROM_EMAIL || process.en
 const newsletterFromName = process.env.NEWSLETTER_MAIL_FROM_NAME || process.env.MAIL_FROM_NAME || 'AskChetna Updates';
 const newsletterReplyTo = process.env.NEWSLETTER_MAIL_REPLY_TO || process.env.MAIL_REPLY_TO;
 
+const lifecycleFromEmail = process.env.LIFECYCLE_MAIL_FROM_EMAIL || process.env.MAIL_FROM_EMAIL || smtpUser;
+const lifecycleFromName = process.env.LIFECYCLE_MAIL_FROM_NAME || process.env.MAIL_FROM_NAME || 'AskChetna Guide';
+const lifecycleReplyTo = process.env.LIFECYCLE_MAIL_REPLY_TO || process.env.MAIL_REPLY_TO;
+
 const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: smtpPort,
@@ -152,6 +156,27 @@ export async function sendNewsletter(to: string[], subject: string, content: str
         return { success: true, count: to.length };
     } catch (error) {
         console.error('Newsletter Error:', error);
+        return { success: false, error };
+    }
+}
+
+export async function sendLifecycleEmailMessage(to: string, subject: string, html: string) {
+    const mailOptions: any = {
+        from: formatFrom(lifecycleFromEmail, lifecycleFromName),
+        to,
+        subject,
+        html,
+    };
+
+    if (lifecycleReplyTo) {
+        mailOptions.replyTo = lifecycleReplyTo;
+    }
+
+    try {
+        await transporter.sendMail(mailOptions);
+        return { success: true };
+    } catch (error) {
+        console.error('Lifecycle email error:', error);
         return { success: false, error };
     }
 }

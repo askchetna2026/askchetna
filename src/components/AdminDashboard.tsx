@@ -37,7 +37,10 @@ interface AnalyticsData {
     activeProfiles: number;
     dailyViews: number;
     totalViews: number;
+    periodDays: number;
     topCountries: Array<{ country: string; _count: { country: number } }>;
+    funnel: Array<{ key: string; label: string; count: number }>;
+    topPages: Array<{ path: string; views: number }>;
 }
 
 interface BlogPost {
@@ -65,15 +68,86 @@ interface CreditRequest {
     };
 }
 
+interface LifecycleSummaryItem {
+    campaignKey: string;
+    status: string;
+    _count: {
+        _all: number;
+    };
+}
+
+interface LifecycleRecentItem {
+    id: string;
+    campaignKey: string;
+    status: string;
+    subject: string;
+    sentAt: string | null;
+    createdAt: string;
+    user: {
+        email: string | null;
+        name: string | null;
+    };
+}
+
+interface LifecyclePerformanceItem {
+    campaignKey: string;
+    sent: number;
+    uniqueRecipients: number;
+    reengagedUsers: number;
+    checkoutUsers: number;
+    paymentUsers: number;
+    clarityUsers: number;
+    chartUnlockUsers: number;
+    reportUnlockUsers: number;
+    reportStartUsers: number;
+    profileExpansionUsers: number;
+    revenue: number;
+    paymentConversionRate: number;
+}
+
+interface LifecycleRunItem {
+    id: string;
+    batchKey: string;
+    campaignKey: string;
+    triggerType: string;
+    status: string;
+    attempted: number;
+    sent: number;
+    skipped: number;
+    failed: number;
+    createdAt: string;
+}
+
+interface LifecycleAutomationStatus {
+    mode: string;
+    description: string;
+    triggerSource: string;
+    abandonedTopUpWindowHours: number;
+    clarityReengagementWindowHours: number;
+    defaultTrafficLimit: number;
+    lastTrafficRunAt: string | null;
+}
+
+interface LifecycleData {
+    summary: LifecycleSummaryItem[];
+    recent: LifecycleRecentItem[];
+    performance: LifecyclePerformanceItem[];
+    recentRuns: LifecycleRunItem[];
+    lookbackDays: number;
+    conversionWindowDays: number;
+    automation: LifecycleAutomationStatus;
+}
+
 export default function AdminDashboard() {
     const router = useRouter();
-    const [activeTab, setActiveTab] = useState<'analytics' | 'pricing' | 'users' | 'newsletter' | 'blogs' | 'creditRequests'>('analytics');
+    const [activeTab, setActiveTab] = useState<'analytics' | 'pricing' | 'users' | 'newsletter' | 'blogs' | 'creditRequests' | 'lifecycle'>('analytics');
     const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
     const [plans, setPlans] = useState<PricingPlan[]>([]);
     const [services, setServices] = useState<ServiceCost[]>([]);
     const [users, setUsers] = useState<User[]>([]);
     const [blogs, setBlogs] = useState<BlogPost[]>([]);
     const [creditRequests, setCreditRequests] = useState<CreditRequest[]>([]);
+    const [lifecycleData, setLifecycleData] = useState<LifecycleData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -89,6 +163,8 @@ export default function AdminDashboard() {
     const [newsletterSubject, setNewsletterSubject] = useState('');
     const [newsletterContent, setNewsletterContent] = useState('');
     const [sendingNewsletter, setSendingNewsletter] = useState(false);
+    const [runningLifecycle, setRunningLifecycle] = useState<string | null>(null);
+    const [lifecycleMessage, setLifecycleMessage] = useState<string | null>(null);
 
     const fetchData = useCallback(async () => {
         setLoading(true);
@@ -106,13 +182,14 @@ export default function AdminDashboard() {
                 creditRequestParams.set('status', creditRequestFilter);
             }
 
-            const [analyticsRes, pricingRes, servicesRes, usersRes, blogsRes, creditRequestsRes] = await Promise.all([
+            const [analyticsRes, pricingRes, servicesRes, usersRes, blogsRes, creditRequestsRes, lifecycleRes] = await Promise.all([
                 fetch('/api/admin/analytics'),
                 fetch('/api/admin/pricing'),
                 fetch('/api/admin/services'),
                 fetch(`/api/admin/users?${userParams.toString()}`),
                 fetch('/api/blogs'),
-                fetch(`/api/admin/credit-requests?${creditRequestParams.toString()}`)
+                fetch(`/api/admin/credit-requests?${creditRequestParams.toString()}`),
+                fetch('/api/admin/lifecycle')
             ]);
 
             if (analyticsRes.status === 401) {
@@ -120,7 +197,7 @@ export default function AdminDashboard() {
                 return;
             }
 
-            if (!analyticsRes.ok || !pricingRes.ok || !servicesRes.ok || !usersRes.ok || !blogsRes.ok || !creditRequestsRes.ok) {
+            if (!analyticsRes.ok || !pricingRes.ok || !servicesRes.ok || !usersRes.ok || !blogsRes.ok || !creditRequestsRes.ok || !lifecycleRes.ok) {
                 throw new Error('Some data failed to load');
             }
 
@@ -130,6 +207,7 @@ export default function AdminDashboard() {
             const uData = await usersRes.json();
             const bData = await blogsRes.json();
             const cData = await creditRequestsRes.json();
+            const lData = await lifecycleRes.json();
 
             setAnalytics(aData);
             setPlans(pData);
@@ -137,6 +215,7 @@ export default function AdminDashboard() {
             setUsers(uData?.users || []);
             setBlogs(bData);
             setCreditRequests(cData?.requests || []);
+            setLifecycleData(lData);
         } catch (error: unknown) {
             console.error('Failed to load admin data', error);
             setError(error instanceof Error ? error.message : 'Failed to load data');
@@ -263,6 +342,61 @@ export default function AdminDashboard() {
         }
     };
 
+    const handleRunLifecycleCampaign = async (campaign: 'all' | 'abandoned_topup' | 'clarity_reengagement') => {
+        setRunningLifecycle(campaign);
+        setLifecycleMessage(null);
+
+        try {
+            const res = await fetch('/api/admin/lifecycle', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ campaign, limit: 25 })
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                setLifecycleMessage(data.error || 'Failed to run lifecycle campaign.');
+                return;
+            }
+
+            const resultParts: string[] = [];
+            if (data.results?.abandonedTopup) {
+                const run = data.results.abandonedTopup;
+                resultParts.push(`abandoned top-up: ${run.sent} sent, ${run.skipped} skipped, ${run.failed} failed`);
+            }
+            if (data.results?.clarityReengagement) {
+                const run = data.results.clarityReengagement;
+                resultParts.push(`clarity re-engagement: ${run.sent} sent, ${run.skipped} skipped, ${run.failed} failed`);
+            }
+
+            setLifecycleMessage(resultParts.length > 0 ? `Lifecycle run complete - ${resultParts.join(' | ')}` : 'Lifecycle run complete.');
+            void fetchData();
+        } catch (runError) {
+            console.error('Lifecycle campaign run error:', runError);
+            setLifecycleMessage('Failed to run lifecycle campaign.');
+        } finally {
+            setRunningLifecycle(null);
+        }
+    };
+
+    const formatLifecycleCampaign = (campaignKey: string) =>
+        campaignKey
+            .split('_')
+            .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+            .join(' ');
+
+    const getLifecycleStatusClassName = (status: string) => {
+        switch (status.toLowerCase()) {
+            case 'sent':
+                return styles.approvedBadge;
+            case 'failed':
+                return styles.rejectedBadge;
+            default:
+                return styles.pendingBadge;
+        }
+    };
+
     if (loading) return <div className={styles.loading}>Loading Admin Dashboard...</div>;
 
     return (
@@ -299,6 +433,12 @@ export default function AdminDashboard() {
                         onClick={() => setActiveTab('newsletter')}
                     >
                         Newsletter
+                    </button>
+                    <button
+                        className={`${styles.navItem} ${activeTab === 'lifecycle' ? styles.active : ''}`}
+                        onClick={() => setActiveTab('lifecycle')}
+                    >
+                        Lifecycle
                     </button>
                     <button
                         className={`${styles.navItem} ${activeTab === 'blogs' ? styles.active : ''}`}
@@ -338,6 +478,32 @@ export default function AdminDashboard() {
                                         <strong>{c._count.country}</strong>
                                     </div>
                                 ))}
+                            </div>
+                        </div>
+
+                        <div className={styles.section} style={{ gridColumn: '1 / -1' }}>
+                            <h3>Funnel Snapshot ({analytics.periodDays} Days)</h3>
+                            <div className={styles.funnelGrid}>
+                                {analytics.funnel.map((step) => (
+                                    <div key={step.key} className={styles.funnelCard}>
+                                        <span className={styles.funnelLabel}>{step.label}</span>
+                                        <strong className={styles.funnelValue}>{step.count}</strong>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className={styles.section} style={{ gridColumn: '1 / -1' }}>
+                            <h3>Top Pages ({analytics.periodDays} Days)</h3>
+                            <div className={styles.topPageList}>
+                                {analytics.topPages.length > 0 ? analytics.topPages.map((page) => (
+                                    <div key={page.path} className={styles.topPageItem}>
+                                        <span className={styles.topPagePath}>{page.path}</span>
+                                        <strong>{page.views}</strong>
+                                    </div>
+                                )) : (
+                                    <div className={styles.emptyPanel}>No page-view data yet.</div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -655,6 +821,254 @@ export default function AdminDashboard() {
                         >
                             {sendingNewsletter ? 'Sending...' : 'Send Broadcast'}
                         </button>
+                    </div>
+                )}
+
+                {activeTab === 'lifecycle' && (
+                    <div className={styles.lifecycleSection}>
+                        <div className={styles.sectionToolbar}>
+                            <div>
+                                <h3>Lifecycle Campaigns</h3>
+                                <p className={styles.sectionHint}>
+                                    Retention emails for onboarding, abandoned top-ups, clarity re-engagement, and low-credit recovery.
+                                </p>
+                            </div>
+                            <div className={styles.lifecycleActionGroup}>
+                                <button
+                                    className={styles.saveBtn}
+                                    onClick={() => handleRunLifecycleCampaign('all')}
+                                    disabled={runningLifecycle !== null}
+                                >
+                                    {runningLifecycle === 'all' ? 'Running All...' : 'Run All'}
+                                </button>
+                                <button
+                                    className={styles.editBtn}
+                                    onClick={() => handleRunLifecycleCampaign('abandoned_topup')}
+                                    disabled={runningLifecycle !== null}
+                                >
+                                    {runningLifecycle === 'abandoned_topup' ? 'Running...' : 'Run Abandoned Top-Up'}
+                                </button>
+                                <button
+                                    className={styles.editBtn}
+                                    onClick={() => handleRunLifecycleCampaign('clarity_reengagement')}
+                                    disabled={runningLifecycle !== null}
+                                >
+                                    {runningLifecycle === 'clarity_reengagement' ? 'Running...' : 'Run Clarity Re-engagement'}
+                                </button>
+                            </div>
+                        </div>
+
+                        {lifecycleMessage && <div className={styles.lifecycleMessage}>{lifecycleMessage}</div>}
+                        {error && <div className={styles.mutedError}>{error}</div>}
+
+                        <div className={styles.lifecycleStatusCard}>
+                            <div className={styles.campaignMeta}>
+                                <strong>Automation Status</strong>
+                                <span className={`${lifecycleData?.automation?.lastTrafficRunAt ? styles.approvedBadge : styles.pendingBadge} ${styles.statusInline}`}>
+                                    {lifecycleData?.automation?.lastTrafficRunAt ? 'active' : 'warming'}
+                                </span>
+                            </div>
+                            <p className={styles.sectionHint}>
+                                {lifecycleData?.automation?.description || 'Runs automatically from normal site activity without cron.'}
+                            </p>
+                            <div className={styles.lifecycleStatusGrid}>
+                                <div>
+                                    <span className={styles.mutedText}>Mode</span>
+                                    <p>{lifecycleData?.automation?.mode || 'traffic'}</p>
+                                </div>
+                                <div>
+                                    <span className={styles.mutedText}>Trigger Source</span>
+                                    <p>{lifecycleData?.automation?.triggerSource || 'internal analytics tracking'}</p>
+                                </div>
+                                <div>
+                                    <span className={styles.mutedText}>Abandoned Top-Up Window</span>
+                                    <p>Every {lifecycleData?.automation?.abandonedTopUpWindowHours || 6} hours when traffic occurs</p>
+                                </div>
+                                <div>
+                                    <span className={styles.mutedText}>Clarity Re-engagement Window</span>
+                                    <p>Every {lifecycleData?.automation?.clarityReengagementWindowHours || 12} hours when traffic occurs</p>
+                                </div>
+                                <div>
+                                    <span className={styles.mutedText}>Default Traffic Limit</span>
+                                    <p>{lifecycleData?.automation?.defaultTrafficLimit || 25}</p>
+                                </div>
+                                <div>
+                                    <span className={styles.mutedText}>Last Traffic Run</span>
+                                    <p>{lifecycleData?.automation?.lastTrafficRunAt ? new Date(lifecycleData.automation.lastTrafficRunAt).toLocaleString() : 'No automatic run yet'}</p>
+                                </div>
+                                <div>
+                                    <span className={styles.mutedText}>Attribution Window</span>
+                                    <p>{lifecycleData?.conversionWindowDays || 7} days after send</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className={styles.campaignSummaryGrid}>
+                            {lifecycleData?.summary?.length ? lifecycleData.summary.map((item) => (
+                                <div
+                                    key={`${item.campaignKey}-${item.status}`}
+                                    className={styles.campaignSummaryCard}
+                                >
+                                    <div className={styles.campaignMeta}>
+                                        <strong>{formatLifecycleCampaign(item.campaignKey)}</strong>
+                                        <span className={`${getLifecycleStatusClassName(item.status)} ${styles.statusInline}`}>
+                                            {item.status}
+                                        </span>
+                                    </div>
+                                    <p className={styles.statValue}>{item._count._all}</p>
+                                    <p className={styles.mutedText}>Last {lifecycleData?.lookbackDays || 30} days</p>
+                                </div>
+                            )) : (
+                                <div className={styles.emptyPanel}>No lifecycle email activity in the last 30 days yet.</div>
+                            )}
+                        </div>
+
+                        <div className={styles.section}>
+                            <div className={styles.sectionToolbar}>
+                                <div>
+                                    <h3>Campaign Performance</h3>
+                                    <p className={styles.sectionHint}>
+                                        Attributed to activity within {lifecycleData?.conversionWindowDays || 7} days after each sent email.
+                                    </p>
+                                </div>
+                            </div>
+                            <div className={styles.tableScroll}>
+                                <table className={styles.table}>
+                                    <thead>
+                                        <tr>
+                                            <th>Campaign</th>
+                                            <th>Sent</th>
+                                            <th>Recipients</th>
+                                            <th>Re-engaged</th>
+                                            <th>Checkouts</th>
+                                            <th>Payments</th>
+                                            <th>Conv.</th>
+                                            <th>Revenue</th>
+                                            <th>Product Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {lifecycleData?.performance?.length ? lifecycleData.performance.map((item) => (
+                                            <tr key={item.campaignKey}>
+                                                <td>{formatLifecycleCampaign(item.campaignKey)}</td>
+                                                <td><strong>{item.sent}</strong></td>
+                                                <td>{item.uniqueRecipients}</td>
+                                                <td>{item.reengagedUsers}</td>
+                                                <td>{item.checkoutUsers}</td>
+                                                <td>{item.paymentUsers}</td>
+                                                <td>{item.paymentConversionRate}%</td>
+                                                <td>₹{item.revenue.toLocaleString()}</td>
+                                                <td className={styles.reasonCell}>
+                                                    Clarity {item.clarityUsers} | Charts {item.chartUnlockUsers} | Report unlocks {item.reportUnlockUsers} | Report generations {item.reportStartUsers} | Expansions {item.profileExpansionUsers}
+                                                </td>
+                                            </tr>
+                                        )) : (
+                                            <tr>
+                                                <td colSpan={9} className={styles.tableEmptyCell}>
+                                                    No campaign performance data yet.
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div className={styles.section}>
+                            <div className={styles.sectionToolbar}>
+                                <h3>Recent Automation Runs</h3>
+                            </div>
+                            <div className={styles.tableScroll}>
+                                <table className={styles.table}>
+                                    <thead>
+                                        <tr>
+                                            <th>Campaign</th>
+                                            <th>Trigger</th>
+                                            <th>Status</th>
+                                            <th>Attempted</th>
+                                            <th>Sent</th>
+                                            <th>Skipped</th>
+                                            <th>Failed</th>
+                                            <th>Ran At</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {lifecycleData?.recentRuns?.length ? lifecycleData.recentRuns.map((item) => (
+                                            <tr key={item.id}>
+                                                <td>{formatLifecycleCampaign(item.campaignKey)}</td>
+                                                <td><span className={styles.mutedText}>{item.triggerType}</span></td>
+                                                <td>
+                                                    <span className={`${getLifecycleStatusClassName(item.status)} ${styles.statusInline}`}>
+                                                        {item.status}
+                                                    </span>
+                                                </td>
+                                                <td>{item.attempted}</td>
+                                                <td>{item.sent}</td>
+                                                <td>{item.skipped}</td>
+                                                <td>{item.failed}</td>
+                                                <td>{new Date(item.createdAt).toLocaleString()}</td>
+                                            </tr>
+                                        )) : (
+                                            <tr>
+                                                <td colSpan={8} className={styles.tableEmptyCell}>
+                                                    No automation runs logged yet.
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div className={styles.section}>
+                            <div className={styles.sectionToolbar}>
+                                <h3>Recent Lifecycle Emails</h3>
+                                <button className={`${styles.saveBtn} ${styles.compactBtn}`} onClick={fetchData}>
+                                    Refresh
+                                </button>
+                            </div>
+                            <div className={styles.tableScroll}>
+                                <table className={styles.table}>
+                                    <thead>
+                                        <tr>
+                                            <th>Campaign</th>
+                                            <th>User</th>
+                                            <th>Subject</th>
+                                            <th>Status</th>
+                                            <th>Queued</th>
+                                            <th>Sent</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {lifecycleData?.recent?.length ? lifecycleData.recent.map((item) => (
+                                            <tr key={item.id}>
+                                                <td>{formatLifecycleCampaign(item.campaignKey)}</td>
+                                                <td>
+                                                    <div className={styles.userMeta}>
+                                                        <strong>{item.user.name || 'Unknown User'}</strong>
+                                                        <span className={styles.mutedText}>{item.user.email || 'No email'}</span>
+                                                    </div>
+                                                </td>
+                                                <td>{item.subject}</td>
+                                                <td>
+                                                    <span className={`${getLifecycleStatusClassName(item.status)} ${styles.statusInline}`}>
+                                                        {item.status}
+                                                    </span>
+                                                </td>
+                                                <td>{new Date(item.createdAt).toLocaleString()}</td>
+                                                <td>{item.sentAt ? new Date(item.sentAt).toLocaleString() : '-'}</td>
+                                            </tr>
+                                        )) : (
+                                            <tr>
+                                                <td colSpan={6} className={styles.tableEmptyCell}>
+                                                    No lifecycle emails found yet.
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 )}
 

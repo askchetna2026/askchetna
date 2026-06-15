@@ -6,6 +6,12 @@ import { generateClarityResponse, isQuestionSafe } from '@/lib/ai/geminiService'
 import { ChartData } from '@/lib/astrology/calculator';
 import { PAYMENTS_ENABLED, PAYMENTS_PAUSED_MESSAGE } from '@/lib/paymentConfig';
 import { rateLimit } from '@/lib/rateLimit';
+import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
+import { recordAnalyticsEvent } from '@/lib/analytics/server';
+import {
+    maybeSendFirstClarityFollowupEmail,
+    maybeSendLowCreditLifecycleEmail,
+} from '@/lib/lifecycleEmails';
 
 export async function POST(req: NextRequest) {
     try {
@@ -163,6 +169,34 @@ export async function POST(req: NextRequest) {
                 questionId: savedQuestion.id,
                 remainingCredits: availableNow - creditsRequired,
             };
+        });
+
+        await recordAnalyticsEvent({
+            type: ANALYTICS_EVENTS.CREDIT_USED,
+            path: '/clarity',
+            userId: session.user.id,
+            metadata: {
+                feature: 'clarity_question',
+                creditsUsed: creditsRequired,
+                questionId: result.questionId,
+                questionLength: question.trim().length,
+            }
+        });
+
+        void maybeSendFirstClarityFollowupEmail({
+            userId: session.user.id,
+            questionId: result.questionId,
+        }).catch((emailError) => {
+            console.error('First clarity lifecycle email failed:', emailError);
+        });
+
+        void maybeSendLowCreditLifecycleEmail({
+            userId: session.user.id,
+            remainingCredits: result.remainingCredits,
+            source: 'clarity_low_credit_email',
+            returnTo: '/clarity',
+        }).catch((emailError) => {
+            console.error('Low credit lifecycle email failed:', emailError);
         });
 
         return NextResponse.json({

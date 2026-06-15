@@ -1,7 +1,7 @@
 'use client';
 
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -9,6 +9,7 @@ import styles from './page.module.css';
 import { CreditCard, UserCircle, ChevronRight, MessageSquare, Trash2, Crown, Download, FileText, PlusCircle, Zap, Sparkles, MapPin, Clock, Trash, CheckSquare, Square, Info } from 'lucide-react';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import { useProfile } from '@/context/ProfileContext';
+import { buildPricingUrl } from '@/lib/monetization';
 import { PAYMENTS_ENABLED, PAYMENTS_PAUSED_MESSAGE } from '@/lib/paymentConfig';
 
 interface UserProfile {
@@ -66,6 +67,7 @@ interface CreditRequestEligibility {
 export default function DashboardPage() {
     const { data: session, status } = useSession();
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [stats, setStats] = useState({
         credits: 0,
         profilesCount: 0,
@@ -434,6 +436,21 @@ export default function DashboardPage() {
 
     if (!session) return null;
 
+    const hasPurchaseSuccess = searchParams.get('purchase') === 'success';
+    const purchaseIntent = searchParams.get('purchaseIntent');
+    const isLowCredit = stats.credits > 0 && stats.credits <= 2;
+    const isOutOfCredits = stats.credits === 0;
+    const dashboardTopUpUrl = buildPricingUrl({
+        intent: 'top_up',
+        source: 'dashboard_credits',
+        returnTo: '/dashboard',
+    });
+    const dashboardLowCreditUrl = buildPricingUrl({
+        intent: 'top_up',
+        source: isOutOfCredits ? 'dashboard_out_of_credits' : 'dashboard_low_credit',
+        returnTo: '/dashboard',
+    });
+
     return (
         <div className={styles.profileContainer}>
             <header className={styles.header}>
@@ -468,6 +485,56 @@ export default function DashboardPage() {
                     </div>
                 </div>
             </header>
+
+            {hasPurchaseSuccess && purchaseIntent === 'top_up' && (
+                <div className={styles.welcomeBonusNotice}>
+                    <div className={styles.welcomeBonusNoticeText}>
+                        <Sparkles size={18} />
+                        <span>Credits added successfully. You are ready for more clarity sessions, chart unlocks, or a premium report.</span>
+                    </div>
+                    <div className={styles.noticeActions}>
+                        <Link href="/clarity" className={styles.noticeActionBtn}>
+                            Use Credits Now
+                        </Link>
+                    </div>
+                </div>
+            )}
+
+            {hasPurchaseSuccess && purchaseIntent === 'profile_expansion' && (
+                <div className={styles.welcomeBonusNotice}>
+                    <div className={styles.welcomeBonusNoticeText}>
+                        <Sparkles size={18} />
+                        <span>Credits added successfully. Reopen the profile flow to expand your active profile limit.</span>
+                    </div>
+                    <div className={styles.noticeActions}>
+                        <button
+                            type="button"
+                            className={styles.noticeActionBtn}
+                            onClick={() => void openNewProfileModal()}
+                        >
+                            Continue Adding Profiles
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {PAYMENTS_ENABLED && !hasPurchaseSuccess && (isOutOfCredits || isLowCredit) && (
+                <div className={styles.welcomeBonusNotice}>
+                    <div className={styles.welcomeBonusNoticeText}>
+                        <Info size={18} />
+                        <span>
+                            {isOutOfCredits
+                                ? 'You are out of credits. Top up now so your next question, chart unlock, or report does not stall.'
+                                : `You have ${stats.credits} credits left. A small top-up now keeps your next reading or premium unlock moving.`}
+                        </span>
+                    </div>
+                    <div className={styles.noticeActions}>
+                        <Link href={dashboardLowCreditUrl} className={styles.noticeActionBtn}>
+                            Top Up Credits
+                        </Link>
+                    </div>
+                </div>
+            )}
 
             <div className={styles.layout}>
                 {/* Sidebar Navigation */}
@@ -513,10 +580,25 @@ export default function DashboardPage() {
                             <section className={`${styles.heroSection} sacred-card`}>
                                 <h2 className="mystic-text text-2xl">Welcome back, {session.user?.name?.split(' ')[0] || 'Friend'}</h2>
                                 <p className="text-white/70 italic my-2">The stars have moved since your last visit.</p>
+                                {PAYMENTS_ENABLED && (isOutOfCredits || isLowCredit) && (
+                                    <div className={styles.infoNote}>
+                                        <Info size={14} />
+                                        <span>
+                                            {isOutOfCredits
+                                                ? 'You are currently out of credits. Top up before starting your next session.'
+                                                : `${stats.credits} credits remaining. Top up now if you want room for follow-up questions and unlocks.`}
+                                        </span>
+                                    </div>
+                                )}
                                 <div className={styles.heroActions}>
                                     <Link href="/clarity" className="primary-btn-cosmic text-sm">
                                         <Sparkles size={16} /> Ask AI Astrologer
                                     </Link>
+                                    {PAYMENTS_ENABLED && (
+                                        <Link href={dashboardTopUpUrl} className="secondary-btn-cosmic text-sm">
+                                            <CreditCard size={16} /> Top Up Credits
+                                        </Link>
+                                    )}
                                     <button onClick={openNewProfileModal} className="secondary-btn-cosmic text-sm">
                                         <PlusCircle size={16} /> New Profile
                                     </button>
@@ -693,7 +775,7 @@ export default function DashboardPage() {
                             <div className={styles.sectionHeader}>
                                 <h2 className={styles.sectionTitle}><CreditCard size={20} /> Clarity Credits</h2>
                                 {PAYMENTS_ENABLED ? (
-                                    <Link href="/pricing" className={styles.actionBtn}>Add Credits</Link>
+                                    <Link href={dashboardTopUpUrl} className={styles.actionBtn}>Add Credits</Link>
                                 ) : (
                                     <span className={styles.infoBadge}>Purchases Paused</span>
                                 )}
@@ -702,6 +784,16 @@ export default function DashboardPage() {
                                 <div className={styles.infoNote}>
                                     <Info size={14} />
                                     <span>{PAYMENTS_PAUSED_MESSAGE}</span>
+                                </div>
+                            )}
+                            {PAYMENTS_ENABLED && (isOutOfCredits || isLowCredit) && (
+                                <div className={styles.infoNote}>
+                                    <Info size={14} />
+                                    <span>
+                                        {isOutOfCredits
+                                            ? 'You have no credits available. Top up once and come right back to continue with clarity, reports, or premium chart unlocks.'
+                                            : `You have ${stats.credits} credits left. A mid-sized pack usually gives enough space for follow-up readings and premium features.`}
+                                    </span>
                                 </div>
                             )}
                             <div className={styles.creditsDisplay}>

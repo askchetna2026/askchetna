@@ -5,15 +5,21 @@ import { calculateChart, calculateVimsottariDashas } from '@/lib/astrology/calcu
 
 export async function GET(req: NextRequest) {
     try {
-        await auth();
+        const session = await auth();
+        if (!session?.user?.id) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
         const { searchParams } = new URL(req.url);
         const profileId = searchParams.get('profileId');
 
         let birthData;
 
         if (profileId) {
-            const profile = await prisma.profile.findUnique({
-                where: { id: profileId }
+            const profile = await prisma.profile.findFirst({
+                where: {
+                    id: profileId,
+                    userId: session.user.id
+                }
             });
             if (!profile) return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
 

@@ -5,11 +5,10 @@ import { Calendar, Clock, ArrowLeft } from 'lucide-react';
 import prisma from '@/lib/prisma';
 import BlogShareButton from '@/components/BlogShareButton';
 import DisclaimerNote from '@/components/DisclaimerNote';
+import { absoluteUrl } from '@/lib/site';
 import styles from '../Blog.module.css';
 
 export const revalidate = 300;
-
-const BASE_URL = process.env.NEXTAUTH_URL || 'https://askchetna.com';
 
 async function getPost(id: string) {
     try {
@@ -34,12 +33,12 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     return {
         title: `${post.title} | AskChetna Blog`,
         description,
-        alternates: { canonical: `${BASE_URL}/blog/${post.id}` },
+        alternates: { canonical: absoluteUrl(`/blog/${post.id}`) },
         openGraph: {
             title: post.title,
             description,
             type: 'article',
-            url: `${BASE_URL}/blog/${post.id}`,
+            url: absoluteUrl(`/blog/${post.id}`),
             publishedTime: new Date(post.createdAt).toISOString(),
         },
     };
@@ -64,7 +63,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ id: s
         dateModified: new Date(post.updatedAt ?? post.createdAt).toISOString(),
         author: { '@type': 'Organization', name: 'AskChetna' },
         publisher: { '@type': 'Organization', name: 'AskChetna' },
-        mainEntityOfPage: { '@type': 'WebPage', '@id': `${BASE_URL}/blog/${post.id}` },
+        mainEntityOfPage: { '@type': 'WebPage', '@id': absoluteUrl(`/blog/${post.id}`) },
         description: excerpt(post.content),
     };
 

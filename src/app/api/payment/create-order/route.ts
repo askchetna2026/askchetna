@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
             key_secret: process.env.RAZORPAY_KEY_SECRET,
         });
 
-        const { productKey } = await req.json();
+        const { productKey, visitorId, intent, source, focus, returnTo } = await req.json();
 
         if (!productKey) {
             return NextResponse.json(
@@ -45,8 +45,11 @@ export async function POST(req: NextRequest) {
         }
 
         // Fetch price from DB to prevent tampering
-        const plan = await prisma.pricingPlan.findUnique({
-            where: { key: productKey }
+        const plan = await prisma.pricingPlan.findFirst({
+            where: {
+                key: productKey,
+                isActive: true
+            }
         });
 
         if (!plan) {
@@ -66,6 +69,11 @@ export async function POST(req: NextRequest) {
                 productKey: plan.key,
                 productType: plan.key,
                 productName: plan.name, // Use DB name preferred, but can fallback
+                visitorId: typeof visitorId === 'string' ? visitorId : null,
+                intent: typeof intent === 'string' ? intent : null,
+                source: typeof source === 'string' ? source : null,
+                focus: typeof focus === 'string' ? focus : null,
+                returnTo: typeof returnTo === 'string' ? returnTo : null,
             },
         });
 

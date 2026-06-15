@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 import { generateReportChapters } from '@/lib/ai/geminiService';
 import { sendLifeReportEmail } from '@/lib/mail';
-import { generateReportPDF } from '@/lib/pdf';
+import { generateReportPDF, type ReportContent } from '@/lib/pdf';
+import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
+import { recordAnalyticsEvent } from '@/lib/analytics/server';
 
 export async function POST(
     req: NextRequest,
@@ -33,10 +36,10 @@ export async function POST(
         }
 
         // 2. Generate content using Gemini
-        const content = await generateReportChapters({
+        const content: ReportContent = await generateReportChapters({
             name: report.profile.name,
             gender: report.profile.gender,
-            chartData: report.profile.chartData as any
+            chartData: report.profile.chartData
         });
 
         // 3. Save content and update status
@@ -44,7 +47,18 @@ export async function POST(
             where: { profileId: id },
             data: {
                 status: 'generated',
-                content: content as any
+                content: content as unknown as Prisma.InputJsonValue
+            }
+        });
+
+        await recordAnalyticsEvent({
+            type: ANALYTICS_EVENTS.REPORT_STARTED,
+            path: `/report/${id}`,
+            userId: session.user.id,
+            metadata: {
+                profileId: id,
+                reportId: updatedReport.id,
+                regenerated: report.status === 'generated',
             }
         });
 
@@ -53,7 +67,7 @@ export async function POST(
         if (userEmail) {
             (async () => {
                 try {
-                    const pdfBuffer = await generateReportPDF(report.profile.name, content as any, report.profile.chartData);
+                    const pdfBuffer = await generateReportPDF(report.profile.name, content, report.profile.chartData);
                     await sendLifeReportEmail(userEmail, report.profile.name, content, pdfBuffer);
                 } catch (err) {
                     console.error('Post-generation processing failed:', err);
@@ -66,7 +80,7 @@ export async function POST(
             content: updatedReport.content
         });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Generation error:', error);
         return NextResponse.json({ error: 'Failed to generate report' }, { status: 500 });
     }

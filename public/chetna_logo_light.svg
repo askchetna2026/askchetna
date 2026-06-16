@@ -1,0 +1,21 @@
+<svg width="400" height="120" viewBox="0 0 400 120" role="img" xmlns="http://www.w3.org/2000/svg">
+  <title>AskChetna</title>
+  <desc>AskChetna logo: an open gold zodiac ring forming a C with house dots and a central sparkle, beside the AskChetna wordmark and the tagline Astrology for Awareness.</desc>
+  <defs>
+    <linearGradient id="acGoldLight" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#D4AF37"/>
+      <stop offset="1" stop-color="#996515"/>
+    </linearGradient>
+    <style>@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&amp;display=swap');</style>
+  </defs>
+  <path d="M100.3,92.15 A50 50 0 1 1 100.3,27.85" fill="none" stroke="url(#acGoldLight)" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="62" cy="110" r="2" fill="url(#acGoldLight)"/>
+  <circle cx="26.64" cy="95.36" r="2" fill="url(#acGoldLight)"/>
+  <circle cx="12" cy="60" r="2" fill="url(#acGoldLight)"/>
+  <circle cx="26.64" cy="24.64" r="2" fill="url(#acGoldLight)"/>
+  <circle cx="62" cy="10" r="2" fill="url(#acGoldLight)"/>
+  <path d="M62,48 Q63.8,58.2 74,60 Q63.8,61.8 62,72 Q60.2,61.8 50,60 Q60.2,58.2 62,48 Z" fill="url(#acGoldLight)"/>
+  <text x="132" y="72" font-family="'Playfair Display', Georgia, 'Times New Roman', serif" font-size="46" font-weight="700">
+    <tspan fill="#2C1B18">Ask</tspan><tspan fill="url(#acGoldLight)">Chetna</tspan></text>
+  <text x="251" y="98" text-anchor="middle" font-family="'Playfair Display', Georgia, serif" font-size="11.5" letter-spacing="3.5" fill="#8E7A77">ASTROLOGY FOR AWARENESS</text>
+</svg>

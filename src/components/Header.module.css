@@ -9,6 +9,11 @@
     -webkit-backdrop-filter: blur(24px);
 }
 
+[data-theme='light'] .header {
+    background: rgba(253, 244, 227, 0.85);
+    box-shadow: 0 4px 24px rgba(44, 27, 24, 0.06), inset 0 -1px 0 rgba(184, 134, 11, 0.2);
+}
+
 .container {
     max-width: 1400px;
     margin: 0 auto;
@@ -66,8 +71,8 @@
 }
 
 [data-theme='light'] .navLink {
-    color: rgba(244, 232, 209, 0.92);
-    opacity: 0.9;
+    color: var(--secondary);
+    opacity: 0.85;
 }
 
 .navLink:hover {
@@ -148,8 +153,8 @@
 }
 
 [data-theme='light'] .signOutBtn {
-    color: rgba(244, 232, 209, 0.92);
-    border-color: rgba(244, 232, 209, 0.35);
+    color: var(--secondary);
+    border-color: var(--card-border);
 }
 
 .signOutBtn:hover {
@@ -169,7 +174,7 @@
 }
 
 [data-theme='light'] .menuToggle {
-    color: rgba(244, 232, 209, 0.95);
+    color: var(--foreground);
 }
 
 /* Mobile Menu Styles */
@@ -314,6 +319,12 @@
 .mobileSignInBtn:hover {
     background: rgba(212, 175, 55, 0.1);
     border-color: var(--accent-gold);
+}
+
+[data-theme='light'] .mobileSignInBtn {
+    background: rgba(184, 134, 11, 0.06);
+    color: var(--accent-gold-dim);
+    border-color: rgba(184, 134, 11, 0.45);
 }
 
 .navCta {

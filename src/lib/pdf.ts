@@ -224,12 +224,12 @@ export async function generateReportPDF(name: string, content: ReportContent, ch
 
     coverPage.drawRectangle({ x: 0, y: 0, width, height, color: charcoal });
 
-    // Improved Logo on Cover (Larger)
+    // Improved Logo on Cover (sized by target width for the horizontal lockup)
     if (logoLight) {
-        const logoDims = logoLight.scale(0.5); // Increased size
+        const logoDims = logoLight.scale(280 / logoLight.width);
         coverPage.drawImage(logoLight, {
             x: (width - logoDims.width) / 2,
-            y: height - 200,
+            y: height - 170,
             width: logoDims.width,
             height: logoDims.height,
         });
@@ -296,10 +296,10 @@ export async function generateReportPDF(name: string, content: ReportContent, ch
 
         // Header Logo
         if (logoDark) {
-            const logoDims = logoDark.scale(0.18);
+            const logoDims = logoDark.scale(150 / logoDark.width);
             page.drawImage(logoDark, {
                 x: width - logoDims.width - 40,
-                y: height - 60,
+                y: height - 58,
                 width: logoDims.width,
                 height: logoDims.height,
             });
@@ -323,10 +323,10 @@ export async function generateReportPDF(name: string, content: ReportContent, ch
                 // Re-add border/logo for new page
                 page.drawRectangle({ x: 20, y: 20, width: width - 40, height: height - 40, borderColor: gold, borderWidth: 0.5, opacity: 0.3 });
                 if (logoDark) {
-                    const logoDims = logoDark.scale(0.18);
+                    const logoDims = logoDark.scale(150 / logoDark.width);
                     page.drawImage(logoDark, {
                         x: width - logoDims.width - 40,
-                        y: height - 60,
+                        y: height - 58,
                         width: logoDims.width,
                         height: logoDims.height,
                     });

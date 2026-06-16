@@ -60,7 +60,11 @@ export const metadata: Metadata = {
     images: [absoluteUrl('/opengraph-image')],
   },
   icons: {
-    icon: '/icons/chetna.png',
+    icon: [
+      { url: '/chetna_icon.svg', type: 'image/svg+xml' },
+      { url: '/icons/chetna.png' },
+    ],
+    apple: '/chetna_icon.svg',
   },
 };
 

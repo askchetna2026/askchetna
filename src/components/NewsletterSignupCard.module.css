@@ -111,6 +111,26 @@
     outline: none;
 }
 
+/* Light theme: this is a LIGHT surface (the dark version is for dark mode only).
+   Flip the card and its inner dark sub-surfaces to light so the default dark
+   text (var(--foreground) / var(--text-muted)) reads clearly. */
+[data-theme='light'] .card {
+    background:
+        radial-gradient(circle at top right, rgba(212, 175, 55, 0.18), transparent 38%),
+        linear-gradient(180deg, rgba(244, 232, 209, 0.7), rgba(253, 244, 227, 0.95));
+    border-color: rgba(184, 134, 11, 0.28);
+}
+
+[data-theme='light'] .actionBlock {
+    background: rgba(255, 255, 255, 0.6);
+    border-color: rgba(184, 134, 11, 0.15);
+}
+
+[data-theme='light'] .inputWrap {
+    background: rgba(255, 255, 255, 0.85);
+    border-color: rgba(184, 134, 11, 0.3);
+}
+
 .submitButton {
     padding: 14px 20px;
     border: none;

@@ -1171,3 +1171,28 @@
   font-size: 0.9rem;
 }
 
+/* ───────────────────────────────────────────────
+   Light theme readability: several cards use hardcoded
+   dark cosmic backgrounds (rgba(18,22,64,...) / rgba(10,10,15,...))
+   that don't follow the theme, so their dark text (var(--foreground))
+   became dark-on-dark in light mode. Flip the surfaces to light.
+   ─────────────────────────────────────────────── */
+[data-theme='light'] .pathwayCard,
+[data-theme='light'] .featureCard,
+[data-theme='light'] .testimonialCard,
+[data-theme='light'] .creditCard,
+[data-theme='light'] .liveSampleContainer,
+[data-theme='light'] .teaserFormContainer {
+  background: rgba(244, 232, 209, 0.6);
+  border-color: rgba(184, 134, 11, 0.22);
+}
+
+[data-theme='light'] .zodiacSection {
+  background: rgba(244, 232, 209, 0.45);
+}
+
+[data-theme='light'] .teaserInput,
+[data-theme='light'] .teaserResultBox {
+  background: rgba(255, 255, 255, 0.75);
+}
+

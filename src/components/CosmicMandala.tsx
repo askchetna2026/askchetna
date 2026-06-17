@@ -23,7 +23,7 @@ export default function CosmicMandala({
       height={size}
       viewBox={`0 0 ${size} ${size}`}
       xmlns="http://www.w3.org/2000/svg"
-      className={className}
+      className={`${className} ${animate ? 'cosmic-mandala-spin' : ''}`.trim()}
       style={{ opacity, pointerEvents: 'none', userSelect: 'none' }}
       aria-hidden="true"
     >
@@ -56,7 +56,6 @@ export default function CosmicMandala({
 
       {/* 12 house divisions */}
       {Array.from({ length: 12 }).map((_, i) => {
-        const angle = (i * 30 * Math.PI) / 180;
         const midAngle = ((i * 30 + 15) * Math.PI) / 180;
         const px = Number((cx + r * 0.72 * Math.cos(midAngle)).toFixed(4));
         const py = Number((cy + r * 0.72 * Math.sin(midAngle)).toFixed(4));
@@ -120,18 +119,6 @@ export default function CosmicMandala({
           />
         );
       })}
-
-      {/* Optional: slow rotation animation */}
-      {animate && (
-        <animateTransform
-          attributeName="transform"
-          type="rotate"
-          from={`0 ${cx} ${cy}`}
-          to={`360 ${cx} ${cy}`}
-          dur="120s"
-          repeatCount="indefinite"
-        />
-      )}
     </svg>
   );
 }

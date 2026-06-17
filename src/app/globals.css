@@ -136,12 +136,58 @@ a {
 }
 
 [data-theme='dark'] .cosmic-bg-overlay {
-  background: 
+  background:
     radial-gradient(circle at 15% 15%, var(--nebula-purple) 0%, transparent 45%),
     radial-gradient(circle at 85% 85%, var(--nebula-indigo) 0%, transparent 45%),
     radial-gradient(circle at 50% 50%, var(--nebula-gold) 0%, transparent 60%),
     radial-gradient(circle at 80% 20%, rgba(159, 122, 234, 0.25) 0%, transparent 35%);
-  background-attachment: fixed;
+  /* The element is already position:fixed, so the gradient stays put without
+     background-attachment:fixed — which forces a full-viewport repaint on every
+     scroll frame and causes scroll jank. */
+}
+
+/* GPU-composited rotation for decorative mandalas (replaces per-frame SMIL repaint) */
+@keyframes cosmicSpin {
+  to { transform: rotate(360deg); }
+}
+
+.cosmic-mandala-spin {
+  transform-origin: center;
+  animation: cosmicSpin 120s linear infinite;
+  will-change: transform;
+}
+
+/* ═══════════════════════════════════════════════
+   MOBILE SCROLL PERFORMANCE
+   Mobile GPUs choke on backdrop-filter blur (the sticky header and
+   every glass card re-blur the scrolling content each frame) and on
+   stacked filtered fixed layers. These are purely decorative, so on
+   small screens we drop the blur (surfaces keep enough opacity to read)
+   and the continuous mandala spin to keep scrolling at 60fps.
+   ═══════════════════════════════════════════════ */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  *,
+  *::before,
+  *::after {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  .stars-layer-1,
+  .stars-layer-2 {
+    filter: none;
+  }
+
+  .cosmic-mandala-spin {
+    animation: none;
+    will-change: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cosmic-mandala-spin {
+    animation: none;
+  }
 }
 
 /* Star Field Layer 1 - Tiny points with subtle glow */

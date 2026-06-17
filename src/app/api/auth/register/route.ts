@@ -1,12 +1,22 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { getRequestLocation, recordAnalyticsEvent } from "@/lib/analytics/server";
 import { sendWelcomeLifecycleEmail } from "@/lib/lifecycleEmails";
+import { rateLimit, getClientIp } from "@/lib/rateLimit";
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
     try {
+        // Throttle signups per IP to curb account-creation spam.
+        const limit = rateLimit(`register:${getClientIp(req)}`, { limit: 10, windowMs: 60 * 60 * 1000 });
+        if (!limit.allowed) {
+            return NextResponse.json(
+                { error: "Too many sign-up attempts. Please try again later." },
+                { status: 429, headers: { "Retry-After": String(limit.retryAfterSeconds) } }
+            );
+        }
+
         const { email: rawEmail, password, name, isSubscribed, visitorId } = await req.json();
         const email = typeof rawEmail === 'string' ? rawEmail.trim().toLowerCase() : '';
         const subscribed = !!isSubscribed;
@@ -16,8 +26,8 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Missing fields" }, { status: 400 });
         }
 
-        if (password.length < 6) {
-            return NextResponse.json({ error: "Password must be at least 6 characters" }, { status: 400 });
+        if (password.length < 8) {
+            return NextResponse.json({ error: "Password must be at least 8 characters" }, { status: 400 });
         }
 
         const exists = await prisma.user.findFirst({

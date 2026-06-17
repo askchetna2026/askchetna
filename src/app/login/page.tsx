@@ -168,7 +168,7 @@ function LoginContent() {
                             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                             required
                             placeholder="••••••••"
-                            minLength={6}
+                            minLength={isLogin ? 6 : 8}
                         />
                     </div>
 

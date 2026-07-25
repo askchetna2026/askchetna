@@ -81,16 +81,20 @@ you need that key's SHA-1. You don't have Java locally, so get it from CI:
 
 1. GitHub → **Actions** → **Android Debug APK** → **Run workflow**
 2. When it finishes, open the run and expand the step
-   **Print debug signing fingerprints**
-3. Inside the collapsible group *"Debug keystore fingerprints"* you'll see a line
-   like:
+   **Print debug signing fingerprints** (it sits *after* Build debug APK — the
+   debug keystore doesn't exist until the first build creates it)
+3. Inside the collapsible group *"Debug keystore fingerprints"* you'll see:
    ```
    SHA1: A1:B2:C3:D4:E5:F6:...
+   SHA256: 11:22:33:44:55:66:...
    ```
-   Copy the whole colon-separated value.
+   Copy the whole colon-separated **SHA1** value.
 
-> Any debug APK built by this workflow uses the same Android debug key, so this
-> fingerprint stays stable across runs. You only need it once.
+**Keep the SHA256 too** — you'll need it for `public/.well-known/assetlinks.json`
+when you set up Android deep links.
+
+> Every debug APK from this workflow uses the same Android debug key, so these
+> fingerprints are stable across runs. You only need them once.
 
 Then in Firebase:
 

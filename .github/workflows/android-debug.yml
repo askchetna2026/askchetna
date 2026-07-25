@@ -87,22 +87,68 @@ jobs:
           echo "--- synced native config ---"
           cat mobile/android/app/src/main/assets/capacitor.config.json
 
-      - name: Print debug signing fingerprints
-        # Firebase needs the debug key's SHA-1 registered or Android phone auth
-        # rejects every verification request. Surfaced here in a labelled block so
-        # it can be copied without a local JDK — see mobile/FIREBASE-SETUP.md.
+      - name: Build debug APK
         working-directory: mobile/android
         run: |
           chmod +x ./gradlew
-          echo "::group::Debug keystore fingerprints (copy SHA1 into Firebase)"
-          ./gradlew signingReport --no-daemon -q 2>/dev/null \
-            | awk '/Variant: debug/,/^$/' \
-            | grep -E "Variant|Config|Store|Alias|SHA1|SHA-256|MD5" || true
-          echo "::endgroup::"
+          ./gradlew assembleDebug --no-daemon --stacktrace
 
-      - name: Build debug APK
-        working-directory: mobile/android
-        run: ./gradlew assembleDebug --no-daemon --stacktrace
+      - name: Print debug signing fingerprints
+        # Firebase needs the debug key's SHA-1 registered or Android phone auth
+        # rejects every verification request, and assetlinks.json needs the
+        # SHA-256. Surfaced here so both can be copied without a local JDK — see
+        # mobile/FIREBASE-SETUP.md.
+        #
+        # MUST run AFTER the build: Gradle generates the debug keystore on the
+        # first debug build, so running this earlier reported the store path with
+        # no fingerprints at all.
+        #
+        # Uses keytool rather than `gradlew signingReport`, whose output repeats
+        # once per variant and buries the values in ~90 lines of noise.
+        run: |
+          set -euo pipefail
+
+          KEYSTORE=""
+          for candidate in "$HOME/.config/android/debug.keystore" "$HOME/.android/debug.keystore"; do
+            if [ -f "$candidate" ]; then KEYSTORE="$candidate"; break; fi
+          done
+
+          if [ -z "$KEYSTORE" ]; then
+            echo "::warning::Debug keystore not found; skipping fingerprint output."
+            exit 0
+          fi
+
+          # `android` is the well-known password for Android's auto-generated
+          # debug keystore — not a secret.
+          #
+          # POSIX character classes rather than \s, and SHA-?256 because keytool
+          # has printed both "SHA256:" and "SHA-256:" across JDK versions.
+          FINGERPRINTS="$(
+            keytool -list -v \
+              -keystore "$KEYSTORE" \
+              -alias AndroidDebugKey \
+              -storepass android \
+              -keypass android 2>/dev/null \
+              | grep -E "^[[:space:]]*(SHA1|SHA-?256):" \
+              | sed 's/^[[:space:]]*//' || true
+          )"
+
+          echo "::group::Debug keystore fingerprints"
+          echo "Keystore: $KEYSTORE"
+          echo ""
+          if [ -n "$FINGERPRINTS" ]; then
+            echo "$FINGERPRINTS"
+            echo ""
+            echo "SHA1   -> Firebase: Project settings > Your apps > Add fingerprint"
+            echo "SHA256 -> public/.well-known/assetlinks.json"
+          else
+            # Never fail silently again: an empty block is exactly the bug this
+            # step already had once.
+            echo "::warning::keytool produced no fingerprints; falling back to signingReport."
+            (cd mobile/android && ./gradlew signingReport --no-daemon 2>/dev/null \
+              | grep -E "SHA1|SHA-?256" | sort -u | head -4) || true
+          fi
+          echo "::endgroup::"
 
       - name: Report APK details
         run: |

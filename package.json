@@ -6,7 +6,11 @@
     "dev": "next dev --webpack",
     "build": "prisma generate && next build --webpack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "migrate:status": "dotenv -e .env.local -- prisma migrate status",
+    "migrate:local": "dotenv -e .env.local -- prisma migrate deploy",
+    "migrate:prod": "dotenv -e .env.prod -- prisma migrate deploy",
+    "db:studio": "dotenv -e .env.local -- prisma studio"
   },
   "dependencies": {
     "@capacitor-firebase/authentication": "^8.3.0",
@@ -55,6 +59,7 @@
     "bcryptjs": "^3.0.3",
     "copy-webpack-plugin": "^13.0.1",
     "dotenv": "^17.2.3",
+    "dotenv-cli": "^11.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.1.0",
     "next-auth": "^5.0.0-beta.30",

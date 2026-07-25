@@ -15,6 +15,7 @@ import {
     sanitizeInternalReturnTo,
     type MonetizationIntent,
 } from '@/lib/monetization';
+import type { AppPlatform } from '@/lib/platform';
 
 declare global {
     interface Window {
@@ -33,10 +34,18 @@ interface PricingPlan {
     price: number;
     currency: string;
     credits: number;
+    /** Set only for plans purchasable via Apple IAP. Null on web/Android plans. */
+    appleProductId?: string | null;
 }
 
 interface PricingClientProps {
     plans: PricingPlan[];
+    /**
+     * Resolved on the SERVER from the User-Agent, so the iOS build never receives
+     * Razorpay markup at all — App Store reviewers read rendered HTML, and
+     * guideline 3.1.1 forbids any non-IAP purchase path for in-app content.
+     */
+    platform: AppPlatform;
 }
 
 const FAQ_ITEMS = [
@@ -93,12 +102,21 @@ function getButtonLabel(plan: PricingPlan, intent: MonetizationIntent) {
     return 'Get Credits';
 }
 
-export default function PricingClient({ plans }: PricingClientProps) {
+export default function PricingClient({ plans, platform }: PricingClientProps) {
     const { data: session } = useSession();
     const router = useRouter();
     const searchParams = useSearchParams();
     const [loading, setLoading] = useState<string | null>(null);
     const hasTrackedPricingView = useRef(false);
+
+    const isIos = platform === 'ios';
+
+    /** App Store price strings, keyed by product id. Populated on iOS only. */
+    const [iapPrices, setIapPrices] = useState<Record<string, string>>({});
+    /** Shown after StoreKit accepts payment, while the webhook applies credits. */
+    const [iapPending, setIapPending] = useState(false);
+    const [iapError, setIapError] = useState('');
+    const [restoring, setRestoring] = useState(false);
 
     const intentParam = searchParams.get('intent');
     const intent = isMonetizationIntent(intentParam) ? intentParam : null;
@@ -132,6 +150,55 @@ export default function PricingClient({ plans }: PricingClientProps) {
         });
     }, [effectiveIntent, focus, plans, returnTo, session?.user?.id, source]);
 
+    /**
+     * On iOS: bind RevenueCat to our user id, then load real App Store prices.
+     *
+     * The logIn is what makes app_user_id our User.id, which is how the webhook
+     * knows whose account to credit. Prices must come from StoreKit rather than
+     * PricingPlan.price — Apple rejects apps displaying a price that differs from
+     * what it will charge, and the INR figure is the Razorpay one.
+     */
+    useEffect(() => {
+        if (!isIos) return;
+        const userId = session?.user?.id;
+        if (!userId) return;
+
+        let cancelled = false;
+
+        void (async () => {
+            const iap = await import('@/lib/native/iap');
+
+            if (!(await iap.configureIap(userId)) || cancelled) return;
+
+            const productIds = plans
+                .map((plan) => plan.appleProductId)
+                .filter((id): id is string => !!id);
+
+            const products = await iap.getIapProducts(productIds);
+            if (cancelled) return;
+
+            setIapPrices(
+                Object.fromEntries(products.map((product) => [product.productId, product.priceString]))
+            );
+        })();
+
+        return () => { cancelled = true; };
+    }, [isIos, plans, session?.user?.id]);
+
+    const handleRestore = async () => {
+        setRestoring(true);
+        setIapError('');
+        try {
+            const iap = await import('@/lib/native/iap');
+            await iap.restoreIapPurchases();
+            // Any purchase RevenueCat re-reports arrives through the webhook, so
+            // just refresh rather than claiming a balance change here.
+            router.refresh();
+        } finally {
+            setRestoring(false);
+        }
+    };
+
     const sortedPlans = [...plans].sort((a, b) => a.price - b.price);
     const recommendedPlan = pickRecommendedPlan(sortedPlans, effectiveIntent);
 
@@ -161,6 +228,41 @@ export default function PricingClient({ plans }: PricingClientProps) {
         }
 
         setLoading(plan.key);
+
+        // ---- iOS: Apple In-App Purchase ----
+        // Razorpay is never reached on iOS. Guideline 3.1.1 requires IAP for
+        // digital content consumed in the app, and credits are exactly that.
+        if (isIos) {
+            setIapError('');
+            try {
+                if (!plan.appleProductId) {
+                    setIapError('This pack is not available in the app yet.');
+                    return;
+                }
+
+                const iap = await import('@/lib/native/iap');
+                const outcome = await iap.purchaseIapProduct(plan.appleProductId);
+
+                if (outcome.status === 'cancelled') return;
+
+                if (outcome.status !== 'purchased') {
+                    setIapError(outcome.message);
+                    return;
+                }
+
+                // StoreKit took the payment, but credits are granted by
+                // RevenueCat's verified webhook — never client-side, which would
+                // be forgeable. Tell the truth about the delay.
+                setIapPending(true);
+                router.refresh();
+            } catch (error) {
+                console.error('IAP error:', error);
+                setIapError('The purchase could not be completed. Please try again.');
+            } finally {
+                setLoading(null);
+            }
+            return;
+        }
 
         try {
             const response = await fetch('/api/payment/create-order', {
@@ -220,7 +322,8 @@ export default function PricingClient({ plans }: PricingClientProps) {
 
     return (
         <>
-            <Script src="https://checkout.razorpay.com/v1/checkout.js" />
+            {/* Razorpay's script is not even loaded on iOS. */}
+            {!isIos && <Script src="https://checkout.razorpay.com/v1/checkout.js" />}
 
             <div className={styles.container}>
                 <div className={styles.header}>
@@ -248,6 +351,22 @@ export default function PricingClient({ plans }: PricingClientProps) {
                     </div>
                 </div>
 
+                {iapPending && (
+                    <div className={styles.noteBox}>
+                        <p>
+                            <strong>Payment received.</strong> Your credits are being added and
+                            will appear in a moment. You can close and reopen this screen if they
+                            haven&apos;t shown up.
+                        </p>
+                    </div>
+                )}
+
+                {iapError && (
+                    <div className={styles.noteBox}>
+                        <p><strong>{iapError}</strong></p>
+                    </div>
+                )}
+
                 <div className={styles.pricingGrid}>
                     {sortedPlans.map((plan) => {
                         const isRecommended = plan.key === recommendedPlan?.key;
@@ -256,7 +375,15 @@ export default function PricingClient({ plans }: PricingClientProps) {
                                 <div className={styles.cardLabel}>
                                     {isRecommended ? 'Recommended Next Step' : plan.credits === 1 ? 'Single Question' : 'Credit Pack'}
                                 </div>
-                                <div className={styles.price}>₹{plan.price / 100}</div>
+                                {/* On iOS show the App Store's own localised price
+                                    string. Displaying the INR Razorpay figure there
+                                    would differ from what StoreKit charges, which
+                                    Apple rejects. */}
+                                <div className={styles.price}>
+                                    {isIos
+                                        ? (plan.appleProductId && iapPrices[plan.appleProductId]) || '—'
+                                        : `₹${plan.price / 100}`}
+                                </div>
                                 <div className={styles.priceUnit}>
                                     {plan.credits === 1 ? 'per question' : `${plan.credits} questions`}
                                 </div>
@@ -291,6 +418,21 @@ export default function PricingClient({ plans }: PricingClientProps) {
                         );
                     })}
                 </div>
+
+                {/* Apple requires a restore affordance in any app selling IAP
+                    (guideline 3.1.1). It also recovers a purchase whose webhook
+                    was delayed, by prompting RevenueCat to resend. */}
+                {isIos && (
+                    <div className={styles.infoSection}>
+                        <button
+                            onClick={handleRestore}
+                            className={styles.secondaryLink}
+                            disabled={restoring}
+                        >
+                            {restoring ? 'Restoring…' : 'Restore Purchases'}
+                        </button>
+                    </div>
+                )}
 
                 <div className={styles.infoSection}>
                     <h2 className="mystic-text text-2xl mb-4">What You&apos;re Paying For</h2>

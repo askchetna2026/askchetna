@@ -10,7 +10,8 @@
     "migrate:status": "dotenv -e .env.local -- prisma migrate status",
     "migrate:local": "dotenv -e .env.local -- prisma migrate deploy",
     "migrate:prod": "dotenv -e .env.prod -- prisma migrate deploy",
-    "db:studio": "dotenv -e .env.local -- prisma studio"
+    "db:studio": "dotenv -e .env.local -- prisma studio",
+    "verify:payments": "dotenv -e .env.local -e .env -- node scripts/verify-payment-webhook.mjs"
   },
   "dependencies": {
     "@capacitor-firebase/authentication": "^8.3.0",

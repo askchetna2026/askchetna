@@ -217,6 +217,21 @@ model PricingPlan {
   currency    String   @default("INR")
   credits     Int      @default(0) // Number of credits this plan gives (0 for n/a)
   isActive    Boolean  @default(true)
+
+  /// App Store product identifier for this pack, e.g.
+  /// "com.askchetnam.app.credits_10". Set only for plans purchasable on iOS,
+  /// where Apple requires In-App Purchase instead of Razorpay.
+  ///
+  /// An explicit column rather than deriving the product id from `key` by
+  /// convention: the mapping is what turns a completed Apple payment into
+  /// credits, and a silent convention mismatch would take the customer's money
+  /// and grant nothing. Being a DB column also means it is editable from the
+  /// existing pricing admin without a deploy.
+  ///
+  /// NOTE: iOS prices come from Apple's price tiers in the App Store, NOT from
+  /// `price` above, which stays the INR/Razorpay figure for web and Android.
+  appleProductId String? @unique
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

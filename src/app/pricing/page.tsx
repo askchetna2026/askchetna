@@ -2,6 +2,7 @@ import PricingClient from '@/components/PricingClient';
 import prisma from '@/lib/prisma';
 import { PAYMENTS_ENABLED, PAYMENTS_PAUSED_MESSAGE } from '@/lib/paymentConfig';
 import { SITE_NAME, absoluteUrl } from '@/lib/site';
+import { getAppPlatform } from '@/lib/platform';
 import styles from './page.module.css';
 
 export const dynamic = 'force-dynamic';
@@ -18,11 +19,23 @@ export default async function PricingPage() {
         );
     }
 
+    // Detected SERVER-side, not in the browser. App Store reviewers read the
+    // rendered HTML, so a client-only check would still ship the Razorpay markup
+    // and script tag to iOS. Free to do here: this route is force-dynamic already.
+    const platform = await getAppPlatform();
+    const isIos = platform === 'ios';
+
     const plans = await prisma.pricingPlan.findMany({
-        where: { isActive: true },
+        where: isIos
+            // On iOS only plans wired to an App Store product can be offered.
+            // Showing a pack that IAP cannot fulfil would be a dead button.
+            ? { isActive: true, appleProductId: { not: null } }
+            : { isActive: true },
         orderBy: { price: 'asc' }
     });
 
+    // Structured data describes the web offering and must not advertise INR
+    // pricing inside the iOS app, where Apple's price tiers apply instead.
     const pricingSchema = {
         '@context': 'https://schema.org',
         '@type': 'OfferCatalog',
@@ -43,11 +56,13 @@ export default async function PricingPage() {
 
     return (
         <>
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(pricingSchema) }}
-            />
-            <PricingClient plans={plans} />
+            {!isIos && (
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(pricingSchema) }}
+                />
+            )}
+            <PricingClient plans={plans} platform={platform} />
         </>
     );
 }

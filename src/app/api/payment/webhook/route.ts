@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
-import prisma from '@/lib/prisma';
-import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
-import { getRequestLocation, recordAnalyticsEvent } from '@/lib/analytics/server';
-import { isMonetizationIntent } from '@/lib/monetization';
-import { sendTopUpSuccessLifecycleEmail } from '@/lib/lifecycleEmails';
+import { grantCreditPack } from '@/lib/credits';
 
 export async function POST(req: NextRequest) {
     try {
@@ -59,100 +55,41 @@ export async function POST(req: NextRequest) {
                 );
             }
 
-            const existingPack = await prisma.creditPack.findFirst({
-                where: { paymentId: payment.id }
+            // Credit granting lives in grantCreditPack so Apple IAP cannot drift
+            // from this behaviour. Semantics preserved exactly: dedupe on
+            // payment id, reject unknown/non-credit plans, and — because the
+            // amount is attacker-influencable here — require it to match the
+            // plan's configured price.
+            const result = await grantCreditPack({
+                userId,
+                planKey: productType,
+                paymentId: payment.id,
+                amount: payment.amount,
+                currency: payment.currency,
+                source: 'razorpay',
+                validateAmount: true,
+                visitorId,
+                intent: payment.notes?.intent,
+                headers: req.headers,
+                extraMetadata: {
+                    // Both keys are emitted because before this refactor the
+                    // CreditTransaction recorded `razorpayOrderId` while the
+                    // analytics event recorded `orderId`. extraMetadata now feeds
+                    // both sinks, so keeping both names means no external
+                    // dashboard querying either JSON field starts returning null.
+                    razorpayOrderId: payment.order_id || null,
+                    orderId: payment.order_id || null,
+                },
+                analyticsPath: '/api/payment/webhook',
             });
 
-            if (existingPack) {
+            if (result.status === 'duplicate') {
                 return NextResponse.json({ success: true, note: 'Duplicate' });
             }
 
-            const plan = await prisma.pricingPlan.findUnique({
-                where: { key: productType }
-            });
-
-            if (!plan) {
-                return NextResponse.json(
-                    { error: `Unknown pricing plan: ${productType}` },
-                    { status: 400 }
-                );
+            if (result.status === 'error') {
+                return NextResponse.json({ error: result.error }, { status: result.httpStatus });
             }
-
-            if (plan.credits < 1) {
-                return NextResponse.json(
-                    { error: `Pricing plan ${productType} does not map to a credit pack.` },
-                    { status: 400 }
-                );
-            }
-
-            if (payment.amount !== plan.price || payment.currency !== plan.currency) {
-                return NextResponse.json(
-                    { error: 'Payment amount or currency does not match the pricing plan.' },
-                    { status: 400 }
-                );
-            }
-
-            await prisma.$transaction([
-                prisma.creditPack.create({
-                    data: {
-                        userId,
-                        packType: plan.key,
-                        questionsTotal: plan.credits,
-                        questionsUsed: 0,
-                        paymentId: payment.id,
-                        amount: payment.amount,
-                    },
-                }),
-                prisma.creditTransaction.create({
-                    data: {
-                        userId,
-                        amount: plan.credits,
-                        description: `Purchased ${plan.name}`,
-                        metadata: {
-                            paymentId: payment.id,
-                            productType: plan.key,
-                            planName: plan.name,
-                            planCredits: plan.credits,
-                            razorpayOrderId: payment.order_id || null
-                        }
-                    }
-                })
-            ]);
-
-            const location = getRequestLocation(req.headers);
-            await recordAnalyticsEvent({
-                type: ANALYTICS_EVENTS.PAYMENT_SUCCESS,
-                path: '/api/payment/webhook',
-                userId,
-                visitorId: visitorId || null,
-                country: location.country,
-                city: location.city,
-                metadata: {
-                    paymentId: payment.id,
-                    orderId: payment.order_id || null,
-                    planKey: plan.key,
-                    planName: plan.name,
-                    credits: plan.credits,
-                    amount: payment.amount,
-                    currency: payment.currency,
-                }
-            });
-
-            const checkoutIntent = payment.notes?.intent;
-            const lifecycleIntent =
-                typeof checkoutIntent === 'string' && isMonetizationIntent(checkoutIntent)
-                    ? checkoutIntent
-                    : undefined;
-
-            void sendTopUpSuccessLifecycleEmail({
-                userId,
-                paymentId: payment.id,
-                planName: plan.name,
-                credits: plan.credits,
-                intent: lifecycleIntent,
-            }).catch((emailError) => {
-                console.error('Top-up lifecycle email failed:', emailError);
-            });
 
             return NextResponse.json({ success: true });
         }

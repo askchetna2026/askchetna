@@ -19,6 +19,12 @@ model User {
   name          String?
   image         String?   // Profile picture from OAuth
   emailVerified DateTime?
+  // Phone sign-in (native apps). Nullable because the vast majority of
+  // existing accounts are email/Google only; email stays the required
+  // identity so nothing downstream (newsletter, reports, lifecycle mail)
+  // has to cope with a null address. Stored E.164, e.g. "+919876543210".
+  phone         String?   @unique
+  phoneVerifiedAt DateTime?
   welcomeBonusNotifiedAt DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt

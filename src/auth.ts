@@ -5,6 +5,14 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import bcrypt from "bcryptjs"
 import prisma from "@/lib/prisma"
 import { rateLimit } from "@/lib/rateLimit"
+// NOTE: firebase-admin is NOT imported at the top level on purpose.
+//
+// src/proxy.ts imports this module and runs on the Edge runtime. firebase-admin
+// depends on Node built-ins (fs/http2/crypto) that Edge cannot load, and a
+// static import here breaks the whole proxy module — which surfaces as a
+// misleading "Proxy file must export a function named `proxy`" error and 500s
+// every route. It is loaded lazily inside authorize() below, which only ever
+// executes in the Node runtime of the NextAuth route handler.
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     trustHost: true,
@@ -64,6 +72,87 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 )
 
                 if (!isValidPassword) {
+                    return null
+                }
+
+                const adminEmails = process.env.ADMIN_EMAILS?.split(',').map(e => e.trim().toLowerCase()) || [];
+                const isAdmin = !!user.email && adminEmails.includes(user.email.toLowerCase());
+
+                return {
+                    id: user.id,
+                    email: user.email,
+                    name: user.name,
+                    image: user.image,
+                    isAdmin: isAdmin
+                }
+            }
+        }),
+        // Phone / OTP sign-in for the native apps.
+        //
+        // The OTP challenge itself happens on-device via Firebase Phone Auth; by
+        // the time we get here the client already holds a Firebase ID token that
+        // cryptographically proves ownership of the number. This provider's only
+        // job is to validate that token and map it to one of our users.
+        //
+        // Implemented as a Credentials provider on purpose: it reuses the
+        // existing JWT session strategy, the jwt/session callbacks, and the
+        // signIn event below — so phone users get the welcome-credit grant with
+        // no extra code.
+        CredentialsProvider({
+            id: "phone-otp",
+            name: "Phone",
+            credentials: {
+                idToken: { label: "Firebase ID token", type: "text" }
+            },
+            async authorize(credentials, request) {
+                if (!credentials?.idToken) {
+                    return null
+                }
+
+                // Cheap IP throttle in front of the (network-bound) Firebase
+                // verification call, mirroring the email provider above. Brute
+                // force isn't feasible against a signed token, so this is really
+                // about not letting anyone burn our Firebase quota.
+                let ip = "unknown";
+                try {
+                    const fwd = request?.headers?.get?.("x-forwarded-for");
+                    if (fwd) ip = fwd.split(",")[0].trim();
+                    else ip = request?.headers?.get?.("x-real-ip") || "unknown";
+                } catch { /* headers unavailable */ }
+
+                const byIp = rateLimit(`phone-login:ip:${ip}`, { limit: 30, windowMs: 15 * 60 * 1000 });
+                if (!byIp.allowed) {
+                    return null
+                }
+
+                let phone: string;
+                try {
+                    // Lazy import keeps firebase-admin out of the Edge bundle
+                    // (see the note at the top of this file).
+                    const { verifyPhoneIdToken, isFirebaseConfigured } = await import("@/lib/firebaseAdmin");
+
+                    if (!isFirebaseConfigured()) {
+                        console.error("Phone sign-in attempted but Firebase Admin is not configured.");
+                        return null
+                    }
+
+                    // Rejects tokens that aren't from the phone provider, or whose
+                    // OTP was completed too long ago to count as fresh proof.
+                    ({ phone } = await verifyPhoneIdToken(String(credentials.idToken)));
+                } catch (error) {
+                    console.warn("Phone sign-in rejected:", error instanceof Error ? error.message : error);
+                    return null
+                }
+
+                const user = await prisma.user.findUnique({
+                    where: { phone }
+                })
+
+                // No account for this number yet. The client is expected to have
+                // called /api/auth/phone/check first and run the signup step, so
+                // reaching here means the flow was skipped — fail closed rather
+                // than silently creating an account with no email.
+                if (!user) {
                     return null
                 }
 

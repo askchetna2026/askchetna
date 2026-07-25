@@ -8,6 +8,7 @@ import styles from './page.module.css';
 import { Mail, AlertCircle } from 'lucide-react';
 import { getVisitorId, trackEvent } from '@/lib/analytics/client';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
+import PhoneLoginPanel from './PhoneLoginPanel';
 
 // Force dynamic rendering to avoid build errors with useSearchParams
 export const dynamic = 'force-dynamic';
@@ -27,6 +28,9 @@ function LoginContent() {
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    // True while the native phone/OTP flow is on screen, so we collapse the
+    // email + Google options and keep one clear path at a time.
+    const [phoneFlowActive, setPhoneFlowActive] = useState(false);
 
     useEffect(() => {
         if (forcedSignup) {
@@ -133,6 +137,9 @@ function LoginContent() {
                     </div>
                 )}
 
+                {/* Hidden while the phone/OTP flow is on screen so there's exactly
+                    one sign-in path visible at a time. */}
+                <div hidden={phoneFlowActive}>
                 <form onSubmit={handleSubmit} className={styles.form}>
                     {!isLogin && (
                         <div className={styles.formGroup}>
@@ -204,8 +211,15 @@ function LoginContent() {
                     </svg>
                     Continue with Google
                 </button>
+                </div>
 
-                <div className={styles.toggle}>
+                {/* Native apps only — renders nothing in a browser. */}
+                <PhoneLoginPanel
+                    callbackUrl={callbackUrl}
+                    onActiveChange={setPhoneFlowActive}
+                />
+
+                <div className={styles.toggle} hidden={phoneFlowActive}>
                     {isLogin ? "Don't have an account? " : "Already have an account? "}
                     <button onClick={() => { setIsLogin(!isLogin); setError(''); }} className={styles.toggleBtn}>
                         {isLogin ? 'Sign Up' : 'Sign In'}

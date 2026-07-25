@@ -1,0 +1,16 @@
+<!--
+  Android adaptive icon BACKGROUND layer.
+
+  Flat #0B0F2F, matching the background custom property in globals.css and the
+  backgroundColor in capacitor.config.ts. (Avoid a double hyphen anywhere in this
+  comment — it is invalid XML and sharp will refuse to parse the file.)
+
+  Deliberately flat with no gradient or artwork: Android
+  parallaxes the background against the foreground as the user scrolls the
+  launcher, and any detail here wobbles distractingly.
+
+  Rendered to mobile/assets/icon-background.png at 1024x1024.
+-->
+<svg width="1024" height="1024" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="64" height="64" fill="#0B0F2F" />
+</svg>

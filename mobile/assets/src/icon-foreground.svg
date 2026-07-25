@@ -1,0 +1,35 @@
+<!--
+  Android adaptive icon FOREGROUND layer. Transparent background.
+
+  Critically, the artwork is scaled to 82% and centred. Android masks the
+  adaptive icon to whatever shape the launcher uses (circle, squircle, teardrop)
+  and applies a zoom, so only the central ~66% of the canvas is guaranteed
+  visible. At full size the zodiac ring (44 of 64 units, ~69%) would have its
+  edges clipped by a circular mask.
+
+  0.82 puts the ring at ~56% of the canvas — comfortably inside the safe zone
+  with room for the launcher's zoom.
+
+  Rendered to mobile/assets/icon-foreground.png at 1024x1024.
+-->
+<svg width="1024" height="1024" viewBox="0 0 64 64" role="img" xmlns="http://www.w3.org/2000/svg">
+  <title>AskChetna icon foreground</title>
+  <defs>
+    <linearGradient id="acFgGold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F5D87A" />
+      <stop offset="1" stop-color="#C49A2B" />
+    </linearGradient>
+  </defs>
+  <g transform="translate(32 32) scale(0.82) translate(-32 -32)">
+    <path d="M48.85,46.14 A22 22 0 1 1 48.85,17.86" fill="none" stroke="url(#acFgGold)" stroke-width="3.5"
+      stroke-linecap="round" />
+    <circle cx="32" cy="54" r="1.1" fill="url(#acFgGold)" />
+    <circle cx="16.44" cy="47.56" r="1.1" fill="url(#acFgGold)" />
+    <circle cx="10" cy="32" r="1.1" fill="url(#acFgGold)" />
+    <circle cx="16.44" cy="16.44" r="1.1" fill="url(#acFgGold)" />
+    <circle cx="32" cy="10" r="1.1" fill="url(#acFgGold)" />
+    <path
+      d="M32,26.5 Q32.825,31.175 37.5,32 Q32.825,32.825 32,37.5 Q31.175,32.825 26.5,32 Q31.175,31.175 32,26.5 Z"
+      fill="url(#acFgGold)" />
+  </g>
+</svg>

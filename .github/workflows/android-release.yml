@@ -1,0 +1,146 @@
+name: Android Release
+
+# Builds a signed AAB for Play and a signed APK for sideload testing.
+#
+# The APK is the artifact to install directly on a device — Play requires the
+# AAB, but an AAB cannot be sideloaded, which is why both are produced.
+#
+# Runs on Ubuntu: no macOS minutes needed for the Android track.
+#
+# Required repository secrets:
+#   ANDROID_KEYSTORE_BASE64   base64 of your release .jks
+#                             (base64 -w0 upload-keystore.jks)
+#   ANDROID_KEYSTORE_PASSWORD
+#   ANDROID_KEY_ALIAS
+#   ANDROID_KEY_PASSWORD
+#   GOOGLE_SERVICES_JSON      contents of google-services.json (needed for FCM;
+#                             without it push notifications silently do nothing)
+
+on:
+  workflow_dispatch:
+    inputs:
+      versionName:
+        description: 'versionName, e.g. 1.0.1 (blank keeps build.gradle value)'
+        required: false
+        type: string
+      versionCode:
+        description: 'versionCode, must increase for every Play upload'
+        required: false
+        type: string
+  push:
+    tags:
+      - 'android-v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Install dependencies
+        # `npm ci` rather than `npm install` so the lockfile is authoritative and
+        # a plugin cannot drift to a version whose native half differs.
+        run: npm ci
+
+      - name: Write google-services.json
+        # Gitignored on purpose. Its absence only logs a warning during the
+        # Gradle build, so a missing secret would otherwise produce an app whose
+        # push notifications silently never arrive.
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          if [ -z "$GOOGLE_SERVICES_JSON" ]; then
+            echo "::error::GOOGLE_SERVICES_JSON secret is not set. Push notifications would not work in this build."
+            exit 1
+          fi
+          printf '%s' "$GOOGLE_SERVICES_JSON" > mobile/android/app/google-services.json
+          echo "Wrote google-services.json ($(wc -c < mobile/android/app/google-services.json) bytes)"
+
+      - name: Apply version overrides
+        if: inputs.versionName != '' || inputs.versionCode != ''
+        run: |
+          cd mobile/android/app
+          if [ -n "${{ inputs.versionName }}" ]; then
+            sed -i "s/versionName \".*\"/versionName \"${{ inputs.versionName }}\"/" build.gradle
+          fi
+          if [ -n "${{ inputs.versionCode }}" ]; then
+            sed -i "s/versionCode .*/versionCode ${{ inputs.versionCode }}/" build.gradle
+          fi
+          grep -E "versionCode|versionName" build.gradle
+
+      - name: Capacitor sync
+        # Regenerates capacitor.config.json and copies mobile/shell into the
+        # native project. Both are gitignored, so without this the build would
+        # use whatever stale copy happened to exist — or none at all.
+        run: npx cap sync android
+
+      - name: Decode keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "::error::ANDROID_KEYSTORE_BASE64 secret is not set."
+            exit 1
+          fi
+          echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          echo "Keystore decoded ($(wc -c < "$RUNNER_TEMP/release.jks") bytes)"
+
+      - name: Build signed AAB and APK
+        working-directory: mobile/android
+        env:
+          # Consumed by the signingConfigs block in app/build.gradle.
+          ASKCHETNA_KEYSTORE_PATH: ${{ runner.temp }}/release.jks
+          ASKCHETNA_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ASKCHETNA_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ASKCHETNA_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          chmod +x ./gradlew
+          ./gradlew bundleRelease assembleRelease --no-daemon --stacktrace
+
+      - name: Verify the outputs are actually signed
+        # An unsigned or debug-signed artifact is rejected by Play only after
+        # upload, so fail here instead.
+        run: |
+          AAB=mobile/android/app/build/outputs/bundle/release/app-release.aab
+          APK=mobile/android/app/build/outputs/apk/release/app-release.apk
+          for f in "$AAB" "$APK"; do
+            if [ ! -f "$f" ]; then echo "::error::Missing build output: $f"; exit 1; fi
+            echo "$f -> $(du -h "$f" | cut -f1)"
+          done
+          # A signed APK contains a v2+ signature block.
+          if ! unzip -l "$APK" | grep -qE 'META-INF/.*\.(RSA|EC|DSA)'; then
+            echo "::error::APK does not appear to be signed."
+            exit 1
+          fi
+          echo "Signature present."
+
+      - name: Upload AAB (for Play Console)
+        uses: actions/upload-artifact@v4
+        with:
+          name: askchetna-release-aab
+          path: mobile/android/app/build/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload APK (sideload onto a device to test)
+        uses: actions/upload-artifact@v4
+        with:
+          name: askchetna-release-apk
+          path: mobile/android/app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error
+          retention-days: 30

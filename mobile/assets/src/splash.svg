@@ -1,0 +1,45 @@
+<!--
+  Splash screen. Square 2732x2732 so it can be centre-cropped to any device
+  aspect ratio without the mark ever leaving frame (androidScaleType is
+  CENTER_CROP in capacitor.config.ts).
+
+  The mark occupies only the middle ~22%, for two reasons: centre-cropping on a
+  tall phone trims the sides heavily, and Apple's guidance is that a launch screen
+  should be quiet rather than a branded advert.
+
+  Background matches capacitor.config.ts backgroundColor (#0B0F2F) so there is no
+  visible seam between the native splash and the web app's first paint.
+
+  Rendered to mobile/assets/splash.png at 2732x2732.
+-->
+<svg width="2732" height="2732" viewBox="0 0 2732 2732" role="img" xmlns="http://www.w3.org/2000/svg">
+  <title>AskChetna</title>
+  <defs>
+    <linearGradient id="acSplashGold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F5D87A" />
+      <stop offset="1" stop-color="#C49A2B" />
+    </linearGradient>
+    <!-- Faint nebula glow, echoing the cosmic background on the site. -->
+    <radialGradient id="acSplashGlow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#5D3FD3" stop-opacity="0.20" />
+      <stop offset="1" stop-color="#5D3FD3" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <rect x="0" y="0" width="2732" height="2732" fill="#0B0F2F" />
+  <circle cx="1366" cy="1366" r="900" fill="url(#acSplashGlow)" />
+
+  <!-- 64-unit artwork scaled to 600px and centred (1366 - 300 = 1066). -->
+  <g transform="translate(1066 1066) scale(9.375)">
+    <path d="M48.85,46.14 A22 22 0 1 1 48.85,17.86" fill="none" stroke="url(#acSplashGold)" stroke-width="3.5"
+      stroke-linecap="round" />
+    <circle cx="32" cy="54" r="1.1" fill="url(#acSplashGold)" />
+    <circle cx="16.44" cy="47.56" r="1.1" fill="url(#acSplashGold)" />
+    <circle cx="10" cy="32" r="1.1" fill="url(#acSplashGold)" />
+    <circle cx="16.44" cy="16.44" r="1.1" fill="url(#acSplashGold)" />
+    <circle cx="32" cy="10" r="1.1" fill="url(#acSplashGold)" />
+    <path
+      d="M32,26.5 Q32.825,31.175 37.5,32 Q32.825,32.825 32,37.5 Q31.175,32.825 26.5,32 Q31.175,31.175 32,26.5 Z"
+      fill="url(#acSplashGold)" />
+  </g>
+</svg>

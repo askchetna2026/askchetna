@@ -16,10 +16,35 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    /**
+     * Release signing, driven entirely by environment variables so no keystore or
+     * password is ever committed.
+     *
+     * The whole block is conditional: when ASKCHETNA_KEYSTORE_PATH is absent
+     * (any local machine), no release signingConfig is registered and debug
+     * builds carry on as normal. CI sets all four before calling bundleRelease.
+     */
+    signingConfigs {
+        if (System.getenv('ASKCHETNA_KEYSTORE_PATH')) {
+            release {
+                storeFile file(System.getenv('ASKCHETNA_KEYSTORE_PATH'))
+                storePassword System.getenv('ASKCHETNA_KEYSTORE_PASSWORD')
+                keyAlias System.getenv('ASKCHETNA_KEY_ALIAS')
+                keyPassword System.getenv('ASKCHETNA_KEY_PASSWORD')
+            }
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            // Only attach if the config above was actually created, otherwise
+            // Gradle fails resolving a signingConfig that does not exist.
+            if (System.getenv('ASKCHETNA_KEYSTORE_PATH')) {
+                signingConfig signingConfigs.release
+            }
         }
     }
 }

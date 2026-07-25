@@ -1,0 +1,30 @@
+<!--
+  Full-bleed app icon (iOS, and the Android legacy/round fallback).
+
+  Same artwork as public/chetna_icon.svg so the app icon, favicon and PWA icon
+  are one identity. Corner radius is intentionally kept: iOS masks it anyway, and
+  it makes the raw PNG look right wherever it is shown unmasked.
+
+  Rendered to mobile/assets/icon.png at 1024x1024 by scripts/build-app-assets.mjs.
+-->
+<svg width="1024" height="1024" viewBox="0 0 64 64" role="img" xmlns="http://www.w3.org/2000/svg">
+  <title>AskChetna</title>
+  <desc>Gold open zodiac ring forming a C with house dots and a central sparkle, on deep indigo.</desc>
+  <defs>
+    <linearGradient id="acIconGold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F5D87A" />
+      <stop offset="1" stop-color="#C49A2B" />
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="64" height="64" rx="14" fill="#0B0F2F" />
+  <path d="M48.85,46.14 A22 22 0 1 1 48.85,17.86" fill="none" stroke="url(#acIconGold)" stroke-width="3.5"
+    stroke-linecap="round" />
+  <circle cx="32" cy="54" r="1.1" fill="url(#acIconGold)" />
+  <circle cx="16.44" cy="47.56" r="1.1" fill="url(#acIconGold)" />
+  <circle cx="10" cy="32" r="1.1" fill="url(#acIconGold)" />
+  <circle cx="16.44" cy="16.44" r="1.1" fill="url(#acIconGold)" />
+  <circle cx="32" cy="10" r="1.1" fill="url(#acIconGold)" />
+  <path
+    d="M32,26.5 Q32.825,31.175 37.5,32 Q32.825,32.825 32,37.5 Q31.175,32.825 26.5,32 Q31.175,31.175 32,26.5 Z"
+    fill="url(#acIconGold)" />
+</svg>

@@ -12,7 +12,10 @@
     "migrate:prod": "dotenv -e .env.prod -- prisma migrate deploy",
     "db:studio": "dotenv -e .env.local -- prisma studio",
     "verify:payments": "dotenv -e .env.local -e .env -- node scripts/verify-payment-webhook.mjs",
-    "apple:secret": "node scripts/generate-apple-secret.mjs"
+    "apple:secret": "node scripts/generate-apple-secret.mjs",
+    "assets:build": "node scripts/build-app-assets.mjs",
+    "assets": "node scripts/build-app-assets.mjs && capacitor-assets generate --ios --android --assetPath mobile/assets --androidProject mobile/android --iosProject mobile/ios/App",
+    "cap:sync": "cap sync"
   },
   "dependencies": {
     "@capacitor-firebase/authentication": "^8.3.0",

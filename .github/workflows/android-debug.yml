@@ -1,0 +1,102 @@
+name: Android Debug APK (for device testing)
+
+# Produces a debug APK you can sideload straight onto a phone.
+#
+# Why this exists alongside android-release.yml: a release build needs a keystore,
+# and creating one needs `keytool` from a local JDK. This workflow needs NO
+# keystore and NO secrets, so it is the fastest route from zero tooling to an app
+# on a real device. Debug APKs are signed automatically with Android's standard
+# debug key.
+#
+# Not for distribution — Play will not accept a debug APK, and it cannot be
+# installed over a release build of the same app (conflicting signatures).
+#
+# GOOGLE_SERVICES_JSON is optional here, unlike in the release workflow. Without
+# it the app still builds and runs, but Firebase-backed features are inert:
+#   - phone OTP sign-in will not work
+#   - push notifications will not arrive
+# Everything else (the site, Razorpay, offline mode, back button, safe areas,
+# deep links) works fine.
+
+on:
+  workflow_dispatch:
+    inputs:
+      debugWebview:
+        description: 'Enable remote WebView inspection (chrome://inspect)'
+        required: false
+        default: true
+        type: boolean
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Write google-services.json (optional)
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          if [ -n "$GOOGLE_SERVICES_JSON" ]; then
+            printf '%s' "$GOOGLE_SERVICES_JSON" > mobile/android/app/google-services.json
+            echo "google-services.json written — phone OTP and push will work."
+          else
+            echo "::warning::GOOGLE_SERVICES_JSON not set. This APK will build and run, but phone OTP sign-in and push notifications will NOT work."
+          fi
+
+      - name: Capacitor sync
+        # Regenerates capacitor.config.json and copies mobile/shell/ into the
+        # native project; both are gitignored, so this is not optional.
+        env:
+          # Gates webContentsDebuggingEnabled in capacitor.config.ts. Off by
+          # default in release builds so nobody holding the device can inspect a
+          # signed-in session.
+          CAP_DEBUG_WEBVIEW: ${{ inputs.debugWebview && '1' || '0' }}
+        run: |
+          npx cap sync android
+          echo "--- synced native config ---"
+          cat mobile/android/app/src/main/assets/capacitor.config.json
+
+      - name: Build debug APK
+        working-directory: mobile/android
+        run: |
+          chmod +x ./gradlew
+          ./gradlew assembleDebug --no-daemon --stacktrace
+
+      - name: Report APK details
+        run: |
+          APK=mobile/android/app/build/outputs/apk/debug/app-debug.apk
+          if [ ! -f "$APK" ]; then
+            echo "::error::Build produced no APK at $APK"
+            exit 1
+          fi
+          echo "APK size: $(du -h "$APK" | cut -f1)"
+          # Confirms the server URL actually made it into the bundle, which is the
+          # single most important thing about this build.
+          unzip -p "$APK" assets/capacitor.config.json | head -20
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: askchetna-debug-apk
+          path: mobile/android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14

@@ -106,48 +106,52 @@ jobs:
         # Uses keytool rather than `gradlew signingReport`, whose output repeats
         # once per variant and buries the values in ~90 lines of noise.
         run: |
-          set -euo pipefail
+          set -uo pipefail
 
-          KEYSTORE=""
-          for candidate in "$HOME/.config/android/debug.keystore" "$HOME/.android/debug.keystore"; do
-            if [ -f "$candidate" ]; then KEYSTORE="$candidate"; break; fi
-          done
+          APK=mobile/android/app/build/outputs/apk/debug/app-debug.apk
 
-          if [ -z "$KEYSTORE" ]; then
-            echo "::warning::Debug keystore not found; skipping fingerprint output."
-            exit 0
-          fi
+          echo "::group::Debug signing fingerprints"
 
-          # `android` is the well-known password for Android's auto-generated
-          # debug keystore — not a secret.
+          # Read the certificate out of the APK rather than hunting for the
+          # keystore file. An earlier version probed $HOME/.config/android and
+          # $HOME/.android and found neither, because where AGP puts the debug
+          # keystore varies with ANDROID_SDK_HOME / GRADLE_USER_HOME on the runner.
           #
-          # POSIX character classes rather than \s, and SHA-?256 because keytool
-          # has printed both "SHA256:" and "SHA-256:" across JDK versions.
+          # This is also strictly more correct: it reports the certificate that
+          # actually signed THIS artifact, which is precisely what Firebase has to
+          # match — not whatever a keystore file happens to contain.
           FINGERPRINTS="$(
-            keytool -list -v \
-              -keystore "$KEYSTORE" \
-              -alias AndroidDebugKey \
-              -storepass android \
-              -keypass android 2>/dev/null \
+            keytool -printcert -jarfile "$APK" 2>/dev/null \
               | grep -E "^[[:space:]]*(SHA1|SHA-?256):" \
-              | sed 's/^[[:space:]]*//' || true
+              | sed 's/^[[:space:]]*//' \
+              | sort -u || true
           )"
 
-          echo "::group::Debug keystore fingerprints"
-          echo "Keystore: $KEYSTORE"
-          echo ""
           if [ -n "$FINGERPRINTS" ]; then
+            echo "Read from: $APK"
+            echo ""
             echo "$FINGERPRINTS"
             echo ""
             echo "SHA1   -> Firebase: Project settings > Your apps > Add fingerprint"
+            echo "          (required for phone OTP and native Google sign-in on Android)"
             echo "SHA256 -> public/.well-known/assetlinks.json"
           else
-            # Never fail silently again: an empty block is exactly the bug this
-            # step already had once.
-            echo "::warning::keytool produced no fingerprints; falling back to signingReport."
-            (cd mobile/android && ./gradlew signingReport --no-daemon 2>/dev/null \
-              | grep -E "SHA1|SHA-?256" | sort -u | head -4) || true
+            # Never fail silently: an empty block is the exact bug this step has
+            # already had twice.
+            echo "::warning::Could not read the certificate from the APK; falling back to the keystore."
+            FOUND="$(find "$HOME" "${ANDROID_SDK_HOME:-$HOME}" -maxdepth 4 -name debug.keystore 2>/dev/null | head -1)"
+            if [ -n "$FOUND" ]; then
+              echo "Keystore: $FOUND"
+              # `android` is the well-known password for Android's auto-generated
+              # debug keystore — not a secret.
+              keytool -list -v -keystore "$FOUND" -alias AndroidDebugKey \
+                -storepass android -keypass android 2>/dev/null \
+                | grep -E "^[[:space:]]*(SHA1|SHA-?256):" | sed 's/^[[:space:]]*//' || true
+            else
+              echo "::error::No signing fingerprint could be determined. Android phone OTP and Google sign-in will not work until the SHA-1 is registered in Firebase."
+            fi
           fi
+
           echo "::endgroup::"
 
       - name: Report APK details

@@ -47,7 +47,8 @@ every route on the site**. Use `await import()` inside the function that needs i
 as the `phone-otp` provider does.
 
 **The Prisma CLI does not read `.env.local`.** Use the npm scripts:
-`migrate:status`, `migrate:local`, `migrate:prod` (they wrap `dotenv-cli`).
+`migrate:status`, `migrate:local`, `migrate:preview`, `migrate:prod` and their
+`:status` variants (they wrap `dotenv-cli`).
 
 **Never run `prisma migrate dev`.** It can offer to drop and recreate the schema.
 Migrations here are hand-written or generated with `prisma migrate diff`, placed in
@@ -55,8 +56,25 @@ Migrations here are hand-written or generated with `prisma migrate diff`, placed
 `migrate deploy`. History was baselined (the DB predates migrations — it was built
 with `db push`); `scripts/baseline-migrations.ps1` documents that.
 
-**`.env.local`, `.env.preview` and `.env.prod` all point at the SAME Supabase
-database.** Local development writes to production data.
+**There are THREE separate Supabase databases**, one per environment, each at a
+different point in migration history:
+
+```
+.env.local     project udwxykemnpyvdlsnwwrl
+.env.preview   project qtyxqebsdpuflngwczvk
+.env.prod      project rrbzhkevlpyfaiesarbo
+```
+
+They share the hostname `aws-1-ap-northeast-1.pooler.supabase.com` — that is
+Supabase's shared pooler and is identical for every project. The project is
+encoded in the **username** (`postgres.<ref>`), so comparing hosts will tell you
+they are the same database when they are not.
+
+**Migrating one does NOT migrate the others.** `npm run migrate:local` only
+touches the local database; the deployed Preview and Production apps read their
+own. A schema change applied locally but not to Preview shows up as
+`P2022 The column X does not exist`, and inside NextAuth it surfaces as the far
+less helpful `?error=Configuration`.
 
 **Adding a column to a widely-queried model breaks reads before the migration
 runs.** Prisma `SELECT`s every column by default, so the code 500s with P2022
@@ -100,9 +118,21 @@ resubmission. Rebuild only for plugin changes, permissions, icons, or native con
 ## Useful scripts
 
 ```
-npm run dev                 # Next dev server
-npm run migrate:status      # pending migrations (.env.local)
-npm run migrate:local       # apply migrations
-npm run verify:payments     # read-only Razorpay webhook regression check
-npm run apple:secret        # regenerate the Sign in with Apple client secret
+npm run dev                     # Next dev server
+
+# Migrations — each targets a DIFFERENT database. Deploying code without
+# migrating the matching database is what produces P2022 at runtime.
+npm run migrate:status          # .env.local
+npm run migrate:status:preview  # .env.preview  <- what the preview site reads
+npm run migrate:status:prod     # .env.prod     <- what the live site reads
+npm run migrate:local
+npm run migrate:preview
+npm run migrate:prod
+
+npm run verify:payments         # read-only Razorpay webhook regression check
+npm run apple:secret            # regenerate the Sign in with Apple client secret
+npm run assets                  # regenerate app icons and splash screens
 ```
+
+After any schema change, check status against **every** environment you deploy to,
+not just local.

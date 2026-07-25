@@ -60,7 +60,7 @@ with `db push`); `scripts/baseline-migrations.ps1` documents that.
 different point in migration history:
 
 ```
-.env.local     project udwxykemnpyvdlsnwwrl
+.env.local     project klsngrntvpnqyqehcuys
 .env.preview   project qtyxqebsdpuflngwczvk
 .env.prod      project rrbzhkevlpyfaiesarbo
 ```
@@ -69,6 +69,22 @@ They share the hostname `aws-1-ap-northeast-1.pooler.supabase.com` — that is
 Supabase's shared pooler and is identical for every project. The project is
 encoded in the **username** (`postgres.<ref>`), so comparing hosts will tell you
 they are the same database when they are not.
+
+⚠️ **These files contain COMMENTED-OUT `DATABASE_URL` lines as well as the live
+one** (`.env.local` has three, only the last active). Grepping for the first match
+reads a disabled line and reports the wrong database — which has already produced
+a confidently wrong diagnosis once. Match `^\s*DATABASE_URL=`, or better, let
+`dotenv-cli` resolve it.
+
+**Do not infer the deployed database from these files at all.** Vercel holds its
+own environment variables, which need not match. Ask the deployment itself:
+
+```
+curl -H "Authorization: Bearer $CRON_SECRET" https://<host>/api/health/db
+```
+
+That reports the host, database user, Supabase project ref, any missing
+columns/tables, and the last applied migrations.
 
 **Migrating one does NOT migrate the others.** `npm run migrate:local` only
 touches the local database; the deployed Preview and Production apps read their

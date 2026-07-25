@@ -134,6 +134,23 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             ? [GoogleProvider({
                 clientId: googleClientId!,
                 clientSecret: googleClientSecret!,
+                /**
+                 * Attach Google to an existing account with the same email.
+                 *
+                 * Without this, anyone who first signed up with email/password —
+                 * then later clicks "Continue with Google" — is bounced with
+                 * `error=OAuthAccountNotLinked` and can NEVER use Google, with no
+                 * explanation offered.
+                 *
+                 * The "dangerous" name is about providers that don't verify email
+                 * ownership, where an attacker could register an account claiming
+                 * someone else's address. Google always verifies, and Auth.js only
+                 * links after a successful sign-in, so owning the Google account
+                 * IS proof of owning the address. This is the same reasoning the
+                 * google-native provider below relies on, where the check is
+                 * explicit (email_verified must be true).
+                 */
+                allowDangerousEmailAccountLinking: true,
             })]
             : []),
         // Spread so the provider simply isn't registered until credentials

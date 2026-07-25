@@ -65,9 +65,21 @@ jobs:
         run: |
           if [ -n "$GOOGLE_SERVICES_JSON" ]; then
             printf '%s' "$GOOGLE_SERVICES_JSON" > mobile/android/app/google-services.json
-            echo "google-services.json written — phone OTP and push will work."
+            BYTES=$(wc -c < mobile/android/app/google-services.json)
+            echo "google-services.json written ($BYTES bytes)"
+
+            # Fail early on a truncated or wrong-shaped paste rather than letting
+            # it surface later as an unexplained runtime failure.
+            if ! grep -q '"project_id"' mobile/android/app/google-services.json; then
+              echo "::error::google-services.json has no project_id — the secret looks truncated or is not the right file."
+              exit 1
+            fi
+            PROJECT=$(grep -o '"project_id"[^,]*' mobile/android/app/google-services.json | head -1)
+            echo "  $PROJECT"
+            echo "FIREBASE_CONFIG=present" >> "$GITHUB_ENV"
           else
-            echo "::warning::GOOGLE_SERVICES_JSON not set. This APK will build and run, but phone OTP sign-in and push notifications will NOT work."
+            echo "::warning::GOOGLE_SERVICES_JSON not set — phone OTP and Google sign-in will NOT work in this APK."
+            echo "FIREBASE_CONFIG=missing" >> "$GITHUB_ENV"
           fi
 
       - name: Capacitor sync
@@ -178,6 +190,58 @@ jobs:
 
           echo "--- offline.html retry target ---"
           unzip -p "$APK" assets/public/offline.html | grep "var SITE" || true
+
+      - name: Build summary
+        # Written to the run summary rather than only the log. The previous
+        # version emitted a ::warning:: about missing Firebase config that was
+        # easy to scroll past, and the resulting APK then failed phone OTP and
+        # Google sign-in with no obvious reason why.
+        if: always()
+        run: |
+          APK=mobile/android/app/build/outputs/apk/debug/app-debug.apk
+
+          {
+            echo "## AskChetna debug APK"
+            echo ""
+            echo "| | |"
+            echo "|---|---|"
+            echo "| Loads | \`${{ inputs.serverUrl }}\` |"
+            echo "| WebView inspection | ${{ inputs.debugWebview && 'enabled (chrome://inspect)' || 'disabled' }} |"
+
+            if [ "${FIREBASE_CONFIG:-missing}" = "present" ]; then
+              echo "| Firebase config | present |"
+            else
+              echo "| Firebase config | **MISSING** |"
+            fi
+            echo ""
+
+            # Proof the google-services Gradle plugin actually ran: it generates a
+            # values.xml holding google_app_id. Its absence means Firebase is not
+            # wired in, whatever the secret said.
+            GENERATED=$(find mobile/android/app/build/generated -name values.xml -path "*google-services*" 2>/dev/null | head -1)
+            if [ -n "$GENERATED" ] && grep -q "google_app_id" "$GENERATED" 2>/dev/null; then
+              echo "Firebase resources were generated, so the app can reach Firebase."
+              echo ""
+              echo "Phone OTP and Google sign-in additionally need the **SHA-1 below** registered in"
+              echo "Firebase (Project settings → Your apps → Add fingerprint). Without it Android"
+              echo "returns error 10 / DEVELOPER_ERROR and phone verification never calls back."
+            else
+              echo "> **Phone OTP and Google sign-in will NOT work in this build.**"
+              echo ">"
+              echo "> No Firebase resources were generated. Add the \`GOOGLE_SERVICES_JSON\`"
+              echo "> repository secret — the full contents of \`google-services.json\` from the"
+              echo "> Firebase console."
+              echo ">"
+              echo "> Note this is a **GitHub Actions secret**, and is different from"
+              echo "> \`FIREBASE_SERVICE_ACCOUNT_BASE64\`, which is a **Vercel** variable used by the"
+              echo "> server. Both are required, for different halves of the flow."
+            fi
+
+            echo ""
+            if [ -f "$APK" ]; then
+              echo "APK size: $(du -h "$APK" | cut -f1)"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4

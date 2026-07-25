@@ -67,12 +67,41 @@ export async function startPhoneVerification(
 
     const plugin = await loadPlugin();
 
+    /**
+     * Safety net for "no callback ever arrives".
+     *
+     * If Firebase can't verify the app — an unregistered SHA-1 being the usual
+     * cause on Android — it can fail without firing phoneVerificationFailed at
+     * all. The UI then sits on "Sending code…" indefinitely with nothing to act
+     * on, which is exactly what happened in testing.
+     *
+     * 50s is just past Firebase's own 60s SMS auto-retrieval window minus the
+     * round trip, so a genuinely slow SMS still wins the race.
+     */
+    let settled = false;
+    const timeoutId = setTimeout(() => {
+        if (settled) return;
+        settled = true;
+        callbacks.onError(
+            'No response from Google\'s verification service. On Android this usually means the ' +
+            'app\'s SHA-1 fingerprint is not registered in Firebase, or google-services.json is ' +
+            'missing from the build.'
+        );
+    }, 50_000);
+
+    const settle = () => {
+        settled = true;
+        clearTimeout(timeoutId);
+    };
+
     // Registered before signInWithPhoneNumber so we can't miss a fast callback.
     const handles = await Promise.all([
         plugin.addListener('phoneCodeSent', (event) => {
+            settle();
             callbacks.onCodeSent(event.verificationId);
         }),
         plugin.addListener('phoneVerificationCompleted', () => {
+            settle();
             // Instant verification: already signed in to Firebase, so read the
             // token straight off the session.
             void getFreshIdToken()
@@ -80,12 +109,14 @@ export async function startPhoneVerification(
                 .catch(() => callbacks.onError('Could not complete verification. Please try again.'));
         }),
         plugin.addListener('phoneVerificationFailed', (event) => {
+            settle();
             console.warn('[phoneAuth] verification failed:', event.message);
             callbacks.onError(friendlyError(event.message));
         }),
     ]);
 
     const cancel = async () => {
+        settle();
         await Promise.all(handles.map((handle) => handle.remove()));
     };
 
@@ -95,7 +126,7 @@ export async function startPhoneVerification(
             resendCode: options.resend ?? false,
         });
     } catch (error) {
-        // Don't leak listeners if the call itself throws.
+        // Don't leak listeners or the timeout if the call itself throws.
         await cancel();
         throw new Error(friendlyError(error instanceof Error ? error.message : String(error)));
     }

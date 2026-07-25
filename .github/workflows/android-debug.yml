@@ -139,8 +139,37 @@ jobs:
       - name: Build debug APK
         working-directory: mobile/android
         run: |
+          set -o pipefail
           chmod +x ./gradlew
-          ./gradlew assembleDebug --no-daemon --stacktrace
+
+          # Confirm the config survived `cap sync`, which runs between writing it
+          # and building.
+          if [ -f app/google-services.json ]; then
+            echo "google-services.json present at build time ($(wc -c < app/google-services.json) bytes)"
+          else
+            echo "::warning::app/google-services.json is NOT present at build time."
+          fi
+
+          # Output is teed so the summary can check whether the google-services
+          # plugin actually ran. `apply plugin` in app/build.gradle sits inside a
+          # try/catch that swallows failures, so a plugin that never applied looks
+          # identical to a successful build.
+          ./gradlew assembleDebug --no-daemon --stacktrace 2>&1 | tee "$RUNNER_TEMP/gradle.log"
+
+          echo "::group::Google Services plugin tasks"
+          grep -iE "Task :app:process.*GoogleServices|google-services" "$RUNNER_TEMP/gradle.log" || \
+            echo "No google-services task ran — the plugin did not apply."
+          echo "::endgroup::"
+
+          echo "::group::Generated resource tree"
+          find app/build/generated -maxdepth 4 -type d 2>/dev/null | head -25 || true
+          echo "::endgroup::"
+
+          if grep -qiE "Task :app:process.*GoogleServices" "$RUNNER_TEMP/gradle.log"; then
+            echo "GOOGLE_SERVICES_TASK=ran" >> "$GITHUB_ENV"
+          else
+            echo "GOOGLE_SERVICES_TASK=absent" >> "$GITHUB_ENV"
+          fi
 
       - name: Print debug signing fingerprints
         # Firebase needs the debug key's SHA-1 registered or Android phone auth
@@ -252,26 +281,40 @@ jobs:
             fi
             echo ""
 
-            # Proof the google-services Gradle plugin actually ran: it generates a
-            # values.xml holding google_app_id. Its absence means Firebase is not
-            # wired in, whatever the secret said.
-            GENERATED=$(find mobile/android/app/build/generated -name values.xml -path "*google-services*" 2>/dev/null | head -1)
-            if [ -n "$GENERATED" ] && grep -q "google_app_id" "$GENERATED" 2>/dev/null; then
+            # Proof the google-services plugin actually ran. Searched by CONTENT
+            # rather than by path: an earlier version looked for a values.xml under
+            # a directory literally named "google-services" and reported "not
+            # generated" even when the secret was correctly set, because the plugin
+            # writes to a different path depending on AGP version.
+            #
+            # Two independent signals, since `apply plugin` sits inside a
+            # try/catch in app/build.gradle that hides a plugin which never applied.
+            GENERATED=$(grep -rl "google_app_id" mobile/android/app/build/generated 2>/dev/null | head -1)
+            if [ -n "$GENERATED" ] || [ "${GOOGLE_SERVICES_TASK:-absent}" = "ran" ]; then
               echo "Firebase resources were generated, so the app can reach Firebase."
               echo ""
               echo "Phone OTP and Google sign-in additionally need the **SHA-1 below** registered in"
               echo "Firebase (Project settings → Your apps → Add fingerprint). Without it Android"
               echo "returns error 10 / DEVELOPER_ERROR and phone verification never calls back."
             else
-              echo "> **Phone OTP and Google sign-in will NOT work in this build.**"
+              echo "> **Firebase does not appear to be wired into this build.**"
               echo ">"
-              echo "> No Firebase resources were generated. Add the \`GOOGLE_SERVICES_JSON\`"
-              echo "> repository secret — the full contents of \`google-services.json\` from the"
-              echo "> Firebase console."
-              echo ">"
-              echo "> Note this is a **GitHub Actions secret**, and is different from"
-              echo "> \`FIREBASE_SERVICE_ACCOUNT_BASE64\`, which is a **Vercel** variable used by the"
-              echo "> server. Both are required, for different halves of the flow."
+              if [ "${FIREBASE_CONFIG:-missing}" = "missing" ]; then
+                echo "> The \`GOOGLE_SERVICES_JSON\` repository secret is not set. Add it with the"
+                echo "> full contents of \`google-services.json\` from the Firebase console."
+                echo ">"
+                echo "> It is a **GitHub Actions secret**, distinct from"
+                echo "> \`FIREBASE_SERVICE_ACCOUNT_BASE64\`, which is a **Vercel** variable used by"
+                echo "> the server. Both are needed, for opposite halves of the flow."
+              else
+                echo "> The secret IS set and the file was written, but the google-services Gradle"
+                echo "> plugin produced no resources. See the *Google Services plugin tasks* and"
+                echo "> *Generated resource tree* groups in the build log."
+                echo ">"
+                echo "> \`apply plugin: 'com.google.gms.google-services'\` in"
+                echo "> \`mobile/android/app/build.gradle\` sits inside a try/catch that swallows"
+                echo "> failures, so a plugin that never applied looks like a clean build."
+              fi
             fi
 
             echo ""

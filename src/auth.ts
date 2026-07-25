@@ -58,15 +58,59 @@ const appleConfigured = !!(appleId && appleSecret);
 
 warnIfAppleSecretExpiring(appleSecret);
 
+/**
+ * Google is registered only when its credentials exist.
+ *
+ * Previously it was registered unconditionally with `process.env.GOOGLE_CLIENT_ID!`
+ * — a compile-time assertion with no runtime check — so a missing value flowed
+ * into NextAuth as `undefined` and surfaced only as `?error=Configuration` on the
+ * login page. That error names nothing and looks identical to a genuine OAuth
+ * misconfiguration, which sends you hunting through the Google Cloud console
+ * instead of the environment variables.
+ *
+ * Vercel scopes env vars per environment, so this typically bites on Preview when
+ * the credentials were only ever added to Production.
+ */
+const googleClientId = process.env.GOOGLE_CLIENT_ID;
+const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
+const googleConfigured = !!(googleClientId && googleClientSecret);
+
+if (!googleConfigured) {
+    console.error(
+        'Google sign-in is DISABLED: ' +
+        `GOOGLE_CLIENT_ID is ${googleClientId ? 'set' : 'MISSING'}, ` +
+        `GOOGLE_CLIENT_SECRET is ${googleClientSecret ? 'set' : 'MISSING'}. ` +
+        'Set both for this environment in Vercel and redeploy.'
+    );
+}
+
+/**
+ * Firebase-backed providers (phone OTP, native Google) need the service account.
+ *
+ * Checked by reading env vars directly rather than importing isFirebaseConfigured
+ * from @/lib/firebaseAdmin: that module pulls in firebase-admin, which cannot load
+ * in the Edge runtime that src/proxy.ts compiles into.
+ */
+const firebaseConfigured = !!(
+    process.env.FIREBASE_SERVICE_ACCOUNT_BASE64 ||
+    (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_CLIENT_EMAIL && process.env.FIREBASE_PRIVATE_KEY)
+);
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
     trustHost: true,
     adapter: PrismaAdapter(prisma),
     secret: process.env.NEXTAUTH_SECRET,
     providers: [
-        GoogleProvider({
-            clientId: process.env.GOOGLE_CLIENT_ID!,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-        }),
+        // Spread conditionally so an unconfigured provider is absent from
+        // /api/auth/providers rather than present-and-broken. The login UI drives
+        // its buttons off that list, so a button can never appear without a
+        // working provider behind it.
+        ...(googleConfigured
+            ? [GoogleProvider({
+                clientId: googleClientId!,
+                clientSecret: googleClientSecret!,
+            })]
+            : []),
         // Spread so the provider simply isn't registered until credentials
         // exist, rather than registering a broken one that fails mid-flow.
         ...(appleConfigured
@@ -150,7 +194,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         // existing JWT session strategy, the jwt/session callbacks, and the
         // signIn event below — so phone users get the welcome-credit grant with
         // no extra code.
-        CredentialsProvider({
+        //
+        // Registered only when Firebase credentials exist, so the login UI can
+        // hide the phone button rather than offering one that always fails.
+        ...(!firebaseConfigured ? [] : [CredentialsProvider({
             id: "phone-otp",
             name: "Phone",
             credentials: {
@@ -219,7 +266,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     isAdmin: isAdmin
                 }
             }
-        }),
+        })]),
         // Native Google sign-in, for the apps only.
         //
         // The web GoogleProvider above cannot work inside a WebView: Google
@@ -228,7 +275,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         // session cookie lands in the wrong cookie jar and the app stays signed
         // out. The apps run Google sign-in through the native SDK instead and
         // exchange the resulting Firebase ID token here.
-        CredentialsProvider({
+        //
+        // Also gated on Firebase, since that is what mints the token.
+        ...(!firebaseConfigured ? [] : [CredentialsProvider({
             id: "google-native",
             name: "Google",
             credentials: {
@@ -309,7 +358,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     isAdmin: isAdmin
                 }
             }
-        })
+        })]),
     ],
     session: {
         strategy: "jwt",

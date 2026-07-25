@@ -27,6 +27,21 @@ const nextConfig: NextConfig = {
     };
 
     if (!isServer) {
+      // Drop the Firebase JS SDK from the client graph.
+      //
+      // @capacitor-firebase/authentication pulls in 'firebase/auth' for its WEB
+      // implementation only. We call that plugin exclusively on native (see
+      // src/lib/native/phoneAuth.ts), where it proxies to the native Firebase
+      // SDKs and never touches the JS one — so bundling it would ship a large
+      // dependency that can never execute. Aliasing to false (same trick as
+      // swisseph.data above) yields an empty module instead.
+      //
+      // This is not just size: webpack processing the full SDK made dev-server
+      // recompiles heavy enough to OOM.
+      config.resolve.alias["firebase/auth"] = false;
+    }
+
+    if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
         fs: false,

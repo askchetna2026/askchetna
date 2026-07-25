@@ -22,10 +22,16 @@ export default function SynastryPage() {
         const inviteUrl = `${origin}/synastry`;
         const text = `Let's see how our charts connect on Chetna — compare yours with mine: ${inviteUrl}`;
         try {
-            if (navigator.share) {
-                await navigator.share({ title: 'Compare charts on Chetna', text, url: inviteUrl });
-            } else {
-                await navigator.clipboard.writeText(text);
+            const { shareContent } = await import('@/lib/native/share');
+            const outcome = await shareContent({
+                title: 'Compare charts on Chetna',
+                text,
+                url: inviteUrl,
+            });
+
+            // Only show the "copied" confirmation when the clipboard was really
+            // used, not when the native share sheet handled it.
+            if (outcome === 'copied') {
                 setInviteCopied(true);
                 setTimeout(() => setInviteCopied(false), 2500);
             }

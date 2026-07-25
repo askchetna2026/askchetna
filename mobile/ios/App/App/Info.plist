@@ -54,14 +54,15 @@
 	<!-- ===== AskChetna additions ===== -->
 
 	<!--
-	  Permission prompts. Apple rejects builds that touch these APIs without a
-	  usage string, and reviewers read the wording — it must say what the app
-	  does with the data, not just name the permission.
+	  Only NSPhotoLibraryAddUsageDescription is declared, because saving a shared
+	  chart image is the one photo capability the app actually has.
+
+	  NSCameraUsageDescription and NSPhotoLibraryUsageDescription were removed
+	  along with @capacitor/camera: nothing captures or picks images, and Apple
+	  expects every usage string to correspond to real functionality — declaring
+	  one you never exercise invites a reviewer to ask why. Re-add them if a
+	  photo-attachment feature is built.
 	-->
-	<key>NSCameraUsageDescription</key>
-	<string>AskChetna uses the camera so you can attach a photo to a question or journal entry.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>AskChetna needs access to your photos so you can attach an existing image to a question or journal entry.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>AskChetna saves your chart images to your photo library when you export or share them.</string>
 

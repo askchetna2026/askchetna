@@ -44,18 +44,14 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <!--
-      Camera / photo upload. `required="false"` so the app still installs on
-      devices without a camera instead of being filtered out of the Play Store.
-    -->
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-feature android:name="android.hardware.camera" android:required="false" />
+      NOTE: no CAMERA or photo-library permissions. Nothing in the app captures or
+      picks images yet, and both stores expect every declared permission to be
+      justified — an unused one is a review question with no good answer. Re-add
+      these alongside @capacitor/camera if a photo-attachment feature is built.
 
-    <!--
-      Photo library access is version-split: Android 13+ uses the scoped
-      READ_MEDIA_IMAGES, older releases use READ_EXTERNAL_STORAGE.
+      Sharing a generated chart image needs no permission: @capacitor/share writes
+      to the app's own cache directory via @capacitor/filesystem.
     -->
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
 
     <!--
       NOTE: no SMS permissions. Firebase phone auth uses the SMS Retriever API,

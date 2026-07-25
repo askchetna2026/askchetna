@@ -57,6 +57,11 @@ export default function ClarityPageContent() {
         setResult(null);
         setError(null);
 
+        // Asking spends a credit, so acknowledge the commitment physically. In the
+        // apps this is a real haptic; on the web it's a no-op.
+        const haptics = await import('@/lib/native/haptics');
+        void haptics.commitFeedback();
+
         try {
             const response = await fetch('/api/clarity/ask', {
                 method: 'POST',
@@ -86,9 +91,13 @@ export default function ClarityPageContent() {
 
             setResult(data.response);
             setCredits(data.remainingCredits);
+            // The reading can take a while; a success buzz means the user doesn't
+            // have to watch the screen waiting for it.
+            void haptics.successFeedback();
         } catch (err: unknown) {
             const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
             setError(errorMessage);
+            void haptics.errorFeedback();
         } finally {
             setIsAnalyzing(false);
         }
@@ -149,15 +158,20 @@ export default function ClarityPageContent() {
         if (!result) return;
         const text = `Chetna AI reflection on: "${result.questionContext}"\n\n${result.phaseOverview}\n\nExplore yours at askchetna.com`;
         try {
-            if (navigator.share) {
-                await navigator.share({ title: 'My Chetna AI Insight', text });
-            } else {
-                await navigator.clipboard.writeText(text);
+            const { shareContent } = await import('@/lib/native/share');
+            const outcome = await shareContent({ title: 'My Chetna AI Insight', text });
+
+            // Only claim "copied" when it actually was. The previous version showed
+            // that message on every non-share path, including outright failure.
+            if (outcome === 'copied') {
                 setShareMsg('Copied to clipboard');
+                setTimeout(() => setShareMsg(null), 2500);
+            } else if (outcome === 'failed') {
+                setShareMsg('Could not share');
                 setTimeout(() => setShareMsg(null), 2500);
             }
         } catch {
-            // User cancelled share sheet — no action needed
+            // Share sheet dismissed — no action needed
         }
     };
 

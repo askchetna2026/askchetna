@@ -44,12 +44,24 @@ export default function ShareChartCard({ profile }: { profile: UserProfile }) {
             const blob: Blob | null = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
             if (!blob) throw new Error('Could not generate image');
 
-            const file = new File([blob], 'my-chetna-chart.png', { type: 'image/png' });
+            const { shareContent } = await import('@/lib/native/share');
+            const { successFeedback } = await import('@/lib/native/haptics');
 
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                await navigator.share({ files: [file], text: threeLineText, title: 'My Chetna Chart' });
-            } else {
-                // Fallback: download the image
+            // Routes to the OS share sheet in the apps. Android's WebView has no
+            // Web Share API, so before this the chart silently downloaded instead
+            // of opening a share sheet — on the one platform where sharing a chart
+            // image matters most.
+            const outcome = await shareContent({
+                title: 'My Chetna Chart',
+                text: threeLineText,
+                file: { blob, name: 'my-chetna-chart.png' },
+            });
+
+            if (outcome === 'shared') {
+                void successFeedback();
+            } else if (outcome === 'failed') {
+                // Neither a share sheet nor the clipboard worked (desktop browsers
+                // cannot put an image on the clipboard) — save the file instead.
                 const link = document.createElement('a');
                 link.href = canvas.toDataURL('image/png');
                 link.download = 'my-chetna-chart.png';

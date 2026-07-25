@@ -131,10 +131,26 @@ export async function startPhoneVerification(
     };
 
     try {
+        // Logged so chrome://inspect shows exactly how far the flow got. When
+        // nothing calls back, the distinction that matters is whether
+        // signInWithPhoneNumber itself resolved: if it did, the request reached
+        // Firebase and app verification is stalling (Play Integrity attestation,
+        // or its reCAPTCHA fallback failing to display in the WebView). If it
+        // never resolves, the plugin call itself is stuck.
+        console.info('[phoneAuth] calling signInWithPhoneNumber', {
+            phoneNumber,
+            resend: options.resend ?? false,
+        });
+
         await plugin.signInWithPhoneNumber({
             phoneNumber,
             resendCode: options.resend ?? false,
         });
+
+        console.info(
+            '[phoneAuth] signInWithPhoneNumber resolved — now waiting for a ' +
+            'phoneCodeSent / phoneVerificationCompleted / phoneVerificationFailed callback'
+        );
     } catch (error) {
         // Don't leak listeners or the timeout if the call itself throws.
         await cancel();

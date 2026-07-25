@@ -56,6 +56,23 @@ if (-not (Test-Path $EnvFile)) {
     exit 1
 }
 
+# Put the project's local binaries on PATH, exactly as `npm run` does, so `dotenv`
+# and `prisma` can be invoked directly.
+#
+# The previous version used `npx dotenv -e ... -- npx prisma ...` and failed with
+# "npm error could not determine executable to run". Two reasons, both avoided by
+# not using npx at all:
+#   1. The inner npx is spawned by dotenv-cli rather than by a shell, and on
+#      Windows the extensionless `npx` shim is not directly executable.
+#   2. `npx dotenv` is ambiguous in this project, which depends on BOTH `dotenv`
+#      (a library with no bin) and `dotenv-cli` (which provides the `dotenv` bin).
+$binDir = (Resolve-Path (Join-Path $PSScriptRoot '..\node_modules\.bin')).Path
+if (-not (Test-Path (Join-Path $binDir 'dotenv.cmd'))) {
+    Write-Host "dotenv-cli is not installed. Run: npm install" -ForegroundColor Red
+    exit 1
+}
+$env:PATH = "$binDir;$env:PATH"
+
 $migrationsDir = Join-Path $PSScriptRoot '..\prisma\migrations'
 
 # Ordered by name, which for timestamp-prefixed directories is chronological.
@@ -92,11 +109,30 @@ foreach ($migration in $toBaseline) {
 
     # Output captured so an "already recorded" result is tolerated, making the
     # script safe to re-run after a partial pass.
-    $output = & npx dotenv -e $EnvFile -- npx prisma migrate resolve --applied $migration 2>&1
-    $exit = $LASTEXITCODE
-    $joined = $output -join "`n"
+    # Arguments are built as an array and splatted so PowerShell passes each one
+    # through verbatim. Written inline, PowerShell consumes the bare `--` as its
+    # own end-of-parameters token and `--applied` was being dropped, leaving
+    # prisma to complain that "--applied or --rolled-back must be part of the
+    # command".
+    $cmdArgs = @(
+        '-e', $EnvFile,
+        '--',
+        'prisma', 'migrate', 'resolve', '--applied', $migration
+    )
 
-    if ($exit -eq 0) {
+    # ErrorActionPreference is relaxed for this call only. In PowerShell 5.1,
+    # `2>&1` on a native executable wraps each stderr line in an ErrorRecord, and
+    # under 'Stop' that is terminating — so the script aborted before it could
+    # inspect the output and recognise a tolerable P3008. Exit codes are checked
+    # explicitly below instead.
+    $previousPreference = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    $output = & dotenv @cmdArgs 2>&1
+    $exitCode = $LASTEXITCODE
+    $ErrorActionPreference = $previousPreference
+    $joined = ($output | ForEach-Object { $_.ToString() }) -join "`n"
+
+    if ($exitCode -eq 0) {
         Write-Host "     marked as applied" -ForegroundColor Green
         continue
     }
@@ -118,3 +154,8 @@ switch ($EnvFile) {
     '.env.prod' { Write-Host "  npm run migrate:prod; npm run migrate:status:prod" }
     default { Write-Host "  npm run migrate:local; npm run migrate:status" }
 }
+
+# Explicit success. Without this the script inherits $LASTEXITCODE from the final
+# prisma call, which is non-zero whenever a migration was already baselined (P3008)
+# — so a completely successful run reported failure.
+exit 0

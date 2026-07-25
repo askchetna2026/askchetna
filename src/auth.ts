@@ -219,6 +219,96 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     isAdmin: isAdmin
                 }
             }
+        }),
+        // Native Google sign-in, for the apps only.
+        //
+        // The web GoogleProvider above cannot work inside a WebView: Google
+        // refuses to complete OAuth there (the `disallowed_useragent`
+        // anti-phishing policy) and escapes to the system browser, where the
+        // session cookie lands in the wrong cookie jar and the app stays signed
+        // out. The apps run Google sign-in through the native SDK instead and
+        // exchange the resulting Firebase ID token here.
+        CredentialsProvider({
+            id: "google-native",
+            name: "Google",
+            credentials: {
+                idToken: { label: "Firebase ID token", type: "text" }
+            },
+            async authorize(credentials, request) {
+                if (!credentials?.idToken) {
+                    return null
+                }
+
+                let ip = "unknown";
+                try {
+                    const fwd = request?.headers?.get?.("x-forwarded-for");
+                    if (fwd) ip = fwd.split(",")[0].trim();
+                    else ip = request?.headers?.get?.("x-real-ip") || "unknown";
+                } catch { /* headers unavailable */ }
+
+                const byIp = rateLimit(`google-native:ip:${ip}`, { limit: 30, windowMs: 15 * 60 * 1000 });
+                if (!byIp.allowed) {
+                    return null
+                }
+
+                let identity;
+                try {
+                    // Lazy import keeps firebase-admin out of the Edge bundle
+                    // (see the note at the top of this file).
+                    const { verifyGoogleIdToken, isFirebaseConfigured } = await import("@/lib/firebaseAdmin");
+
+                    if (!isFirebaseConfigured()) {
+                        console.error("Native Google sign-in attempted but Firebase Admin is not configured.");
+                        return null
+                    }
+
+                    // Asserts the provider is google.com AND that Google verified
+                    // the email — matching accounts by an unverified address would
+                    // let someone sign into an account they don't own.
+                    identity = await verifyGoogleIdToken(String(credentials.idToken));
+                } catch (error) {
+                    console.warn("Native Google sign-in rejected:", error instanceof Error ? error.message : error);
+                    return null
+                }
+
+                // Link by verified email. Safe here precisely because Google
+                // asserted ownership of the address; this is the same guarantee
+                // the web OAuth flow relies on.
+                let user = await prisma.user.findFirst({
+                    where: { email: { equals: identity.email, mode: 'insensitive' } }
+                })
+
+                if (!user) {
+                    user = await prisma.user.create({
+                        data: {
+                            email: identity.email,
+                            name: identity.name,
+                            image: identity.picture,
+                            // No password, same as any OAuth-created account.
+                            password: null,
+                            emailVerified: new Date(),
+                        }
+                    })
+                } else if (!user.image && identity.picture) {
+                    // Backfill only. Never overwrite a name the user has since
+                    // edited with whatever Google currently reports.
+                    user = await prisma.user.update({
+                        where: { id: user.id },
+                        data: { image: identity.picture }
+                    })
+                }
+
+                const adminEmails = process.env.ADMIN_EMAILS?.split(',').map(e => e.trim().toLowerCase()) || [];
+                const isAdmin = !!user.email && adminEmails.includes(user.email.toLowerCase());
+
+                return {
+                    id: user.id,
+                    email: user.email,
+                    name: user.name,
+                    image: user.image,
+                    isAdmin: isAdmin
+                }
+            }
         })
     ],
     session: {

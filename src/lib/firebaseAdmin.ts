@@ -160,3 +160,77 @@ export async function verifyPhoneIdToken(idToken: string): Promise<VerifiedPhone
 export function looksLikeE164(phone: string): boolean {
     return /^\+[1-9]\d{7,14}$/.test(phone);
 }
+
+export interface VerifiedGoogleIdentity {
+    email: string;
+    name: string | null;
+    picture: string | null;
+    firebaseUid: string;
+}
+
+/**
+ * Verify a Firebase ID token that came from NATIVE Google sign-in.
+ *
+ * Why this exists at all: Google refuses to complete OAuth inside an embedded
+ * WebView (the `disallowed_useragent` anti-phishing policy), so the web
+ * GoogleProvider cannot work in the apps — it bails out to the system browser,
+ * where the session cookie lands in the wrong cookie jar and the app stays
+ * signed out. The apps therefore run Google sign-in through the native SDK and
+ * exchange the resulting token here.
+ *
+ * Throws PhoneTokenError (reused for symmetry with verifyPhoneIdToken; callers
+ * surface a generic message either way).
+ */
+export async function verifyGoogleIdToken(idToken: string): Promise<VerifiedGoogleIdentity> {
+    if (!idToken || typeof idToken !== 'string') {
+        throw new PhoneTokenError('Missing ID token');
+    }
+
+    const auth = getAuth(getFirebaseApp());
+
+    let decoded;
+    try {
+        decoded = await auth.verifyIdToken(idToken, true);
+    } catch (error) {
+        throw new PhoneTokenError(
+            `ID token failed verification: ${error instanceof Error ? error.message : 'unknown'}`
+        );
+    }
+
+    // Only accept tokens minted by Google sign-in. Without this, a token from any
+    // other Firebase provider (including phone) would be accepted as proof of
+    // owning the email address on it.
+    if (decoded.firebase?.sign_in_provider !== 'google.com') {
+        throw new PhoneTokenError(
+            `Unexpected sign-in provider: ${decoded.firebase?.sign_in_provider ?? 'unknown'}`
+        );
+    }
+
+    const email = typeof decoded.email === 'string' ? decoded.email.trim().toLowerCase() : '';
+    if (!email) {
+        throw new PhoneTokenError('Token has no email claim');
+    }
+
+    // CRITICAL for account linking. We match existing accounts by email, so the
+    // token must prove the user actually owns that address. Google sets
+    // email_verified, and an unverified one (possible with some Workspace
+    // configurations) would otherwise allow signing into someone else's account
+    // by asserting their address.
+    if (decoded.email_verified !== true) {
+        throw new PhoneTokenError(`Email ${email} is not verified by Google`);
+    }
+
+    const authAgeSeconds = Math.floor(Date.now() / 1000) - decoded.auth_time;
+    if (authAgeSeconds > MAX_AUTH_AGE_SECONDS) {
+        throw new PhoneTokenError(
+            `Stale verification: sign-in completed ${authAgeSeconds}s ago (max ${MAX_AUTH_AGE_SECONDS}s)`
+        );
+    }
+
+    return {
+        email,
+        name: typeof decoded.name === 'string' ? decoded.name : null,
+        picture: typeof decoded.picture === 'string' ? decoded.picture : null,
+        firebaseUid: decoded.uid,
+    };
+}

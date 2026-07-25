@@ -211,8 +211,19 @@ export default function NativeAppShell() {
                     if (isOwnHost(target.hostname)) return;
                     if (target.hostname === window.location.hostname) return;
 
-                    // Keep checkout and OAuth in the WebView.
-                    if (/razorpay|rzp\.io|accounts\.google\.com|appleid\.apple\.com/.test(target.hostname)) {
+                    // Keep payment and auth flows in the WebView rather than
+                    // bouncing them to the browser mid-flow, which would lose the
+                    // session.
+                    //
+                    // The Google list is deliberately broad: its auth flow hops
+                    // across several hostnames, and an earlier version excluded
+                    // only accounts.google.com — narrow enough that other hops got
+                    // pushed out to Chrome. Note that Google SIGN-IN no longer
+                    // relies on this path at all (it runs natively, see
+                    // src/lib/native/googleAuth.ts); this now only covers
+                    // incidental Google links such as Maps or policy pages
+                    // encountered mid-checkout.
+                    if (/(^|\.)(razorpay\.com|rzp\.io|google\.com|googleapis\.com|gstatic\.com|googleusercontent\.com|apple\.com)$/.test(target.hostname)) {
                         return;
                     }
 

@@ -132,10 +132,12 @@ const config: CapacitorConfig = {
         },
 
         FirebaseAuthentication: {
-            // Only phone verification is used; Google sign-in stays on the web
-            // side through NextAuth so there is one session authority.
+            // Phone OTP, plus Google — Google refuses to complete OAuth inside a
+            // WebView (`disallowed_useragent`), so in the apps it must run through
+            // the native SDK. Both exchange a Firebase ID token for a NextAuth
+            // session, keeping NextAuth the single session authority.
             skipNativeAuth: false,
-            providers: ['phone'],
+            providers: ['phone', 'google.com'],
         },
     },
 };

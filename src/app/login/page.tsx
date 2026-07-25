@@ -134,6 +134,47 @@ function LoginContent() {
 
     const handleGoogleLogin = async () => {
         setError('');
+
+        // In the apps, Google OAuth CANNOT run in the WebView — Google blocks it
+        // (`disallowed_useragent`) and escapes to the system browser, where the
+        // session cookie lands in the browser's cookie jar and the app stays
+        // signed out. Use the native SDK and exchange its token instead.
+        const { isNativeGoogleAvailable, signInWithGoogleNative, releaseGoogleFirebaseSession } =
+            await import('@/lib/native/googleAuth');
+
+        if (isNativeGoogleAvailable()) {
+            setLoading(true);
+            try {
+                const outcome = await signInWithGoogleNative();
+
+                if (outcome.status === 'cancelled') return;
+                if (outcome.status === 'error') {
+                    setError(outcome.message);
+                    return;
+                }
+
+                const result = await signIn('google-native', {
+                    idToken: outcome.idToken,
+                    redirect: false,
+                });
+
+                if (result?.error) {
+                    setError('We verified your Google account but could not sign you in. Please try again.');
+                    return;
+                }
+
+                void releaseGoogleFirebaseSession();
+                // Full reload so every server component re-renders with the new
+                // session cookie.
+                window.location.assign(callbackUrl);
+            } catch {
+                setError('Google sign-in failed');
+            } finally {
+                setLoading(false);
+            }
+            return;
+        }
+
         try {
             await signIn('google', { callbackUrl });
         } catch {

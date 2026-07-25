@@ -65,38 +65,39 @@ export async function startPhoneVerification(
         throw new Error('Phone sign-in is only available in the AskChetna app.');
     }
 
-    const plugin = await loadPlugin();
-
-    // Same reasoning as signInWithGoogleNative: start from no Firebase session, so
-    // the resulting token's auth_time is genuinely fresh and cannot fail the
-    // server's 5-minute freshness check because of an earlier failed attempt.
-    if (!options.resend) {
-        try {
-            await plugin.signOut();
-        } catch { /* nothing to sign out of */ }
-    }
-
     /**
-     * Safety net for "no callback ever arrives".
+     * Safety net for "nothing ever comes back".
      *
-     * If Firebase can't verify the app — an unregistered SHA-1 being the usual
-     * cause on Android — it can fail without firing phoneVerificationFailed at
-     * all. The UI then sits on "Sending code…" indefinitely with nothing to act
-     * on, which is exactly what happened in testing.
+     * Armed FIRST, before any await. Firebase can fail app verification without
+     * firing phoneVerificationFailed at all — and the plugin load or signOut below
+     * could equally stall — leaving the UI on "Sending code…" forever with nothing
+     * to act on. An earlier version armed this after those awaits, which left the
+     * exact hang it was meant to catch unprotected.
      *
-     * 50s is just past Firebase's own 60s SMS auto-retrieval window minus the
-     * round trip, so a genuinely slow SMS still wins the race.
+     * 50s sits just inside Firebase's own 60s SMS auto-retrieval window, so a
+     * merely slow SMS still wins the race.
      */
     let settled = false;
     const timeoutId = setTimeout(() => {
         if (settled) return;
         settled = true;
         callbacks.onError(
-            'No response from Google\'s verification service. On Android this usually means the ' +
-            'app\'s SHA-1 fingerprint is not registered in Firebase, or google-services.json is ' +
-            'missing from the build.'
+            'No response from Google\'s verification service. On Android this usually means ' +
+            'the app\'s SHA-1 AND SHA-256 fingerprints are not both registered in Firebase, ' +
+            'or the Play Integrity API is not enabled for the project.'
         );
     }, 50_000);
+
+    const plugin = await loadPlugin();
+
+    // Same reasoning as signInWithGoogleNative: start from no Firebase session so
+    // the resulting token's auth_time is genuinely fresh, rather than inherited
+    // from an earlier failed attempt.
+    if (!options.resend) {
+        try {
+            await plugin.signOut();
+        } catch { /* nothing to sign out of */ }
+    }
 
     const settle = () => {
         settled = true;

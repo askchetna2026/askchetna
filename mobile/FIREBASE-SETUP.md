@@ -90,8 +90,31 @@ you need that key's SHA-1. You don't have Java locally, so get it from CI:
    ```
    Copy the whole colon-separated **SHA1** value.
 
-**Keep the SHA256 too** — you'll need it for `public/.well-known/assetlinks.json`
-when you set up Android deep links.
+**Add BOTH fingerprints, not just SHA-1.** Repeat *Add fingerprint* for the SHA-256
+value as well.
+
+Google Sign-In only needs the SHA-1, which is why it can work while phone OTP does
+not. **Phone auth additionally attests the app through Play Integrity, which uses
+the SHA-256.** If it is missing, Firebase cannot verify the app, silently falls
+back to a reCAPTCHA flow that a Capacitor WebView often cannot display, and the
+request never calls back — the app simply sits on "Sending code…" forever.
+
+The SHA-256 is also what `public/.well-known/assetlinks.json` needs for Android
+deep links, so you want it regardless.
+
+### Enable the Play Integrity API
+
+Phone auth needs this turned on, and Firebase does not do it for you:
+
+1. Go to **https://console.cloud.google.com**
+2. Top-left project picker → select the project matching your Firebase project
+3. **APIs & Services** → **Library**
+4. Search **`Play Integrity API`** → open it → **Enable**
+
+> Sideloaded debug builds cannot fully satisfy Play Integrity, since it verifies
+> distribution through Play. That is exactly why the **test phone numbers** from
+> Part 2 matter: they bypass verification entirely. Confirm your number appears
+> there character-for-character, including the `+91`.
 
 > Every debug APK from this workflow uses the same Android debug key, so these
 > fingerprints are stable across runs. You only need them once.

@@ -67,6 +67,15 @@ export async function startPhoneVerification(
 
     const plugin = await loadPlugin();
 
+    // Same reasoning as signInWithGoogleNative: start from no Firebase session, so
+    // the resulting token's auth_time is genuinely fresh and cannot fail the
+    // server's 5-minute freshness check because of an earlier failed attempt.
+    if (!options.resend) {
+        try {
+            await plugin.signOut();
+        } catch { /* nothing to sign out of */ }
+    }
+
     /**
      * Safety net for "no callback ever arrives".
      *

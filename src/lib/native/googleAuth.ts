@@ -42,6 +42,21 @@ export async function signInWithGoogleNative(): Promise<NativeGoogleOutcome> {
     try {
         const { FirebaseAuthentication } = await import('@capacitor-firebase/authentication');
 
+        // Clear any existing Firebase session FIRST.
+        //
+        // signInWithGoogle() on a device that already holds a session can return
+        // without re-authenticating, leaving `auth_time` at whenever the user
+        // originally signed in. The server rejects tokens older than 5 minutes, so
+        // once an attempt failed, every retry after that reused the same stale
+        // auth_time and failed the freshness check too — the failure became
+        // permanent rather than transient.
+        //
+        // releaseGoogleFirebaseSession() only runs on success, so this is what
+        // guarantees a genuinely fresh sign-in after any earlier failure.
+        try {
+            await FirebaseAuthentication.signOut();
+        } catch { /* nothing to sign out of */ }
+
         await FirebaseAuthentication.signInWithGoogle();
 
         // forceRefresh keeps auth_time recent; the server rejects stale

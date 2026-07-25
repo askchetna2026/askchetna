@@ -19,13 +19,22 @@ const globalForFirebase = globalThis as unknown as {
 };
 
 /**
- * How recently the user must have completed the OTP challenge.
+ * How recently the user must have authenticated.
  *
  * Firebase ID tokens stay valid for an hour, but we only want to accept one as
- * proof of a *fresh* phone verification. Without this, a token captured from
- * one session could be replayed as a login for up to an hour.
+ * proof of a *fresh* verification — without this, a captured token could be
+ * replayed as a login for that whole hour.
+ *
+ * 15 minutes, not 5. The same token is presented three times across one signup:
+ * /api/auth/phone/check, then /api/auth/phone/register, then signIn('phone-otp')
+ * — and for a new number there is a "enter your email and name" form in between.
+ * A five-minute budget was routinely blown by a user simply typing, and the
+ * failure looked like a rejected OTP rather than a timeout.
+ *
+ * Refreshing the token does NOT help: forceRefresh issues a new token but
+ * `auth_time` still reflects the original authentication, by design.
  */
-const MAX_AUTH_AGE_SECONDS = 5 * 60;
+const MAX_AUTH_AGE_SECONDS = 15 * 60;
 
 function loadServiceAccount(): ServiceAccount {
     // Preferred: whole service-account JSON, base64-encoded into one variable.

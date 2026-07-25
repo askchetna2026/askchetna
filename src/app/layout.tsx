@@ -11,6 +11,7 @@ import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, absoluteUrl } from '@/lib/site';
 import { PLATFORM_BOOTSTRAP_SCRIPT } from '@/lib/platform';
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar';
 import NativeAppShell from '@/components/NativeAppShell';
+import PendingDeletionGate from '@/components/PendingDeletionGate';
 
 import AnalyticsTracker from '@/components/AnalyticsTracker';
 import FloatingActionButton from '@/components/FloatingActionButton';
@@ -171,6 +172,10 @@ export default async function RootLayout({
             {/* Native-only wiring (splash, status bar, back button, offline
                 banner, external links). Renders nothing in a browser. */}
             <NativeAppShell />
+            {/* Locks the account to a cancellation screen while deletion is
+                pending — what makes the grace period read as real deletion to
+                App Review rather than deactivation. Renders nothing otherwise. */}
+            <PendingDeletionGate />
           </ProfileProvider>
         </AuthProvider>
       </body>

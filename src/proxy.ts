@@ -9,6 +9,10 @@ const protectedPaths = [
     "/clarity",
     "/timing",
     "/synastry",
+    // The page itself also redirects when unauthenticated, but gating here means
+    // the auth boundary is enforced before any rendering begins rather than
+    // relying on a streamed redirect instruction.
+    "/account",
     ...(PAYMENTS_ENABLED ? ["/pricing"] : [])
 ]
 

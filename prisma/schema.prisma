@@ -25,6 +25,19 @@ model User {
   // has to cope with a null address. Stored E.164, e.g. "+919876543210".
   phone         String?   @unique
   phoneVerifiedAt DateTime?
+
+  /// Account deletion, required in-app by BOTH App Store guideline 5.1.1(v) and
+  /// Google Play's data-deletion policy.
+  ///
+  /// Soft delete with a grace period: requesting deletion sets these, signs the
+  /// user out, and locks the account to a cancellation screen only. A cron then
+  /// purges permanently after deletionScheduledFor.
+  ///
+  /// Both stores permit scheduled deletion; what they reject is an account that
+  /// remains usable afterwards, since that is deactivation rather than deletion.
+  deletionRequestedAt  DateTime?
+  deletionScheduledFor DateTime?
+
   welcomeBonusNotifiedAt DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -44,6 +57,9 @@ model User {
   profileLimits UserProfileLimit[]
   lifecycleEmails LifecycleEmail[]
   deviceTokens  DeviceToken[]
+
+  /// Lets the purge cron find due accounts without scanning the whole table.
+  @@index([deletionScheduledFor])
 }
 
 /// Push notification registration for one install of the native app.

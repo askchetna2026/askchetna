@@ -1,0 +1,28 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["TEAMID.com.askchetnam.app"],
+        "components": [
+          {
+            "/": "/api/*",
+            "exclude": true,
+            "comment": "API routes must stay in the browser/webview HTTP layer and never open the app."
+          },
+          {
+            "/": "/.well-known/*",
+            "exclude": true,
+            "comment": "Association files themselves must remain plain HTTP fetches."
+          },
+          {
+            "/": "/*",
+            "comment": "Everything else opens in the AskChetna app when it is installed."
+          }
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": ["TEAMID.com.askchetnam.app"]
+  }
+}

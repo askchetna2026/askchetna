@@ -11,6 +11,38 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+
+  /**
+   * Deep-link association files.
+   *
+   * These live here rather than in vercel.json (which carries the site's
+   * security headers) for one practical reason: next.config headers apply during
+   * `next dev` too, so the content type is verifiable locally. vercel.json
+   * headers only take effect on a deployment.
+   *
+   * The content type matters: /.well-known/apple-app-site-association has no
+   * file extension, so it is otherwise served as application/octet-stream and
+   * iOS silently refuses to associate the domain — universal links then just
+   * open Safari with no error anywhere.
+   */
+  async headers() {
+    return [
+      {
+        source: '/.well-known/apple-app-site-association',
+        headers: [
+          { key: 'Content-Type', value: 'application/json' },
+          { key: 'Cache-Control', value: 'public, max-age=3600' },
+        ],
+      },
+      {
+        source: '/.well-known/assetlinks.json',
+        headers: [
+          { key: 'Content-Type', value: 'application/json' },
+          { key: 'Cache-Control', value: 'public, max-age=3600' },
+        ],
+      },
+    ];
+  },
   webpack: (config, { isServer }) => {
     config.experiments = {
       ...config.experiments,

@@ -1,0 +1,185 @@
+.container {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.section {
+    background: rgba(159, 122, 234, 0.04);
+    border: 1px solid rgba(159, 122, 234, 0.14);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 24px;
+}
+
+.sectionTitle {
+    font-family: var(--font-heading, serif);
+    font-size: 1.35rem;
+    color: var(--accent-gold);
+    margin: 0 0 16px;
+}
+
+.sectionText {
+    color: var(--secondary);
+    line-height: 1.65;
+    margin: 0 0 14px;
+}
+
+/* ---- Profile details ---- */
+.detailList {
+    margin: 0;
+}
+
+.detailRow {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(159, 122, 234, 0.1);
+}
+
+.detailRow:last-child {
+    border-bottom: none;
+}
+
+.detailRow dt {
+    color: var(--secondary);
+    font-size: 0.92rem;
+}
+
+.detailRow dd {
+    margin: 0;
+    color: var(--foreground);
+    font-weight: 500;
+    text-align: right;
+    word-break: break-word;
+}
+
+.muted {
+    color: var(--secondary);
+    opacity: 0.7;
+    font-weight: 400;
+}
+
+/* ---- Buttons ---- */
+.secondaryBtn,
+.dangerBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 50px;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.secondaryBtn {
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    background: transparent;
+    color: var(--accent-gold);
+}
+
+.secondaryBtn:hover:not(:disabled) {
+    background: rgba(212, 175, 55, 0.1);
+}
+
+.dangerBtn {
+    border: 1px solid rgba(255, 180, 171, 0.45);
+    background: rgba(255, 180, 171, 0.08);
+    color: var(--error, #ffb4ab);
+}
+
+.dangerBtn:hover:not(:disabled) {
+    background: rgba(255, 180, 171, 0.16);
+}
+
+.secondaryBtn:disabled,
+.dangerBtn:disabled {
+    opacity: 0.55;
+    cursor: default;
+}
+
+/* ---- Danger zone ---- */
+.dangerSection {
+    background: rgba(255, 180, 171, 0.04);
+    border-color: rgba(255, 180, 171, 0.22);
+}
+
+.dangerSection .sectionTitle {
+    color: var(--error, #ffb4ab);
+}
+
+.confirmBox {
+    margin-top: 8px;
+    padding: 20px;
+    border-radius: 12px;
+    background: rgba(255, 180, 171, 0.07);
+    border: 1px solid rgba(255, 180, 171, 0.28);
+}
+
+.confirmTitle {
+    margin: 0 0 16px;
+    font-weight: 700;
+    color: var(--foreground);
+}
+
+.confirmActions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+}
+
+.formGroup {
+    margin-bottom: 14px;
+}
+
+.formGroup label {
+    display: block;
+    margin-bottom: 7px;
+    font-size: 0.9rem;
+    color: var(--secondary);
+}
+
+.formGroup input {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(159, 122, 234, 0.28);
+    background: rgba(11, 15, 47, 0.5);
+    color: var(--foreground);
+    font: inherit;
+}
+
+.formGroup input:focus {
+    outline: none;
+    border-color: var(--accent-gold);
+}
+
+.errorText {
+    color: var(--error, #ffb4ab);
+    font-size: 0.92rem;
+    margin: 12px 0 0;
+}
+
+@media (max-width: 600px) {
+    .section {
+        padding: 22px 18px;
+    }
+
+    .detailRow {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .detailRow dd {
+        text-align: left;
+    }
+}

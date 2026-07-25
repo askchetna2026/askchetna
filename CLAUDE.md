@@ -100,6 +100,14 @@ until the migration is applied. Deploy migration-first, and prefer an explicit
 **Free-tier Supabase auto-pauses after ~7 days idle**, which takes the live site
 down. Symptom: `FATAL: (ENOTFOUND) tenant/user postgres.<ref> not found`.
 
+**`DATABASE_URL` must use port 6543 with `?pgbouncer=true`; `DIRECT_URL` uses
+5432.** Port 5432 is Supabase's session mode, capped at 15 clients — a `next build`
+runs 7 workers and exhausts it, and serverless functions will fail intermittently
+under real traffic. Symptom:
+`FATAL: (EMAXCONNSESSION) max clients reached in session mode`. Prisma needs both:
+the pooled URL for queries, the direct one for migrations. `.env.prod` has this
+right; check any environment showing that error, including Vercel's own variables.
+
 ## Native app architecture
 
 The apps do **not** bundle the web app. `capacitor.config.ts` sets

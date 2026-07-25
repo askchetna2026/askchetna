@@ -87,11 +87,22 @@ jobs:
           echo "--- synced native config ---"
           cat mobile/android/app/src/main/assets/capacitor.config.json
 
-      - name: Build debug APK
+      - name: Print debug signing fingerprints
+        # Firebase needs the debug key's SHA-1 registered or Android phone auth
+        # rejects every verification request. Surfaced here in a labelled block so
+        # it can be copied without a local JDK — see mobile/FIREBASE-SETUP.md.
         working-directory: mobile/android
         run: |
           chmod +x ./gradlew
-          ./gradlew assembleDebug --no-daemon --stacktrace
+          echo "::group::Debug keystore fingerprints (copy SHA1 into Firebase)"
+          ./gradlew signingReport --no-daemon -q 2>/dev/null \
+            | awk '/Variant: debug/,/^$/' \
+            | grep -E "Variant|Config|Store|Alias|SHA1|SHA-256|MD5" || true
+          echo "::endgroup::"
+
+      - name: Build debug APK
+        working-directory: mobile/android
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
 
       - name: Report APK details
         run: |

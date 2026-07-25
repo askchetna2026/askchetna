@@ -201,6 +201,9 @@
     display: flex;
     flex-direction: column;
     padding: 32px 24px;
+    /* viewport-fit=cover lets this drawer extend under the status bar / notch,
+       so both ends need the inset. env() is 0px where there is no safe area. */
+    padding-top: calc(32px + env(safe-area-inset-top, 0px));
     padding-bottom: calc(24px + env(safe-area-inset-bottom));
     overflow-y: auto;
 }

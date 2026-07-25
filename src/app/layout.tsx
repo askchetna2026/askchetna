@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Suspense } from 'react';
 import { Inter, Playfair_Display } from 'next/font/google';
 import './globals.css';
@@ -8,6 +8,8 @@ import AuthProvider from '@/components/AuthProvider';
 import WelcomeBanner from '@/components/WelcomeBanner';
 import prisma from '@/lib/prisma';
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, absoluteUrl } from '@/lib/site';
+import { PLATFORM_BOOTSTRAP_SCRIPT } from '@/lib/platform';
+import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar';
 
 import AnalyticsTracker from '@/components/AnalyticsTracker';
 import FloatingActionButton from '@/components/FloatingActionButton';
@@ -66,6 +68,26 @@ export const metadata: Metadata = {
     ],
     apple: '/chetna_icon.svg',
   },
+  manifest: '/manifest.webmanifest',
+  appleWebApp: {
+    capable: true,
+    title: SITE_NAME,
+    // Lets the cosmic background bleed under the iOS status bar, which is what
+    // the safe-area padding in globals.css then compensates for.
+    statusBarStyle: 'black-translucent',
+  },
+};
+
+/**
+ * `viewport-fit=cover` is what makes env(safe-area-inset-*) resolve to real
+ * values on notched iOS devices; without it the insets are always 0 and the
+ * .native-app padding rules in globals.css do nothing.
+ */
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+  themeColor: '#0B0F2F',
 };
 
 export default async function RootLayout({
@@ -112,6 +134,14 @@ export default async function RootLayout({
   return (
     <html lang="en" data-theme="dark" suppressHydrationWarning>
       <body className={`${inter.variable} ${playfair.variable}`}>
+        {/*
+          Tags <html> with .native-app / data-app-platform before first paint so
+          the app-only safe-area rules apply without a visible reflow. Done with
+          a blocking inline script rather than server-side header sniffing on
+          purpose: reading headers() in the root layout would force every page —
+          including the static SEO landing pages — into dynamic rendering.
+        */}
+        <script dangerouslySetInnerHTML={{ __html: PLATFORM_BOOTSTRAP_SCRIPT }} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaGraph) }}
@@ -125,7 +155,7 @@ export default async function RootLayout({
           <ProfileProvider>
             <Header />
             <WelcomeBanner bonusAmount={welcomeBonusAmount} />
-            <main style={{ paddingTop: '20px' }}>
+            <main className="app-main" style={{ paddingTop: '20px' }}>
               {children}
             </main>
             <Footer />
@@ -136,6 +166,7 @@ export default async function RootLayout({
             <Suspense fallback={null}>
               <AnalyticsTracker />
             </Suspense>
+            <ServiceWorkerRegistrar />
           </ProfileProvider>
         </AuthProvider>
       </body>

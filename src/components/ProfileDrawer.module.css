@@ -25,6 +25,10 @@
     flex-direction: column;
     overflow: hidden;
     border: none;
+    /* Anchored to top: 0, so under viewport-fit=cover the header row would sit
+       beneath the notch. Inset the whole column; 0px without a safe area. */
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 [data-theme='dark'] .drawer {

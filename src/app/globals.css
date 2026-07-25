@@ -394,3 +394,49 @@ h3 { font-size: 1.5rem; letter-spacing: 0.05em; }
   h1 { font-size: 2.2rem; }
   h2 { font-size: 1.8rem; }
 }
+
+/* ==========================================================================
+   Native app (Capacitor) adjustments
+   ==========================================================================
+   The iOS/Android apps load this same site in a webview. `.native-app` and
+   `data-app-platform` are set on <html> before first paint by
+   PLATFORM_BOOTSTRAP_SCRIPT (src/lib/platform.ts), so every rule below is
+   inert on the website itself.
+
+   Only the TOP inset is gated behind .native-app: in the app the webview draws
+   under the translucent status bar, whereas in a mobile browser the browser's
+   own chrome already occupies that space. Bottom/side insets are applied
+   ungated via calc(... + env()) at each call site, because env() resolves to
+   0px on devices without safe areas. */
+
+.native-app body {
+  /* Stops rubber-band overscroll from revealing gaps behind the cosmic
+     background — a common tell that an app is a webview. */
+  overscroll-behavior-y: none;
+}
+
+.native-app header {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.native-app .app-main {
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+.native-app footer {
+  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+}
+
+/* No address bar or browser back button in the app, so letting users
+   select the header/footer chrome just feels broken. Content stays selectable. */
+.native-app header,
+.native-app footer {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Remove the grey tap flash that makes a webview feel like a webview. */
+.native-app * {
+  -webkit-tap-highlight-color: transparent;
+}

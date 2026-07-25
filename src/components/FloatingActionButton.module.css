@@ -1,7 +1,9 @@
 .fab {
     position: fixed;
-    bottom: 24px;
-    right: 24px;
+    /* Clears the iOS home indicator in the native app. env() resolves to 0px on
+       devices without safe areas, so the website is visually unchanged. */
+    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    right: calc(24px + env(safe-area-inset-right, 0px));
     width: 60px;
     height: 60px;
     border-radius: 50%;

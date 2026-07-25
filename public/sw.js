@@ -1,0 +1,161 @@
+/**
+ * AskChetna service worker.
+ *
+ * Goals, in priority order:
+ *   1. Never serve stale or wrong content. The site is the single source of
+ *      truth and deploys must appear immediately in the apps.
+ *   2. Provide a usable offline screen instead of a dead webview.
+ *   3. Cut repeat-visit load time on immutable build assets.
+ *
+ * Deliberate non-goals — these are the footguns this file avoids:
+ *
+ *   - HTML/navigation responses are NEVER cached. Most pages here are
+ *     authenticated and user-specific (dashboard, chart, clarity). Caching them
+ *     risks serving one signed-in user's page to another from a shared cache,
+ *     and would make Vercel deploys look "stuck" behind stale HTML. Offline
+ *     users get the precached /offline page instead.
+ *   - /api/* is never touched. Credits, payments and auth must always hit the
+ *     network; a cached balance or a replayed mutation would be a real bug.
+ */
+
+const VERSION = 'v1';
+const PRECACHE = `askchetna-precache-${VERSION}`;
+const ASSETS = `askchetna-assets-${VERSION}`;
+
+const OFFLINE_URL = '/offline';
+
+// Small and stable — safe to precache. The offline page must be self-contained
+// enough to render from cache, so it ships its own inline styles.
+const PRECACHE_URLS = [
+    OFFLINE_URL,
+    '/chetna_icon.svg',
+    '/icons/chetna.png',
+];
+
+self.addEventListener('install', (event) => {
+    event.waitUntil(
+        (async () => {
+            const cache = await caches.open(PRECACHE);
+            // Individually so one 404 can't fail the whole install.
+            await Promise.all(
+                PRECACHE_URLS.map((url) =>
+                    cache.add(new Request(url, { cache: 'reload' })).catch(() => {
+                        console.warn('[sw] precache miss:', url);
+                    })
+                )
+            );
+            await self.skipWaiting();
+        })()
+    );
+});
+
+self.addEventListener('activate', (event) => {
+    event.waitUntil(
+        (async () => {
+            // Drop caches from previous versions of this worker.
+            const keys = await caches.keys();
+            await Promise.all(
+                keys
+                    .filter((key) => key.startsWith('askchetna-') && key !== PRECACHE && key !== ASSETS)
+                    .map((key) => caches.delete(key))
+            );
+            await self.clients.claim();
+        })()
+    );
+});
+
+/** Build output is content-hashed and immutable, so cache-first is always correct. */
+function isImmutableAsset(url) {
+    return url.pathname.startsWith('/_next/static/');
+}
+
+/** Brand images and the ephemeris payloads: large, rarely change, safe to reuse. */
+function isCacheableAsset(url) {
+    return (
+        /\.(?:png|jpe?g|svg|webp|avif|gif|ico|woff2?)$/i.test(url.pathname) ||
+        url.pathname === '/swisseph.wasm' ||
+        url.pathname === '/swisseph.data'
+    );
+}
+
+self.addEventListener('fetch', (event) => {
+    const { request } = event;
+
+    // Mutations and non-GET verbs always go straight to the network.
+    if (request.method !== 'GET') return;
+
+    const url = new URL(request.url);
+
+    // Only handle our own origin. Razorpay, Google Fonts, Firebase etc. pass through.
+    if (url.origin !== self.location.origin) return;
+
+    // Never intercept API traffic, auth callbacks, or admin.
+    if (url.pathname.startsWith('/api/') || url.pathname.startsWith('/admin')) return;
+
+    // ---- Navigations: network-only, with an offline fallback ----
+    if (request.mode === 'navigate') {
+        event.respondWith(
+            (async () => {
+                try {
+                    return await fetch(request);
+                } catch {
+                    const cache = await caches.open(PRECACHE);
+                    const offline = await cache.match(OFFLINE_URL);
+                    return (
+                        offline ||
+                        new Response('You are offline.', {
+                            status: 503,
+                            headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+                        })
+                    );
+                }
+            })()
+        );
+        return;
+    }
+
+    // ---- Immutable build assets: cache-first ----
+    if (isImmutableAsset(url)) {
+        event.respondWith(
+            (async () => {
+                const cache = await caches.open(ASSETS);
+                const hit = await cache.match(request);
+                if (hit) return hit;
+
+                const response = await fetch(request);
+                if (response.ok) cache.put(request, response.clone());
+                return response;
+            })()
+        );
+        return;
+    }
+
+    // ---- Other static assets: stale-while-revalidate ----
+    if (isCacheableAsset(url)) {
+        event.respondWith(
+            (async () => {
+                const cache = await caches.open(ASSETS);
+                const hit = await cache.match(request);
+
+                const network = fetch(request)
+                    .then((response) => {
+                        if (response.ok) cache.put(request, response.clone());
+                        return response;
+                    })
+                    .catch(() => undefined);
+
+                // Serve cache immediately when we have it; refresh in the background.
+                const response = hit || (await network);
+                if (response) return response;
+                return new Response('', { status: 504, statusText: 'Offline' });
+            })()
+        );
+    }
+
+    // Everything else: default browser behaviour.
+});
+
+/** Lets the app trigger an immediate worker swap after a deploy. */
+self.addEventListener('message', (event) => {
+    if (event.data === 'SKIP_WAITING') self.skipWaiting();
+});

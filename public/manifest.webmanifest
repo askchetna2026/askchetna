@@ -1,0 +1,50 @@
+{
+  "name": "AskChetna | Astrology for Awareness",
+  "short_name": "AskChetna",
+  "description": "Understand patterns, not predictions. A calm, awareness-first approach to Vedic Astrology and planetary timing.",
+  "id": "/",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait-primary",
+  "background_color": "#0B0F2F",
+  "theme_color": "#0B0F2F",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["lifestyle", "education", "health"],
+  "icons": [
+    {
+      "src": "/chetna_icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/chetna.png",
+      "type": "image/png",
+      "sizes": "500x500",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Ask for Clarity",
+      "short_name": "Clarity",
+      "description": "Ask a question and reflect on the patterns behind it",
+      "url": "/clarity?source=pwa_shortcut"
+    },
+    {
+      "name": "My Chart",
+      "short_name": "Chart",
+      "description": "Open your birth chart",
+      "url": "/chart?source=pwa_shortcut"
+    },
+    {
+      "name": "Timing",
+      "short_name": "Timing",
+      "description": "Current planetary timing and dasha periods",
+      "url": "/timing?source=pwa_shortcut"
+    }
+  ]
+}

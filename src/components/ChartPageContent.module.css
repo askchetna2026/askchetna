@@ -1035,6 +1035,10 @@
     flex-direction: column;
     overflow: hidden;
     animation: fadeInOverlay 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    /* Full-screen overlay anchored to top: 0 — inset so its close button stays
+       clear of the notch. env() is 0px where there is no safe area. */
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 @keyframes fadeInOverlay {

@@ -43,6 +43,38 @@ model User {
   posts         Post[]
   profileLimits UserProfileLimit[]
   lifecycleEmails LifecycleEmail[]
+  deviceTokens  DeviceToken[]
+}
+
+/// Push notification registration for one install of the native app.
+///
+/// Keyed on the FCM token rather than the user: a token identifies a specific
+/// app install, and the same device can be handed to a different account
+/// (sign out, sign in as someone else). Registration therefore upserts on
+/// `token` and reassigns `userId`, so a notification can never be delivered to
+/// the previous owner of the device.
+model DeviceToken {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  token       String   @unique
+  platform    String   // "ios" | "android"
+  appVersion  String?
+  deviceModel String?
+
+  /// Refreshed each time the app registers, so stale installs can be pruned.
+  lastSeenAt  DateTime @default(now())
+
+  /// Set when the user opts out, signs out, or FCM reports the token as
+  /// unregistered. Rows are disabled rather than deleted to keep delivery
+  /// history meaningful.
+  disabledAt  DateTime?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId, disabledAt])
 }
 
 // OAuth account info (for NextAuth)

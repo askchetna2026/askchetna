@@ -62,7 +62,11 @@ function loadServiceAccount(): ServiceAccount {
     return { projectId, clientEmail, privateKey };
 }
 
-function getFirebaseApp(): App {
+/**
+ * The shared Admin app. Exported so the push sender (src/lib/push/send.ts) can
+ * reuse this single credential/connection rather than initialising its own.
+ */
+export function getFirebaseApp(): App {
     if (globalForFirebase.firebaseAdminApp) return globalForFirebase.firebaseAdminApp;
 
     // getApps() guards against duplicate-app errors across HMR reloads and

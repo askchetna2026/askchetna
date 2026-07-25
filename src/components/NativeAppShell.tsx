@@ -128,7 +128,38 @@ export default function NativeAppShell() {
                         }
                     })
                 );
+
+                // FCM rotates push tokens, so re-sync whenever the app comes
+                // back to the foreground. Without this, delivery stops silently
+                // after a rotation.
+                await track(
+                    App.addListener('resume', () => {
+                        void import('@/lib/native/push').then((m) => m.syncExistingRegistration());
+                    })
+                );
             } catch { /* plugin unavailable */ }
+
+            // ---- Push notifications ----
+            // Dynamically imported like everything else here, so none of the push
+            // wrapper reaches the web bundle either.
+            //
+            // Listeners only. The permission prompt is NOT triggered here — it's
+            // wired to the settings toggle instead, because iOS asks once and a
+            // cold-start prompt gets denied permanently.
+            try {
+                const push = await import('@/lib/native/push');
+
+                const detachPush = await push.attachPushListeners((path) => router.push(path));
+                if (cancelled) {
+                    detachPush();
+                } else {
+                    cleanups.push(detachPush);
+                    // Refresh the token if permission was granted on a previous run.
+                    void push.syncExistingRegistration();
+                }
+            } catch (error) {
+                console.warn('[native] push setup failed:', error);
+            }
 
             // ---- External links ----
             try {

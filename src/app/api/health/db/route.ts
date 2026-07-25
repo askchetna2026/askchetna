@@ -57,7 +57,29 @@ export async function GET(req: NextRequest) {
         /* leave the placeholder */
     }
 
-    const result: Record<string, unknown> = { target };
+    // Which Firebase project the SERVER verifies tokens against. It must match the
+    // project_id in the app's google-services.json: a token minted by project A
+    // cannot be verified by project B, and the resulting failure names neither.
+    let firebaseProjectId: string | null = null;
+    try {
+        const encoded = process.env.FIREBASE_SERVICE_ACCOUNT_BASE64;
+        if (encoded) {
+            firebaseProjectId = JSON.parse(Buffer.from(encoded, 'base64').toString('utf8')).project_id ?? null;
+        } else if (process.env.FIREBASE_PROJECT_ID) {
+            firebaseProjectId = process.env.FIREBASE_PROJECT_ID;
+        }
+    } catch {
+        firebaseProjectId = '(service account could not be decoded)';
+    }
+
+    const result: Record<string, unknown> = {
+        target,
+        firebase: {
+            projectId: firebaseProjectId,
+            configured: !!firebaseProjectId,
+            note: 'Must equal the project_id inside the app\'s google-services.json.',
+        },
+    };
 
     try {
         const columns = await prisma.$queryRaw<Array<{ column_name: string }>>`

@@ -77,6 +77,24 @@ jobs:
             PROJECT=$(grep -o '"project_id"[^,]*' mobile/android/app/google-services.json | head -1)
             echo "  $PROJECT"
             echo "FIREBASE_CONFIG=present" >> "$GITHUB_ENV"
+
+            # Report which OAuth clients the file carries.
+            #
+            # Firebase adds an ANDROID oauth_client (client_type 1, carrying a
+            # certificate_hash) only once a SHA-1 is registered — and only into
+            # copies of google-services.json downloaded AFTER that. A file
+            # downloaded beforehand keeps working for most things but lacks the
+            # entry native Google Sign-In matches against, which is a genuinely
+            # easy way to be stuck with a stale config and no clue why.
+            ANDROID_CLIENTS=$(grep -c '"client_type": *1' mobile/android/app/google-services.json || true)
+            WEB_CLIENTS=$(grep -c '"client_type": *3' mobile/android/app/google-services.json || true)
+            echo "  oauth_client entries: android=$ANDROID_CLIENTS web=$WEB_CLIENTS"
+            echo "GS_ANDROID_CLIENTS=$ANDROID_CLIENTS" >> "$GITHUB_ENV"
+            echo "GS_WEB_CLIENTS=$WEB_CLIENTS" >> "$GITHUB_ENV"
+
+            if [ "$ANDROID_CLIENTS" = "0" ]; then
+              echo "::warning::google-services.json contains no Android oauth_client. If it was downloaded before the SHA-1 was registered in Firebase, re-download it and update the GOOGLE_SERVICES_JSON secret."
+            fi
           else
             echo "::warning::GOOGLE_SERVICES_JSON not set — phone OTP and Google sign-in will NOT work in this APK."
             echo "FIREBASE_CONFIG=missing" >> "$GITHUB_ENV"
@@ -325,7 +343,21 @@ jobs:
             echo ""
 
             if [ "${DEBUG_KEYSTORE_PINNED:-no}" = "yes" ]; then
-              echo "This fingerprint is **stable** across builds. Register it in Firebase once."
+              echo "This fingerprint is **stable** across builds — it will not change on the next"
+              echo "run. Register it in Firebase once."
+              echo ""
+              if [ "${GS_ANDROID_CLIENTS:-0}" = "0" ]; then
+                echo "> \`google-services.json\` carries **no Android oauth_client**."
+                echo ">"
+                echo "> Firebase only adds that entry once a SHA-1 is registered, and only to"
+                echo "> copies downloaded afterwards. If you registered the fingerprint after"
+                echo "> downloading the file, re-download it from the Firebase console and update"
+                echo "> the \`GOOGLE_SERVICES_JSON\` secret — native Google Sign-In matches against"
+                echo "> that entry."
+              else
+                echo "\`google-services.json\` carries an Android oauth_client, so it is up to date"
+                echo "with the registered fingerprint(s)."
+              fi
             else
               echo "> **This fingerprint will CHANGE on the next run.**"
               echo ">"

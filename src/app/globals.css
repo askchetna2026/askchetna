@@ -410,9 +410,19 @@ h3 { font-size: 1.5rem; letter-spacing: 0.05em; }
    0px on devices without safe areas. */
 
 .native-app body {
-  /* Stops rubber-band overscroll from revealing gaps behind the cosmic
-     background — a common tell that an app is a webview. */
-  overscroll-behavior-y: none;
+  /* NOTE: `overscroll-behavior-y: none` used to be here, to stop rubber-band
+     overscroll revealing gaps behind the cosmic background. It BROKE SCROLLING
+     ENTIRELY in the Android WebView.
+
+     Unlike Chrome, the WebView routes scrolling through the native overScrollBy
+     path, and a non-auto overscroll-behavior on the viewport element can stop it
+     scrolling at all. The symptom is specific and misleading: taps still work and
+     the same page scrolls fine in Chrome on the same phone, so it looks like
+     anything but a CSS property.
+
+     Do not reintroduce it. If the overscroll glow is worth suppressing, do it
+     natively in MainActivity with
+     webView.setOverScrollMode(View.OVER_SCROLL_NEVER) instead of in CSS. */
 
   /* Lifts all page content clear of the home indicator.
      Applied to <body> rather than <footer> on purpose: overriding the footer's

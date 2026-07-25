@@ -25,6 +25,31 @@ android {
      * builds carry on as normal. CI sets all four before calling bundleRelease.
      */
     signingConfigs {
+        /**
+         * Pin the DEBUG signing key when one is supplied.
+         *
+         * Android generates a debug keystore on first use, with a RANDOM key. CI
+         * runners are ephemeral, so every build produced a different debug
+         * certificate and therefore a different SHA-1 — which meant a fingerprint
+         * registered in Firebase only ever matched the one build it came from, and
+         * phone OTP / Google sign-in failed with DEVELOPER_ERROR on every
+         * subsequent APK.
+         *
+         * Supplying a fixed keystore makes the fingerprint stable, so it needs
+         * registering in Firebase exactly once.
+         *
+         * Debug keystore credentials are the well-known Android defaults, not
+         * secrets: password `android`, alias `androiddebugkey`.
+         */
+        if (System.getenv('ASKCHETNA_DEBUG_KEYSTORE_PATH')) {
+            debug {
+                storeFile file(System.getenv('ASKCHETNA_DEBUG_KEYSTORE_PATH'))
+                storePassword 'android'
+                keyAlias 'androiddebugkey'
+                keyPassword 'android'
+            }
+        }
+
         if (System.getenv('ASKCHETNA_KEYSTORE_PATH')) {
             release {
                 storeFile file(System.getenv('ASKCHETNA_KEYSTORE_PATH'))

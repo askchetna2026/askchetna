@@ -82,6 +82,43 @@ jobs:
             echo "FIREBASE_CONFIG=missing" >> "$GITHUB_ENV"
           fi
 
+      - name: Prepare a STABLE debug keystore
+        # Android generates a debug keystore with a RANDOM key on first use, and CI
+        # runners are ephemeral — so without this every build had a different
+        # debug SHA-1. A fingerprint registered in Firebase then matched only the
+        # single build it came from, and every later APK failed phone OTP and
+        # Google sign-in with DEVELOPER_ERROR.
+        #
+        # With ANDROID_DEBUG_KEYSTORE_BASE64 set, all builds share one certificate
+        # and the fingerprint needs registering just once. Without it, one is
+        # generated here and its base64 printed to the run summary, so it can be
+        # saved as that secret and reused from then on.
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_DEBUG_KEYSTORE_BASE64 }}
+        run: |
+          set -uo pipefail
+          KS="$RUNNER_TEMP/debug.keystore"
+
+          if [ -n "${KEYSTORE_B64:-}" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > "$KS"
+            echo "Using the pinned debug keystore from ANDROID_DEBUG_KEYSTORE_BASE64."
+            echo "DEBUG_KEYSTORE_PINNED=yes" >> "$GITHUB_ENV"
+          else
+            # Standard Android debug conventions, so it behaves exactly like the
+            # keystore AGP would have made. These are not secrets.
+            keytool -genkeypair -v \
+              -keystore "$KS" \
+              -storepass android -keypass android \
+              -alias androiddebugkey \
+              -keyalg RSA -keysize 2048 -validity 10950 \
+              -dname "C=US, O=Android, CN=Android Debug" >/dev/null 2>&1
+            echo "::warning::No pinned debug keystore. Generated a throwaway one — its SHA-1 will change on the next run. See the run summary to make it permanent."
+            echo "DEBUG_KEYSTORE_PINNED=no" >> "$GITHUB_ENV"
+            echo "GENERATED_KEYSTORE_B64=$(base64 -w0 "$KS")" >> "$GITHUB_ENV"
+          fi
+
+          echo "ASKCHETNA_DEBUG_KEYSTORE_PATH=$KS" >> "$GITHUB_ENV"
+
       - name: Capacitor sync
         # Regenerates capacitor.config.json and copies mobile/shell/ into the
         # native project; both are gitignored, so this is not optional.
@@ -235,6 +272,36 @@ jobs:
               echo "> Note this is a **GitHub Actions secret**, and is different from"
               echo "> \`FIREBASE_SERVICE_ACCOUNT_BASE64\`, which is a **Vercel** variable used by the"
               echo "> server. Both are required, for different halves of the flow."
+            fi
+
+            echo ""
+            echo "### Debug signing certificate"
+            echo ""
+            SHA1=$(keytool -printcert -jarfile "$APK" 2>/dev/null | grep -E "^[[:space:]]*SHA1:" | head -1 | sed 's/^[[:space:]]*//')
+            echo "\`$SHA1\`"
+            echo ""
+
+            if [ "${DEBUG_KEYSTORE_PINNED:-no}" = "yes" ]; then
+              echo "This fingerprint is **stable** across builds. Register it in Firebase once."
+            else
+              echo "> **This fingerprint will CHANGE on the next run.**"
+              echo ">"
+              echo "> Android generates the debug keystore with a random key, and CI runners are"
+              echo "> ephemeral — so registering this SHA-1 in Firebase would only ever match this"
+              echo "> one build. That is why phone OTP and Google sign-in fail with"
+              echo "> DEVELOPER_ERROR even after adding a fingerprint."
+              echo ">"
+              echo "> **Fix it once:** copy the value below into a repository secret named"
+              echo "> \`ANDROID_DEBUG_KEYSTORE_BASE64\`, then re-run. Every future build will share"
+              echo "> one certificate, and the SHA-1 above becomes permanent."
+              echo ""
+              echo "<details><summary>ANDROID_DEBUG_KEYSTORE_BASE64</summary>"
+              echo ""
+              echo '```'
+              echo "${GENERATED_KEYSTORE_B64:-}"
+              echo '```'
+              echo ""
+              echo "</details>"
             fi
 
             echo ""

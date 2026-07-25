@@ -1,5 +1,6 @@
 import NextAuth from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
+import AppleProvider from "next-auth/providers/apple"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import bcrypt from "bcryptjs"
@@ -14,6 +15,49 @@ import { rateLimit } from "@/lib/rateLimit"
 // every route. It is loaded lazily inside authorize() below, which only ever
 // executes in the Node runtime of the NextAuth route handler.
 
+/**
+ * Sign in with Apple is required by App Store guideline 4.8 because the app also
+ * offers Google sign-in: an app using a third-party login service must offer an
+ * equivalent privacy-preserving option.
+ *
+ * APPLE_SECRET is a JWT that Apple caps at 6 months. When it expires, Apple
+ * sign-in simply stops working with no obvious cause, so warn as the date
+ * approaches. Regenerate with `npm run apple:secret`.
+ *
+ * Decoded by hand rather than verified: this only needs the `exp` claim, and
+ * pulling in a crypto library would put it in the Edge bundle that src/proxy.ts
+ * compiles into.
+ */
+function warnIfAppleSecretExpiring(secret: string | undefined) {
+    if (!secret) return;
+    try {
+        const payload = JSON.parse(
+            Buffer.from(secret.split('.')[1], 'base64').toString('utf8')
+        );
+        if (typeof payload.exp !== 'number') return;
+
+        const daysLeft = Math.floor((payload.exp * 1000 - Date.now()) / 86_400_000);
+        if (daysLeft <= 0) {
+            console.error(
+                `APPLE_SECRET EXPIRED ${Math.abs(daysLeft)} day(s) ago. Sign in with Apple is broken. ` +
+                `Regenerate with: npm run apple:secret`
+            );
+        } else if (daysLeft <= 30) {
+            console.warn(
+                `APPLE_SECRET expires in ${daysLeft} day(s). Regenerate with: npm run apple:secret`
+            );
+        }
+    } catch {
+        console.warn('APPLE_SECRET is set but could not be decoded; it may be malformed.');
+    }
+}
+
+const appleId = process.env.APPLE_ID;
+const appleSecret = process.env.APPLE_SECRET;
+const appleConfigured = !!(appleId && appleSecret);
+
+warnIfAppleSecretExpiring(appleSecret);
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
     trustHost: true,
     adapter: PrismaAdapter(prisma),
@@ -23,6 +67,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             clientId: process.env.GOOGLE_CLIENT_ID!,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
         }),
+        // Spread so the provider simply isn't registered until credentials
+        // exist, rather than registering a broken one that fails mid-flow.
+        ...(appleConfigured
+            ? [AppleProvider({
+                clientId: appleId!,
+                clientSecret: appleSecret!,
+            })]
+            : []),
         CredentialsProvider({
             name: "Email",
             credentials: {

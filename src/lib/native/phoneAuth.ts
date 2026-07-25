@@ -78,13 +78,32 @@ export async function startPhoneVerification(
      * merely slow SMS still wins the race.
      */
     let settled = false;
+
+    /**
+     * Whether signInWithPhoneNumber returned. This is THE diagnostic distinction
+     * when nothing calls back, and it is reported in the timeout message so it can
+     * be read off the screen — reaching it via chrome://inspect requires USB
+     * debugging, which is a lot of setup for one boolean.
+     */
+    let requestDispatched = false;
+
     const timeoutId = setTimeout(() => {
         if (settled) return;
         settled = true;
+
         callbacks.onError(
-            'No response from Google\'s verification service. On Android this usually means ' +
-            'the app\'s SHA-1 AND SHA-256 fingerprints are not both registered in Firebase, ' +
-            'or the Play Integrity API is not enabled for the project.'
+            requestDispatched
+                // Firebase accepted the request, then never reported a result:
+                // app verification is stalling. On Android that is Play Integrity
+                // attestation, or the reCAPTCHA fallback failing to display.
+                ? 'Google accepted the request but never sent a code (step 2/2). This is app ' +
+                'verification failing: check that this number is listed under Firebase > ' +
+                'Authentication > Sign-in method > Phone > "Phone numbers for testing", ' +
+                'exactly as typed, and that google-services.json is from that same project.'
+                // The plugin call never returned, so the request did not get out.
+                : 'Could not reach Google\'s verification service (step 1/2). The request never ' +
+                'left the app — check the device\'s internet connection, and that ' +
+                'google-services.json is present in the build.'
         );
     }, 50_000);
 
@@ -146,6 +165,9 @@ export async function startPhoneVerification(
             phoneNumber,
             resendCode: options.resend ?? false,
         });
+
+        // Drives which half of the timeout message is shown (see requestDispatched).
+        requestDispatched = true;
 
         console.info(
             '[phoneAuth] signInWithPhoneNumber resolved — now waiting for a ' +

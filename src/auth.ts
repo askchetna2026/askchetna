@@ -99,7 +99,32 @@ const firebaseConfigured = !!(
 export const { handlers, signIn, signOut, auth } = NextAuth({
     trustHost: true,
     adapter: PrismaAdapter(prisma),
-    secret: process.env.NEXTAUTH_SECRET,
+    // AUTH_SECRET is the NextAuth v5 name; NEXTAUTH_SECRET is the v4 one this
+    // project started with. Passing the v4 variable alone means an explicit
+    // `undefined` whenever only the v5 name is set in an environment, and a
+    // missing secret surfaces as the same opaque `error=Configuration` as every
+    // other config fault.
+    secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET,
+
+    // Auth.js reports every configuration fault to the client as the single
+    // string "Configuration", which names nothing. These make the actual cause
+    // appear in the Vercel runtime log instead.
+    debug: process.env.AUTH_DEBUG === '1',
+    logger: {
+        error(error) {
+            console.error(
+                '[auth][error]',
+                error?.name,
+                error?.message,
+                // Auth.js wraps the real fault in `cause`, which is where the
+                // useful detail lives.
+                (error as { cause?: unknown })?.cause ?? ''
+            );
+        },
+        warn(code) {
+            console.warn('[auth][warn]', code);
+        },
+    },
     providers: [
         // Spread conditionally so an unconfigured provider is absent from
         // /api/auth/providers rather than present-and-broken. The login UI drives

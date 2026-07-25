@@ -21,6 +21,14 @@ name: Android Debug APK (for device testing)
 on:
   workflow_dispatch:
     inputs:
+      serverUrl:
+        description: 'Which deployment the app loads'
+        required: true
+        default: 'https://preview.askchetna.com'
+        type: choice
+        options:
+          - 'https://preview.askchetna.com'
+          - 'https://www.askchetna.com'
       debugWebview:
         description: 'Enable remote WebView inspection (chrome://inspect)'
         required: false
@@ -65,13 +73,17 @@ jobs:
       - name: Capacitor sync
         # Regenerates capacitor.config.json and copies mobile/shell/ into the
         # native project; both are gitignored, so this is not optional.
+        #
+        # `npm run cap:sync` (not `cap sync` directly) so prepare-shell.mjs also
+        # points the offline page's retry at the same deployment.
         env:
           # Gates webContentsDebuggingEnabled in capacitor.config.ts. Off by
           # default in release builds so nobody holding the device can inspect a
           # signed-in session.
           CAP_DEBUG_WEBVIEW: ${{ inputs.debugWebview && '1' || '0' }}
+          CAP_SERVER_URL: ${{ inputs.serverUrl }}
         run: |
-          npx cap sync android
+          npm run cap:sync
           echo "--- synced native config ---"
           cat mobile/android/app/src/main/assets/capacitor.config.json
 
@@ -89,9 +101,22 @@ jobs:
             exit 1
           fi
           echo "APK size: $(du -h "$APK" | cut -f1)"
+
           # Confirms the server URL actually made it into the bundle, which is the
           # single most important thing about this build.
+          echo "--- capacitor.config.json inside the APK ---"
           unzip -p "$APK" assets/capacitor.config.json | head -20
+
+          # Fail rather than hand over an APK pointing at the wrong deployment.
+          EXPECTED='${{ inputs.serverUrl }}'
+          if ! unzip -p "$APK" assets/capacitor.config.json | grep -q "\"url\": *\"$EXPECTED\""; then
+            echo "::error::APK server.url does not match the requested $EXPECTED"
+            exit 1
+          fi
+          echo "Verified server.url = $EXPECTED"
+
+          echo "--- offline.html retry target ---"
+          unzip -p "$APK" assets/public/offline.html | grep "var SITE" || true
 
       - name: Upload APK
         uses: actions/upload-artifact@v4

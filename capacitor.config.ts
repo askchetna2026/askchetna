@@ -22,6 +22,21 @@ import type { CapacitorConfig } from '@capacitor/cli';
  * `webDir` is only a thin local shell (the offline fallback), not a web build.
  */
 
+/**
+ * Which deployment the app loads.
+ *
+ * Defaults to the canonical PRODUCTION host. Note `www`: the apex
+ * askchetna.com issues a 308 to www.askchetna.com, so pointing at the apex would
+ * make every cold start pay a redirect before first paint.
+ *
+ * Override for test builds:
+ *   CAP_SERVER_URL=https://preview.askchetna.com npx cap sync
+ *
+ * Baked into the native project at `cap sync` time, so changing it requires a
+ * rebuild — unlike web content, which updates over the air.
+ */
+const SERVER_URL = process.env.CAP_SERVER_URL || 'https://www.askchetna.com';
+
 const config: CapacitorConfig = {
     appId: 'com.askchetnam.app',
     appName: 'AskChetna',
@@ -30,9 +45,7 @@ const config: CapacitorConfig = {
     webDir: 'mobile/shell',
 
     server: {
-        // Single source of truth. Change this to a Vercel preview URL to test a
-        // branch without rebuilding anything else.
-        url: 'https://askchetna.com',
+        url: SERVER_URL,
 
         // Shown when the site can't be reached at all. NOTE: on Android an
         // errorPath page has no access to Capacitor plugins, which is why

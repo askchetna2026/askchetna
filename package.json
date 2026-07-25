@@ -15,7 +15,8 @@
     "apple:secret": "node scripts/generate-apple-secret.mjs",
     "assets:build": "node scripts/build-app-assets.mjs",
     "assets": "node scripts/build-app-assets.mjs && capacitor-assets generate --ios --android --assetPath mobile/assets --androidProject mobile/android --iosProject mobile/ios/App",
-    "cap:sync": "cap sync"
+    "shell:prepare": "node scripts/prepare-shell.mjs",
+    "cap:sync": "node scripts/prepare-shell.mjs && cap sync && node scripts/fix-spm-paths.mjs"
   },
   "dependencies": {
     "@capacitor-firebase/authentication": "^8.3.0",

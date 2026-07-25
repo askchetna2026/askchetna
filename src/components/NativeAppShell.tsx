@@ -5,6 +5,21 @@ import { useRouter } from 'next/navigation';
 import { isClientNativeApp, getClientAppPlatform } from '@/lib/platform';
 
 /**
+ * Whether a hostname belongs to us.
+ *
+ * Deliberately NOT `hostname.endsWith('askchetna.com')` — that also matches
+ * `evil-askchetna.com`, which would let an attacker's page be treated as
+ * first-party: opened inside the WebView (where there is no URL bar to expose
+ * it) and accepted as a deep-link target.
+ *
+ * Matches the apex plus any subdomain, so www, preview and future environments
+ * all count as ours.
+ */
+function isOwnHost(hostname: string): boolean {
+    return hostname === 'askchetna.com' || hostname.endsWith('.askchetna.com');
+}
+
+/**
  * Wires up native behaviour for the Capacitor apps. Renders an offline banner;
  * otherwise invisible.
  *
@@ -120,7 +135,7 @@ export default function NativeAppShell() {
                             const target = new URL(url);
                             // Only follow links into our own site; anything else is
                             // handed to the system browser below.
-                            if (target.hostname.endsWith('askchetna.com')) {
+                            if (isOwnHost(target.hostname)) {
                                 router.push(target.pathname + target.search);
                             }
                         } catch {
@@ -193,7 +208,7 @@ export default function NativeAppShell() {
                     }
 
                     if (target.protocol !== 'http:' && target.protocol !== 'https:') return;
-                    if (target.hostname.endsWith('askchetna.com')) return;
+                    if (isOwnHost(target.hostname)) return;
                     if (target.hostname === window.location.hostname) return;
 
                     // Keep checkout and OAuth in the WebView.

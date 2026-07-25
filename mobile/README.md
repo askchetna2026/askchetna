@@ -14,7 +14,28 @@ mobile/
 ```
 
 `capacitor.config.ts` lives at the **repo root**, not here, and points `android`/
-`ios` into this directory. The Capacitor npm packages are in the root
+`ios` into this directory.
+
+## Which deployment the app loads
+
+`server.url` defaults to **`https://www.askchetna.com`** (production). Note the
+`www`: the apex `askchetna.com` issues a 308 redirect to it, so pointing at the
+apex would make every cold start pay a redirect before first paint.
+
+Override for test builds:
+
+```bash
+CAP_SERVER_URL=https://preview.askchetna.com npm run cap:sync
+```
+
+Use `npm run cap:sync` rather than `npx cap sync` — it also rewrites the offline
+page's retry target to match, so a preview build doesn't bounce testers to
+production when connectivity returns.
+
+The value is baked in at sync time, so **switching deployments needs a rebuild**.
+Web content itself still updates over the air. The Android debug workflow exposes
+this as a dropdown, and fails the build if the URL in the finished APK doesn't
+match what you asked for. The Capacitor npm packages are in the root
 `package.json` on purpose: the JS half of every plugin is imported by the Next app
 while the native half is synced into these projects, so a second `package.json`
 would eventually drift out of version lockstep and cause native/JS mismatches.
@@ -149,7 +170,7 @@ CI is the easy path — **Actions → Android Release → Run workflow** produce
 Locally (needs JDK 21 and the Android SDK):
 
 ```bash
-npx cap sync android
+CAP_SERVER_URL=https://preview.askchetna.com npm run cap:sync
 cd mobile/android && ./gradlew assembleDebug
 ```
 

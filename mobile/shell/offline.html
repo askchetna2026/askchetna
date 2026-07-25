@@ -112,7 +112,11 @@
 
   <script>
     (function () {
-      var SITE = 'https://askchetna.com';
+      // Rewritten by scripts/prepare-shell.mjs to match CAP_SERVER_URL, so a
+      // preview build retries against the preview deployment rather than sending
+      // the tester to production. Keep this line's shape intact — the script
+      // matches on it.
+      var SITE = 'https://www.askchetna.com';
 
       function retry() {
         // Go to the site rather than location.reload(): reloading would just

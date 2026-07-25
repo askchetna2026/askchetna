@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CAPACITOR_DEBUG</key>
+	<string>$(CAPACITOR_DEBUG)</string>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleDisplayName</key>
+        <string>AskChetna</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(MARKETING_VERSION)</string>
+	<key>CFBundleVersion</key>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>armv7</string>
+	</array>
+	<!--
+	  Portrait-only on iPhone. The chart and dasha layouts are built for a narrow
+	  column; shipping a landscape mode we haven't laid out invites a UI-quality
+	  rejection. iPad keeps all orientations below.
+	-->
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<true/>
+
+	<!-- ===== AskChetna additions ===== -->
+
+	<!--
+	  Permission prompts. Apple rejects builds that touch these APIs without a
+	  usage string, and reviewers read the wording — it must say what the app
+	  does with the data, not just name the permission.
+	-->
+	<key>NSCameraUsageDescription</key>
+	<string>AskChetna uses the camera so you can attach a photo to a question or journal entry.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>AskChetna needs access to your photos so you can attach an existing image to a question or journal entry.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>AskChetna saves your chart images to your photo library when you export or share them.</string>
+
+	<!--
+	  Required for Firebase Phone Auth. iOS verification works by sending a
+	  SILENT push to prove the app instance is genuine, so the app must be able
+	  to receive remote notifications in the background. Without this the OTP
+	  flow falls back to a reCAPTCHA web view, which is a much worse experience.
+	  This entry covers both that and normal push notifications.
+	-->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
+
+	<!--
+	  Opens https:// links in the user's browser rather than trapping them in
+	  our WebView (see the external-link handling in the app shell).
+	-->
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>https</string>
+		<string>http</string>
+	</array>
+
+</dict>
+</plist>

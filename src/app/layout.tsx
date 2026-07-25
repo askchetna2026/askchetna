@@ -10,6 +10,7 @@ import prisma from '@/lib/prisma';
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, absoluteUrl } from '@/lib/site';
 import { PLATFORM_BOOTSTRAP_SCRIPT } from '@/lib/platform';
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar';
+import NativeAppShell from '@/components/NativeAppShell';
 
 import AnalyticsTracker from '@/components/AnalyticsTracker';
 import FloatingActionButton from '@/components/FloatingActionButton';
@@ -167,6 +168,9 @@ export default async function RootLayout({
               <AnalyticsTracker />
             </Suspense>
             <ServiceWorkerRegistrar />
+            {/* Native-only wiring (splash, status bar, back button, offline
+                banner, external links). Renders nothing in a browser. */}
+            <NativeAppShell />
           </ProfileProvider>
         </AuthProvider>
       </body>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Offline — AskChetna</title>
+  <!--
+    Bundled offline fallback, shown by Capacitor's `server.errorPath` when
+    https://askchetna.com cannot be reached at all (no network, DNS failure,
+    site down).
+
+    Constraints, both deliberate:
+      1. NO Capacitor plugin calls. On Android an errorPath page has no bridge
+         access, so anything beyond plain web APIs would silently fail.
+      2. NO external requests — no fonts, no CDN, no images by URL. This page
+         only ever renders when the network is unavailable, so every byte it
+         needs must already be on the device.
+
+    Distinct from /offline in the Next app: that one is precached by the service
+    worker and handles "a page failed to load while the app was running". This
+    one handles "the app launched and there is no connectivity at all".
+  -->
+  <style>
+    :root {
+      color-scheme: dark;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      margin: 0;
+      height: 100%;
+    }
+
+    body {
+      /* Matches --background / --accent-gold in the web app's globals.css so
+         launching offline still looks like AskChetna. */
+      background: #0B0F2F;
+      color: #DFE0FF;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 32px calc(24px + env(safe-area-inset-right, 0px)) calc(32px + env(safe-area-inset-bottom, 0px)) calc(24px + env(safe-area-inset-left, 0px));
+      padding-top: calc(32px + env(safe-area-inset-top, 0px));
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .glyph {
+      font-size: 3rem;
+      line-height: 1;
+      color: #D4AF37;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 1.6rem;
+      font-weight: 500;
+      margin: 0 0 14px;
+      color: #DFE0FF;
+    }
+
+    p {
+      margin: 0;
+      max-width: 30ch;
+      font-size: 1rem;
+      line-height: 1.6;
+      color: rgba(223, 224, 255, 0.72);
+    }
+
+    button {
+      margin-top: 28px;
+      padding: 13px 32px;
+      border-radius: 50px;
+      border: 1px solid rgba(212, 175, 55, 0.45);
+      background: transparent;
+      color: #D4AF37;
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    button:active {
+      background: rgba(212, 175, 55, 0.14);
+      transform: scale(0.98);
+    }
+
+    .hint {
+      margin-top: 18px;
+      font-size: 0.85rem;
+      color: rgba(223, 224, 255, 0.5);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="glyph" aria-hidden="true">✦</div>
+  <h1>The sky is out of reach</h1>
+  <p>AskChetna needs a connection to read your chart. Check your network and try again.</p>
+  <button type="button" id="retry">Try Again</button>
+  <p class="hint" id="hint">We&rsquo;ll retry automatically once you&rsquo;re back online.</p>
+
+  <script>
+    (function () {
+      var SITE = 'https://askchetna.com';
+
+      function retry() {
+        // Go to the site rather than location.reload(): reloading would just
+        // re-render this local error page.
+        window.location.replace(SITE);
+      }
+
+      document.getElementById('retry').addEventListener('click', retry);
+
+      // Fires when the device regains connectivity.
+      window.addEventListener('online', retry);
+    })();
+  </script>
+</body>
+
+</html>

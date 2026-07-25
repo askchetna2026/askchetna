@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>AskChetna</title>
+  <!--
+    Placeholder only. This file is never shown in normal operation.
+
+    `server.url` in capacitor.config.ts points the WebView straight at
+    https://askchetna.com, so Capacitor never loads this local index. It exists
+    because the Capacitor CLI expects `webDir` to contain an index.html and will
+    warn (or fail `cap copy`) without one.
+
+    The file that actually matters in this directory is offline.html, wired up
+    as `server.errorPath`.
+  -->
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0B0F2F;
+      color: #D4AF37;
+      font-family: Georgia, serif;
+    }
+  </style>
+</head>
+
+<body>
+  <p>Loading AskChetna&hellip;</p>
+  <script>
+    // Defensive: if this page is ever reached (e.g. a misconfigured server.url),
+    // send the user to the real site rather than leaving them on a dead screen.
+    window.location.replace('https://askchetna.com');
+  </script>
+</body>
+
+</html>

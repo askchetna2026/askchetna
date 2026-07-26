@@ -30,6 +30,25 @@
   --radius-sm: 8px;
   --radius-md: 16px;
   --radius-lg: 32px;
+
+  /* Height of the native app's bottom tab bar, EXCLUDING the safe-area inset
+     the bar adds underneath it. Anything that anchors to the bottom of the
+     screen in the app (tab bar, FABs, page padding) derives from this so the
+     stack stays in sync. */
+  --app-tabbar-height: 58px;
+
+  /* Width of the same navigation when it becomes a left rail on tablets,
+     foldables and landscape phones. Excludes the left safe-area inset, exactly
+     as --app-tabbar-height excludes the bottom one. */
+  --app-rail-width: 76px;
+
+  /* The width at which the app's navigation flips from bottom bar to left rail.
+     Matches Material's compact/medium window boundary (600dp): below it the
+     bottom strip is the only thumb-reachable zone, above it a bottom bar looks
+     stranded and wastes vertical space. Landscape phones land above it too,
+     which is the behaviour we want. Media queries can't read a custom property,
+     so 600px is repeated literally at each @media — keep them in sync. */
+  --app-rail-breakpoint: 600px;
 }
 
 [data-theme='dark'] {
@@ -121,6 +140,15 @@ html,
 body {
   width: 100%;
   overflow-x: hidden;
+  /* Android's WebView inflates text it decides is body copy ("font boosting"),
+     which is why the app reads noticeably larger on Android than on iOS from
+     identical CSS. Pinning this to 100% turns that off and hands sizing back to
+     the clamp() scale below.
+
+     This does NOT override the user's system font-size setting — that stays
+     respected, as it should. It only stops the WebView's own guesswork. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   font-family: var(--font-main);
   background: var(--background);
   color: var(--foreground);
@@ -296,9 +324,31 @@ h1, h2, h3, h4, h5, h6 {
   filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.15));
 }
 
-h1 { font-size: 3.5rem; text-transform: uppercase; }
-h2 { font-size: 2.2rem; }
-h3 { font-size: 1.5rem; letter-spacing: 0.05em; }
+/* Fluid heading scale.
+   These were fixed rem, so a phone got the full desktop size: 56px h1 on a
+   375px screen, which spent a quarter of the viewport on one headline. Only 5
+   of the 31 CSS modules override with their own clamp(), so most pages inherited
+   it. The lower bounds are sized for a 375px viewport, the upper bounds are the
+   previous desktop values — unchanged above ~930px.
+
+   Body copy is deliberately NOT scaled down: 16px is already the floor for
+   comfortable reading and WCAG AA, and the complaint is about headings. */
+h1 { font-size: clamp(1.75rem, 6vw, 3.5rem); text-transform: uppercase; }
+h2 { font-size: clamp(1.375rem, 4.5vw, 2.2rem); }
+h3 { font-size: clamp(1.125rem, 3vw, 1.5rem); letter-spacing: 0.05em; }
+
+/* One further step down inside the native apps.
+   An app is a place you spend twenty minutes, not a landing page you scan for
+   ten seconds — headings that read as confident on the web read as shouting in
+   a product. Scoped to .native-app so mobile *web* keeps the louder editorial
+   voice that sells.
+
+   Specificity note: `.native-app h1` is (0,1,1), which outranks the (0,1,0)
+   class selectors in the page CSS modules, so this also reins in per-page hero
+   overrides like .heroTitle without having to chase each one. */
+.native-app h1 { font-size: clamp(1.5rem, 5.2vw, 2.75rem); }
+.native-app h2 { font-size: clamp(1.25rem, 4vw, 1.9rem); }
+.native-app h3 { font-size: clamp(1.0625rem, 2.8vw, 1.35rem); }
 
 /* ═══════════════════════════════════════════════
    SACRED UI ELEMENTS
@@ -654,12 +704,32 @@ h3 { font-size: 1.5rem; letter-spacing: 0.05em; }
      natively in MainActivity with
      webView.setOverScrollMode(View.OVER_SCROLL_NEVER) instead of in CSS. */
 
-  /* Lifts all page content clear of the home indicator.
-     Applied to <body> rather than <footer> on purpose: overriding the footer's
-     own padding-bottom would have to hardcode its current value (60px 24px 32px)
-     and would silently shrink it on devices with no bottom inset. The footer's
-     background is transparent over this element, so padding here is seamless. */
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  /* Lifts all page content clear of the tab bar AND the home indicator beneath
+     it. Applied to <body> rather than <footer> on purpose: overriding the
+     footer's own padding-bottom would have to hardcode its current value
+     (60px 24px 32px) and would silently shrink it on devices with no bottom
+     inset. The footer's background is transparent over this element, so padding
+     here is seamless.
+
+     The inset is counted ONCE, here. AppTabBar carries the same inset as its own
+     padding so its background bleeds into the home-indicator area — but the bar
+     is position: fixed and out of flow, so that padding does not add to this. */
+  padding-bottom: calc(var(--app-tabbar-height) + env(safe-area-inset-bottom, 0px));
+}
+
+/* Rail mode: navigation moves to the left edge, so the reserved space moves with
+   it. See --app-rail-breakpoint for why 600px. */
+@media (min-width: 600px) {
+  .native-app body {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-left: calc(var(--app-rail-width) + env(safe-area-inset-left, 0px));
+  }
+
+  /* The left inset is now part of <body>'s padding above; leaving it here too
+     would indent content by the notch twice on a landscape phone. */
+  .native-app .app-main {
+    padding-left: 0;
+  }
 }
 
 .native-app header {

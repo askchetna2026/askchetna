@@ -2,6 +2,13 @@
     display: none;
 }
 
+/* In the app "Ask" is a permanent tab, so the floating pill is redundant — and
+   it would land straight on top of the tab bar. Higher specificity than the
+   mobile media query below, so it wins regardless of source order. */
+:global(html.native-app) .fab {
+    display: none;
+}
+
 /* Mobile-only: highest-value action always within thumb reach */
 @media (max-width: 768px) {
     .fab {

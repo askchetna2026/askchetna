@@ -50,7 +50,11 @@
 }
 
 .heroTitle {
-  font-size: clamp(2.5rem, 5vw + 1rem, 4.5rem);
+  /* Steeper slope than the old `5vw + 1rem`, which resolved to 40px at 375px and
+     wrapped this headline onto five lines. Recalculated to pass through 30px at
+     375px while still reaching the 4.5rem cap at ~1145px — the old curve capped
+     at ~1120px, so anything laptop-sized and up is unchanged. */
+  font-size: clamp(1.875rem, 5.6vw + 0.5rem, 4.5rem);
   line-height: 1.1;
   font-family: var(--font-heading);
   color: var(--foreground);
@@ -1196,3 +1200,148 @@
   background: rgba(255, 255, 255, 0.75);
 }
 
+
+/* ==========================================================================
+   Artwork placement
+   ==========================================================================
+   Illustrations and photography from public/art. The line art is transparent
+   PNG designed for a dark ground; the photographs are dark-key WebP, so both
+   sit on the cosmic background without a plate behind them. */
+
+/* Step illustration inside a How-It-Works card. Sits behind the heading as a
+   watermark rather than a hero image — the cards are text-led, and a full-
+   strength illustration would compete with the copy. */
+.featureArt {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 120px;
+  opacity: 0.22;
+  pointer-events: none;
+  z-index: 0;
+  mask-image: radial-gradient(circle at 65% 35%, #000 40%, transparent 78%);
+  -webkit-mask-image: radial-gradient(circle at 65% 35%, #000 40%, transparent 78%);
+}
+
+.featureArt img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Keep the card's own content above the watermark. */
+.featureCard {
+  position: relative;
+}
+
+.featureCard > *:not(.featureArt) {
+  position: relative;
+  z-index: 1;
+}
+
+@media (min-width: 900px) {
+  .featureArt {
+    width: 165px;
+  }
+}
+
+/* Hero backdrop — the celestial mandala plate. Low opacity and masked at the
+   bottom so the headline never sits on busy pixels. */
+.hero {
+  position: relative;
+  isolation: isolate;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: url('/art/hero/night-sky.webp');
+  background-size: cover;
+  background-position: center top;
+  opacity: 0.28;
+  mask-image: linear-gradient(to bottom, #000 0%, #000 45%, transparent 92%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 45%, transparent 92%);
+  pointer-events: none;
+}
+
+/* Photographic backdrops. Each photo is dark-keyed already, so a low opacity
+   reads as texture rather than as a picture behind text. */
+.philosophySection,
+.liveSampleSection,
+.newsletterSection {
+  position: relative;
+  isolation: isolate;
+}
+
+.philosophySection::before,
+.liveSampleSection::before,
+.newsletterSection::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-size: cover;
+  background-position: center;
+  pointer-events: none;
+  mask-image: radial-gradient(ellipse at center, #000 20%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 20%, transparent 75%);
+}
+
+.philosophySection::before {
+  background-image: url('/art/photo/sky.webp');
+  opacity: 0.30;
+}
+
+.liveSampleSection::before {
+  background-image: url('/art/photo/journal.webp');
+  opacity: 0.22;
+}
+
+.newsletterSection::before {
+  background-image: url('/art/photo/texture.webp');
+  opacity: 0.18;
+}
+
+/* The remaining two photographs anchor the testimonials and credits bands. */
+.testimonialsSection,
+.creditsSection {
+  position: relative;
+  isolation: isolate;
+}
+
+.testimonialsSection::before,
+.creditsSection::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-size: cover;
+  background-position: center;
+  pointer-events: none;
+  mask-image: radial-gradient(ellipse at center, #000 15%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 15%, transparent 70%);
+}
+
+.testimonialsSection::before {
+  background-image: url('/art/photo/botanical.webp');
+  opacity: 0.20;
+}
+
+.creditsSection::before {
+  background-image: url('/art/photo/lamp.webp');
+  opacity: 0.26;
+}
+
+/* Photographs are texture here, not content. Anyone who has asked for reduced
+   motion or is on a slow connection loses nothing by dropping them, and on the
+   light theme they darken the parchment too much to be worth keeping. */
+:global([data-theme='light']) .philosophySection::before,
+:global([data-theme='light']) .liveSampleSection::before,
+:global([data-theme='light']) .newsletterSection::before,
+:global([data-theme='light']) .testimonialsSection::before,
+:global([data-theme='light']) .creditsSection::before,
+:global([data-theme='light']) .hero::before {
+  opacity: 0.10;
+}

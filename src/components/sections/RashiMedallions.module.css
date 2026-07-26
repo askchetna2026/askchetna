@@ -1,0 +1,110 @@
+.section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 80px 24px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.intro {
+    max-width: 620px;
+    margin: 16px auto 0;
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.7;
+}
+
+/* Two columns on a phone, three from tablet up. The mockup's three-across only
+   works at width — at 375px a third column leaves the medallion too small to
+   read as an illustration. */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+@media (min-width: 600px) {
+    .grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+    }
+}
+
+@media (min-width: 1000px) {
+    .grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* The whole card is the link — on a phone the tap target should be the card, not
+   just the title. */
+.card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 20px 16px 24px;
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    transition: transform 0.25s ease, border-color 0.25s ease;
+}
+
+.card:hover,
+.card:focus-visible {
+    transform: translateY(-4px);
+    border-color: var(--accent-gold);
+}
+
+.card:focus-visible {
+    outline: 2px solid var(--accent-gold);
+    outline-offset: 3px;
+}
+
+.card:active {
+    transform: scale(0.98);
+}
+
+/* No border or radius here: the artwork is transparent PNG that already contains
+   its own dotted ring, and one of the twelve (Kanya) is framed as a square. A CSS
+   circle would clip that one and double the ring on the other eleven. */
+.medallion {
+    position: relative;
+    width: 100%;
+    max-width: 140px;
+    margin-bottom: 12px;
+}
+
+.name {
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--foreground);
+    margin: 0;
+}
+
+.english {
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-gold);
+    margin-top: 2px;
+}
+
+.trait {
+    margin-top: 10px;
+    font-size: 0.82rem;
+    line-height: 1.55;
+    color: var(--text-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .card,
+    .card:hover {
+        transition: none;
+        transform: none;
+    }
+}

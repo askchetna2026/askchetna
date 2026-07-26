@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useSession } from 'next-auth/react';
 import styles from './page.module.css';
@@ -12,26 +13,13 @@ import JournalWidget from '@/components/JournalWidget';
 import PanchangWidget from '@/components/PanchangWidget';
 import CosmicMandala from '@/components/CosmicMandala';
 import NewsletterSignupCard from '@/components/NewsletterSignupCard';
+import RashiMedallions from '@/components/sections/RashiMedallions';
 import { useProfile } from '@/context/ProfileContext';
 import { trackEvent } from '@/lib/analytics/client';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { HOME_TOPIC_LINKS } from '@/lib/seoLandingPages';
 
-// Zodiac signs with their Sanskrit names and glyphs
-const ZODIAC_SIGNS = [
-  { glyph: '♈', name: 'Mesha', en: 'Aries' },
-  { glyph: '♉', name: 'Vrishabha', en: 'Taurus' },
-  { glyph: '♊', name: 'Mithuna', en: 'Gemini' },
-  { glyph: '♋', name: 'Karka', en: 'Cancer' },
-  { glyph: '♌', name: 'Simha', en: 'Leo' },
-  { glyph: '♍', name: 'Kanya', en: 'Virgo' },
-  { glyph: '♎', name: 'Tula', en: 'Libra' },
-  { glyph: '♏', name: 'Vrishchika', en: 'Scorpio' },
-  { glyph: '♐', name: 'Dhanu', en: 'Sagittarius' },
-  { glyph: '♑', name: 'Makara', en: 'Capricorn' },
-  { glyph: '♒', name: 'Kumbha', en: 'Aquarius' },
-  { glyph: '♓', name: 'Meena', en: 'Pisces' },
-];
+// The twelve rashis now live in RashiMedallions, alongside their artwork slots.
 
 // Navagraha – the 9 Vedic planets
 const NAVAGRAHA = [
@@ -304,18 +292,11 @@ export default function Home() {
           </div>
 
           {/* ═══════════════════════════════════
-              ZODIAC WHEEL ROW
+              THE TWELVE RASHIS
+              Was a scrolling row of Unicode glyphs; now an illustrated
+              medallion grid. Art drops into the slots in RashiMedallions.
               ═══════════════════════════════════ */}
-          <section className={styles.zodiacSection}>
-            <div className={styles.zodiacScroll}>
-              {[...ZODIAC_SIGNS, ...ZODIAC_SIGNS].map((sign, i) => (
-                <div key={`${sign.name}-${i}`} className={styles.zodiacItem}>
-                  <span className={styles.zodiacGlyph}>{sign.glyph}</span>
-                  <span className={styles.zodiacSanskrit}>{sign.name}</span>
-                </div>
-              ))}
-            </div>
-          </section>
+          <RashiMedallions />
 
           {/* ═══════════════════════════════════
               LIVE AI SAMPLE RESPONSES
@@ -460,6 +441,9 @@ export default function Home() {
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
               >
+                <div className={styles.featureArt} aria-hidden="true">
+                  <Image src="/art/steps/step-1.png" alt="" width={400} height={534} />
+                </div>
                 <div className={`${styles.featureIcon} ${styles.iconColors}`}>
                   <span className="planet-glyph">☉</span>
                 </div>
@@ -517,6 +501,9 @@ export default function Home() {
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
               >
+                <div className={styles.featureArt} aria-hidden="true">
+                  <Image src="/art/steps/step-3.png" alt="" width={400} height={534} />
+                </div>
                 <div className={`${styles.featureIcon} ${styles.iconColors}`}>
                   <span className="planet-glyph">♄</span>
                 </div>
@@ -536,6 +523,9 @@ export default function Home() {
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
               >
+                <div className={styles.featureArt} aria-hidden="true">
+                  <Image src="/art/steps/step-2.png" alt="" width={400} height={534} />
+                </div>
                 <div className={`${styles.featureIcon} ${styles.iconColors}`}>
                   <span className="planet-glyph">☿</span>
                 </div>

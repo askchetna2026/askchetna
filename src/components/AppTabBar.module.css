@@ -1,0 +1,133 @@
+/* Hidden on the website. Only the native apps get a tab bar — see AppTabBar.tsx
+   for why the switch is CSS rather than a platform check in JS. */
+.tabBar {
+    display: none;
+}
+
+:global(html.native-app) .tabBar {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    /* Below the header (1000) so its mobile drawer still covers the bar, but
+       above page content and the FAB (500). */
+    z-index: 900;
+
+    align-items: stretch;
+    justify-content: space-around;
+
+    /* The inset lives here rather than on <body> so the bar's own background
+       extends into the home-indicator area instead of leaving a gap above it. */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+
+    background: rgba(11, 15, 47, 0.92);
+    /* Inset shadow rather than border-top so the bar's box stays exactly
+       --app-tabbar-height tall — a real border would add 1px that the body's
+       padding-bottom doesn't account for, hiding a sliver of content. */
+    box-shadow: inset 0 1px 0 rgba(212, 175, 55, 0.18);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+}
+
+/* Both .native-app and data-theme sit on <html>, so this is one element. */
+:global(html.native-app[data-theme='light']) .tabBar {
+    background: rgba(253, 244, 227, 0.92);
+    box-shadow: inset 0 1px 0 rgba(184, 134, 11, 0.22);
+}
+
+.tab {
+    flex: 1;
+    height: var(--app-tabbar-height);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+
+    color: var(--text-muted);
+    text-decoration: none;
+    /* Thumb-sized target across the full column, not just the icon. */
+    min-width: 0;
+    transition: color 0.18s ease;
+}
+
+.label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.tabActive {
+    color: var(--accent-gold);
+}
+
+/* Press feedback has to be instant — a transition here is the difference
+   between "app" and "webpage". */
+.tab:active {
+    transform: scale(0.94);
+    transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tab,
+    .tab:active {
+        transition: none;
+        transform: none;
+    }
+}
+
+/* ==========================================================================
+   Rail mode — tablets, foldables, landscape phones
+   ==========================================================================
+   Above 600px the bottom bar stops making sense: on a tablet it is a stranded
+   strip miles from the content, and in landscape it eats scarce vertical space.
+   Same component, same tabs, rotated to the left edge — which is what Material's
+   navigation rail is specified for and what iPad sidebars do.
+
+   Deliberately NOT applied below this width: on a portrait phone the left edge
+   is the hardest region for a thumb to reach and collides with the iOS
+   back-swipe and Android drawer gestures. Keep 600px in sync with
+   --app-rail-breakpoint in globals.css. */
+
+@media (min-width: 600px) {
+    :global(html.native-app) .tabBar {
+        top: 0;
+        bottom: 0;
+        right: auto;
+        /* border-box, so this total minus the inset padding leaves exactly
+           --app-rail-width of content — matching <body>'s padding-left. */
+        width: calc(var(--app-rail-width) + env(safe-area-inset-left, 0px));
+
+        flex-direction: column;
+        justify-content: center;
+        gap: 4px;
+
+        padding-left: env(safe-area-inset-left, 0px);
+        padding-right: 0;
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        /* No header clearance needed: <body>'s padding-left indents the header
+           too, so it starts to the RIGHT of the rail rather than over it. Only
+           the status-bar inset has to be cleared. */
+        padding-top: env(safe-area-inset-top, 0px);
+
+        box-shadow: inset -1px 0 0 rgba(212, 175, 55, 0.18);
+    }
+
+    :global(html.native-app[data-theme='light']) .tabBar {
+        box-shadow: inset -1px 0 0 rgba(184, 134, 11, 0.22);
+    }
+
+    :global(html.native-app) .tab {
+        flex: 0 0 auto;
+        width: 100%;
+        height: auto;
+        padding: 12px 4px;
+        gap: 5px;
+    }
+}

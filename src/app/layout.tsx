@@ -11,6 +11,7 @@ import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, absoluteUrl } from '@/lib/site';
 import { PLATFORM_BOOTSTRAP_SCRIPT } from '@/lib/platform';
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar';
 import NativeAppShell from '@/components/NativeAppShell';
+import AppTabBar from '@/components/AppTabBar';
 import PendingDeletionGate from '@/components/PendingDeletionGate';
 
 import AnalyticsTracker from '@/components/AnalyticsTracker';
@@ -164,6 +165,10 @@ export default async function RootLayout({
               {children}
             </main>
             <Footer />
+
+            {/* Bottom tab navigation. Sits above the routes so it never
+                re-mounts on navigation — renders nothing in a browser. */}
+            <AppTabBar />
 
             <ProfileManager />
             <FloatingActionButton />

@@ -9,7 +9,7 @@ export default function Footer() {
         <footer className={styles.footer}>
             <div className={styles.footerContent}>
                 {/* About Section */}
-                <div className={styles.footerSection}>
+                <div className={`${styles.footerSection} ${styles.aboutSection}`}>
                     <h3>About AskChetna</h3>
                     <p>
                         An awareness-first astrology platform designed to support reflection, understanding, and conscious decision-making.
@@ -31,7 +31,7 @@ export default function Footer() {
                 </div>
 
                 {/* Quick Links */}
-                <div className={styles.footerSection}>
+                <div className={`${styles.footerSection} ${styles.exploreSection}`}>
                     <h3>Explore</h3>
                     <ul className={styles.footerLinks}>
                         <li><Link href="/about">About</Link></li>
@@ -45,8 +45,9 @@ export default function Footer() {
                     </ul>
                 </div>
 
-                {/* Legal Links */}
-                <div className={styles.footerSection}>
+                {/* Legal Links. Kept in the app's compact footer too — App Store
+                    5.1.1 and Play both want these reachable in-app. */}
+                <div className={`${styles.footerSection} ${styles.legalSection}`}>
                     <h3>Legal</h3>
                     <ul className={styles.footerLinks}>
                         <li><Link href="/disclaimer">Disclaimer</Link></li>

@@ -385,3 +385,18 @@
         padding: 12px 20px;
     }
 }
+
+/* ==========================================================================
+   Native app header
+   ==========================================================================
+   With a tab bar owning primary navigation, the header's job shrinks to brand +
+   overflow menu. Slimmer padding buys back vertical space on phones, and the
+   duplicate Sign In goes — the tab bar carries it for signed-out users. */
+
+:global(html.native-app) .container {
+    padding: 8px 16px;
+}
+
+:global(html.native-app) .mobileSignInBtn {
+    display: none;
+}

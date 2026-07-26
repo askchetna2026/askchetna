@@ -51,3 +51,20 @@
         height: 56px;
     }
 }
+
+/* In the app the Ask pill is gone (it's a tab now), so this only has to clear
+   the tab bar. Declared after the media query AND with higher specificity so it
+   overrides the bare `bottom: 80px` above — that value drops the safe-area
+   inset, which would put the button on the home indicator on notched devices. */
+:global(html.native-app) .fab {
+    bottom: calc(16px + var(--app-tabbar-height) + env(safe-area-inset-bottom, 0px));
+    right: calc(16px + env(safe-area-inset-right, 0px));
+}
+
+/* Rail mode moves navigation off the bottom edge, so the button drops back down.
+   Keep 600px in sync with --app-rail-breakpoint in globals.css. */
+@media (min-width: 600px) {
+    :global(html.native-app) .fab {
+        bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    }
+}

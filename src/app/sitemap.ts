@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 import prisma from '@/lib/prisma';
 import { absoluteUrl } from '@/lib/site';
+import { RASHIS } from '@/lib/rashis';
 
 export const revalidate = 3600;
 
@@ -37,6 +38,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: r.priority,
     }));
 
+    // The twelve rashi pages. Derived from RASHIS rather than listed by hand so
+    // adding a sign can never silently leave it out of the sitemap.
+    const rashiEntries: MetadataRoute.Sitemap = RASHIS.map((r) => ({
+        url: absoluteUrl(`/rashi/${r.slug}`),
+        lastModified: now,
+        changeFrequency: 'monthly' as const,
+        priority: 0.7,
+    }));
+
     // Individual blog posts — indexable and addressable
     let postEntries: MetadataRoute.Sitemap = [];
     try {
@@ -51,5 +61,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         console.error('Sitemap: failed to load blog posts:', error);
     }
 
-    return [...staticEntries, ...postEntries];
+    return [...staticEntries, ...rashiEntries, ...postEntries];
 }

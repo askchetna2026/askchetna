@@ -124,3 +124,54 @@
         text-align: center;
     }
 }
+/* ==========================================================================
+   Native app footer
+   ==========================================================================
+   A three-column marketing footer is the single loudest "this is a website"
+   signal inside an app, and with a tab bar directly beneath it the links are
+   unreachable anyway. Collapse to a legal strip: the Explore links are all in
+   the tab bar or the header drawer, but Privacy/Terms/Disclaimer/Refund/Contact
+   have to stay reachable in-app for both stores, so they survive as a row. */
+
+:global(html.native-app) .aboutSection,
+:global(html.native-app) .exploreSection,
+:global(html.native-app) .legalSection h3 {
+    display: none;
+}
+
+:global(html.native-app) .footer {
+    padding: 24px 16px 8px;
+}
+
+:global(html.native-app) .footerContent {
+    grid-template-columns: 1fr;
+    gap: 0;
+}
+
+:global(html.native-app) .legalSection .footerLinks {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px 16px;
+}
+
+:global(html.native-app) .legalSection .footerLinks li {
+    margin: 0;
+}
+
+:global(html.native-app) .legalSection .footerLinks a {
+    font-size: 0.8rem;
+}
+
+:global(html.native-app) .footerBottom {
+    padding-top: 16px;
+    flex-direction: column;
+    text-align: center;
+    gap: 4px;
+}
+
+/* The disclaimer is a product rule, not decoration — keep it. The copyright is
+   web furniture. */
+:global(html.native-app) .copyright {
+    display: none;
+}

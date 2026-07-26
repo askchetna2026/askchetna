@@ -18,6 +18,8 @@ import FloatingActionButton from '@/components/FloatingActionButton';
 import AskChetnaFab from '@/components/AskChetnaFab';
 import { ProfileProvider } from '@/context/ProfileContext';
 import ProfileManager from '@/components/ProfileManager';
+import { CosmicStarfield } from '@/lib/cosmic/Starfield';
+import UpdateNotification from '@/components/UpdateNotification';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -148,6 +150,7 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaGraph) }}
         />
+        <CosmicStarfield />
         <div className="cosmic-bg-overlay"></div>
         <div className="stars-layer-1"></div>
         <div className="stars-layer-2"></div>
@@ -172,6 +175,8 @@ export default async function RootLayout({
             {/* Native-only wiring (splash, status bar, back button, offline
                 banner, external links). Renders nothing in a browser. */}
             <NativeAppShell />
+            {/* Update notification for native app users */}
+            <UpdateNotification />
             {/* Locks the account to a cancellation screen while deletion is
                 pending — what makes the grace period read as real deletion to
                 App Review rather than deactivation. Renders nothing otherwise. */}

@@ -5,7 +5,7 @@
 
 import { useEffect, useState } from 'react';
 
-export const CURRENT_VERSION = '1.0.1'; // Increment on each web deployment
+export const CURRENT_VERSION = '1.0.2'; // Increment on each web deployment
 
 interface VersionInfo {
   version: string;

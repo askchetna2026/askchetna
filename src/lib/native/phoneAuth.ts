@@ -23,9 +23,46 @@ import { isClientNativeApp } from '@/lib/platform';
 
 type Plugin = typeof import('@capacitor-firebase/authentication')['FirebaseAuthentication'];
 
+/** How long to wait for the JS chunk before giving up on it. */
+const PLUGIN_IMPORT_TIMEOUT_MS = 8_000;
+
+/**
+ * Obtain the Firebase Auth plugin.
+ *
+ * Prefers the proxy Capacitor injects into the WebView, which is present from
+ * page load and needs no network at all. The npm package's export is itself just
+ * `registerPlugin('FirebaseAuthentication')` — a proxy over the same native
+ * bridge — so the two are equivalent on a device.
+ *
+ * This matters because `await import()` fetches a JS chunk over HTTP, and on
+ * device that import hung indefinitely: phone sign-in reported "timed out while:
+ * loading the Firebase plugin" having never reached Firebase. Google sign-in was
+ * unaffected only because it happened to load the same chunk first and warm it.
+ *
+ * The dynamic import stays as a fallback for the web (where no bridge exists),
+ * now with a timeout so it can never hang forever again.
+ */
 async function loadPlugin(): Promise<Plugin> {
-    const { FirebaseAuthentication } = await import('@capacitor-firebase/authentication');
-    return FirebaseAuthentication;
+    const injected = (
+        globalThis as unknown as {
+            Capacitor?: { Plugins?: Record<string, unknown> };
+        }
+    )?.Capacitor?.Plugins?.FirebaseAuthentication;
+
+    if (injected) {
+        return injected as Plugin;
+    }
+
+    const load = import('@capacitor-firebase/authentication').then((m) => m.FirebaseAuthentication);
+
+    const timeout = new Promise<never>((_, reject) =>
+        setTimeout(
+            () => reject(new Error('Timed out loading the Firebase plugin. Check your connection and try again.')),
+            PLUGIN_IMPORT_TIMEOUT_MS
+        )
+    );
+
+    return Promise.race([load, timeout]);
 }
 
 /** Phone sign-in is offered only in the native apps (see startPhoneVerification). */

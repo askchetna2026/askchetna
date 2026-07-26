@@ -64,6 +64,30 @@ self.addEventListener('activate', (event) => {
     );
 });
 
+/**
+ * fetch() with a ceiling.
+ *
+ * Whenever this worker calls respondWith, the page's request cannot complete
+ * until the worker's promise settles — so an unbounded fetch on a flaky mobile
+ * network stalls that request forever, with no error and no timeout of its own.
+ *
+ * On failure the request is retried once without the worker in the way, so a
+ * genuinely slow-but-alive network still succeeds.
+ */
+async function fetchWithTimeout(request, timeoutMs = 10000) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+    try {
+        return await fetch(request, { signal: controller.signal });
+    } catch (error) {
+        console.warn('[sw] fetch timed out or failed, retrying once:', request.url, error);
+        return fetch(request);
+    } finally {
+        clearTimeout(timer);
+    }
+}
+
 /** Build output is content-hashed and immutable, so cache-first is always correct. */
 function isImmutableAsset(url) {
     return url.pathname.startsWith('/_next/static/');
@@ -122,7 +146,12 @@ self.addEventListener('fetch', (event) => {
                 const hit = await cache.match(request);
                 if (hit) return hit;
 
-                const response = await fetch(request);
+                // Bounded, because this worker owns the response: a hanging fetch
+                // here hangs the page's request indefinitely. That is not
+                // theoretical — it stalled a dynamic import() of a lazily loaded
+                // module on device, and the feature waiting on that import simply
+                // never proceeded.
+                const response = await fetchWithTimeout(request);
                 if (response.ok) cache.put(request, response.clone());
                 return response;
             })()

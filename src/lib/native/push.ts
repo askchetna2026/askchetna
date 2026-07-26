@@ -143,10 +143,24 @@ export async function attachPushListeners(
             }),
 
             // Foreground receipt. iOS shows the banner itself because
-            // presentationOptions is set in capacitor.config.ts; nothing to do
-            // here beyond logging.
+            // presentationOptions is set in capacitor.config.ts.
+            // Dispatch custom event for update notifications so React components can react.
             PushNotifications.addListener('pushNotificationReceived', (notification) => {
                 console.info('[push] received in foreground:', notification.title);
+
+                const type = notification.data?.type;
+                if (type === 'update') {
+                    const updateData = {
+                        type: 'update',
+                        update: {
+                            version: notification.data?.version || 'unknown',
+                            critical: notification.data?.critical === 'true',
+                            changelog: notification.body || 'Update available',
+                            releaseDate: new Date().toISOString().split('T')[0],
+                        },
+                    };
+                    window.dispatchEvent(new CustomEvent('push-notification', { detail: updateData }));
+                }
             }),
 
             // Tapped — from the tray, or from a cold start.

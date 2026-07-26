@@ -5,6 +5,7 @@ import {
   CURRENT_VERSION,
   checkForUpdates,
   fetchServerVersion,
+  isCriticalUpdate,
   markAutoReloadAttempted,
 } from '@/lib/updates/versionManager';
 import Link from 'next/link';
@@ -206,7 +207,7 @@ export default function AppInfoPage() {
                 <span style={{ color: 'rgba(78, 205, 196, 0.7)' }}>Released:</span>
                 <span>{new Date(updateAvailable.releaseDate).toLocaleDateString()}</span>
               </div>
-              {updateAvailable.critical && (
+              {isCriticalUpdate(updateAvailable) && (
                 <div style={{
                   display: 'flex',
                   justifyContent: 'space-between',
@@ -225,7 +226,7 @@ export default function AppInfoPage() {
               style={{
                 width: '100%',
                 padding: '12px',
-                background: updateAvailable.critical
+                background: isCriticalUpdate(updateAvailable)
                   ? 'linear-gradient(135deg, #FF6B9D 0%, #FF5580 100%)'
                   : 'linear-gradient(135deg, #4ECDC4 0%, #45B7AA 100%)',
                 color: '#0B0F2F',

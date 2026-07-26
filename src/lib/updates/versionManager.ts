@@ -60,6 +60,37 @@ export function compareVersions(a: string, b: string): number {
   return 0;
 }
 
+export type VersionChange = 'major' | 'minor' | 'patch' | 'none';
+
+/**
+ * How big a jump it is from `from` to `to`.
+ *
+ * Worked out on the client rather than the server, because the client is the
+ * only side that knows both numbers: its own is compiled in, the other arrives
+ * from /api/version. Asking the server would mean it remembering which version
+ * each caller last ran, which is state it has no good place to keep.
+ */
+export function getVersionChange(from: string, to: string): VersionChange {
+  const [fMajor = 0, fMinor = 0, fPatch = 0] = from.split('.').map((v) => parseInt(v, 10) || 0);
+  const [tMajor = 0, tMinor = 0, tPatch = 0] = to.split('.').map((v) => parseInt(v, 10) || 0);
+
+  if (tMajor > fMajor) return 'major';
+  if (tMajor === fMajor && tMinor > fMinor) return 'minor';
+  if (tMajor === fMajor && tMinor === fMinor && tPatch > fPatch) return 'patch';
+  return 'none';
+}
+
+/**
+ * Whether an update should be treated as unskippable.
+ *
+ * A major bump means the deployment may no longer honour what this bundle
+ * expects of it, so leaving the user on old code risks quiet breakage rather
+ * than mere staleness. The server can also force it explicitly.
+ */
+export function isCriticalUpdate(update: VersionInfo): boolean {
+  return update.critical || getVersionChange(CURRENT_VERSION, update.version) === 'major';
+}
+
 /**
  * Resolves to the deployed version when this page is running older code.
  */

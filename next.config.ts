@@ -1,6 +1,15 @@
 import type { NextConfig } from "next";
 
+// Inlined into the client bundle at build time, so a loaded page can report
+// which deployment it came from. A runtime lookup would defeat the purpose:
+// the value has to be frozen alongside the JS the user is actually running.
+const APP_VERSION = require("./package.json").version as string;
+
 const nextConfig: NextConfig = {
+  env: {
+    NEXT_PUBLIC_APP_VERSION: APP_VERSION,
+  },
+
   images: {
     remotePatterns: [
       {

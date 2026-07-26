@@ -1,21 +1,21 @@
 /**
- * Version manager for OTA updates.
+ * Staleness detection for the native apps.
  *
- * Automatic update detection:
- * 1. On app startup, fetch /api/version from server
- * 2. Compare against last known version (stored in localStorage)
- * 3. If different, show update notification automatically
- * 4. User taps "Update Now" -> page reloads -> gets new code
- * 5. New code fetches API again, sees it's the latest, hides notification
+ * The apps bundle no web content — capacitor.config.ts points the WebView at the
+ * live site — so a cold start always loads the newest deployment and there is
+ * nothing to "install". The only way a user runs old code is by holding a
+ * session open across a deploy, which a reload fixes.
  *
- * Simple, automatic, no manual steps needed.
+ * CURRENT_VERSION is inlined at build time (next.config.ts) so it describes the
+ * bundle actually executing. Reading it at runtime would compare the server to
+ * itself and report an update that reloading could never clear.
  */
 
 import { useEffect, useState } from 'react';
 
-export const CURRENT_VERSION = '0.0.0'; // Fallback if API unreachable
+export const CURRENT_VERSION = process.env.NEXT_PUBLIC_APP_VERSION || '0.0.0';
 
-interface VersionInfo {
+export interface VersionInfo {
   version: string;
   releaseDate: string;
   critical: boolean;
@@ -23,125 +23,97 @@ interface VersionInfo {
   minNativeVersion?: string;
 }
 
-const STORAGE_KEY = 'last_known_app_version';
-
 /**
- * Get the version from API
+ * Records the version an automatic reload was already attempted for.
+ *
+ * Session-scoped, and the guard against a bricked app: if the two versions ever
+ * fail to converge — a bad deploy, an unreadable package.json resolving to
+ * 0.0.0, two Vercel instances disagreeing — an unguarded auto-reload would spin
+ * forever and the app would never reach usable content.
  */
+const RELOAD_GUARD_KEY = 'update_autoreload_attempted_for';
+
 export async function fetchServerVersion(): Promise<VersionInfo | null> {
   try {
-    const response = await fetch('/api/version', {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-    });
-
+    // cache: 'no-store' matters. The endpoint sets max-age=3600, so a cached
+    // response would keep reporting the pre-deploy version for an hour.
+    const response = await fetch('/api/version', { cache: 'no-store' });
     if (!response.ok) return null;
     return await response.json();
   } catch (error) {
-    console.error('Failed to fetch server version:', error);
+    console.error('[updates] version fetch failed:', error);
     return null;
   }
 }
 
-/**
- * Get the last known version stored locally
- */
-function getLastKnownVersion(): string {
-  if (typeof window === 'undefined') return CURRENT_VERSION;
-  try {
-    return localStorage.getItem(STORAGE_KEY) || '0.0.0';
-  } catch {
-    return '0.0.0';
+/** Returns 1 if a > b, -1 if a < b, 0 if equal. */
+export function compareVersions(a: string, b: string): number {
+  const pa = a.split('.').map((v) => parseInt(v, 10) || 0);
+  const pb = b.split('.').map((v) => parseInt(v, 10) || 0);
+
+  for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+    const x = pa[i] || 0;
+    const y = pb[i] || 0;
+    if (x > y) return 1;
+    if (x < y) return -1;
   }
-}
-
-/**
- * Store the current version as the "last known"
- */
-function storeLastKnownVersion(version: string): void {
-  if (typeof window === 'undefined') return;
-  try {
-    localStorage.setItem(STORAGE_KEY, version);
-  } catch {
-    // Silent fail - localStorage might not be available
-  }
-}
-
-/**
- * Compare semantic versions
- * Returns: 1 if v1 > v2, -1 if v1 < v2, 0 if equal
- */
-function compareVersions(v1: string, v2: string): number {
-  const parts1 = v1.split('.').map((v) => parseInt(v, 10) || 0);
-  const parts2 = v2.split('.').map((v) => parseInt(v, 10) || 0);
-
-  for (let i = 0; i < Math.max(parts1.length, parts2.length); i++) {
-    const part1 = parts1[i] || 0;
-    const part2 = parts2[i] || 0;
-
-    if (part1 > part2) return 1;
-    if (part1 < part2) return -1;
-  }
-
   return 0;
 }
 
 /**
- * Check for updates by comparing server version against last known version
+ * Resolves to the deployed version when this page is running older code.
  */
 export async function checkForUpdates(): Promise<VersionInfo | null> {
-  const serverVersion = await fetchServerVersion();
-  if (!serverVersion) return null;
+  const server = await fetchServerVersion();
+  if (!server) return null;
 
-  const lastKnown = getLastKnownVersion();
-
-  // New version available if server > last known
-  if (compareVersions(serverVersion.version, lastKnown) > 0) {
-    console.log(`[updates] New version detected: ${lastKnown} -> ${serverVersion.version}`);
-    return serverVersion;
-  }
-
-  // If we just got a version, store it so next check knows we're on this version
-  storeLastKnownVersion(serverVersion.version);
-  return null;
+  return compareVersions(server.version, CURRENT_VERSION) > 0 ? server : null;
 }
 
-/**
- * Hook to check for updates on app mount (AUTOMATIC)
- * No manual interaction needed - just checks on startup
- */
+/** True when an automatic reload for this version has not been tried yet. */
+export function canAutoReload(targetVersion: string): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    return sessionStorage.getItem(RELOAD_GUARD_KEY) !== targetVersion;
+  } catch {
+    // Storage unavailable means the guard can't hold, so don't auto-reload.
+    return false;
+  }
+}
+
+export function markAutoReloadAttempted(targetVersion: string): void {
+  if (typeof window === 'undefined') return;
+  try {
+    sessionStorage.setItem(RELOAD_GUARD_KEY, targetVersion);
+  } catch {
+    /* nothing to do — canAutoReload already fails closed */
+  }
+}
+
 export function useUpdateCheck() {
   const [updateAvailable, setUpdateAvailable] = useState<VersionInfo | null>(null);
-  const [checking, setChecking] = useState(false);
+  const [checking, setChecking] = useState(true);
   const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
-    async function check() {
-      setChecking(true);
-      try {
-        const update = await checkForUpdates();
-        setUpdateAvailable(update);
+    let cancelled = false;
 
-        if (update) {
-          console.log('Update available:', update);
-        }
-      } finally {
-        setChecking(false);
-      }
+    async function check() {
+      const update = await checkForUpdates();
+      if (cancelled) return;
+      setUpdateAvailable(update);
+      setChecking(false);
     }
 
-    // Check on mount (automatic, no user action needed)
-    check();
+    void check();
 
-    // Also check every 30 minutes
-    const interval = setInterval(check, 30 * 60 * 1000);
-    return () => clearInterval(interval);
+    // Catches a deploy that lands while the app sits open.
+    const interval = setInterval(() => void check(), 30 * 60 * 1000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
   }, []);
 
-  return {
-    updateAvailable,
-    checking,
-    dismissed,
-    setDismissed,
-  };
+  return { updateAvailable, checking, dismissed, setDismissed };
 }

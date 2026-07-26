@@ -1,52 +1,33 @@
 import { NextResponse } from 'next/server';
-import { sendUpdateNotificationsIfNeeded } from '@/lib/updates/notificationManager';
 import { getPackageVersion } from '@/lib/updates/packageVersion';
 
 /**
- * GET /api/version
+ * GET /api/version — what is deployed right now.
  *
- * Returns current app version info from package.json.
- * Automatically sends push notifications if version changed from last deployment.
+ * Clients compare this against the version compiled into their own bundle
+ * (NEXT_PUBLIC_APP_VERSION) to tell whether the page they are running predates
+ * the current deployment.
  *
- * Deployment flow (fully automated, zero manual steps):
- * 1. Update package.json version before pushing to preview
- * 2. Code pushed to preview → Vercel auto-deploys
- * 3. First request to /api/version detects version change
- * 4. System auto-sends push notifications to all active users
- * 5. Users see update banner with appropriate urgency
- *    - Major version = critical (red banner, forces update)
- *    - Minor/patch = normal (blue banner, can dismiss for 24h)
- *
- * Response:
- * {
- *   "version": "0.2.0",
- *   "releaseDate": "2026-07-26",
- *   "critical": false,
- *   "changelog": "..."
- * }
+ * Deliberately free of side effects. Broadcasting from here looks tempting —
+ * it fires right after a deploy — but "have we already announced this version?"
+ * would have to live in the instance's memory, and every cold-started Vercel
+ * instance starts with that memory empty. Each one would decide the version was
+ * new and notify every user again. The announcement belongs in the deploy step
+ * (POST /api/notifications/send-update), which runs once.
  */
 export async function GET() {
-  const version = getPackageVersion();
-  const versionInfo = {
-    version,
-    releaseDate: new Date().toISOString().split('T')[0],
-    critical: false, // Set in notificationManager based on version change type
-    changelog: 'Check app info for update details',
-    minNativeVersion: '1.0.0',
-  };
-
-  // Auto-detect version change and send notifications if needed
-  // This runs on first request after Vercel deployment
-  try {
-    await sendUpdateNotificationsIfNeeded();
-  } catch (error) {
-    console.error('[api/version] Auto-notification failed (non-fatal):', error);
-    // Don't fail the response; version endpoint is critical
-  }
-
-  return NextResponse.json(versionInfo, {
-    headers: {
-      'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
-    },
-  });
+    return NextResponse.json(
+        {
+            version: getPackageVersion(),
+            releaseDate: new Date().toISOString().split('T')[0],
+            critical: false,
+            changelog: 'Latest improvements and fixes',
+            minNativeVersion: '1.0.0',
+        },
+        {
+            // no-store: a cached copy would keep reporting the pre-deploy version
+            // and hide the very change this endpoint exists to reveal.
+            headers: { 'Cache-Control': 'no-store' },
+        }
+    );
 }

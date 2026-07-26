@@ -1,7 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { CURRENT_VERSION, checkForUpdates } from '@/lib/updates/versionManager';
+import {
+  CURRENT_VERSION,
+  checkForUpdates,
+  fetchServerVersion,
+  markAutoReloadAttempted,
+} from '@/lib/updates/versionManager';
 import Link from 'next/link';
 
 interface VersionInfo {
@@ -26,11 +31,7 @@ export default function AppInfoPage() {
         const isNativeApp = /AskChetnaApp/.test(navigator.userAgent);
         setIsNative(isNativeApp);
 
-        const response = await fetch('/api/version');
-        if (response.ok) {
-          const data = await response.json();
-          setApiVersion(data);
-        }
+        setApiVersion(await fetchServerVersion());
 
         const update = await checkForUpdates();
         setUpdateAvailable(update);
@@ -46,14 +47,17 @@ export default function AppInfoPage() {
   }, []);
 
   const handleUpdate = () => {
+    // Claim the guard so the background auto-reload doesn't fire a second time
+    // for this same version once the page comes back.
+    if (updateAvailable) markAutoReloadAttempted(updateAvailable.version);
     window.location.reload();
   };
 
   const handleCheckNow = async () => {
     setLoading(true);
     try {
-      const update = await checkForUpdates();
-      setUpdateAvailable(update);
+      setApiVersion(await fetchServerVersion());
+      setUpdateAvailable(await checkForUpdates());
       setLastChecked(new Date().toLocaleTimeString());
     } catch (err) {
       console.error('Error checking updates:', err);
@@ -335,10 +339,10 @@ export default function AppInfoPage() {
           marginBottom: '24px'
         }}>
           <p style={{ margin: '0 0 8px 0' }}>
-            <strong>For Native App Users:</strong> Updates are checked automatically on app startup. Force close and reopen the app to check for updates at any time.
+            <strong>In the app:</strong> the latest version loads every time you open AskChetna, so there is nothing to install. If an update is released while you are still using the app, it applies on its own the next time you switch back.
           </p>
           <p style={{ margin: 0 }}>
-            <strong>For Web Users:</strong> Updates are applied when you refresh the page.
+            <strong>In a browser:</strong> the latest version loads when you refresh the page.
           </p>
         </div>
 
@@ -361,12 +365,9 @@ export default function AppInfoPage() {
               For complete privacy details, see our <a href="/privacy" style={{ color: '#D4AF37', textDecoration: 'underline' }}>Privacy Policy</a>.
             </li>
             <li>
-              Updates require internet connection. No automatic installation—you control when to update.
+              Updates need an internet connection. They apply on their own, but never while you are in the middle of something — only once the app is in the background or you return to it.
             </li>
           </ul>
-          <p style={{ margin: '0', fontSize: '11px', color: 'rgba(212, 175, 55, 0.5)' }}>
-            💡 Push notifications for updates will be available soon.
-          </p>
         </div>
       </div>
     </main>

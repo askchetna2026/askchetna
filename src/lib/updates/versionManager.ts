@@ -1,11 +1,18 @@
 /**
- * Version manager for Capacitor Live Updates
- * Tracks current version and checks for updates
+ * Version manager for OTA updates.
+ *
+ * The client version is compared against server version (/api/version).
+ * Server version is always read from package.json (single source of truth).
+ *
+ * When you bump package.json version, the next deployment automatically
+ * notifies users with appropriate urgency based on change type (major/minor/patch).
  */
 
 import { useEffect, useState } from 'react';
 
-export const CURRENT_VERSION = '1.0.2'; // Increment on each web deployment
+// Client version - should match package.json
+// Update this when you bump package.json version
+export const CURRENT_VERSION = '0.2.0';
 
 interface VersionInfo {
   version: string;

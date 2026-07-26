@@ -1,67 +1,69 @@
 /**
  * Manages automatic update notifications.
  *
- * Tracks which version users have been notified about and automatically
- * sends notifications when a new version is deployed.
+ * Reads version from package.json (single source of truth).
+ * Detects new deployments by comparing with in-memory cache.
+ * Automatically sends notifications with no manual env var updates.
+ *
+ * Flow:
+ * 1. Code pushed to preview → Vercel rebuilds
+ * 2. package.json version is now different from what was deployed before
+ * 3. First request to /api/version detects change
+ * 4. System auto-sends push notifications
+ * 5. In-memory cache prevents duplicate notifications on same server instance
+ * 6. Next deployment (new version in package.json) triggers again
  */
 
 import { sendPushToUsers } from '@/lib/push/send';
 import prisma from '@/lib/prisma';
+import {
+  getPackageVersion,
+  getVersionChangeType,
+  getChangelogForVersion,
+  isCriticalUpdate,
+} from '@/lib/updates/packageVersion';
 
-const LAST_NOTIFIED_VERSION_KEY = 'UPDATE_NOTIFICATION_LAST_VERSION';
+// In-memory cache: tracks last version we notified about on this server instance
+// Resets on deployment (server restart), allowing re-notification after new deploy
+let lastNotifiedVersion = '';
 
 /**
- * Get the last version we sent notifications for.
- * Uses an env variable for simplicity (set on deployment).
+ * Initialize the cache with current version.
+ * This prevents notifications on startup if version hasn't changed.
  */
-function getLastNotifiedVersion(): string {
-  return process.env[LAST_NOTIFIED_VERSION_KEY] || '0.0.0';
-}
-
-/**
- * Check if current version is newer than last notified version.
- */
-export function isNewVersionAvailable(currentVersion: string, lastNotified: string): boolean {
-  const current = currentVersion.split('.').map(Number);
-  const last = lastNotified.split('.').map(Number);
-
-  for (let i = 0; i < Math.max(current.length, last.length); i++) {
-    const c = current[i] || 0;
-    const l = last[i] || 0;
-    if (c > l) return true;
-    if (c < l) return false;
+export function initializeNotificationCache(): void {
+  if (!lastNotifiedVersion) {
+    lastNotifiedVersion = getPackageVersion();
   }
-
-  return false;
 }
 
 /**
- * Automatically send update notifications if there's a new version.
- * Call this from:
- * 1. The /api/version endpoint (on every request)
- * 2. A Vercel deployment webhook
- * 3. A scheduled cron job
+ * Automatically send update notifications if version changed.
+ * Call this from the /api/version endpoint on every request.
  *
  * Returns true if notifications were sent, false otherwise.
  */
-export async function sendUpdateNotificationsIfNeeded(
-  currentVersion: string,
-  changelog: string
-): Promise<boolean> {
+export async function sendUpdateNotificationsIfNeeded(): Promise<boolean> {
   try {
-    const lastNotified = getLastNotifiedVersion();
+    // Initialize cache on first call
+    if (!lastNotifiedVersion) {
+      initializeNotificationCache();
+    }
 
-    // Check if we have a new version
-    if (!isNewVersionAvailable(currentVersion, lastNotified)) {
-      console.log(
-        `[updates] Version ${currentVersion} is not newer than last notified ${lastNotified}`
-      );
+    const currentVersion = getPackageVersion();
+    const changeType = getVersionChangeType(currentVersion, lastNotifiedVersion);
+
+    // No version change detected
+    if (changeType === 'none') {
       return false;
     }
 
     console.log(
-      `[updates] New version detected: ${lastNotified} -> ${currentVersion}. Sending notifications...`
+      `[updates] ${changeType.toUpperCase()} version change detected: ${lastNotifiedVersion} -> ${currentVersion}`
     );
+
+    const changelog = getChangelogForVersion(currentVersion, changeType);
+    const isCritical = isCriticalUpdate(changeType);
 
     // Get all users with active devices
     const activeDevices = await prisma.deviceToken.findMany({
@@ -74,21 +76,28 @@ export async function sendUpdateNotificationsIfNeeded(
 
     if (userIds.length === 0) {
       console.log('[updates] No active users to notify');
+      lastNotifiedVersion = currentVersion;
       return false;
     }
 
     // Send notifications
     const result = await sendPushToUsers(userIds, {
-      title: '✨ App Update Available',
+      title: isCritical ? '⚠️ Critical App Update' : '✨ App Update Available',
       body: changelog,
       path: '/app-info',
       data: {
         version: currentVersion,
         type: 'update',
+        critical: isCritical ? 'true' : 'false',
       },
     });
 
-    console.log(`[updates] Notifications sent: ${result.sent}/${userIds.length}`);
+    console.log(
+      `[updates] ${changeType} update notifications sent: ${result.sent}/${userIds.length} (critical: ${isCritical})`
+    );
+
+    // Update cache so we don't re-notify on next request (same server instance)
+    lastNotifiedVersion = currentVersion;
     return result.sent > 0;
   } catch (error) {
     console.error('[updates] Failed to send auto notifications:', error);
@@ -97,25 +106,19 @@ export async function sendUpdateNotificationsIfNeeded(
 }
 
 /**
- * Format instructions for environment setup.
- * After deploying a new version, update this env var so the system knows
- * which version was last notified about.
+ * Get current status for debugging.
  */
-export function getDeploymentInstructions(newVersion: string): string {
-  return `
-After deployment to preview:
+export function getNotificationStatus(): {
+  currentVersion: string;
+  lastNotifiedVersion: string;
+  hasChanges: boolean;
+} {
+  const currentVersion = getPackageVersion();
+  const changeType = getVersionChangeType(currentVersion, lastNotifiedVersion);
 
-1. Update Vercel environment variable on ${process.env.VERCEL_ENV || 'preview'} environment:
-   Name: UPDATE_NOTIFICATION_LAST_VERSION
-   Value: ${newVersion}
-
-   OR add to .env.preview:
-   UPDATE_NOTIFICATION_LAST_VERSION=${newVersion}
-
-2. Trigger redeployment OR manually call:
-   curl -X POST https://preview.askchetna.com/api/notifications/check \
-     -H "Authorization: Bearer \$CRON_SECRET"
-
-This notifies all users with active devices about the new version.
-  `;
+  return {
+    currentVersion,
+    lastNotifiedVersion,
+    hasChanges: changeType !== 'none',
+  };
 }

@@ -1,16 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { sendUpdateNotificationsIfNeeded } from '@/lib/updates/notificationManager';
+import { sendUpdateNotificationsIfNeeded, getNotificationStatus } from '@/lib/updates/notificationManager';
 
 /**
  * POST /api/notifications/check
  *
  * Manually trigger version check and send notifications if needed.
- * Can be called by:
- * 1. Vercel deployment webhooks
- * 2. Scheduled GitHub Actions
- * 3. Admin cron jobs
+ * Useful for testing or when you want to force a check outside of /api/version requests.
  *
  * Requires CRON_SECRET in Authorization header for security.
+ * No request body needed - reads version from package.json automatically.
  */
 
 export async function POST(request: NextRequest) {
@@ -33,25 +31,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { version, changelog } = await request.json() as {
-      version?: string;
-      changelog?: string;
-    };
-
-    if (!version || !changelog) {
-      return NextResponse.json(
-        { error: 'Missing version or changelog in request body' },
-        { status: 400 }
-      );
-    }
-
-    // Trigger the notification check
-    const sent = await sendUpdateNotificationsIfNeeded(version, changelog);
+    // Trigger the notification check (reads version from package.json)
+    const sent = await sendUpdateNotificationsIfNeeded();
+    const status = getNotificationStatus();
 
     return NextResponse.json({
       success: true,
-      message: sent ? 'Notifications sent' : 'Version is not new, no notifications sent',
-      version,
+      message: sent ? 'Notifications sent' : 'No new version, notifications not needed',
+      ...status,
       notificationsSent: sent,
     });
   } catch (error) {

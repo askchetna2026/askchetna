@@ -20,8 +20,7 @@ export function CosmicStarfield() {
       gl={{
         alpha: true,
         antialias: true,
-        powerPreference: 'high-performance',
-        dpr: window.devicePixelRatio || 1
+        powerPreference: 'high-performance'
       }}
       dpr={[1, 2]}
     >

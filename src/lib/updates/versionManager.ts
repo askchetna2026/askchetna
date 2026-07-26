@@ -1,18 +1,22 @@
 /**
  * Version manager for OTA updates.
  *
- * The client version is compared against server version (/api/version).
+ * The client fetches current version from /api/version on each check.
  * Server version is always read from package.json (single source of truth).
  *
  * When you bump package.json version, the next deployment automatically
- * notifies users with appropriate urgency based on change type (major/minor/patch).
+ * notifies users.
+ *
+ * This approach ensures:
+ * 1. Client always has latest version after code update (reload)
+ * 2. Version mismatch is detected correctly
+ * 3. No manual version syncing needed
  */
 
 import { useEffect, useState } from 'react';
 
-// Client version - should match package.json
-// Update this when you bump package.json version
-export const CURRENT_VERSION = '0.2.0';
+// Fallback version if API is unreachable
+export const CURRENT_VERSION = '0.0.0';
 
 interface VersionInfo {
   version: string;
@@ -20,6 +24,28 @@ interface VersionInfo {
   critical: boolean;
   changelog: string;
   minNativeVersion?: string;
+}
+
+// Track the current deployed version by checking API on startup
+let deployedVersion = '';
+
+async function getDeployedVersion(): Promise<string> {
+  if (deployedVersion) return deployedVersion;
+
+  try {
+    const response = await fetch('/api/version', {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (response.ok) {
+      const data: VersionInfo = await response.json();
+      deployedVersion = data.version;
+      return data.version;
+    }
+  } catch (error) {
+    console.error('Failed to fetch deployed version:', error);
+  }
+  return CURRENT_VERSION;
 }
 
 export async function checkForUpdates(): Promise<VersionInfo | null> {
@@ -33,8 +59,11 @@ export async function checkForUpdates(): Promise<VersionInfo | null> {
 
     const versionInfo: VersionInfo = await response.json();
 
-    // Update available if remote version > current version
-    if (compareVersions(versionInfo.version, CURRENT_VERSION) > 0) {
+    // Get current deployed version
+    const currentDeployed = await getDeployedVersion();
+
+    // Update available if remote version > deployed version
+    if (compareVersions(versionInfo.version, currentDeployed) > 0) {
       return versionInfo;
     }
 

@@ -34,8 +34,11 @@ export type VersionType = 'major' | 'minor' | 'patch' | 'none';
  * - 1.0.0 -> 1.0.0 = none (no change)
  */
 export function getVersionChangeType(currentVersion: string, previousVersion: string): VersionType {
-  const current = currentVersion.split('.').map(Number);
-  const previous = previousVersion.split('.').map(Number);
+  // Handle empty/invalid previous version (treats as 0.0.0)
+  const prevVersion = previousVersion || '0.0.0';
+
+  const current = currentVersion.split('.').map((v) => parseInt(v, 10) || 0);
+  const previous = prevVersion.split('.').map((v) => parseInt(v, 10) || 0);
 
   const [currMajor = 0, currMinor = 0, currPatch = 0] = current;
   const [prevMajor = 0, prevMinor = 0, prevPatch = 0] = previous;

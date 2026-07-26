@@ -23,19 +23,10 @@ import {
   isCriticalUpdate,
 } from '@/lib/updates/packageVersion';
 
-// In-memory cache: tracks last version we notified about on this server instance
-// Resets on deployment (server restart), allowing re-notification after new deploy
+// In-memory cache: tracks last version we notified about
+// Empty string means "never notified before this deployment"
+// When server restarts (new deployment), this resets to '', allowing detection of version change
 let lastNotifiedVersion = '';
-
-/**
- * Initialize the cache with current version.
- * This prevents notifications on startup if version hasn't changed.
- */
-export function initializeNotificationCache(): void {
-  if (!lastNotifiedVersion) {
-    lastNotifiedVersion = getPackageVersion();
-  }
-}
 
 /**
  * Automatically send update notifications if version changed.
@@ -45,11 +36,6 @@ export function initializeNotificationCache(): void {
  */
 export async function sendUpdateNotificationsIfNeeded(): Promise<boolean> {
   try {
-    // Initialize cache on first call
-    if (!lastNotifiedVersion) {
-      initializeNotificationCache();
-    }
-
     const currentVersion = getPackageVersion();
     const changeType = getVersionChangeType(currentVersion, lastNotifiedVersion);
 

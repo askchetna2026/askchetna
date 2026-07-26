@@ -1,16 +1,46 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sendUpdateNotificationsIfNeeded, getNotificationStatus } from '@/lib/updates/notificationManager';
+import prisma from '@/lib/prisma';
+
+/**
+ * GET /api/notifications/check
+ *
+ * Debug endpoint - shows current notification status without requiring auth
+ */
+export async function GET() {
+  try {
+    const status = getNotificationStatus();
+
+    // Count active device tokens
+    const activeDeviceCount = await prisma.deviceToken.count({
+      where: { disabledAt: null }
+    });
+
+    return NextResponse.json({
+      status: 'OK',
+      currentVersion: status.currentVersion,
+      lastNotifiedVersion: status.lastNotifiedVersion,
+      hasChanges: status.hasChanges,
+      activeDeviceTokens: activeDeviceCount,
+      message: status.hasChanges
+        ? 'New version detected - notifications would be sent'
+        : 'No new version - no notifications needed'
+    });
+  } catch (error) {
+    console.error('Get notification status failed:', error);
+    return NextResponse.json(
+      { error: 'Failed to check status', details: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
+    );
+  }
+}
 
 /**
  * POST /api/notifications/check
  *
  * Manually trigger version check and send notifications if needed.
- * Useful for testing or when you want to force a check outside of /api/version requests.
- *
  * Requires CRON_SECRET in Authorization header for security.
- * No request body needed - reads version from package.json automatically.
  */
-
 export async function POST(request: NextRequest) {
   try {
     const authHeader = request.headers.get('Authorization');

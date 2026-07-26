@@ -18,11 +18,11 @@ export async function GET() {
   // This is the current deployed version
   // Increment the version number when pushing significant updates
   const versionInfo = {
-    version: '1.0.0',
+    version: '1.0.1',
     releaseDate: new Date().toISOString().split('T')[0],
     critical: false, // Set to true to force update on all users
     changelog:
-      'Latest features and improvements from AskChetna',
+      'Test update: Live update system is working! Performance improvements.',
     minNativeVersion: '1.0.0', // Minimum native app version required
   };
 

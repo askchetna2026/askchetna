@@ -289,9 +289,22 @@ function friendlyError(raw: string): string {
             'cannot run here. Use a number registered under Firebase > Authentication > ' +
             'Sign-in method > Phone > "Phone numbers for testing".';
     }
-    if (message.includes('billing') || message.includes('not-enabled') || message.includes('operation-not-allowed')) {
-        return 'Phone sign-in is not enabled on this Firebase project, or the project needs ' +
-            'billing enabled for SMS.';
+    // Matches the prose too, not just the error code. Firebase sends the sentence
+    // "This operation is not allowed. This may be because the given sign-in
+    // provider is disabled for this Firebase project", which contains neither
+    // "operation-not-allowed" nor "not-enabled" and so fell through to the raw
+    // fallback.
+    if (
+        message.includes('billing') ||
+        message.includes('not-enabled') ||
+        message.includes('operation-not-allowed') ||
+        message.includes('operation is not allowed') ||
+        message.includes('sign-in provider is disabled')
+    ) {
+        return 'Firebase rejected phone sign-in as "not allowed". If the Phone provider IS ' +
+            'enabled, the usual causes are: google-services.json belongs to a different ' +
+            'Firebase project than the console you enabled it in, or the SMS region policy ' +
+            '(Authentication > Settings) does not permit this country.';
     }
 
     // Deliberately include the raw text. Every branch above exists because a real

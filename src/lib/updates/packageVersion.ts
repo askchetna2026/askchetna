@@ -7,7 +7,7 @@
 import fs from 'fs';
 import path from 'path';
 
-let cachedVersion: string | null = null;
+let cachedVersion = '';
 
 export function getPackageVersion(): string {
   if (cachedVersion) return cachedVersion;

@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import styles from './Header.module.css';
 import Logo from './Logo';
 import ThemeToggle from './ThemeToggle';
-import { Menu, X, CreditCard, LayoutDashboard, LogOut, Info, BookOpen, MessageSquare, Sparkles, Users, UserCog } from 'lucide-react';
+import { Menu, X, CreditCard, LayoutDashboard, LogOut, Info, BookOpen, MessageSquare, Sparkles, Users, UserCog, Settings } from 'lucide-react';
 import { PAYMENTS_ENABLED } from '@/lib/paymentConfig';
 
 export default function Header() {
@@ -92,6 +92,9 @@ export default function Header() {
                 <Link href="/account" className={`${styles.navLink} ${pathname === '/account' ? styles.activeLink : ''}`}>
                   Account
                 </Link>
+                <Link href="/app-info" className={`${styles.navLink} ${pathname === '/app-info' ? styles.activeLink : ''}`}>
+                  App Info
+                </Link>
                 {session?.user?.isAdmin && (
                   <Link href="/admin" className={`${styles.navLink} ${styles.adminLink} ${pathname === '/admin' ? styles.activeLink : ''}`} onClick={() => setIsMenuOpen(false)}>
                     Admin
@@ -166,6 +169,9 @@ export default function Header() {
                           mobile apps. */}
                       <Link href="/account" className={`${styles.mobileNavLink} ${pathname === '/account' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
                         <UserCog size={20} /> Account
+                      </Link>
+                      <Link href="/app-info" className={`${styles.mobileNavLink} ${pathname === '/app-info' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                        <Settings size={20} /> App Info
                       </Link>
                     </>
                   ) : (

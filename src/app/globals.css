@@ -44,22 +44,46 @@
   --secondary: #C7C5CF;
   --brand-secondary: #5D3FD3;
   --text-muted: #B3B2B9; /* Increased contrast for readability */
-  --success: #4ade80;
-  --success-bg: rgba(74, 222, 128, 0.15);
-  --error: #ffb4ab;
-  --error-bg: rgba(255, 180, 171, 0.15);
+  --success: #4ECDC4;
+  --success-bg: rgba(78, 205, 196, 0.15);
+  --warning: #F7B731;
+  --warning-bg: rgba(247, 183, 49, 0.15);
+  --error: #FF6B9D;
+  --error-bg: rgba(255, 107, 157, 0.15);
   --accent-gold: #D4AF37;
   --accent-gold-rgb: 212, 175, 55;
   --accent-gold-dim: #9E8329;
-  --card-bg: rgba(18, 22, 64, 0.85); /* No lines, soft depth */
-  --card-border: rgba(212, 175, 55, 0.0); /* Removed harsh border */
-  --border-soft: rgba(93, 63, 211, 0.2); /* Iris border fallback */
+  --accent-iris: #5D3FD3;
+  --card-bg: rgba(18, 22, 64, 0.4);
+  --card-border: rgba(212, 175, 55, 0.2);
+  --border-soft: rgba(93, 63, 211, 0.2);
   --glass-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.8), 0 0 30px -5px rgba(93, 63, 211, 0.15);
-  
-  /* Cosmic specific colors */
-  --nebula-purple: rgba(159, 122, 234, 0.35); /* #9F7AEA */
-  --nebula-indigo: rgba(93, 63, 211, 0.4);    /* #5D3FD3 */
-  --nebula-gold: rgba(212, 175, 55, 0.15);    /* #D4AF37 */
+
+  /* Cosmic palette - Nebula & Stars */
+  --nebula-purple: rgba(159, 122, 234, 0.35);
+  --nebula-purple-light: rgba(184, 159, 232, 0.25);
+  --nebula-indigo: rgba(93, 63, 211, 0.4);
+  --nebula-blue: rgba(74, 144, 226, 0.3);
+  --star-white: #E8E9FF;
+  --moon-silver: #C7C5CF;
+  --cosmic-glow: #D4AF37;
+
+  /* Planets - Chart colors */
+  --planet-sun: #FFD700;
+  --planet-moon: #F0F0F0;
+  --planet-mars: #E74C3C;
+  --planet-mercury: #3498DB;
+  --planet-venus: #F39C12;
+  --planet-jupiter: #8E44AD;
+  --planet-saturn: #95A5A6;
+  --planet-rahu: #2C3E50;
+  --planet-ketu: #34495E;
+
+  /* Elements - Vedic */
+  --element-fire: #E74C3C;
+  --element-earth: #8B7355;
+  --element-air: #87CEEB;
+  --element-water: #3498DB;
 }
 
 [data-theme='light'] {
@@ -247,7 +271,7 @@ a {
 .noise-overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  z-index: -1;
+  z-index: -3;
   pointer-events: none;
   opacity: 0.03;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
@@ -280,7 +304,7 @@ h3 { font-size: 1.5rem; letter-spacing: 0.05em; }
    SACRED UI ELEMENTS
    ═══════════════════════════════════════════════ */
 
-/* Sacred Card Border & Background */
+/* Sacred Card Border & Background - Enhanced Glassmorphism */
 .sacred-card {
   position: relative;
   background: var(--card-bg);
@@ -288,9 +312,9 @@ h3 { font-size: 1.5rem; letter-spacing: 0.05em; }
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--card-border);
   border-radius: var(--radius-md);
-  box-shadow: var(--glass-shadow);
+  box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 .sacred-card::before {
@@ -298,12 +322,25 @@ h3 { font-size: 1.5rem; letter-spacing: 0.05em; }
   position: absolute;
   top: 0; left: 0; right: 0; height: 1px;
   background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.5), transparent);
+  z-index: 1;
 }
 
 .sacred-card:hover {
-  transform: translateY(-6px) scale(1.01);
-  border-color: rgba(212, 175, 55, 0.5);
-  box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.6), 0 0 40px -5px rgba(212, 175, 55, 0.15);
+  transform: translateY(-8px);
+  border-color: rgba(212, 175, 55, 0.4);
+  box-shadow:
+    0 30px 60px -15px rgba(0, 0, 0, 0.6),
+    0 0 40px -5px rgba(212, 175, 55, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  background: rgba(18, 22, 64, 0.5);
+}
+
+.sacred-card.active {
+  border-color: var(--accent-gold);
+  box-shadow:
+    0 20px 40px -10px rgba(212, 175, 55, 0.3),
+    0 0 20px rgba(212, 175, 55, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 /* Decorative Section Divider */
@@ -338,37 +375,165 @@ h3 { font-size: 1.5rem; letter-spacing: 0.05em; }
 }
 
 /* ═══════════════════════════════════════════════
+   ANIMATIONS & KEYFRAMES
+   ═══════════════════════════════════════════════ */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.8);
+  }
+}
+
+@keyframes glow-float {
+  0%, 100% {
+    filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.4));
+    transform: translateY(0px);
+  }
+  50% {
+    filter: drop-shadow(0 0 16px rgba(212, 175, 55, 0.8));
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+@keyframes rotate-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Animation utility classes */
+.animate-in {
+  animation: slideInUp 0.5s ease-out forwards;
+}
+
+.animate-fade {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.animate-scale {
+  animation: scaleIn 0.5s ease-out forwards;
+}
+
+.animate-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: glow-float 3s ease-in-out infinite;
+}
+
+.animate-twinkle {
+  animation: twinkle 3s ease-in-out infinite;
+}
+
+.animate-spin {
+  animation: rotate-slow 8s linear infinite;
+}
+
+/* ═══════════════════════════════════════════════
    INTERACTIVE ELEMENTS
    ═══════════════════════════════════════════════ */
 .primary-btn-cosmic {
+  position: relative;
   font-family: var(--font-heading);
   letter-spacing: 0.1em;
   color: #050208;
   background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%);
   border: none;
   padding: 12px 32px;
-  border-radius: 50px;
+  border-radius: 8px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
+  box-shadow:
+    0 4px 20px rgba(212, 175, 55, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
   text-transform: uppercase;
   font-size: 0.9rem;
+  overflow: hidden;
+}
+
+.primary-btn-cosmic::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+}
+
+.primary-btn-cosmic:active::before {
+  width: 300px;
+  height: 300px;
+  animation: ripple 0.6s ease-out;
 }
 
 .primary-btn-cosmic:hover {
-  transform: scale(1.02) translateY(-2px);
-  box-shadow: 0 10px 30px rgba(212, 175, 55, 0.6);
+  transform: translateY(-2px);
+  box-shadow:
+    0 10px 30px rgba(212, 175, 55, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.primary-btn-cosmic:focus {
+  outline: 2px solid rgba(212, 175, 55, 0.5);
+  outline-offset: 2px;
 }
 
 .secondary-btn-cosmic {
+  position: relative;
   font-family: var(--font-heading);
   letter-spacing: 0.1em;
   color: var(--accent-gold);
   background: transparent;
-  border: 1px solid var(--accent-gold);
+  border: 1.5px solid var(--accent-gold);
   padding: 12px 32px;
-  border-radius: 50px;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
   text-transform: uppercase;
@@ -376,8 +541,24 @@ h3 { font-size: 1.5rem; letter-spacing: 0.05em; }
 }
 
 .secondary-btn-cosmic:hover {
-  background: rgba(212, 175, 55, 0.1);
-  box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+  background: rgba(212, 175, 55, 0.15);
+  box-shadow:
+    inset 0 0 20px rgba(212, 175, 55, 0.2),
+    0 0 20px rgba(212, 175, 55, 0.1);
+  border-color: rgba(212, 175, 55, 0.8);
+}
+
+.secondary-btn-cosmic:focus {
+  outline: 2px solid rgba(212, 175, 55, 0.5);
+  outline-offset: 2px;
+}
+
+@keyframes ripple {
+  to {
+    width: 300px;
+    height: 300px;
+    opacity: 0;
+  }
 }
 
 /* Planet Glyph Utility */
@@ -386,6 +567,55 @@ h3 { font-size: 1.5rem; letter-spacing: 0.05em; }
   color: var(--accent-gold);
   filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.6));
 }
+
+/* Cosmic Effect Utilities */
+.cosmic-glow {
+  position: relative;
+}
+
+.cosmic-glow::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: inherit;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.3), transparent 70%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.glassmorphism-card {
+  background: rgba(18, 22, 64, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 16px;
+  box-shadow:
+    0 20px 50px -10px rgba(0, 0, 0, 0.8),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #D4AF37 0%, #5D3FD3 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.text-gold { color: var(--accent-gold); }
+.text-iris { color: var(--accent-iris); }
+.text-muted-cosmic { color: var(--text-muted); }
+
+.bg-glow-gold {
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
+}
+
+.bg-glow-iris {
+  box-shadow: 0 0 30px rgba(93, 63, 211, 0.2);
+}
+
+.border-gold { border-color: var(--accent-gold); }
+.border-iris { border-color: var(--accent-iris); }
 
 @media (max-width: 640px) {
   .container {

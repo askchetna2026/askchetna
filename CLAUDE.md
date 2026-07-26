@@ -154,9 +154,143 @@ npm run migrate:preview
 npm run migrate:prod
 
 npm run verify:payments         # read-only Razorpay webhook regression check
-npm run apple:secret            # regenerate the Sign in with Apple client secret
+npm run apple:secret            # regenerate the Sign in with Apple client secret (expires 6mo)
 npm run assets                  # regenerate app icons and splash screens
+npm run cap:sync                # sync config into native projects (before building)
+npm run shell:prepare           # points offline page at correct deployment (CAP_SERVER_URL)
 ```
 
 After any schema change, check status against **every** environment you deploy to,
 not just local.
+
+## Mobile App Build & Deployment
+
+### Quick Start (Development)
+
+**iOS (macOS only):**
+```bash
+npm run cap:sync              # Syncs web + Capacitor config into Xcode project
+open mobile/ios/App/App.xcodeproj
+# In Xcode: Cmd+R to build and run on simulator/device
+```
+
+**Android:**
+```bash
+npm run cap:sync              # Syncs web + Capacitor config into Gradle
+npx cap run android           # Builds and runs on first connected emulator/device
+# Or open mobile/android in Android Studio and run from IDE
+```
+
+### Building for Store Submission
+
+**Android Release:**
+```bash
+export ASKCHETNA_KEYSTORE_PATH="/path/to/release.jks"
+export ASKCHETNA_KEYSTORE_PASSWORD="keystore_password"
+export ASKCHETNA_KEY_ALIAS="askchetna-prod"
+export ASKCHETNA_KEY_PASSWORD="key_password"
+
+cd mobile/android
+./gradlew bundleRelease
+# Outputs: app/build/outputs/bundle/release/app-release.aab → upload to Google Play
+```
+
+**iOS Release:**
+```bash
+# Create archive in Xcode (Product → Archive) or CLI:
+xcodebuild -scheme App -archivePath App.xcarchive -configuration Release archive
+
+# Export and upload via Transporter or Xcode Organizer
+xcodebuild -exportArchive -archivePath App.xcarchive \
+  -exportOptionsPlist exportOptions.plist -exportPath ./build
+# Outputs: build/*.ipa → upload to App Store Connect
+```
+
+### Preview vs Production
+
+**Web deployment** is automatic (Vercel from `preview` branch).
+
+**Mobile apps** are locked to a URL at build time. To test preview:
+
+```bash
+CAP_SERVER_URL=https://preview.askchetna.com npm run cap:sync
+# Rebuild and run — now loading from preview.askchetna.com instead of production
+
+# Remember to switch back before production build:
+npm run cap:sync  # Uses default: https://www.askchetna.com
+```
+
+### Key Mobile Files
+
+| File | Purpose |
+|---|---|
+| `capacitor.config.ts` | Platform config, URL, plugin setup, safe areas |
+| `src/lib/platform.ts` | Platform detection (server + client via User-Agent) |
+| `src/lib/native/phoneAuth.ts` | Phone OTP flow (detailed error messages, timeout tracking) |
+| `src/lib/native/googleAuth.ts` | Native Google sign-in (system account picker) |
+| `src/lib/native/iap.ts` | RevenueCat integration (iOS only, App Store IAP) |
+| `src/lib/native/push.ts` | Push notifications (FCM + APNs, token management) |
+| `mobile/shell/offline.html` | Offline fallback (STATIC ONLY — no plugin calls) |
+| `scripts/prepare-shell.mjs` | Updates offline page URL to match CAP_SERVER_URL |
+| `.github/workflows/android-*.yml` | CI/CD for Android builds (signing + upload) |
+| `.github/workflows/ios-release.yml` | CI/CD for iOS builds (archive + upload) |
+
+### Store Compliance (Do Not Regress)
+
+**iOS App Store:**
+- **3.1.1**: Razorpay must NOT appear (checked server-side via `isIosApp()`)
+- **4.8**: Sign in with Apple required if Google sign-in exists
+- **5.1.1(v)**: Account deletion must be in-app with 7-day grace period
+
+**Android Google Play:**
+- Data deletion policy: Same as iOS account deletion
+- No blocking payment methods
+- Permissions aligned with features
+
+### Firebase Configuration
+
+**Phone OTP + Google sign-in** use Firebase Authentication. Both require:
+
+1. **SHA-1 and SHA-256 fingerprints** registered in Firebase Console
+   ```bash
+   # Extract from debug APK:
+   apksigner verify --print-certs app-debug.apk | grep -E "SHA-1|SHA-256"
+   
+   # Copy both to Firebase Console > Authentication > Settings > Android
+   ```
+
+2. **google-services.json** (Android)
+   - Downloaded from Firebase Console
+   - Not in git (contains keys)
+   - For CI builds: Supply as environment variable
+
+3. **GoogleService-Info.plist** (iOS)
+   - Downloaded from Firebase Console
+   - Checked into `mobile/ios/App/App/`
+   - Must match the Firebase project from web app
+
+**Test Numbers** (Firebase Console):
+- Can register phone numbers for OTP testing without real SMS
+- Useful for QA before production
+
+### iOS-Specific Gotchas
+
+- **Signing certificates expire** — must be renewed in Apple Developer Portal and added to Xcode
+- **Provisioning profiles expire** — need renewal too (affects both dev and production)
+- **App Store review can take 24-48 hours** — test in TestFlight first
+- **`APPLE_SECRET` expires every 6 months** — regenerate with `npm run apple:secret` proactively
+- **Safe area insets** — `viewport-fit=cover` with `env(safe-area-inset-*)` (see globals.css)
+
+### Android-Specific Gotchas
+
+- **Emulator is slow** — consider physical device for testing
+- **App signing key** — debug and release keys are separate; fingerprints differ
+- **google-services.json** — must match the Firebase project or phone OTP will fail with DEVELOPER_ERROR
+- **Keystore password** — if lost, app cannot be updated (must create new release under different package ID)
+- **Gradle sync errors** — usually network issues; try invalidating cache in Android Studio
+
+## Detailed Documentation
+
+For complete technical details, setup instructions, and troubleshooting:
+- **Technical Deep Dive:** See `docs/TECHNICAL-MOBILE-DOCUMENTATION.md`
+- **Status Summary:** See `docs/MOBILE-STATUS-SUMMARY.md`

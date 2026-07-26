@@ -20,7 +20,6 @@ export function CosmicStarfield() {
       gl={{
         alpha: true,
         antialias: true,
-        transparent: true,
         powerPreference: 'high-performance',
         dpr: window.devicePixelRatio || 1
       }}

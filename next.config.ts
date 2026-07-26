@@ -1,13 +1,20 @@
 import type { NextConfig } from "next";
 
-// Inlined into the client bundle at build time, so a loaded page can report
-// which deployment it came from. A runtime lookup would defeat the purpose:
-// the value has to be frozen alongside the JS the user is actually running.
+// Both are inlined into the client bundle at build time, so a loaded page can
+// report which deployment it came from. A runtime lookup would defeat the
+// purpose: the values have to be frozen alongside the JS actually running.
+//
+// They answer two different questions. BUILD_ID — Vercel's commit SHA, unique
+// per deploy — answers "is this page stale?", and needs no upkeep, so a release
+// can never be missed by forgetting to bump something. APP_VERSION answers "how
+// urgent is it?", and is the one deliberate, occasional decision.
 const APP_VERSION = require("./package.json").version as string;
+const BUILD_ID = process.env.VERCEL_GIT_COMMIT_SHA || "dev";
 
 const nextConfig: NextConfig = {
   env: {
     NEXT_PUBLIC_APP_VERSION: APP_VERSION,
+    NEXT_PUBLIC_BUILD_ID: BUILD_ID,
   },
 
   images: {

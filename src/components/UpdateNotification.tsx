@@ -8,6 +8,7 @@ import {
     canAutoReload,
     markAutoReloadAttempted,
     isCriticalUpdate,
+    updateKey,
     type VersionInfo,
 } from '@/lib/updates/versionManager';
 
@@ -58,10 +59,11 @@ export default function UpdateNotification() {
     const update = updateAvailable || pushUpdate;
     const critical = update ? isCriticalUpdate(update) : false;
 
-    const apply = useCallback((version: string) => {
-        if (applyingRef.current || !canAutoReload(version)) return;
+    const apply = useCallback((target: VersionInfo) => {
+        const key = updateKey(target);
+        if (applyingRef.current || !canAutoReload(key)) return;
         applyingRef.current = true;
-        markAutoReloadAttempted(version);
+        markAutoReloadAttempted(key);
         setApplying(true);
         window.location.reload();
     }, []);
@@ -71,7 +73,7 @@ export default function UpdateNotification() {
         if (!isNative || !update || !critical) return;
 
         if (!isUserTyping()) {
-            apply(update.version);
+            apply(update);
             return;
         }
 
@@ -79,7 +81,7 @@ export default function UpdateNotification() {
         // re-check on the next tick rather than acting on the event itself.
         const onFocusOut = () => {
             setTimeout(() => {
-                if (!isUserTyping()) apply(update.version);
+                if (!isUserTyping()) apply(update);
             }, 0);
         };
 
@@ -99,7 +101,7 @@ export default function UpdateNotification() {
         const onForeground = async () => {
             if (disposed) return;
             const fresh = await checkForUpdates();
-            if (fresh && !disposed) apply(fresh.version);
+            if (fresh && !disposed) apply(fresh);
         };
 
         const onVisibility = () => {
@@ -107,7 +109,7 @@ export default function UpdateNotification() {
                 void onForeground();
             } else if (update) {
                 // Backgrounded with a known update: nothing on screen to disturb.
-                apply(update.version);
+                apply(update);
             }
         };
 
@@ -177,7 +179,7 @@ export default function UpdateNotification() {
                                     </button>
                                 )}
                                 <button
-                                    onClick={() => apply(update.version)}
+                                    onClick={() => apply(update)}
                                     className={`px-4 py-2 text-xs font-semibold rounded text-white transition-all ${critical ? 'bg-amber-600 hover:bg-amber-500' : 'bg-blue-600 hover:bg-blue-500'
                                         }`}
                                 >

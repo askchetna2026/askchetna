@@ -6,37 +6,51 @@
  * nothing to "install". The only way a user runs old code is by holding a
  * session open across a deploy, which a reload fixes.
  *
- * CURRENT_VERSION is inlined at build time (next.config.ts) so it describes the
- * bundle actually executing. Reading it at runtime would compare the server to
- * itself and report an update that reloading could never clear.
+ * Two separate questions, answered by two separate values, both frozen into the
+ * bundle at build time (next.config.ts). Reading either at runtime would compare
+ * the server to itself and report an update that reloading could never clear.
+ *
+ *   BUILD_ID  — is this page stale?   Vercel's commit SHA, unique per deploy.
+ *   VERSION   — how urgent is it?     package.json, bumped deliberately.
+ *
+ * Splitting them means detection cannot be broken by forgetting to bump a
+ * version, and a version bump is reserved for the one thing it is good at:
+ * saying how hard to push the update.
  */
 
 import { useEffect, useState } from 'react';
 
 export const CURRENT_VERSION = process.env.NEXT_PUBLIC_APP_VERSION || '0.0.0';
+export const CURRENT_BUILD_ID = process.env.NEXT_PUBLIC_BUILD_ID || 'dev';
 
 export interface VersionInfo {
   version: string;
   releaseDate: string;
   critical: boolean;
   changelog: string;
+  buildId?: string;
   minNativeVersion?: string;
 }
 
 /**
- * Records the version an automatic reload was already attempted for.
+ * Records the deployment an automatic reload was already attempted for.
  *
- * Session-scoped, and the guard against a bricked app: if the two versions ever
- * fail to converge — a bad deploy, an unreadable package.json resolving to
- * 0.0.0, two Vercel instances disagreeing — an unguarded auto-reload would spin
- * forever and the app would never reach usable content.
+ * Session-scoped, and the guard against a bricked app: if the two sides ever
+ * fail to converge — a bad deploy, an unreadable package.json, two Vercel
+ * instances disagreeing — an unguarded auto-reload would spin forever and the
+ * app would never reach usable content.
  */
 const RELOAD_GUARD_KEY = 'update_autoreload_attempted_for';
 
+/** Identifies the target deployment; falls back to the version if no build id. */
+export function updateKey(update: VersionInfo): string {
+  return update.buildId || update.version;
+}
+
 export async function fetchServerVersion(): Promise<VersionInfo | null> {
   try {
-    // cache: 'no-store' matters. The endpoint sets max-age=3600, so a cached
-    // response would keep reporting the pre-deploy version for an hour.
+    // cache: 'no-store' matters. Without it a cached response would keep
+    // reporting the pre-deploy build for as long as it lived.
     const response = await fetch('/api/version', { cache: 'no-store' });
     if (!response.ok) return null;
     return await response.json();
@@ -92,30 +106,38 @@ export function isCriticalUpdate(update: VersionInfo): boolean {
 }
 
 /**
- * Resolves to the deployed version when this page is running older code.
+ * Resolves to the deployed build when this page is not running it.
+ *
+ * Keyed on the build id, not the version, so it also catches a deploy that
+ * ships no version bump — and a rollback, where the version goes backwards but
+ * the client should still move to whatever the server is now serving.
  */
 export async function checkForUpdates(): Promise<VersionInfo | null> {
   const server = await fetchServerVersion();
   if (!server) return null;
 
-  return compareVersions(server.version, CURRENT_VERSION) > 0 ? server : null;
+  // Both sides read 'dev' outside Vercel, so local work never sees an update.
+  const differentBuild = Boolean(server.buildId) && server.buildId !== CURRENT_BUILD_ID;
+  const newerVersion = compareVersions(server.version, CURRENT_VERSION) > 0;
+
+  return differentBuild || newerVersion ? server : null;
 }
 
-/** True when an automatic reload for this version has not been tried yet. */
-export function canAutoReload(targetVersion: string): boolean {
+/** True when an automatic reload for this deployment has not been tried yet. */
+export function canAutoReload(key: string): boolean {
   if (typeof window === 'undefined') return false;
   try {
-    return sessionStorage.getItem(RELOAD_GUARD_KEY) !== targetVersion;
+    return sessionStorage.getItem(RELOAD_GUARD_KEY) !== key;
   } catch {
     // Storage unavailable means the guard can't hold, so don't auto-reload.
     return false;
   }
 }
 
-export function markAutoReloadAttempted(targetVersion: string): void {
+export function markAutoReloadAttempted(key: string): void {
   if (typeof window === 'undefined') return;
   try {
-    sessionStorage.setItem(RELOAD_GUARD_KEY, targetVersion);
+    sessionStorage.setItem(RELOAD_GUARD_KEY, key);
   } catch {
     /* nothing to do — canAutoReload already fails closed */
   }

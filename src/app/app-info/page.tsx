@@ -7,6 +7,7 @@ import {
   fetchServerVersion,
   isCriticalUpdate,
   markAutoReloadAttempted,
+  updateKey,
 } from '@/lib/updates/versionManager';
 import Link from 'next/link';
 
@@ -50,7 +51,7 @@ export default function AppInfoPage() {
   const handleUpdate = () => {
     // Claim the guard so the background auto-reload doesn't fire a second time
     // for this same version once the page comes back.
-    if (updateAvailable) markAutoReloadAttempted(updateAvailable.version);
+    if (updateAvailable) markAutoReloadAttempted(updateKey(updateAvailable));
     window.location.reload();
   };
 

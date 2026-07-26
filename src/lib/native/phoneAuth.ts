@@ -80,31 +80,21 @@ export async function startPhoneVerification(
     let settled = false;
 
     /**
-     * Whether signInWithPhoneNumber returned. This is THE diagnostic distinction
-     * when nothing calls back, and it is reported in the timeout message so it can
-     * be read off the screen — reaching it via chrome://inspect requires USB
-     * debugging, which is a lot of setup for one boolean.
+     * The step currently in flight, reported verbatim if we time out.
+     *
+     * Several awaits happen before Google is even contacted, and an earlier
+     * version lumped all of them into one "the request never left the app"
+     * message — which narrowed the cause to four possible lines and no further.
+     * Each stage below is updated immediately before the await it describes, so a
+     * timeout names the exact one that hung, readable off the screen without USB
+     * debugging.
      */
-    let requestDispatched = false;
+    let stage = 'loading the Firebase plugin';
 
     const timeoutId = setTimeout(() => {
         if (settled) return;
         settled = true;
-
-        callbacks.onError(
-            requestDispatched
-                // Firebase accepted the request, then never reported a result:
-                // app verification is stalling. On Android that is Play Integrity
-                // attestation, or the reCAPTCHA fallback failing to display.
-                ? 'Google accepted the request but never sent a code (step 2/2). This is app ' +
-                'verification failing: check that this number is listed under Firebase > ' +
-                'Authentication > Sign-in method > Phone > "Phone numbers for testing", ' +
-                'exactly as typed, and that google-services.json is from that same project.'
-                // The plugin call never returned, so the request did not get out.
-                : 'Could not reach Google\'s verification service (step 1/2). The request never ' +
-                'left the app — check the device\'s internet connection, and that ' +
-                'google-services.json is present in the build.'
-        );
+        callbacks.onError(`Phone sign-in timed out while: ${stage}.`);
     }, 50_000);
 
     const plugin = await loadPlugin();
@@ -113,6 +103,7 @@ export async function startPhoneVerification(
     // the resulting token's auth_time is genuinely fresh, rather than inherited
     // from an earlier failed attempt.
     if (!options.resend) {
+        stage = 'clearing the previous Firebase session';
         try {
             await plugin.signOut();
         } catch { /* nothing to sign out of */ }
@@ -122,6 +113,8 @@ export async function startPhoneVerification(
         settled = true;
         clearTimeout(timeoutId);
     };
+
+    stage = 'registering the verification listeners';
 
     // Registered before signInWithPhoneNumber so we can't miss a fast callback.
     const handles = await Promise.all([
@@ -150,12 +143,8 @@ export async function startPhoneVerification(
     };
 
     try {
-        // Logged so chrome://inspect shows exactly how far the flow got. When
-        // nothing calls back, the distinction that matters is whether
-        // signInWithPhoneNumber itself resolved: if it did, the request reached
-        // Firebase and app verification is stalling (Play Integrity attestation,
-        // or its reCAPTCHA fallback failing to display in the WebView). If it
-        // never resolves, the plugin call itself is stuck.
+        stage = 'sending the request to Google';
+
         console.info('[phoneAuth] calling signInWithPhoneNumber', {
             phoneNumber,
             resend: options.resend ?? false,
@@ -166,8 +155,10 @@ export async function startPhoneVerification(
             resendCode: options.resend ?? false,
         });
 
-        // Drives which half of the timeout message is shown (see requestDispatched).
-        requestDispatched = true;
+        // Past this point the request is with Google, and any further delay is app
+        // verification (Play Integrity attestation, or its reCAPTCHA fallback
+        // failing to display) rather than anything on our side.
+        stage = 'waiting for Google to send the code';
 
         console.info(
             '[phoneAuth] signInWithPhoneNumber resolved — now waiting for a ' +

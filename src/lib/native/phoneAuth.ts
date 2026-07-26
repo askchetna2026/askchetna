@@ -279,5 +279,27 @@ function friendlyError(raw: string): string {
     if (message.includes('cancel')) {
         return 'Verification was cancelled.';
     }
-    return 'Could not verify that number. Please try again.';
+    if (message.includes('app-not-authorized') || message.includes('developer_error') || message.includes('17028')) {
+        return 'This app build is not authorised for phone sign-in. Its SHA-1 and SHA-256 ' +
+            'fingerprints must both be registered in the Firebase project that ' +
+            'google-services.json came from.';
+    }
+    if (message.includes('recaptcha') || message.includes('web-context') || message.includes('missing-client-identifier')) {
+        return 'Google could not verify this app and fell back to a reCAPTCHA check, which ' +
+            'cannot run here. Use a number registered under Firebase > Authentication > ' +
+            'Sign-in method > Phone > "Phone numbers for testing".';
+    }
+    if (message.includes('billing') || message.includes('not-enabled') || message.includes('operation-not-allowed')) {
+        return 'Phone sign-in is not enabled on this Firebase project, or the project needs ' +
+            'billing enabled for SMS.';
+    }
+
+    // Deliberately include the raw text. Every branch above exists because a real
+    // failure was seen and decoded; anything reaching here is one we have not met,
+    // and swallowing it into "please try again" leaves nothing to act on — which
+    // is exactly what happened when this fallback fired on device.
+    const detail = raw.trim().slice(0, 200);
+    return detail
+        ? `Could not verify that number. Google reported: ${detail}`
+        : 'Could not verify that number. Please try again.';
 }

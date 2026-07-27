@@ -192,12 +192,20 @@
 .mobileMenu {
     position: fixed;
     top: 0;
-    right: 0;
-    width: min(88vw, 360px);
+    /* Anchored left to match its trigger, which now sits top-left. A panel that
+       flies in from the opposite side to the button that opened it reads as
+       borrowed from another app. */
+    left: 0;
+    /* 88vw left only ~45px of backdrop on a 375px phone, so it read as a full
+       screen takeover rather than a panel over the page. At 78vw/300px there is
+       a visible strip of content behind it — which is what tells the user this
+       is dismissible and that they have not navigated away. */
+    width: min(78vw, 300px);
     height: 100dvh;
     background: var(--background);
     z-index: 1060;
-    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
+    /* Shadow falls to the right now that the panel is on the left. */
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
     padding: 32px 24px;
@@ -205,6 +213,8 @@
        so both ends need the inset. env() is 0px where there is no safe area. */
     padding-top: calc(32px + env(safe-area-inset-top, 0px));
     padding-bottom: calc(24px + env(safe-area-inset-bottom));
+    /* Left edge inset matters in landscape, where the notch is on a side. */
+    padding-left: calc(24px + env(safe-area-inset-left, 0px));
     overflow-y: auto;
 }
 
@@ -213,6 +223,12 @@
     align-items: center;
     justify-content: space-between;
     margin-bottom: 32px;
+    /* Clears the toggle, which paints over this panel (z 1100 vs 1060) and now
+       doubles as the close button. Before the drawer moved to the left it sat on
+       the opposite edge and never collided; on the left it lands squarely on the
+       brand mark. Offsetting the row is the standard arrangement anyway —
+       nav icon first, title beside it. */
+    padding-left: 48px;
 }
 
 .closeBtn {
@@ -379,10 +395,18 @@
         align-items: center;
         gap: 12px;
         z-index: 1100;
+        /* Keeps Sign In pinned right now that the container packs from the
+           left — without this, space-between would centre the logo instead of
+           grouping it with the menu button. */
+        margin-left: auto;
     }
 
     .container {
         padding: 12px 20px;
+        /* Pack from the left so the menu button and logo sit together as one
+           group, the standard mobile arrangement. Desktop keeps space-between. */
+        justify-content: flex-start;
+        gap: 10px;
     }
 }
 

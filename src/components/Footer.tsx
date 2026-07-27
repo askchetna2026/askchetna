@@ -55,6 +55,13 @@ export default function Footer() {
                         <li><Link href="/terms">Terms of Service</Link></li>
                         <li><Link href="/refund">Refund Policy</Link></li>
                         <li><Link href="/contact">Contact Us</Link></li>
+                        {/* Version and update status. Sits here rather than in
+                            Explore because this is the column that survives in
+                            the app's compact footer — and the app is where
+                            "which build am I on?" actually gets asked. Reachable
+                            signed out: the header only exposes it once you are
+                            authenticated, but the page needs no session. */}
+                        <li><Link href="/app-info">App Info</Link></li>
                     </ul>
                 </div>
             </div>

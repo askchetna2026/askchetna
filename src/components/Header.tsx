@@ -10,11 +10,25 @@ import Logo from './Logo';
 import ThemeToggle from './ThemeToggle';
 import { Menu, X, CreditCard, LayoutDashboard, LogOut, Info, BookOpen, MessageSquare, Sparkles, Users, UserCog, Settings } from 'lucide-react';
 import { PAYMENTS_ENABLED } from '@/lib/paymentConfig';
+import { isClientNativeApp } from '@/lib/platform';
 
 export default function Header() {
   const { data: session, status } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
+
+  /**
+   * Inside the apps the bottom tab bar already owns Today, Chart, Ask, Timing
+   * and Me, so repeating them here leaves two menus answering the same question
+   * and neither reading as authoritative. In the app the drawer becomes a true
+   * overflow menu; on the web there is no tab bar, so it keeps everything.
+   *
+   * Reading this during render is safe despite the server having no navigator:
+   * the drawer is gated on isMenuOpen, which starts false, so it is absent from
+   * the SSR output and only mounts on a click — long after hydration. There is
+   * no first paint for the two answers to disagree about.
+   */
+  const isAppShell = isClientNativeApp();
 
   useEffect(() => {
     const handleResize = () => {
@@ -27,6 +41,29 @@ export default function Header() {
   return (
     <header className={styles.header}>
       <div className={styles.container}>
+        {/* Direct child of the container, and first, so it renders top-LEFT on
+            mobile. It used to sit inside .mobileHeaderActions alongside Sign In,
+            which pinned it to the right-hand group. Hidden above 1100px, so the
+            logo is still the first visible element on desktop. */}
+        <button
+          className={styles.menuToggle}
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          aria-label="Toggle menu"
+          aria-expanded={isMenuOpen}
+        >
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={isMenuOpen ? 'close' : 'open'}
+              initial={{ opacity: 0, rotate: -90 }}
+              animate={{ opacity: 1, rotate: 0 }}
+              exit={{ opacity: 0, rotate: 90 }}
+              transition={{ duration: 0.2 }}
+            >
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </motion.div>
+          </AnimatePresence>
+        </button>
+
         <Link href="/" onClick={() => setIsMenuOpen(false)}>
           <Logo width={140} height={50} />
         </Link>
@@ -37,23 +74,6 @@ export default function Header() {
               Sign In
             </Link>
           )}
-          <button
-            className={styles.menuToggle}
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label="Toggle menu"
-          >
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={isMenuOpen ? 'close' : 'open'}
-                initial={{ opacity: 0, rotate: -90 }}
-                animate={{ opacity: 1, rotate: 0 }}
-                exit={{ opacity: 0, rotate: 90 }}
-                transition={{ duration: 0.2 }}
-              >
-                {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-              </motion.div>
-            </AnimatePresence>
-          </button>
         </div>
 
         <div className={styles.desktopNav}>
@@ -126,9 +146,9 @@ export default function Header() {
               />
               <motion.div
                 className={styles.mobileMenu}
-                initial={{ x: '100%' }}
+                initial={{ x: '-100%' }}
                 animate={{ x: 0 }}
-                exit={{ x: '100%' }}
+                exit={{ x: '-100%' }}
                 transition={{ type: 'spring', damping: 25, stiffness: 200 }}
               >
                 <div className={styles.mobileMenuHeader}>
@@ -141,15 +161,20 @@ export default function Header() {
                       <Link href="/" className={`${styles.mobileNavLink} ${pathname === '/' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
                         <Sparkles size={20} /> Home
                       </Link>
-                      <Link href="/chart" className={`${styles.mobileNavLink} ${pathname === '/chart' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                        <CreditCard size={20} /> Birth Chart
-                      </Link>
-                      <Link href="/timing" className={`${styles.mobileNavLink} ${pathname === '/timing' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                        <Info size={20} /> Timing & Seasons
-                      </Link>
-                      <Link href="/clarity" className={`${styles.mobileNavLink} ${styles.mobileCtaLink} ${pathname === '/clarity' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                        <MessageSquare size={20} /> Ask Chetna AI
-                      </Link>
+                      {/* Chart, Timing and Ask are tabs in the app — see isAppShell. */}
+                      {!isAppShell && (
+                        <>
+                          <Link href="/chart" className={`${styles.mobileNavLink} ${pathname === '/chart' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                            <CreditCard size={20} /> Birth Chart
+                          </Link>
+                          <Link href="/timing" className={`${styles.mobileNavLink} ${pathname === '/timing' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                            <Info size={20} /> Timing & Seasons
+                          </Link>
+                          <Link href="/clarity" className={`${styles.mobileNavLink} ${styles.mobileCtaLink} ${pathname === '/clarity' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                            <MessageSquare size={20} /> Ask Chetna AI
+                          </Link>
+                        </>
+                      )}
                       <Link href="/synastry" className={`${styles.mobileNavLink} ${pathname === '/synastry' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
                         <Users size={20} /> Relationships
                       </Link>
@@ -161,15 +186,25 @@ export default function Header() {
                           <CreditCard size={20} /> Credits
                         </Link>
                       )}
-                      <Link href="/dashboard" className={`${styles.mobileNavLink} ${pathname === '/dashboard' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                        <LayoutDashboard size={20} /> Dashboard
-                      </Link>
-                      {/* Account deletion lives here. Both stores require it to
-                          be reachable in-app, and this is the primary nav in the
-                          mobile apps. */}
-                      <Link href="/account" className={`${styles.mobileNavLink} ${pathname === '/account' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                        <UserCog size={20} /> Account
-                      </Link>
+                      {/* Dashboard is the "Today" tab and Account is the "Me" tab in
+                          the app.
+
+                          Account deletion lives behind /account, which both stores
+                          require to stay reachable in-app. Hiding this entry does NOT
+                          weaken that: in the app the Me tab is a permanent bottom-bar
+                          destination pointing at the same page, which is more
+                          prominent than a link buried in a drawer, not less. On the
+                          web there is no tab bar, so the entry stays. */}
+                      {!isAppShell && (
+                        <>
+                          <Link href="/dashboard" className={`${styles.mobileNavLink} ${pathname === '/dashboard' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                            <LayoutDashboard size={20} /> Dashboard
+                          </Link>
+                          <Link href="/account" className={`${styles.mobileNavLink} ${pathname === '/account' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                            <UserCog size={20} /> Account
+                          </Link>
+                        </>
+                      )}
                       <Link href="/app-info" className={`${styles.mobileNavLink} ${pathname === '/app-info' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
                         <Settings size={20} /> App Info
                       </Link>
@@ -180,6 +215,12 @@ export default function Header() {
                       <Link href="/about" className={styles.mobileNavLink} onClick={() => setIsMenuOpen(false)}>About Us</Link>
                       <Link href="/blog" className={styles.mobileNavLink} onClick={() => setIsMenuOpen(false)}>Blog</Link>
                       <Link href="/clarity" className={`${styles.mobileNavLink} ${styles.mobileCtaLink}`} onClick={() => setIsMenuOpen(false)}>Ask Chetna AI</Link>
+                      {/* Parity with the signed-in drawer. In the app this is
+                          the only "more" menu, and a signed-out user still needs
+                          to be able to check which build they are on. */}
+                      <Link href="/app-info" className={`${styles.mobileNavLink} ${pathname === '/app-info' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                        <Settings size={20} /> App Info
+                      </Link>
                     </>
                   )}
                 </nav>

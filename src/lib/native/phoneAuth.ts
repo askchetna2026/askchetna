@@ -301,10 +301,20 @@ function friendlyError(raw: string): string {
         message.includes('operation is not allowed') ||
         message.includes('sign-in provider is disabled')
     ) {
-        return 'Firebase rejected phone sign-in as "not allowed". If the Phone provider IS ' +
-            'enabled, the usual causes are: google-services.json belongs to a different ' +
-            'Firebase project than the console you enabled it in, or the SMS region policy ' +
-            '(Authentication > Settings) does not permit this country.';
+        // Five different server conditions land here, and they need opposite
+        // fixes — BILLING_NOT_ENABLED means upgrade the plan, OPERATION_NOT_ALLOWED
+        // means enable the provider, a region rejection means edit the SMS policy.
+        // Showing the same three-way guess for all of them sent a real diagnosis
+        // down the wrong path once: the SMS region policy was checked and found
+        // correct, because the actual code was something else. The raw text is
+        // the only thing that distinguishes them, and console.warn is invisible
+        // on a device, so it goes in the message.
+        const code = raw.trim().slice(0, 120);
+        return 'Firebase rejected phone sign-in as "not allowed". Test numbers bypass SMS ' +
+            'entirely, so if those still work the provider is enabled and google-services.json ' +
+            'is correct — check billing (phone auth needs the Blaze plan for real SMS to many ' +
+            'regions) and the SMS region policy under Authentication > Settings. ' +
+            `Google reported: ${code}`;
     }
 
     // Deliberately include the raw text. Every branch above exists because a real

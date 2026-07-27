@@ -242,6 +242,7 @@
 .verdictHeader {
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
     align-items: center;
     margin-bottom: 24px;
 }
@@ -576,6 +577,7 @@
     padding: 16px 24px;
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
     align-items: center;
     cursor: pointer;
     font-family: var(--font-heading);

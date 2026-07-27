@@ -55,6 +55,7 @@
 .sectionHeader {
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
     align-items: center;
     margin-bottom: 24px;
 }
@@ -296,6 +297,7 @@
     padding: 16px 24px;
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
     align-items: center;
     gap: 40px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);

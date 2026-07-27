@@ -434,6 +434,7 @@
 .usageHeader {
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
     align-items: center;
     font-size: 0.9rem;
     margin-bottom: 8px;
@@ -647,6 +648,7 @@
 .profileControls {
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
     align-items: center;
     margin-bottom: 24px;
     padding: 0 4px;
@@ -797,6 +799,7 @@
 .cardHeader {
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
     align-items: center;
 }
 
@@ -873,6 +876,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
     margin-top: 10px;
     padding-top: 20px;
     border-top: 1px solid var(--border-soft);
@@ -958,6 +962,7 @@
 .creditRequestHeader {
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
     align-items: center;
     gap: 12px;
 }
@@ -1398,8 +1403,14 @@
         gap: 12px;
     }
 
+    /* The axis has to switch HERE, not at 640px, because this is where
+       .noticeActions is first given width: 100%. It is flex-shrink: 0, so as a
+       row item it takes the full width and gives none back, collapsing the
+       message beside it. Fixing it only at 640px left 641-1024px broken. */
     .welcomeBonusNotice {
         padding: 12px;
+        flex-direction: column;
+        align-items: stretch;
     }
 
     .primaryBtn, .secondaryBtn {
@@ -1509,15 +1520,16 @@
         font-size: 1rem;
     }
 
-    .welcomeBonusNotice {
-        align-items: flex-start;
-    }
-
+    /* Direction is already column from the 1024px block above. */
     .welcomeBonusNoticeText {
         font-size: 0.9rem;
     }
 
     .noticeActions {
+        width: 100%;
+    }
+
+    .noticeActionBtn {
         width: 100%;
     }
 

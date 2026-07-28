@@ -61,14 +61,25 @@ jobs:
         # Also runs pod install, which is why this cannot happen on Windows.
         run: npx cap sync ios
 
-      - name: Set build number
-        # CFBundleVersion must be unique for every TestFlight upload; reusing one
-        # is rejected after the upload completes.
+      - name: Set version and build number
+        # Two different numbers, and Apple treats them differently:
+        #   MARKETING_VERSION  (CFBundleShortVersionString) - what users see,
+        #     and what must match the web app and Android. Derived from
+        #     package.json, the same single source next.config.ts and
+        #     mobile/android/app/build.gradle read. It was pinned at 1.0 in the
+        #     Xcode project and had drifted three releases behind.
+        #   CURRENT_PROJECT_VERSION (CFBundleVersion) - the upload counter. Must
+        #     be unique per TestFlight upload; reusing one is rejected after the
+        #     upload completes, so it stays tied to the run number.
         run: |
+          set -euo pipefail
+          APP_VERSION=$(node -p "require('./package.json').version")
           BUILD_NUMBER="${{ inputs.buildNumber }}"
           if [ -z "$BUILD_NUMBER" ]; then BUILD_NUMBER="${{ github.run_number }}"; fi
           cd mobile/ios/App
+          agvtool new-marketing-version "$APP_VERSION"
           agvtool new-version -all "$BUILD_NUMBER"
+          echo "Marketing version set to $APP_VERSION (from package.json)"
           echo "Build number set to $BUILD_NUMBER"
 
       - name: Import signing certificate and profile

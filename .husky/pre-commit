@@ -1,0 +1,4 @@
+# Bumps the patch version once per push cycle. See scripts/auto-bump-patch.mjs
+# for the rule and the reasoning. Never blocks a commit — it exits 0 on every
+# failure path, deliberately.
+node scripts/auto-bump-patch.mjs

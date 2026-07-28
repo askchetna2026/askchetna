@@ -8,16 +8,27 @@ apply plugin: 'com.android.application'
  * only surfaces in the store listing. Deriving it removes the class of bug
  * rather than the instance.
  *
- * versionCode packs the semver into one increasing integer (2.1.8 -> 20108).
+ * versionCode packs the semver into one increasing integer (2.1.9 -> 20109).
  * Play rejects any upload whose versionCode does not increase, and a hand-
  * maintained counter is exactly the kind of thing that gets forgotten at 11pm.
  * Caps minor and patch at 99, which is far beyond how this project versions.
+ *
+ * CI can override either value through ASKCHETNA_VERSION_NAME /
+ * ASKCHETNA_VERSION_CODE, matching how signing is already configured. The
+ * workflow used to sed these lines instead, which broke silently the moment
+ * they stopped being string literals - a regex against a build script is not a
+ * contract.
  */
-def appVersion = new groovy.json.JsonSlurper()
+def packageVersion = new groovy.json.JsonSlurper()
         .parseText(file("${rootDir}/../../package.json").text)
         .version
+def envVersionName = System.getenv('ASKCHETNA_VERSION_NAME')?.trim()
+def envVersionCode = System.getenv('ASKCHETNA_VERSION_CODE')?.trim()
+
+def appVersion = envVersionName ?: packageVersion
 def (verMajor, verMinor, verPatch) = appVersion.tokenize('.').collect { it.toInteger() }
-def derivedVersionCode = verMajor * 10000 + verMinor * 100 + verPatch
+def derivedVersionCode = envVersionCode ? envVersionCode.toInteger()
+        : verMajor * 10000 + verMinor * 100 + verPatch
 
 android {
     namespace = "com.askchetnam.app"

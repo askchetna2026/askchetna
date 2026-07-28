@@ -71,17 +71,6 @@ jobs:
           printf '%s' "$GOOGLE_SERVICES_JSON" > mobile/android/app/google-services.json
           echo "Wrote google-services.json ($(wc -c < mobile/android/app/google-services.json) bytes)"
 
-      - name: Apply version overrides
-        if: inputs.versionName != '' || inputs.versionCode != ''
-        run: |
-          cd mobile/android/app
-          if [ -n "${{ inputs.versionName }}" ]; then
-            sed -i "s/versionName \".*\"/versionName \"${{ inputs.versionName }}\"/" build.gradle
-          fi
-          if [ -n "${{ inputs.versionCode }}" ]; then
-            sed -i "s/versionCode .*/versionCode ${{ inputs.versionCode }}/" build.gradle
-          fi
-          grep -E "versionCode|versionName" build.gradle
 
       - name: Capacitor sync
         # Regenerates capacitor.config.json and copies mobile/shell into the
@@ -108,6 +97,11 @@ jobs:
           ASKCHETNA_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ASKCHETNA_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ASKCHETNA_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          # Optional version overrides. Blank means build.gradle derives both
+          # from package.json. This replaced a sed against build.gradle, which
+          # silently stopped matching once these were no longer literals.
+          ASKCHETNA_VERSION_NAME: ${{ inputs.versionName }}
+          ASKCHETNA_VERSION_CODE: ${{ inputs.versionCode }}
         run: |
           chmod +x ./gradlew
           ./gradlew bundleRelease assembleRelease --no-daemon --stacktrace

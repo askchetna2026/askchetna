@@ -1,5 +1,24 @@
 apply plugin: 'com.android.application'
 
+/**
+ * Version derived from package.json, the same single source next.config.ts uses.
+ *
+ * These were hardcoded at 1.0/1 and had drifted three releases behind the web
+ * app, which nobody noticed because the apps load askchetna.com and the number
+ * only surfaces in the store listing. Deriving it removes the class of bug
+ * rather than the instance.
+ *
+ * versionCode packs the semver into one increasing integer (2.1.8 -> 20108).
+ * Play rejects any upload whose versionCode does not increase, and a hand-
+ * maintained counter is exactly the kind of thing that gets forgotten at 11pm.
+ * Caps minor and patch at 99, which is far beyond how this project versions.
+ */
+def appVersion = new groovy.json.JsonSlurper()
+        .parseText(file("${rootDir}/../../package.json").text)
+        .version
+def (verMajor, verMinor, verPatch) = appVersion.tokenize('.').collect { it.toInteger() }
+def derivedVersionCode = verMajor * 10000 + verMinor * 100 + verPatch
+
 android {
     namespace = "com.askchetnam.app"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -7,8 +26,8 @@ android {
         applicationId "com.askchetnam.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode derivedVersionCode
+        versionName appVersion
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.

@@ -54,58 +54,58 @@ export default function VersionDebugPage() {
 
   return (
     <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-      <h1 style={{ color: '#D4AF37' }}>🔍 Version Debug Info</h1>
+      <h1 style={{ color: 'var(--accent-gold)' }}>🔍 Version Debug Info</h1>
 
-      {loading && <p style={{ color: '#DFE0FF' }}>Loading...</p>}
-      {error && <p style={{ color: '#FF6B9D' }}>Error: {error}</p>}
+      {loading && <p style={{ color: 'var(--foreground)' }}>Loading...</p>}
+      {error && <p style={{ color: 'var(--error)' }}>Error: {error}</p>}
 
-      <div style={{ marginBottom: '24px', padding: '16px', background: 'rgba(18, 22, 64, 0.5)', borderRadius: '8px', border: '1px solid rgba(212, 175, 55, 0.2)' }}>
-        <h2 style={{ color: '#D4AF37', marginTop: 0 }}>App Info</h2>
-        <div style={{ color: '#DFE0FF' }}>
+      <div style={{ marginBottom: '24px', padding: '16px', background: 'rgba(var(--bg-soft-rgb), 0.5)', borderRadius: '8px', border: '1px solid rgba(var(--accent-gold-rgb), 0.2)' }}>
+        <h2 style={{ color: 'var(--accent-gold)', marginTop: 0 }}>App Info</h2>
+        <div style={{ color: 'var(--foreground)' }}>
           <p>
-            <strong>Is Native App:</strong> <span style={{ color: isNative ? '#4ECDC4' : '#FF6B9D' }}>{isNative ? 'YES ✅' : 'NO ❌'}</span>
+            <strong>Is Native App:</strong> <span style={{ color: isNative ? 'var(--success)' : 'var(--error)' }}>{isNative ? 'YES ✅' : 'NO ❌'}</span>
           </p>
           <p>
-            <strong>Current Version:</strong> <code style={{ background: '#0B0F2F', padding: '4px 8px', borderRadius: '4px' }}>{currentVersion}</code>
+            <strong>Current Version:</strong> <code style={{ background: 'var(--background)', padding: '4px 8px', borderRadius: '4px' }}>{currentVersion}</code>
           </p>
           <p>
-            <strong>User-Agent:</strong> <code style={{ background: '#0B0F2F', padding: '4px 8px', borderRadius: '4px', fontSize: '12px', wordBreak: 'break-all' }}>{userAgent}</code>
+            <strong>User-Agent:</strong> <code style={{ background: 'var(--background)', padding: '4px 8px', borderRadius: '4px', fontSize: '12px', wordBreak: 'break-all' }}>{userAgent}</code>
           </p>
         </div>
       </div>
 
-      <div style={{ marginBottom: '24px', padding: '16px', background: 'rgba(18, 22, 64, 0.5)', borderRadius: '8px', border: '1px solid rgba(212, 175, 55, 0.2)' }}>
-        <h2 style={{ color: '#D4AF37', marginTop: 0 }}>/api/version Response</h2>
+      <div style={{ marginBottom: '24px', padding: '16px', background: 'rgba(var(--bg-soft-rgb), 0.5)', borderRadius: '8px', border: '1px solid rgba(var(--accent-gold-rgb), 0.2)' }}>
+        <h2 style={{ color: 'var(--accent-gold)', marginTop: 0 }}>/api/version Response</h2>
         {apiVersion ? (
-          <div style={{ color: '#DFE0FF' }}>
+          <div style={{ color: 'var(--foreground)' }}>
             <p><strong>Version:</strong> {apiVersion.version}</p>
             <p><strong>Critical:</strong> {apiVersion.critical ? 'YES ⚠️' : 'NO'}</p>
             <p><strong>Release Date:</strong> {apiVersion.releaseDate}</p>
             <p><strong>Changelog:</strong> {apiVersion.changelog}</p>
           </div>
         ) : (
-          <p style={{ color: '#FF6B9D' }}>No API response</p>
+          <p style={{ color: 'var(--error)' }}>No API response</p>
         )}
       </div>
 
-      <div style={{ marginBottom: '24px', padding: '16px', background: 'rgba(18, 22, 64, 0.5)', borderRadius: '8px', border: '1px solid rgba(212, 175, 55, 0.2)' }}>
-        <h2 style={{ color: '#D4AF37', marginTop: 0 }}>Update Status</h2>
+      <div style={{ marginBottom: '24px', padding: '16px', background: 'rgba(var(--bg-soft-rgb), 0.5)', borderRadius: '8px', border: '1px solid rgba(var(--accent-gold-rgb), 0.2)' }}>
+        <h2 style={{ color: 'var(--accent-gold)', marginTop: 0 }}>Update Status</h2>
         {updateAvailable ? (
-          <div style={{ color: '#4ECDC4' }}>
+          <div style={{ color: 'var(--success)' }}>
             <p>✅ <strong>Update Available!</strong></p>
             <p><strong>New Version:</strong> {updateAvailable.version}</p>
             <p><strong>Changelog:</strong> {updateAvailable.changelog}</p>
           </div>
         ) : (
-          <p style={{ color: '#DFE0FF' }}>
+          <p style={{ color: 'var(--foreground)' }}>
             {apiVersion ? `No update available (current: ${CURRENT_VERSION}, server: ${apiVersion.version})` : 'Could not check'}
           </p>
         )}
       </div>
 
       <div style={{ marginTop: '40px', padding: '16px', background: 'rgba(93, 63, 211, 0.1)', borderRadius: '8px', border: '1px solid rgba(93, 63, 211, 0.2)' }}>
-        <h3 style={{ color: '#5D3FD3', marginTop: 0 }}>Troubleshooting</h3>
-        <ul style={{ color: '#DFE0FF', fontSize: '14px' }}>
+        <h3 style={{ color: 'var(--accent-iris)', marginTop: 0 }}>Troubleshooting</h3>
+        <ul style={{ color: 'var(--foreground)', fontSize: '14px' }}>
           <li>If "Is Native App" is NO: Check User-Agent string. APK needs to include "AskChetnaApp"</li>
           <li>If /api/version fails: Check network connection and that preview.askchetna.com is reachable</li>
           <li>If no update available: Versions match or API version is older. Check version numbers above.</li>

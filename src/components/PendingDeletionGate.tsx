@@ -90,7 +90,7 @@ export default function PendingDeletionGate() {
                 inset: 0,
                 // Above every other fixed layer in the app (drawers sit at 9999).
                 zIndex: 100000,
-                background: 'rgba(11, 15, 47, 0.98)',
+                background: 'rgba(var(--background-rgb), 0.98)',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -100,33 +100,33 @@ export default function PendingDeletionGate() {
                 overflowY: 'auto',
             }}
         >
-            <span style={{ fontSize: '2.5rem', color: '#D4AF37', lineHeight: 1 }} aria-hidden="true">✦</span>
+            <span style={{ fontSize: '2.5rem', color: 'var(--accent-gold)', lineHeight: 1 }} aria-hidden="true">✦</span>
 
             <h1
                 id="ac-deletion-title"
                 style={{
                     fontFamily: 'var(--font-heading, Georgia, serif)',
                     fontSize: '1.7rem',
-                    color: '#DFE0FF',
+                    color: 'var(--foreground)',
                     margin: '20px 0 12px',
                 }}
             >
                 This account is scheduled for deletion
             </h1>
 
-            <p style={{ color: 'rgba(223, 224, 255, 0.75)', maxWidth: '44ch', lineHeight: 1.6, margin: 0 }}>
+            <p style={{ color: 'rgba(var(--foreground-rgb), 0.75)', maxWidth: '44ch', lineHeight: 1.6, margin: 0 }}>
                 {deletionDate
-                    ? <>Your account and all of your charts, journal entries and credits will be permanently deleted on <strong style={{ color: '#DFE0FF' }}>{deletionDate}</strong>.</>
+                    ? <>Your account and all of your charts, journal entries and credits will be permanently deleted on <strong style={{ color: 'var(--foreground)' }}>{deletionDate}</strong>.</>
                     : <>Your account and all of your charts, journal entries and credits will be permanently deleted shortly.</>}
             </p>
 
-            <p style={{ color: 'rgba(223, 224, 255, 0.6)', maxWidth: '44ch', lineHeight: 1.6, marginTop: 14, fontSize: '0.95rem' }}>
+            <p style={{ color: 'rgba(var(--foreground-rgb), 0.6)', maxWidth: '44ch', lineHeight: 1.6, marginTop: 14, fontSize: '0.95rem' }}>
                 Until then, your account is locked. You can cancel the deletion to restore full
                 access — after that date, nothing can be recovered.
             </p>
 
             {error && (
-                <p style={{ color: '#ffb4ab', marginTop: 18, fontSize: '0.95rem' }}>{error}</p>
+                <p style={{ color: 'var(--error, #b3261e)', marginTop: 18, fontSize: '0.95rem' }}>{error}</p>
             )}
 
             <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', justifyContent: 'center', marginTop: 28 }}>
@@ -138,7 +138,7 @@ export default function PendingDeletionGate() {
                         padding: '13px 30px',
                         borderRadius: 50,
                         border: 'none',
-                        background: 'linear-gradient(135deg, #D4AF37, #ffc107)',
+                        background: 'linear-gradient(135deg, var(--accent-gold), #ffc107)',
                         color: '#1a1a1a',
                         font: 'inherit',
                         fontWeight: 700,
@@ -155,9 +155,9 @@ export default function PendingDeletionGate() {
                     style={{
                         padding: '13px 30px',
                         borderRadius: 50,
-                        border: '1px solid rgba(212, 175, 55, 0.45)',
+                        border: '1px solid rgba(var(--accent-gold-rgb), 0.45)',
                         background: 'transparent',
-                        color: '#D4AF37',
+                        color: 'var(--accent-gold)',
                         font: 'inherit',
                         fontWeight: 600,
                         cursor: working ? 'default' : 'pointer',

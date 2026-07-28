@@ -42,7 +42,10 @@ export default function AppTabBar() {
     const tabs: Tab[] = [
         // Signed-in users get the dashboard as home — the marketing homepage is a
         // web surface and has nothing to offer someone already inside the product.
-        { href: authed ? '/dashboard' : '/', label: 'Today', icon: Home },
+        // "/" is matched too: the proxy rewrites it to /dashboard for signed-in
+        // native requests, so the URL stays "/" while the dashboard renders and
+        // this tab still needs to light up.
+        { href: authed ? '/dashboard' : '/', label: 'Today', icon: Home, match: authed ? ['/'] : [] },
         { href: '/chart', label: 'Chart', icon: Orbit, match: ['/report', '/how-we-calculate'] },
         { href: '/clarity', label: 'Ask', icon: MessageSquare, match: ['/ai-astrologer'] },
         { href: '/timing', label: 'Timing', icon: CalendarClock, match: ['/dasha-timeline'] },

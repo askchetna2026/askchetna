@@ -69,8 +69,8 @@ export default function AppInfoPage() {
   };
 
   return (
-    <main style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #0B0F2F 0%, #1a1a4d 100%)' }}>
-      <div style={{ maxWidth: '600px', margin: '0 auto', padding: '24px', color: '#DFE0FF' }}>
+    <main style={{ minHeight: '100vh', background: 'linear-gradient(135deg, var(--background) 0%, #1a1a4d 100%)' }}>
+      <div style={{ maxWidth: '600px', margin: '0 auto', padding: '24px', color: 'var(--foreground)' }}>
         {/* Back Button */}
         <Link
           href="/"
@@ -79,7 +79,7 @@ export default function AppInfoPage() {
             alignItems: 'center',
             gap: '8px',
             fontSize: '14px',
-            color: '#D4AF37',
+            color: 'var(--accent-gold)',
             textDecoration: 'none',
             marginBottom: '32px',
             transition: 'gap 0.2s'
@@ -92,10 +92,10 @@ export default function AppInfoPage() {
 
         {/* Header */}
         <div style={{ marginBottom: '40px' }}>
-          <h1 style={{ fontSize: '32px', fontWeight: 600, margin: '0 0 8px 0', color: '#DFE0FF' }}>
+          <h1 style={{ fontSize: '32px', fontWeight: 600, margin: '0 0 8px 0', color: 'var(--foreground)' }}>
             App Information
           </h1>
-          <p style={{ fontSize: '14px', color: 'rgba(212, 175, 55, 0.8)', margin: 0 }}>
+          <p style={{ fontSize: '14px', color: 'rgba(var(--accent-gold-rgb), 0.8)', margin: 0 }}>
             Version details and updates
           </p>
         </div>
@@ -103,8 +103,8 @@ export default function AppInfoPage() {
         {/* Current Version Card */}
         <div style={{
           padding: '24px',
-          background: 'rgba(18, 22, 64, 0.6)',
-          border: '1px solid rgba(212, 175, 55, 0.2)',
+          background: 'rgba(var(--bg-soft-rgb), 0.6)',
+          border: '1px solid rgba(var(--accent-gold-rgb), 0.2)',
           borderRadius: '12px',
           marginBottom: '20px'
         }}>
@@ -113,7 +113,7 @@ export default function AppInfoPage() {
             <div>
               <p style={{
                 fontSize: '12px',
-                color: 'rgba(212, 175, 55, 0.7)',
+                color: 'rgba(var(--accent-gold-rgb), 0.7)',
                 margin: '0 0 8px 0',
                 textTransform: 'uppercase',
                 letterSpacing: '0.5px'
@@ -125,17 +125,17 @@ export default function AppInfoPage() {
                 fontWeight: 600,
                 margin: 0,
                 fontFamily: 'monospace',
-                color: '#D4AF37'
+                color: 'var(--accent-gold)'
               }}>
                 v{CURRENT_VERSION}
               </p>
             </div>
 
             {/* App Type */}
-            <div style={{ paddingTop: '12px', borderTop: '1px solid rgba(212, 175, 55, 0.1)' }}>
+            <div style={{ paddingTop: '12px', borderTop: '1px solid rgba(var(--accent-gold-rgb), 0.1)' }}>
               <p style={{
                 fontSize: '12px',
-                color: 'rgba(212, 175, 55, 0.7)',
+                color: 'rgba(var(--accent-gold-rgb), 0.7)',
                 margin: '0 0 8px 0',
                 textTransform: 'uppercase',
                 letterSpacing: '0.5px'
@@ -145,14 +145,14 @@ export default function AppInfoPage() {
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px' }}>
                 {isNative ? (
                   <>
-                    <span style={{ color: '#4ECDC4' }}>📱</span>
-                    <span style={{ color: '#4ECDC4' }}>Native App</span>
-                    <span style={{ color: '#4ECDC4', fontSize: '12px' }}>✓</span>
+                    <span style={{ color: 'var(--success)' }}>📱</span>
+                    <span style={{ color: 'var(--success)' }}>Native App</span>
+                    <span style={{ color: 'var(--success)', fontSize: '12px' }}>✓</span>
                   </>
                 ) : (
                   <>
-                    <span style={{ color: '#DFE0FF' }}>🌐</span>
-                    <span style={{ color: '#DFE0FF' }}>Web Browser</span>
+                    <span style={{ color: 'var(--foreground)' }}>🌐</span>
+                    <span style={{ color: 'var(--foreground)' }}>Web Browser</span>
                   </>
                 )}
               </div>
@@ -172,7 +172,7 @@ export default function AppInfoPage() {
             <div style={{ marginBottom: '16px' }}>
               <h2 style={{
                 fontSize: '16px',
-                color: '#4ECDC4',
+                color: 'var(--success)',
                 margin: '0 0 12px 0',
                 textTransform: 'uppercase',
                 letterSpacing: '0.5px',
@@ -216,7 +216,7 @@ export default function AppInfoPage() {
                   borderTop: '1px solid rgba(78, 205, 196, 0.2)'
                 }}>
                   <span style={{ color: 'rgba(78, 205, 196, 0.7)' }}>Priority:</span>
-                  <span style={{ color: '#FF6B9D', fontWeight: 600 }}>⚠️ Critical</span>
+                  <span style={{ color: 'var(--error)', fontWeight: 600 }}>⚠️ Critical</span>
                 </div>
               )}
             </div>
@@ -228,9 +228,9 @@ export default function AppInfoPage() {
                 width: '100%',
                 padding: '12px',
                 background: isCriticalUpdate(updateAvailable)
-                  ? 'linear-gradient(135deg, #FF6B9D 0%, #FF5580 100%)'
-                  : 'linear-gradient(135deg, #4ECDC4 0%, #45B7AA 100%)',
-                color: '#0B0F2F',
+                  ? 'linear-gradient(135deg, var(--error) 0%, var(--error) 100%)'
+                  : 'linear-gradient(135deg, var(--success) 0%, var(--success) 100%)',
+                color: 'var(--background)',
                 border: 'none',
                 borderRadius: '8px',
                 fontSize: '14px',
@@ -271,7 +271,7 @@ export default function AppInfoPage() {
               width: '100%',
               padding: '12px',
               background: 'rgba(93, 63, 211, 0.2)',
-              color: '#5D3FD3',
+              color: 'var(--accent-iris)',
               border: '1px solid rgba(93, 63, 211, 0.4)',
               borderRadius: '8px',
               fontSize: '14px',
@@ -288,7 +288,7 @@ export default function AppInfoPage() {
           {lastChecked && (
             <p style={{
               fontSize: '12px',
-              color: 'rgba(212, 175, 55, 0.5)',
+              color: 'rgba(var(--accent-gold-rgb), 0.5)',
               margin: '8px 0 0 0',
               textAlign: 'center'
             }}>
@@ -301,15 +301,15 @@ export default function AppInfoPage() {
         {apiVersion && (
           <div style={{
             padding: '20px',
-            background: 'rgba(18, 22, 64, 0.4)',
-            border: '1px solid rgba(212, 175, 55, 0.15)',
+            background: 'rgba(var(--bg-soft-rgb), 0.4)',
+            border: '1px solid rgba(var(--accent-gold-rgb), 0.15)',
             borderRadius: '8px',
             marginBottom: '24px',
             fontSize: '13px'
           }}>
             <p style={{
               fontSize: '12px',
-              color: 'rgba(212, 175, 55, 0.6)',
+              color: 'rgba(var(--accent-gold-rgb), 0.6)',
               margin: '0 0 12px 0',
               textTransform: 'uppercase',
               letterSpacing: '0.5px'
@@ -318,12 +318,12 @@ export default function AppInfoPage() {
             </p>
             <div style={{ display: 'grid', gap: '8px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'rgba(212, 175, 55, 0.6)' }}>Latest:</span>
-                <span style={{ fontFamily: 'monospace', color: '#DFE0FF' }}>v{apiVersion.version}</span>
+                <span style={{ color: 'rgba(var(--accent-gold-rgb), 0.6)' }}>Latest:</span>
+                <span style={{ fontFamily: 'monospace', color: 'var(--foreground)' }}>v{apiVersion.version}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'rgba(212, 175, 55, 0.6)' }}>Status:</span>
-                <span style={{ color: '#4ECDC4' }}>Online ✓</span>
+                <span style={{ color: 'rgba(var(--accent-gold-rgb), 0.6)' }}>Status:</span>
+                <span style={{ color: 'var(--success)' }}>Online ✓</span>
               </div>
             </div>
           </div>
@@ -336,7 +336,7 @@ export default function AppInfoPage() {
           border: '1px solid rgba(93, 63, 211, 0.15)',
           borderRadius: '8px',
           fontSize: '12px',
-          color: 'rgba(212, 175, 55, 0.6)',
+          color: 'rgba(var(--accent-gold-rgb), 0.6)',
           lineHeight: '1.6',
           marginBottom: '24px'
         }}>
@@ -351,20 +351,20 @@ export default function AppInfoPage() {
         {/* Privacy & Disclaimer */}
         <div style={{
           padding: '16px',
-          background: 'rgba(212, 175, 55, 0.05)',
-          border: '1px solid rgba(212, 175, 55, 0.15)',
+          background: 'rgba(var(--accent-gold-rgb), 0.05)',
+          border: '1px solid rgba(var(--accent-gold-rgb), 0.15)',
           borderRadius: '8px',
           fontSize: '12px',
-          color: 'rgba(212, 175, 55, 0.7)',
+          color: 'rgba(var(--accent-gold-rgb), 0.7)',
           lineHeight: '1.6'
         }}>
-          <h3 style={{ margin: '0 0 12px 0', fontSize: '13px', color: '#D4AF37' }}>Privacy & Updates</h3>
+          <h3 style={{ margin: '0 0 12px 0', fontSize: '13px', color: 'var(--accent-gold)' }}>Privacy & Updates</h3>
           <ul style={{ margin: '0 0 12px 0', paddingLeft: '20px' }}>
             <li style={{ marginBottom: '8px' }}>
               Update checks do <strong>not</strong> transmit personal data. Only your app version is compared with the server.
             </li>
             <li style={{ marginBottom: '8px' }}>
-              For complete privacy details, see our <a href="/privacy" style={{ color: '#D4AF37', textDecoration: 'underline' }}>Privacy Policy</a>.
+              For complete privacy details, see our <a href="/privacy" style={{ color: 'var(--accent-gold)', textDecoration: 'underline' }}>Privacy Policy</a>.
             </li>
             <li>
               Updates need an internet connection. They apply on their own, but never while you are in the middle of something — only once the app is in the background or you return to it.

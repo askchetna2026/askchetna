@@ -18,6 +18,21 @@
   --accent-gold-dim: #996515;
   --accent-rose: #C48E8E;
 
+  /* Semantic and brand accents. These were defined only under
+     [data-theme='dark'], so components using them had nothing to fall back to in
+     light mode — which is why several screens hardcoded the dark hexes instead
+     and then stayed dark regardless of theme. Darkened from their dark-theme
+     counterparts to hold contrast against the #FDF4E3 parchment rather than
+     glow against navy. */
+  --success: #2E7D32;
+  --success-bg: rgba(46, 125, 50, 0.12);
+  --warning: #B26A00;
+  --warning-bg: rgba(178, 106, 0, 0.12);
+  --error: #B3261E;
+  --error-bg: rgba(179, 38, 30, 0.10);
+  --accent-iris: #4A2FA8;
+  --brand-secondary: #4A2FA8;
+
   --card-bg: rgba(244, 232, 209, 0.65);
   --card-border: rgba(184, 134, 11, 0.25);
   --border-soft: rgba(184, 134, 11, 0.15);
@@ -124,6 +139,16 @@
   --accent-gold-rgb: 184, 134, 11;
   --accent-gold-dim: #996515;
   --accent-rose: #C48E8E;
+
+  /* --warning and the iris accents had no light-mode value at all, which is one
+     reason screens using them hardcoded the dark hexes and then stayed dark
+     regardless of theme. Darkened from their dark counterparts to hold contrast
+     against the #FDF4E3 parchment rather than glow against navy.
+     (--success and --error are already defined above in this block.) */
+  --warning: #B26A00;
+  --warning-bg: rgba(178, 106, 0, 0.12);
+  --accent-iris: #4A2FA8;
+  --brand-secondary: #4A2FA8;
   --card-bg: rgba(244, 232, 209, 0.65);
   --card-border: rgba(184, 134, 11, 0.25);
   --border-soft: rgba(184, 134, 11, 0.15);
@@ -752,4 +777,13 @@ h3 { font-size: clamp(1.125rem, 3vw, 1.5rem); letter-spacing: 0.05em; }
 /* Remove the grey tap flash that makes a webview feel like a webview. */
 .native-app * {
   -webkit-tap-highlight-color: transparent;
+}
+/* Full-viewport drop-shadow filters are a compositing cost on every scroll
+   frame. Worth it on a landing page; not worth it for the whole time an app
+   session is open. The star layers keep their gradients, just not the glow.
+   The WebGL canvas is handled separately — see src/lib/cosmic/Starfield.tsx,
+   which does not mount it in the app at all. */
+.native-app .stars-layer-1,
+.native-app .stars-layer-2 {
+  filter: none;
 }

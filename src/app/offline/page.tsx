@@ -30,14 +30,14 @@ export default function OfflinePage() {
                         .ac-offline{min-height:70vh;display:flex;flex-direction:column;align-items:center;
                             justify-content:center;text-align:center;padding:80px 24px;gap:16px;
                             font-family:var(--font-main,system-ui,-apple-system,sans-serif)}
-                        .ac-offline__glyph{font-size:3rem;color:#D4AF37;opacity:.9;line-height:1}
+                        .ac-offline__glyph{font-size:3rem;color:var(--accent-gold);opacity:.9;line-height:1}
                         .ac-offline__title{font-family:var(--font-heading,Georgia,serif);font-size:1.9rem;
-                            color:var(--foreground,#DFE0FF);margin:0}
+                            color:var(--foreground,var(--foreground));margin:0}
                         .ac-offline__text{color:var(--secondary,rgba(223,224,255,.7));font-size:1.05rem;
                             line-height:1.6;max-width:460px;margin:0}
                         .ac-offline__actions{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:12px}
                         .ac-offline__btn{display:inline-flex;align-items:center;padding:12px 28px;border-radius:50px;
-                            border:1px solid rgba(212,175,55,.45);color:#D4AF37;background:transparent;
+                            border:1px solid rgba(212,175,55,.45);color:var(--accent-gold);background:transparent;
                             font:inherit;font-weight:600;cursor:pointer;transition:all .25s ease}
                         .ac-offline__btn:hover{background:rgba(212,175,55,.12)}
                         .ac-offline__hint{font-size:.9rem;color:var(--secondary,rgba(223,224,255,.55));margin:4px 0 0}

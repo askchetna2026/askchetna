@@ -1,5 +1,12 @@
 # AskChetna Mobile Apps — Status Summary
 
+> ⚠️ **Superseded by [`PENDING-WORK.md`](./PENDING-WORK.md) (28 Jul 2026).**
+> Parts of this file are out of date — it lists the account-deletion
+> "cancellation affordance" as pending, but `PendingDeletionGate.tsx` has had a
+> working Cancel button and scheduled-date display for some time. Use
+> `PENDING-WORK.md` for anything you intend to act on; every item there was
+> re-verified against the code.
+
 **Last Updated:** July 26, 2026  
 **Overall Status:** Production Ready (Core Features) / Pending Enhancements (Polish & Compliance)
 

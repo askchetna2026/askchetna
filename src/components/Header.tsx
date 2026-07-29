@@ -84,6 +84,9 @@ export default function Header() {
                 <Link href="/chart" className={`${styles.navLink} ${pathname === '/chart' ? styles.activeLink : ''}`}>Birth Chart</Link>
                 <Link href="/timing" className={`${styles.navLink} ${pathname === '/timing' ? styles.activeLink : ''}`}>Timing & Seasons</Link>
                 <Link href="/clarity" className={`${styles.navCta} ${pathname === '/clarity' ? styles.navCtaActive : ''}`}>Ask Chetna AI</Link>
+                {/* Human astrologers, as distinct from the AI above. Placed
+                    beside it so the two routes to an answer sit together. */}
+                <Link href="/consult" className={`${styles.navLink} ${pathname.startsWith('/consult') ? styles.activeLink : ''}`}>Astrologers</Link>
                 <Link href="/synastry" className={`${styles.navLink} ${pathname === '/synastry' ? styles.activeLink : ''}`}>Relationships</Link>
                 <Link href="/blog" className={`${styles.navLink} ${pathname === '/blog' ? styles.activeLink : ''}`}>Blog</Link>
                 {PAYMENTS_ENABLED && (
@@ -175,6 +178,12 @@ export default function Header() {
                           </Link>
                         </>
                       )}
+                      {/* Not inside the !isAppShell block above: consulting a
+                          human astrologer is not a tab, so the drawer is the
+                          only way to reach it in the app. */}
+                      <Link href="/consult" className={`${styles.mobileNavLink} ${pathname.startsWith('/consult') ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                        <Users size={20} /> Talk to an Astrologer
+                      </Link>
                       <Link href="/synastry" className={`${styles.mobileNavLink} ${pathname === '/synastry' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
                         <Users size={20} /> Relationships
                       </Link>

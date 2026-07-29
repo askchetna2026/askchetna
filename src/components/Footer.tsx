@@ -43,6 +43,7 @@ export default function Footer() {
                         <li><Link href="/glossary">Glossary</Link></li>
                         <li><Link href="/clarity">Ask Chetna AI</Link></li>
                         <li><Link href="/consult">Talk to an Astrologer</Link></li>
+                        <li><Link href="/astrologer/register">Become an Astrologer</Link></li>
                     </ul>
                 </div>
 

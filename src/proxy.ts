@@ -21,6 +21,14 @@ const protectedPaths = [
     // reasoning applies: the pages call redirect() too, but a streamed redirect
     // instruction is not an auth boundary. Covers /consult and /consult/[id].
     "/consult",
+    // Astrologer application and dashboard.
+    "/astrologer",
+    // Admin. This only enforces "signed in" — the admin ROLE check stays in
+    // checkAdminAccess on each page, because the proxy runs on the Edge and has
+    // no business loading the admin allowlist. The gain is that a signed-out
+    // request gets a real 307 instead of a 200 whose redirect is streamed as an
+    // instruction the client may or may not act on.
+    "/admin",
     ...(PAYMENTS_ENABLED ? ["/pricing"] : [])
 ]
 

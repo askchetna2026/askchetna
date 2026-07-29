@@ -1,0 +1,15 @@
+.page {
+    padding: 40px 20px 80px;
+}
+
+.header {
+    max-width: 640px;
+    margin: 0 auto 40px;
+    text-align: center;
+}
+
+.intro {
+    margin-top: 16px;
+    color: var(--text-muted);
+    line-height: 1.75;
+}

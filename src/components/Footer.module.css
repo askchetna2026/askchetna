@@ -175,3 +175,14 @@
 :global(html.native-app) .copyright {
     display: none;
 }
+
+/* App Info is only meaningful inside the app; the web footer shows the download
+   prompt instead (GetTheApp). Mirror-image of the rule in GetTheApp.module.css,
+   which hides that component under .native-app. */
+.appOnly {
+    display: none;
+}
+
+:global(html.native-app) .appOnly {
+    display: list-item;
+}

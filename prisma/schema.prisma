@@ -59,6 +59,7 @@ model User {
   deviceTokens  DeviceToken[]
   astrologer    Astrologer?
   consultations Consultation[]
+  astrologerApplications AstrologerApplication[]
 
   /// Lets the purge cron find due accounts without scanning the whole table.
   @@index([deletionScheduledFor])
@@ -616,4 +617,103 @@ model Payout {
   @@index([astrologerId, periodEnd])
   @@index([status])
   @@map("payouts")
+}
+
+/// A first-screening application to become an astrologer.
+///
+/// Deliberately SEPARATE from `Astrologer`, per §28 of the implementation spec:
+/// submitting an application must never create a public profile. `Astrologer` is
+/// the approved, published record; this is the thing an admin reviews. Keeping
+/// them apart means an application can be rejected, amended, or sit in review
+/// for weeks without any of that touching the directory.
+///
+/// Multi-select answers are stored as String[] rather than join tables: they are
+/// closed vocabularies read as a whole and never queried across applicants, so a
+/// relational table would add joins without buying anything.
+model AstrologerApplication {
+  id     String @id @default(cuid())
+  /// Human-quotable identifier shown on the confirmation screen, e.g. AC-7F3A9C21.
+  /// Support conversations need something a person can read down a phone line.
+  ref    String @unique
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// DRAFT | SUBMITTED | UNDER_REVIEW | REQUEST_MORE_INFORMATION
+  /// APPLICANT_RESPONDED | SHORTLISTED | VERIFICATION_PENDING | VERIFIED
+  /// FINAL_APPROVAL | REJECTED | ACTIVE
+  status String @default("SUBMITTED")
+
+  // ---- Section 1: about you ----
+  fullName    String
+  displayName String
+  email       String
+  phone       String
+  country     String
+  city        String
+  /// Storage path, not a URL. Photos stay private until a profile is published
+  /// (spec §30), so they are served through short-lived signed URLs generated
+  /// per request rather than a permanent public link.
+  profilePhotoPath String?
+
+  // ---- Section 2: practice ----
+  primaryPractice      String
+  primaryPracticeOther String?
+  additionalPractices  String[]
+  yearsOfExperience    String
+  learningMethods      String[]
+  learningMethodOther  String?
+  teacherGuruInstitute String?
+  hasFormalQualification Boolean @default(false)
+  qualificationName      String?
+
+  // ---- Section 3: expertise ----
+  areasOfExpertise      String[]
+  areasOfExpertiseOther String?
+  specialization        String? @db.Text
+
+  // ---- Section 4: languages and methods ----
+  languages            String[]
+  languageOther        String?
+  consultationMethods  String[]
+  availabilityFrequency String
+
+  // ---- Section 5: previous experience ----
+  previousConsultationExperience String
+  previousConsultationLocations  String[]
+  professionalProfileUrl         String?
+
+  // ---- Section 6-8: screening answers ----
+  aboutYou                    String  @db.Text
+  consultationApproach        String  @db.Text
+  sensitiveQuestionsApproach  String  @db.Text
+  whyJoinAskchetna            String  @db.Text
+  predictionCommunication     String
+  predictionCommunicationOther String? @db.Text
+
+  // ---- Section 9: declarations ----
+  // Stored individually rather than as one flag: they are separate consents and
+  // an audit needs to show which was given, not merely that a box was ticked.
+  declarationAccuracy             Boolean @default(false)
+  declarationNoGuarantee          Boolean @default(false)
+  declarationTerms                Boolean @default(false)
+  declarationAdditionalVerification Boolean @default(false)
+  declaredAt                      DateTime?
+
+  // ---- review ----
+  submittedAt DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  reviewedAt  DateTime?
+  reviewedBy  String?
+  /// Never shown to the applicant. Spec §25: internal notes stay internal.
+  adminNotes  String?   @db.Text
+  /// Shown to the applicant, so it must be written for them to read.
+  rejectionReason String? @db.Text
+  /// What the admin has asked the applicant to supply, when status is
+  /// REQUEST_MORE_INFORMATION.
+  infoRequest     String? @db.Text
+  infoRequestedAt DateTime?
+
+  @@index([status, submittedAt])
+  @@index([userId])
+  @@map("astrologer_applications")
 }

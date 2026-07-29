@@ -1,0 +1,400 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+.notice {
+    padding: 14px 16px;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(var(--accent-gold-rgb), 0.35);
+    background: rgba(var(--accent-gold-rgb), 0.08);
+    font-size: 0.88rem;
+    line-height: 1.65;
+    color: var(--foreground);
+}
+
+/* Section cards rather than a wizard: the whole application stays visible,
+   which suits something filled in carefully rather than raced through. */
+.section {
+    padding: 22px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--card-border);
+    background: var(--card-bg);
+}
+
+.sectionTitle {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    color: var(--foreground);
+    margin-bottom: 18px;
+}
+
+.sectionNo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: rgba(var(--accent-gold-rgb), 0.15);
+    color: var(--accent-gold);
+    font-size: 0.8rem;
+    font-weight: 700;
+    font-family: var(--font-main);
+}
+
+.sectionBody {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--foreground);
+}
+
+.req {
+    color: var(--accent-gold);
+}
+
+.hint {
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+}
+
+.fieldFoot {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    min-height: 0;
+}
+
+.error {
+    font-size: 0.78rem;
+    color: var(--error);
+}
+
+.counter {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+    margin-left: auto;
+}
+
+.input,
+.textarea,
+.select {
+    width: 100%;
+    padding: 11px 13px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--card-border);
+    background: var(--background);
+    color: var(--foreground);
+    font-family: inherit;
+    /* 16px floor: iOS Safari zooms the viewport when focusing smaller text,
+       which throws a long form out of alignment mid-entry. */
+    font-size: 16px;
+    line-height: 1.55;
+}
+
+.textarea {
+    resize: vertical;
+}
+
+.input:focus,
+.textarea:focus,
+.select:focus {
+    outline: 2px solid var(--accent-gold);
+    outline-offset: 1px;
+}
+
+/* Invalid state is a border AND the message below AND aria-invalid — never
+   colour alone. */
+.inputInvalid {
+    border-color: var(--error);
+}
+
+.chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.chip {
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--card-border);
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 0.83rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.chipOn {
+    border-color: var(--accent-gold);
+    color: var(--accent-gold);
+    background: rgba(var(--accent-gold-rgb), 0.12);
+    font-weight: 600;
+}
+
+.chip:focus-visible {
+    outline: 2px solid var(--accent-gold);
+    outline-offset: 2px;
+}
+
+.radios {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.radio,
+.check {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--foreground);
+    cursor: pointer;
+}
+
+.radio input,
+.check input {
+    margin-top: 3px;
+    flex-shrink: 0;
+    accent-color: var(--accent-gold);
+    /* Comfortably tappable rather than the 13px browser default. */
+    width: 17px;
+    height: 17px;
+}
+
+.check {
+    padding: 11px;
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+}
+
+.checkInvalid {
+    border-color: var(--error);
+    background: var(--error-bg);
+}
+
+.inlineLink {
+    color: var(--accent-gold);
+    text-decoration: underline;
+}
+
+.banner {
+    padding: 12px 15px;
+    border-radius: var(--radius-sm);
+    background: var(--error-bg);
+    color: var(--error);
+    font-size: 0.88rem;
+}
+
+.submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 15px 30px;
+    border-radius: 999px;
+    border: none;
+    background: var(--accent-gold);
+    color: var(--bg-primary);
+    font-weight: 700;
+    font-size: 1rem;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.submit:disabled {
+    opacity: 0.55;
+    cursor: default;
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .spin { animation: none; }
+}
+
+.status {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 38px 28px;
+    text-align: center;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--card-border);
+    background: var(--card-bg);
+}
+
+.tick {
+    color: var(--success);
+    margin-bottom: 14px;
+}
+
+.statusTitle {
+    font-family: var(--font-heading);
+    font-size: 1.35rem;
+    color: var(--foreground);
+    margin-bottom: 10px;
+}
+
+.statusRef {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+}
+
+.statusRef strong {
+    color: var(--accent-gold);
+    font-family: monospace;
+    letter-spacing: 0.05em;
+}
+
+.statusDetail {
+    color: var(--text-muted);
+    line-height: 1.7;
+}
+
+.infoRequest {
+    padding: 15px;
+    margin-bottom: 16px;
+    text-align: left;
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--warning);
+    background: var(--warning-bg);
+    color: var(--foreground);
+    line-height: 1.65;
+}
+
+.infoRequestTitle {
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.back {
+    display: inline-block;
+    margin-top: 20px;
+    color: var(--accent-gold);
+    font-weight: 600;
+}
+
+/* ---- profile photo ---- */
+
+.photoField {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.photoRow {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.photoPreview {
+    width: 88px;
+    height: 88px;
+    flex-shrink: 0;
+    border-radius: var(--radius-sm);
+    border: 1px dashed var(--card-border);
+    background: var(--background);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.photoImg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.photoIcon {
+    color: var(--text-muted);
+}
+
+.photoActions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 7px;
+    min-width: 0;
+}
+
+.photoBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 16px;
+    border-radius: 999px;
+    border: 1px solid var(--card-border);
+    background: transparent;
+    color: var(--foreground);
+    font-size: 0.85rem;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.photoBtn:hover:not(:disabled) {
+    border-color: var(--accent-gold);
+    color: var(--accent-gold);
+}
+
+.photoBtn:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.photoDone {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.8rem;
+    color: var(--success);
+}
+
+/* The native file input is replaced by the button above. Kept in the DOM and
+   visually hidden rather than display:none so it stays focusable and reachable
+   by assistive technology. */
+.fileInput {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}

@@ -1,0 +1,51 @@
+/* Hidden inside the apps: someone who already installed it does not need a
+   download prompt, and App Info takes this slot there instead. */
+:global(html.native-app) .inline,
+:global(html.native-app) .row {
+    display: none;
+}
+
+.inline {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 12px 0;
+}
+
+.label {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.store {
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--card-border);
+    color: var(--accent-gold);
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: border-color 0.2s ease;
+}
+
+.store:hover {
+    border-color: var(--accent-gold);
+}

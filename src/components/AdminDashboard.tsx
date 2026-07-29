@@ -2,6 +2,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import styles from './AdminDashboard.module.css';
 
@@ -410,6 +411,18 @@ export default function AdminDashboard() {
                     >
                         Analytics
                     </button>
+                    {/* Links rather than tabs: each is its own page with its own
+                        queue and filters, and neither was reachable from here at
+                        all — the approval flow needed the URL typed in.
+
+                        Two distinct things: Applications is first-screening
+                        review, Astrologers is the approved roster. */}
+                    <Link href="/admin/astrologer-applications" className={styles.navItem}>
+                        Applications
+                    </Link>
+                    <Link href="/admin/astrologers" className={styles.navItem}>
+                        Astrologers
+                    </Link>
                     <button
                         className={`${styles.navItem} ${activeTab === 'users' ? styles.active : ''}`}
                         onClick={() => setActiveTab('users')}

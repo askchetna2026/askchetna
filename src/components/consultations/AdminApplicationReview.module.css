@@ -1,0 +1,395 @@
+.wrap,
+.detail {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+}
+
+.tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 16px;
+    border-radius: 999px;
+    border: 1px solid var(--card-border);
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 0.86rem;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.tabOn {
+    border-color: var(--accent-gold);
+    color: var(--accent-gold);
+    background: rgba(var(--accent-gold-rgb), 0.1);
+    font-weight: 600;
+}
+
+.count {
+    padding: 1px 7px;
+    border-radius: 999px;
+    background: rgba(var(--foreground-rgb), 0.1);
+    font-size: 0.72rem;
+}
+
+.searchRow {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.searchIcon {
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+.search {
+    width: 100%;
+    padding: 11px 14px 11px 38px;
+    border-radius: 999px;
+    border: 1px solid var(--card-border);
+    background: var(--card-bg);
+    color: var(--foreground);
+    /* 16px floor stops iOS Safari zooming the viewport on focus. */
+    font-size: 16px;
+    font-family: inherit;
+}
+
+.search:focus {
+    outline: 2px solid var(--accent-gold);
+    outline-offset: 1px;
+}
+
+.loading,
+.empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 40px 0;
+    color: var(--text-muted);
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .spin {
+        animation: none;
+    }
+}
+
+.error {
+    padding: 11px 14px;
+    margin-bottom: 16px;
+    border-radius: var(--radius-sm);
+    background: var(--error-bg);
+    color: var(--error);
+    font-size: 0.88rem;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    width: 100%;
+    padding: 15px 18px;
+    text-align: left;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--card-border);
+    background: var(--card-bg);
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.row:hover {
+    border-color: var(--accent-gold);
+}
+
+.rowMain {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+.rowName {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    color: var(--foreground);
+}
+
+.rowMeta {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    overflow-wrap: anywhere;
+}
+
+/* Status is always a word as well as a colour. */
+.badge {
+    padding: 4px 11px;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+    flex-shrink: 0;
+    border: 1px solid var(--border-soft);
+    color: var(--text-muted);
+}
+
+.submitted,
+.under_review,
+.applicant_responded {
+    border-color: var(--warning);
+    color: var(--warning);
+    background: var(--warning-bg);
+}
+
+.shortlisted,
+.final_approval,
+.active,
+.verified {
+    border-color: var(--success);
+    color: var(--success);
+    background: var(--success-bg);
+}
+
+.rejected {
+    border-color: var(--error);
+    color: var(--error);
+    background: var(--error-bg);
+}
+
+/* ---- detail ---- */
+
+.back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 20px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--card-border);
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.detailHead {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+    padding-bottom: 20px;
+    margin-bottom: 22px;
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.photo,
+.photoMissing {
+    width: 84px;
+    height: 84px;
+    flex-shrink: 0;
+    border-radius: var(--radius-sm);
+    object-fit: cover;
+    border: 1px solid var(--card-border);
+}
+
+.photoMissing {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--card-bg);
+    color: var(--text-muted);
+    font-size: 0.72rem;
+}
+
+.detailName {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    color: var(--foreground);
+    margin-bottom: 3px;
+}
+
+.detailRef {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.group {
+    padding: 20px;
+    margin-bottom: 16px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--card-border);
+    background: var(--card-bg);
+}
+
+.groupTitle {
+    font-family: var(--font-heading);
+    font-size: 1.02rem;
+    color: var(--accent-gold);
+    margin-bottom: 14px;
+}
+
+.facts {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+}
+
+@media (min-width: 640px) {
+    .facts {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.facts dt {
+    font-size: 0.68rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 3px;
+}
+
+.facts dd {
+    font-size: 0.9rem;
+    color: var(--foreground);
+    overflow-wrap: anywhere;
+}
+
+.essay {
+    margin-bottom: 18px;
+}
+
+.essay:last-child {
+    margin-bottom: 0;
+}
+
+.essayTitle {
+    font-size: 0.78rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+.essayBody {
+    font-size: 0.92rem;
+    line-height: 1.7;
+    color: var(--foreground);
+    /* Applicants write in paragraphs; collapsing them makes 2000 characters
+       unreadable. */
+    white-space: pre-wrap;
+}
+
+.notesHint {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+.notes {
+    width: 100%;
+    padding: 11px 13px;
+    margin-bottom: 10px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--card-border);
+    background: var(--background);
+    color: var(--foreground);
+    font-size: 16px;
+    font-family: inherit;
+    line-height: 1.6;
+    resize: vertical;
+}
+
+.notes:focus {
+    outline: 2px solid var(--accent-gold);
+    outline-offset: 1px;
+}
+
+.savedNote {
+    margin-left: 10px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.approve,
+.reject,
+.secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 11px 18px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    font-size: 0.87rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.approve {
+    background: var(--success);
+    color: var(--bg-primary);
+}
+
+.reject {
+    background: transparent;
+    border-color: var(--error);
+    color: var(--error);
+}
+
+.secondary {
+    background: transparent;
+    border-color: var(--card-border);
+    color: var(--text-muted);
+}
+
+.approve:disabled,
+.reject:disabled,
+.secondary:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.footnote {
+    margin-top: 14px;
+    font-size: 0.78rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    font-style: italic;
+}

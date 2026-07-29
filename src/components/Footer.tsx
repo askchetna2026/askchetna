@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import styles from './Footer.module.css';
 import { Mail, Youtube, Instagram, Facebook } from 'lucide-react';
+import GetTheApp from './GetTheApp';
 
 export default function Footer() {
     return (
@@ -45,6 +46,7 @@ export default function Footer() {
                         <li><Link href="/consult">Talk to an Astrologer</Link></li>
                         <li><Link href="/astrologer/register">Become an Astrologer</Link></li>
                     </ul>
+                    <GetTheApp />
                 </div>
 
                 {/* Legal Links. Kept in the app's compact footer too — App Store
@@ -63,7 +65,12 @@ export default function Footer() {
                             "which build am I on?" actually gets asked. Reachable
                             signed out: the header only exposes it once you are
                             authenticated, but the page needs no session. */}
-                        <li><Link href="/app-info">App Info</Link></li>
+                        {/* App Info reports the running build and update state.
+                            That is meaningful inside the app and meaningless in a
+                            browser, so the web footer offers the download instead
+                            — see GetTheApp, which hides itself under .native-app
+                            while this entry hides itself outside it. */}
+                        <li className={styles.appOnly}><Link href="/app-info">App Info</Link></li>
                     </ul>
                 </div>
             </div>

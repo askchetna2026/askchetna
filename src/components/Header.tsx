@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import styles from './Header.module.css';
 import Logo from './Logo';
 import ThemeToggle from './ThemeToggle';
+import ProfileMenu from './ProfileMenu';
 import { Menu, X, CreditCard, LayoutDashboard, LogOut, Info, BookOpen, MessageSquare, Sparkles, Users, UserCog, Settings } from 'lucide-react';
 import { PAYMENTS_ENABLED } from '@/lib/paymentConfig';
 import { isClientNativeApp } from '@/lib/platform';
@@ -106,31 +107,11 @@ export default function Header() {
           <div className={styles.actions}>
             <ThemeToggle />
             {status === 'authenticated' ? (
-              <div className={styles.authGroup}>
-                <Link href="/dashboard" className={`${styles.navLink} ${pathname === '/dashboard' ? styles.activeLink : ''}`}>
-                  Dashboard
-                </Link>
-                {/* Account settings hosts account deletion, which both stores
-                    require to be easy to find rather than buried. */}
-                <Link href="/account" className={`${styles.navLink} ${pathname === '/account' ? styles.activeLink : ''}`}>
-                  Account
-                </Link>
-                <Link href="/app-info" className={`${styles.navLink} ${pathname === '/app-info' ? styles.activeLink : ''}`}>
-                  App Info
-                </Link>
-                {session?.user?.isAdmin && (
-                  <Link href="/admin" className={`${styles.navLink} ${styles.adminLink} ${pathname === '/admin' ? styles.activeLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                    Admin
-                  </Link>
-                )}
-                <button
-                  onClick={() => signOut({ callbackUrl: '/' })}
-                  className={styles.signOutBtn}
-                  aria-label="Sign out"
-                >
-                  <LogOut size={16} />
-                </button>
-              </div>
+              // Dashboard, Account, App Info, Admin and sign out were five
+              // separate items competing for space in the bar. One profile
+              // control holds them all — with Account still a single tap, since
+              // it hosts account deletion and both stores want that findable.
+              <ProfileMenu />
             ) : (
               <Link href="/login" className={styles.loginBtn}>Sign In</Link>
             )}
@@ -184,6 +165,22 @@ export default function Header() {
                       <Link href="/consult" className={`${styles.mobileNavLink} ${pathname.startsWith('/consult') ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
                         <Users size={20} /> Talk to an Astrologer
                       </Link>
+
+                      {/* Was footer-only, in the Explore column — which the app
+                          hides — so it was unreachable on Android and iOS. */}
+                      <Link href="/astrologer/register" className={`${styles.mobileNavLink} ${pathname.startsWith('/astrologer') ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                        <Sparkles size={20} /> Become an Astrologer
+                      </Link>
+
+                      {/* Admin reaches the console from the app too. isAdmin is
+                          already on the session (see the session callback in
+                          auth.ts), so no extra request is needed — and every
+                          admin route re-checks server-side regardless. */}
+                      {session?.user?.isAdmin && (
+                        <Link href="/admin/astrologers" className={`${styles.mobileNavLink} ${pathname.startsWith('/admin') ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                          <UserCog size={20} /> Admin
+                        </Link>
+                      )}
                       <Link href="/synastry" className={`${styles.mobileNavLink} ${pathname === '/synastry' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
                         <Users size={20} /> Relationships
                       </Link>
@@ -214,9 +211,15 @@ export default function Header() {
                           </Link>
                         </>
                       )}
-                      <Link href="/app-info" className={`${styles.mobileNavLink} ${pathname === '/app-info' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                        <Settings size={20} /> App Info
-                      </Link>
+                      {/* App Info reports the running build and update state:
+                          useful in the app, meaningless in a browser where
+                          there is nothing to update. Web gets the download
+                          prompt instead — GetTheApp hides itself in-app. */}
+                      {isAppShell && (
+                        <Link href="/app-info" className={`${styles.mobileNavLink} ${pathname === '/app-info' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                          <Settings size={20} /> App Info
+                        </Link>
+                      )}
                     </>
                   ) : (
                     <>
@@ -224,11 +227,14 @@ export default function Header() {
                       <Link href="/about" className={styles.mobileNavLink} onClick={() => setIsMenuOpen(false)}>About Us</Link>
                       <Link href="/blog" className={styles.mobileNavLink} onClick={() => setIsMenuOpen(false)}>Blog</Link>
                       <Link href="/clarity" className={`${styles.mobileNavLink} ${styles.mobileCtaLink}`} onClick={() => setIsMenuOpen(false)}>Ask Chetna AI</Link>
-                      {/* Parity with the signed-in drawer. In the app this is
-                          the only "more" menu, and a signed-out user still needs
-                          to be able to check which build they are on. */}
-                      <Link href="/app-info" className={`${styles.mobileNavLink} ${pathname === '/app-info' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                        <Settings size={20} /> App Info
+                      <Link href="/consult" className={`${styles.mobileNavLink} ${pathname.startsWith('/consult') ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                        <Users size={20} /> Talk to an Astrologer
+                      </Link>
+                      {/* Signed-out users are the ones most likely to be
+                          looking for this — it bounces through login and comes
+                          straight back via callbackUrl. */}
+                      <Link href="/astrologer/register" className={`${styles.mobileNavLink} ${pathname.startsWith('/astrologer') ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                        <Sparkles size={20} /> Become an Astrologer
                       </Link>
                     </>
                   )}

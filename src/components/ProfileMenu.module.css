@@ -1,0 +1,126 @@
+.wrap {
+    position: relative;
+}
+
+.trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--card-border);
+    background: var(--card-bg);
+    color: var(--foreground);
+    cursor: pointer;
+    padding: 0;
+    overflow: hidden;
+}
+
+.trigger:hover {
+    border-color: var(--accent-gold);
+}
+
+.trigger:focus-visible {
+    outline: 2px solid var(--accent-gold);
+    outline-offset: 2px;
+}
+
+.avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.initial {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--accent-gold);
+}
+
+.menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    min-width: 250px;
+    z-index: 1200;
+    padding: 8px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--card-border);
+    background: var(--background);
+    box-shadow: var(--glass-shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.identity {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px 12px 12px;
+    border-bottom: 1px solid var(--border-soft);
+    margin-bottom: 6px;
+}
+
+.name {
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    color: var(--foreground);
+}
+
+.email {
+    font-size: 0.76rem;
+    color: var(--text-muted);
+    /* An address long enough to overflow must wrap, not widen the popover. */
+    overflow-wrap: anywhere;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: transparent;
+    color: var(--foreground);
+    font-size: 0.9rem;
+    font-family: inherit;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.item:hover,
+.item:focus-visible {
+    background: rgba(var(--accent-gold-rgb), 0.1);
+    color: var(--accent-gold);
+    outline: none;
+}
+
+.sub {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: 1px;
+}
+
+.admin {
+    color: var(--accent-iris);
+}
+
+.signOut {
+    margin-top: 4px;
+    border-top: 1px solid var(--border-soft);
+    border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+    color: var(--error);
+}
+
+.signOut:hover,
+.signOut:focus-visible {
+    background: var(--error-bg);
+    color: var(--error);
+}

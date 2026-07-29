@@ -17,6 +17,10 @@ const protectedPaths = [
     // the auth boundary is enforced before any rendering begins rather than
     // relying on a streamed redirect instruction.
     "/account",
+    // Consultations spend credits and open a private conversation, so the same
+    // reasoning applies: the pages call redirect() too, but a streamed redirect
+    // instruction is not an auth boundary. Covers /consult and /consult/[id].
+    "/consult",
     ...(PAYMENTS_ENABLED ? ["/pricing"] : [])
 ]
 

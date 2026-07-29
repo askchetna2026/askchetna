@@ -1,0 +1,152 @@
+.wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+}
+
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 60px 20px;
+    color: var(--text-muted);
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .spin {
+        animation: none;
+    }
+}
+
+.error {
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    border-radius: var(--radius-sm);
+    background: var(--error-bg);
+    color: var(--error);
+    font-size: 0.9rem;
+}
+
+.empty {
+    padding: 50px 20px;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+}
+
+@media (min-width: 620px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 980px) {
+    .grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    padding: 22px;
+    border-radius: var(--radius-md);
+}
+
+.top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.name {
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    color: var(--foreground);
+    margin: 0;
+}
+
+/* Presence is a word, not just a coloured dot — a dot alone is invisible to
+   anyone who cannot separate the two hues. */
+.presence {
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--border-soft);
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.online {
+    border-color: var(--success);
+    color: var(--success);
+    background: var(--success-bg);
+}
+
+.tags {
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent-gold);
+    margin-bottom: 10px;
+}
+
+.bio {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    /* Keeps cards on one row the same height without truncating mid-word. */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.languages {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+}
+
+.start {
+    margin-top: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 18px;
+    border-radius: 999px;
+    border: none;
+    background: var(--accent-gold);
+    color: var(--bg-primary);
+    font-weight: 700;
+    font-size: 0.87rem;
+    cursor: pointer;
+}
+
+.start:disabled {
+    opacity: 0.45;
+    cursor: default;
+}

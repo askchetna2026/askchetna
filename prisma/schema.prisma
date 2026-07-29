@@ -57,6 +57,8 @@ model User {
   profileLimits UserProfileLimit[]
   lifecycleEmails LifecycleEmail[]
   deviceTokens  DeviceToken[]
+  astrologer    Astrologer?
+  consultations Consultation[]
 
   /// Lets the purge cron find due accounts without scanning the whole table.
   @@index([deletionScheduledFor])
@@ -421,4 +423,197 @@ model LifecycleAutomationRun {
   @@index([campaignKey, createdAt])
   @@index([triggerType, createdAt])
   @@index([batchKey])
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Astrologer marketplace
+// ═══════════════════════════════════════════════════════════════════════════
+
+/// Admin-only numeric configuration.
+///
+/// Separate from ServiceCost, whose `credits` field means "this action costs N
+/// credits". These values are seconds, percentages and paise, and storing them
+/// in a column named `credits` would be a lie that outlives whoever wrote it.
+///
+/// Enforcement of "admin only" lives in the API layer — the schema cannot
+/// express it. Every write path must check the admin role.
+model AppSetting {
+  key         String   @id
+  value       Int
+  description String?
+  updatedAt   DateTime @updatedAt
+  updatedBy   String?
+
+  @@map("app_settings")
+}
+
+/// A user who has registered to take consultations.
+///
+/// One per user, and deliberately a separate record rather than a role flag:
+/// astrologers carry payout, verification and rate data that has no meaning for
+/// an ordinary account, and an approval workflow that a boolean cannot express.
+model Astrologer {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  displayName  String
+  bio          String?  @db.Text
+  photoUrl     String?
+  languages    String[] // ISO codes, e.g. ["hi","en"]
+  specialities String[] // e.g. ["career","relationships"]
+
+  /// PENDING | APPROVED | SUSPENDED | REJECTED. Only APPROVED may take sessions.
+  status      String    @default("PENDING")
+  approvedAt  DateTime?
+  approvedBy  String?
+  rejectionReason String? @db.Text
+
+  /// Per-astrologer override of ASTROLOGER_REVENUE_PCT. Null means use the
+  /// global default, so changing the default moves everyone who has no override.
+  revenueSharePct Int?
+
+  /// Manual online toggle, and a heartbeat. Availability needs both: a toggle
+  /// alone leaves ghosts online after a crash.
+  isAvailable Boolean  @default(false)
+  lastSeenAt  DateTime?
+
+  /// Payout destination. Nullable because it is collected after approval, not
+  /// at registration. See the tax note in the plan before extending this.
+  payoutAccountRef String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  consultations Consultation[]
+  earnings      AstrologerEarning[]
+  payouts       Payout[]
+
+  @@index([status, isAvailable])
+  @@map("astrologers")
+}
+
+/// One consultation session, billed in whole blocks.
+///
+/// A block is bought up front — one credit opens `secondsPerBlock` seconds. When
+/// a block is nearly spent the user may buy another; if they do not, the SERVER
+/// closes the session at `deadlineAt`. Nothing here is fractional, which is what
+/// lets the existing whole-credit model stand unchanged.
+///
+/// Rates and shares are SNAPSHOTTED, never joined live. An astrologer's rate
+/// will change, and a live join would silently rewrite every historical earning
+/// and break reconciliation against payouts already made.
+model Consultation {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  astrologerId String
+  astrologer   Astrologer @relation(fields: [astrologerId], references: [id])
+
+  /// CHAT | AUDIO | VIDEO. Present from day one so adding a mode is a config
+  /// row and a transport adapter, not a second billing path.
+  kind   String @default("CHAT")
+
+  /// REQUESTED | ACTIVE | ENDED_BY_USER | ENDED_BY_ASTROLOGER
+  /// ENDED_NO_EXTENSION | ENDED_TIMEOUT | FAILED
+  status String @default("REQUESTED")
+
+  startedAt DateTime?
+  endedAt   DateTime?
+
+  /// Server-authoritative end of the currently paid block. The client counts
+  /// down toward it for display only; the server decides when time is up.
+  deadlineAt DateTime?
+
+  blocksCharged  Int @default(0)
+  creditsCharged Int @default(0)
+  billedSeconds  Int @default(0)
+
+  // ---- snapshots taken when the session opens ----
+  secondsPerBlock  Int
+  creditValuePaise Int
+  revenueSharePct  Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messages ConsultationMessage[]
+  earning  AstrologerEarning?
+
+  @@index([userId, createdAt])
+  @@index([astrologerId, createdAt])
+  @@index([status])
+  /// Lets the sweeper find sessions whose deadline has passed without needing a
+  /// full scan — the safety net for clients that never send an end event.
+  @@index([status, deadlineAt])
+  @@map("consultations")
+}
+
+model ConsultationMessage {
+  id             String   @id @default(cuid())
+  consultationId String
+  consultation   Consultation @relation(fields: [consultationId], references: [id], onDelete: Cascade)
+  senderId       String
+  body           String   @db.Text
+  sentAt         DateTime @default(now())
+  readAt         DateTime?
+
+  @@index([consultationId, sentAt])
+  @@map("consultation_messages")
+}
+
+/// Append-only earnings ledger, one row per consultation.
+///
+/// Payout totals are summed from here and never recomputed from consultations:
+/// recomputation drifts the moment a rate or share percentage changes, and a
+/// figure that moves after it has been paid is unauditable.
+///
+/// The unique constraint on consultationId is the idempotency guard — settling
+/// the same session twice is a duplicate key error rather than double pay.
+model AstrologerEarning {
+  id             String   @id @default(cuid())
+  astrologerId   String
+  astrologer     Astrologer @relation(fields: [astrologerId], references: [id])
+  consultationId String   @unique
+  consultation   Consultation @relation(fields: [consultationId], references: [id])
+
+  creditsServed Int
+  amountPaise   Int
+
+  /// Null until a payout run claims it. This is what makes runs re-runnable.
+  payoutId String?
+  payout   Payout? @relation(fields: [payoutId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([astrologerId, createdAt])
+  @@index([payoutId])
+  @@map("astrologer_earnings")
+}
+
+model Payout {
+  id           String   @id @default(cuid())
+  astrologerId String
+  astrologer   Astrologer @relation(fields: [astrologerId], references: [id])
+
+  periodStart DateTime
+  periodEnd   DateTime
+
+  creditsServed Int
+  amountPaise   Int
+
+  /// PENDING | PROCESSING | PAID | FAILED
+  status    String  @default("PENDING")
+  reference String? // bank or RazorpayX payout id
+  notes     String? @db.Text
+  paidAt    DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  earnings AstrologerEarning[]
+
+  @@index([astrologerId, periodEnd])
+  @@index([status])
+  @@map("payouts")
 }

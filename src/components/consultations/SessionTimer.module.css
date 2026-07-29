@@ -1,0 +1,42 @@
+.timer {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--card-border);
+    background: var(--card-bg);
+    font-variant-numeric: tabular-nums;
+    transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+.value {
+    font-size: 1.05rem;
+    font-weight: 700;
+    /* Tabular figures stop the pill twitching as digits change width. */
+    font-variant-numeric: tabular-nums;
+    color: var(--foreground);
+}
+
+.label {
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+/* Colour is not the only signal — the pill also gains a ring, and the timer
+   element is aria-live once urgent, so the warning does not depend on being
+   able to distinguish red. */
+.urgent {
+    border-color: var(--error);
+    box-shadow: 0 0 0 3px var(--error-bg);
+}
+
+.urgent .value {
+    color: var(--error);
+}
+
+.urgent .label {
+    color: var(--error);
+}

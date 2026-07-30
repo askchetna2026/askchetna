@@ -1,6 +1,6 @@
 {
   "name": "chetna",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "private": true,
   "_comment_overrides": "jwks-rsa@4 is CommonJS and does require('jose') at the top of src/utils.js, but it declares jose ^6 — and jose has been ESM-only since v5. npm hoists a single jose@6 (because @auth/core needs ^6), so at runtime firebase-admin's token verification dies with 'require() of ES Module ... not supported'. This pins a NESTED jose@4 (the last CommonJS line) for jwks-rsa only; jwks-rsa uses just importJWK and exportSPKI, both present in v4. @auth/core keeps the hoisted v6.",
   "overrides": {
@@ -21,6 +21,7 @@
     "migrate:prod": "dotenv -e .env.prod -- prisma migrate deploy",
     "db:studio": "dotenv -e .env.local -- prisma studio",
     "verify:payments": "dotenv -e .env.local -e .env -- node scripts/verify-payment-webhook.mjs",
+    "verify:payouts": "dotenv -e .env.local -- tsx scripts/verify-payouts.mts",
     "seed:ai": "dotenv -e .env.local -- node scripts/seed-ai-astrologers.mjs",
     "seed:ai:preview": "dotenv -e .env.preview -- node scripts/seed-ai-astrologers.mjs",
     "seed:ai:prod": "dotenv -e .env.prod -- node scripts/seed-ai-astrologers.mjs",
@@ -109,6 +110,7 @@
     "razorpay": "^2.9.6",
     "storybook": "^10.5.4",
     "ts-node": "^10.9.2",
+    "tsx": "^4.23.1",
     "typescript": "^5",
     "vite": "^8.1.5",
     "vitest": "^4.1.10"

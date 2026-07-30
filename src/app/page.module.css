@@ -276,8 +276,8 @@
   display: inline-flex;
   align-items: center;
   padding: 16px 40px;
-  background: linear-gradient(135deg, var(--accent-gold) 0%, #b8860b 100%);
-  color: #101010;
+  background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-dim) 100%);
+  color: var(--bg-primary);
   border-radius: 50px;
   font-weight: 700;
   font-size: 1.05rem;
@@ -1122,7 +1122,8 @@
 .teaserSubmitBtn {
   padding: 12px 32px;
   background: var(--accent-gold);
-  color: #0b0f2f;
+  /* See NewsletterSignupCard.submitButton — same hardcoded navy, same fix. */
+  color: var(--bg-primary);
   font-weight: 700;
   border-radius: 50px;
   border: 1px solid var(--accent-gold);

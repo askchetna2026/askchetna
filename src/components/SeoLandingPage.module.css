@@ -85,7 +85,8 @@
 
 .primaryButton {
     background: var(--accent-gold);
-    color: #0d122d;
+    /* See Header .navCta — same hardcoded navy on a gold fill, same fix. */
+    color: var(--bg-primary);
 }
 
 .secondaryButton {

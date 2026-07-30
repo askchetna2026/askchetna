@@ -136,7 +136,10 @@
 
 .confirmButton.warning {
     background: var(--accent-gold);
-    color: black;
+    /* Was `black`, which measured 4.23:1 on the light theme's deep gold — under
+       AA, on a confirmation button. --bg-primary is the app's "text on a gold
+       fill" colour and clears it in both themes. */
+    color: var(--bg-primary);
 }
 
 .confirmButton.danger {

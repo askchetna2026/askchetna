@@ -61,7 +61,11 @@ export default function WelcomeBanner({ bonusAmount }: { bonusAmount: number }) 
                         href="/login"
                         style={{
                             background: 'var(--accent-gold)',
-                            color: '#000',
+                            // Not '#000': black on the light theme's deep gold
+                            // measured 3.7:1, under AA. --bg-primary is the
+                            // app's "text on gold" colour and clears it in both
+                            // themes.
+                            color: 'var(--bg-primary)',
                             padding: '6px 16px',
                             borderRadius: '20px',
                             fontSize: '0.85rem',

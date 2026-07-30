@@ -136,7 +136,11 @@
     border: none;
     border-radius: 16px;
     background: var(--accent-gold);
-    color: #0d122d;
+    /* Was a hardcoded #0d122d, so this stayed dark-navy-on-gold in both themes.
+       --bg-primary is the established "text on a gold fill" colour across the
+       app: navy on the dark theme's bright gold, parchment on the light theme's
+       deep gold. Both clear AA; the hardcode did not. */
+    color: var(--bg-primary);
     font-size: 0.95rem;
     font-weight: 800;
     cursor: pointer;

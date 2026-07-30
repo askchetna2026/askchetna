@@ -132,6 +132,26 @@
     box-shadow: 0 4px 12px rgba(27, 43, 65, 0.2);
 }
 
+/* The desktop Sign In pill had no light-theme rule, so it stayed a near-black
+   capsule on the parchment page — white-on-black passes contrast, which is why
+   it survived the audit, but it is the only dark control on a light page.
+   Mirrors [data-theme='light'] .mobileSignInBtn so both breakpoints agree.
+   NOTE: .loginBtn above also carries header-bar declarations (a translucent
+   dark background, border-bottom, z-index 1000) that look pasted in from
+   .header; that dark background is what this has to override. */
+[data-theme='light'] .loginBtn {
+    background: rgba(184, 134, 11, 0.06);
+    color: var(--accent-gold-dim);
+    border: 1px solid rgba(184, 134, 11, 0.45);
+    box-shadow: none;
+}
+
+[data-theme='light'] .loginBtn:hover {
+    background: rgba(184, 134, 11, 0.12);
+    border-color: var(--accent-gold);
+    box-shadow: none;
+}
+
 .authGroup {
     display: flex;
     align-items: center;
@@ -349,7 +369,10 @@
 .navCta {
     padding: 8px 20px;
     background: var(--accent-gold);
-    color: #0b0f2f !important;
+    /* Hardcoded navy here meant the header CTA kept dark-on-gold in the light
+       theme, where the gold fill is deep enough that it stopped clearing AA.
+       --bg-primary is the app's "text on a gold fill" colour in both themes. */
+    color: var(--bg-primary) !important;
     border-radius: 50px;
     font-size: 0.85rem;
     font-weight: 700;

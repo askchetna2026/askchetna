@@ -10,12 +10,23 @@
   --foreground-rgb: 44, 27, 24;
 
   --primary: #4A2E2B;
+  /* Muted body copy. #8E7A77 measured 3.45:1 on a card and 3.7:1 on the page —
+     under the 4.5:1 AA floor either way, which is what made secondary text on
+     the light theme read as washed out rather than quiet. */
   --secondary: #6B4E4A;
-  --text-muted: #8E7A77;
+  --text-muted: #75605C;
 
-  --accent-gold: #B8860B;
-  --accent-gold-rgb: 184, 134, 11;
-  --accent-gold-dim: #996515;
+  /* Gold has to be genuinely dark to survive on #FDF4E3 parchment: it is used
+     as a TEXT colour ~270 times and only ~55 times as a surface, so the token
+     is tuned for legibility first. #B8860B ("darkgoldenrod") measured 2.8-3.0:1
+     against the page and cards, which is why gold headings, labels and links
+     were the single largest source of unreadable text in this theme.
+     #8B5E10 measures 5.19:1 on the page and 4.89:1 on a card, and still reads
+     as antique gold rather than brown. Buttons that fill with it pair it with
+     --bg-primary, which clears AA in the other direction. */
+  --accent-gold: #8B5E10;
+  --accent-gold-rgb: 139, 94, 16;
+  --accent-gold-dim: #6E4A0D;
   --accent-rose: #C48E8E;
 
   /* Semantic and brand accents. These were defined only under
@@ -24,7 +35,10 @@
      and then stayed dark regardless of theme. Darkened from their dark-theme
      counterparts to hold contrast against the #FDF4E3 parchment rather than
      glow against navy. */
-  --success: #2E7D32;
+  /* #2E7D32 still only measured 4.03:1 against its own tint over the parchment,
+     so it is a shade darker again to clear the 4.5:1 floor for the small
+     uppercase status pills that use it. */
+  --success: #256B29;
   --success-bg: rgba(46, 125, 50, 0.12);
   --warning: #B26A00;
   --warning-bg: rgba(178, 106, 0, 0.12);
@@ -34,8 +48,11 @@
   --brand-secondary: #4A2FA8;
 
   --card-bg: rgba(244, 232, 209, 0.65);
-  --card-border: rgba(184, 134, 11, 0.25);
-  --border-soft: rgba(184, 134, 11, 0.15);
+  /* Tracks --accent-gold-rgb above. Borders carry no contrast requirement, but
+     leaving them on the old lighter gold would make them drift from every
+     bordered element that also uses the token for its text. */
+  --card-border: rgba(139, 94, 16, 0.25);
+  --border-soft: rgba(139, 94, 16, 0.15);
 
   --glass-shadow: 0 12px 40px -10px rgba(16, 20, 32, 0.1);
 
@@ -130,14 +147,22 @@
   --foreground-rgb: 44, 27, 24;
   --primary: #4A2E2B;
   --secondary: #6B4E4A;
-  --text-muted: #8E7A77;
-  --success: #16a34a;
-  --success-bg: rgba(22, 163, 74, 0.1);
-  --error: #dc2626;
-  --error-bg: rgba(220, 38, 38, 0.1);
-  --accent-gold: #B8860B;
-  --accent-gold-rgb: 184, 134, 11;
-  --accent-gold-dim: #996515;
+  /* Keep these three in step with the :root block above — :root is the light
+     palette too (it is what an unset data-theme falls back to), so a value
+     changed in only one place fixes the theme for half the visitors. */
+  --text-muted: #75605C;
+  /* These four used to hold BRIGHTER values than the :root block, silently
+     undoing the darkening :root did for contrast — and :root's comment says
+     that darkening was deliberate. The bright green measured 2.55:1 on the
+     "Available" pill in the astrologer directory, the bright red 3.80:1 on its
+     own tint. Both now match :root. */
+  --success: #256B29;
+  --success-bg: rgba(46, 125, 50, 0.12);
+  --error: #B3261E;
+  --error-bg: rgba(179, 38, 30, 0.10);
+  --accent-gold: #8B5E10;
+  --accent-gold-rgb: 139, 94, 16;
+  --accent-gold-dim: #6E4A0D;
   --accent-rose: #C48E8E;
 
   /* --warning and the iris accents had no light-mode value at all, which is one
@@ -150,8 +175,8 @@
   --accent-iris: #4A2FA8;
   --brand-secondary: #4A2FA8;
   --card-bg: rgba(244, 232, 209, 0.65);
-  --card-border: rgba(184, 134, 11, 0.25);
-  --border-soft: rgba(184, 134, 11, 0.15);
+  --card-border: rgba(139, 94, 16, 0.25);
+  --border-soft: rgba(139, 94, 16, 0.15);
   --glass-shadow: 0 12px 40px -10px rgba(44, 27, 24, 0.1);
 }
 
@@ -596,8 +621,12 @@ h3 { font-size: clamp(1.125rem, 3vw, 1.5rem); letter-spacing: 0.05em; }
   position: relative;
   font-family: var(--font-heading);
   letter-spacing: 0.1em;
-  color: #050208;
-  background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%);
+  /* Both were hardcoded to the DARK theme's golds (#D4AF37 -> #B8860B) with
+     near-black text, so this button ignored the theme entirely and sat bright
+     gold on parchment while every other gold control went deep. Tokens make it
+     follow the theme; --bg-primary is the app's "text on a gold fill" colour. */
+  color: var(--bg-primary);
+  background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-dim) 100%);
   border: none;
   padding: 12px 32px;
   border-radius: 8px;

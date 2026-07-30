@@ -129,7 +129,7 @@
     padding: 16px;
     margin-top: 12px;
     background: linear-gradient(135deg, var(--primary) 0%, var(--accent-gold) 100%);
-    color: #000;
+    color: var(--bg-primary);
     /* Contrast text for gold background */
     font-weight: 600;
     font-size: 1rem;

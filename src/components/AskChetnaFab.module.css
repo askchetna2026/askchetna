@@ -22,8 +22,8 @@
         height: 52px;
         padding: 0 20px;
         border-radius: 50px;
-        background: linear-gradient(135deg, var(--accent-gold), #ffc107);
-        color: #1a1a1a;
+        background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-dim));
+        color: var(--bg-primary);
         font-weight: 700;
         font-size: 0.9rem;
         letter-spacing: 0.02em;

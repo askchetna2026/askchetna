@@ -58,7 +58,7 @@
 
 .createBtn {
     background: var(--accent-gold);
-    color: #000;
+    color: var(--bg-primary);
     padding: 12px 24px;
     border-radius: 100px;
     font-weight: 700;

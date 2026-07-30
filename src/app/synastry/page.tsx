@@ -40,6 +40,9 @@ export default function SynastryPage() {
         }
     };
 
+    /** Both slots holding one person. Ids are optional, so an absent id is not a match. */
+    const samePerson = Boolean(personA?.id && personB?.id && personA.id === personB.id);
+
     const handleAnalyze = async () => {
         setIsAnalyzing(true);
         setShowResult(false);
@@ -95,7 +98,7 @@ export default function SynastryPage() {
                     ) : (
                         <div className={styles.emptyState}>
                             <p>Select a profile</p>
-                            <ProfileSelector onSelect={setPersonA} />
+                            <ProfileSelector onSelect={setPersonA} excludeId={personB?.id} />
                         </div>
                     )}
                 </div>
@@ -112,15 +115,27 @@ export default function SynastryPage() {
                     ) : (
                         <div className={styles.emptyState}>
                             <p>Select a profile</p>
-                            <ProfileSelector onSelect={setPersonB} />
+                            <ProfileSelector onSelect={setPersonB} excludeId={personA?.id} />
                         </div>
                     )}
                 </div>
             </div>
 
+            {/* Belt and braces: ProfileSelector already hides whoever is in the
+                other slot, but a selection made before that filter existed — or
+                two profiles saved with the same id — should not reach the API.
+                Comparing a chart with itself returns a confident, meaningless
+                reading rather than an error, so it has to be caught here. */}
+            {samePerson && (
+                <p className={styles.sameProfileWarning} role="alert">
+                    Person A and Person B are the same profile. Choose a different profile
+                    for one of them.
+                </p>
+            )}
+
             <button
                 className={styles.analyzeBtn}
-                disabled={!personA || !personB || isAnalyzing}
+                disabled={!personA || !personB || samePerson || isAnalyzing}
                 onClick={handleAnalyze}
             >
                 {isAnalyzing ? 'Connecting Charts...' : 'Analyze Synergy'}

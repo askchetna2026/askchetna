@@ -59,3 +59,10 @@
 .newBtn:hover {
     background: rgba(var(--accent-gold-rgb), 0.05);
 }
+/* Shown when the other synastry slot has taken every remaining profile. */
+.emptyHint {
+    margin: 0 0 10px;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+}

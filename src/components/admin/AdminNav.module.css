@@ -1,0 +1,75 @@
+.nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.navItem {
+    text-align: left;
+    background: transparent;
+    border: none;
+    padding: 0.75rem 1rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s;
+    font-size: 0.95rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.navItem:hover {
+    background-color: rgba(var(--foreground-rgb), 0.05);
+    color: var(--foreground);
+}
+
+.active {
+    background-color: var(--accent-gold);
+    color: #1a1a1a;
+}
+
+.active:hover {
+    background-color: var(--accent-gold);
+    color: #1a1a1a;
+}
+
+/* Separates the consultations queues from the rest of the console. Without it
+   "Applications" and "Astrologers" read as two names for one thing. */
+.groupLabel {
+    margin: 1rem 0 0.25rem;
+    padding: 0 1rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    opacity: 0.75;
+}
+
+@media (max-width: 768px) {
+    .nav {
+        flex-direction: row;
+        gap: 0.35rem;
+        overflow-x: auto;
+        /* Momentum scrolling in the WebView, and no scrollbar eating height. */
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    .navItem {
+        padding: 0.55rem 0.85rem;
+        font-size: 0.85rem;
+        border: 1px solid var(--border-soft);
+        border-radius: 999px;
+    }
+
+    /* A heading inside a horizontal strip would just steal space. */
+    .groupLabel {
+        display: none;
+    }
+}

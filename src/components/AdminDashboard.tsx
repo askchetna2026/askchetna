@@ -2,9 +2,18 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import styles from './AdminDashboard.module.css';
+
+/** Sections of this page. Selected by ?tab= and rendered by AdminNav. */
+export type AdminTab =
+    | 'analytics'
+    | 'pricing'
+    | 'users'
+    | 'newsletter'
+    | 'blogs'
+    | 'creditRequests'
+    | 'lifecycle';
 
 interface PricingPlan {
     id: string;
@@ -139,9 +148,8 @@ interface LifecycleData {
     automation: LifecycleAutomationStatus;
 }
 
-export default function AdminDashboard() {
+export default function AdminDashboard({ activeTab }: { activeTab: AdminTab }) {
     const router = useRouter();
-    const [activeTab, setActiveTab] = useState<'analytics' | 'pricing' | 'users' | 'newsletter' | 'blogs' | 'creditRequests' | 'lifecycle'>('analytics');
     const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
     const [plans, setPlans] = useState<PricingPlan[]>([]);
     const [services, setServices] = useState<ServiceCost[]>([]);
@@ -401,68 +409,10 @@ export default function AdminDashboard() {
     if (loading) return <div className={styles.loading}>Loading Admin Dashboard...</div>;
 
     return (
-        <div className={styles.container}>
-            <div className={styles.sidebar}>
-                <h2 className={styles.logo}>AskChetna Admin</h2>
-                <nav className={styles.nav}>
-                    <button
-                        className={`${styles.navItem} ${activeTab === 'analytics' ? styles.active : ''}`}
-                        onClick={() => setActiveTab('analytics')}
-                    >
-                        Analytics
-                    </button>
-                    {/* Links rather than tabs: each is its own page with its own
-                        queue and filters, and neither was reachable from here at
-                        all — the approval flow needed the URL typed in.
-
-                        Two distinct things: Applications is first-screening
-                        review, Astrologers is the approved roster. */}
-                    <Link href="/admin/astrologer-applications" className={styles.navItem}>
-                        Applications
-                    </Link>
-                    <Link href="/admin/astrologers" className={styles.navItem}>
-                        Astrologers
-                    </Link>
-                    <button
-                        className={`${styles.navItem} ${activeTab === 'users' ? styles.active : ''}`}
-                        onClick={() => setActiveTab('users')}
-                    >
-                        Users
-                    </button>
-                    <button
-                        className={`${styles.navItem} ${activeTab === 'creditRequests' ? styles.active : ''}`}
-                        onClick={() => setActiveTab('creditRequests')}
-                    >
-                        Credit Requests
-                    </button>
-                    <button
-                        className={`${styles.navItem} ${activeTab === 'pricing' ? styles.active : ''}`}
-                        onClick={() => setActiveTab('pricing')}
-                    >
-                        Pricing & Services
-                    </button>
-                    <button
-                        className={`${styles.navItem} ${activeTab === 'newsletter' ? styles.active : ''}`}
-                        onClick={() => setActiveTab('newsletter')}
-                    >
-                        Newsletter
-                    </button>
-                    <button
-                        className={`${styles.navItem} ${activeTab === 'lifecycle' ? styles.active : ''}`}
-                        onClick={() => setActiveTab('lifecycle')}
-                    >
-                        Lifecycle
-                    </button>
-                    <button
-                        className={`${styles.navItem} ${activeTab === 'blogs' ? styles.active : ''}`}
-                        onClick={() => setActiveTab('blogs')}
-                    >
-                        Blogs
-                    </button>
-                </nav>
-            </div>
-
-            <main className={styles.content}>
+        <>
+            {/* The sidebar and page chrome now live in src/app/admin/layout.tsx,
+                so they wrap the astrologer queues too rather than only this page. */}
+            <div className={styles.dashboard}>
                 {activeTab === 'analytics' && analytics && (
                     <div className={styles.analyticsGrid}>
                         <div className={styles.statCard}>
@@ -1140,7 +1090,7 @@ export default function AdminDashboard() {
                         </div>
                     </div>
                 )}
-            </main>
-        </div >
+            </div>
+        </>
     );
 }

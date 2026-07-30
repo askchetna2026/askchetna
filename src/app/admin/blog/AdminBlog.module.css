@@ -1,6 +1,9 @@
+/* The 120px top margin here used to clear the site header, back when this was
+   a standalone page. It now renders inside the admin layout's content area,
+   which supplies its own padding — keeping both left a large empty band. */
 .container {
     max-width: 800px;
-    margin: 120px auto 60px;
+    margin: 0 auto 60px;
     padding: 0 24px;
 }
 

@@ -446,3 +446,15 @@
         grid-template-columns: 1fr;
     }
 }
+/* Shown when both slots hold the same profile. */
+.sameProfileWarning {
+    max-width: 640px;
+    margin: 0 auto 14px;
+    padding: 11px 14px;
+    border-radius: var(--radius-sm);
+    background: var(--error-bg);
+    color: var(--error);
+    font-size: 0.88rem;
+    line-height: 1.5;
+    text-align: center;
+}

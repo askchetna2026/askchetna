@@ -1,0 +1,80 @@
+/*
+ * Shell for every /admin route.
+ *
+ * The sidebar used to live inside AdminDashboard, which meant the two
+ * sub-pages (astrologers, astrologer-applications) rendered with no navigation
+ * at all — reaching one was a dead end you could only leave with the back
+ * button. Hoisting it into a layout is what makes every admin page reachable
+ * from every other.
+ */
+
+.container {
+    display: flex;
+    min-height: 100vh;
+    background-color: var(--background);
+    color: var(--foreground);
+}
+
+.sidebar {
+    width: 250px;
+    flex-shrink: 0;
+    background-color: var(--bg-soft);
+    padding: 2rem 1.5rem;
+    border-right: 1px solid var(--border-soft);
+    display: flex;
+    flex-direction: column;
+}
+
+.logo {
+    font-family: var(--font-heading);
+    color: var(--accent-gold);
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1px;
+    border-bottom: 1px solid var(--accent-gold);
+    display: inline-block;
+}
+
+.content {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+    /* Without this a wide table stretches the flex item instead of scrolling,
+       which pushed the sidebar off-screen on the phone. */
+    min-width: 0;
+}
+
+/*
+ * Phone and the native app drawer.
+ *
+ * A 250px fixed sidebar leaves almost nothing for content on a phone, which is
+ * why the admin console read as broken in the app. Below this width the nav
+ * becomes a horizontally scrolling strip above the content — every destination
+ * still reachable, none of them consuming the viewport.
+ */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        min-height: 0;
+    }
+
+    .sidebar {
+        width: 100%;
+        padding: 1rem;
+        border-right: none;
+        border-bottom: 1px solid var(--border-soft);
+        /* Sticks below the site header so navigation survives a long table. */
+        position: sticky;
+        top: 0;
+        z-index: 20;
+    }
+
+    .logo {
+        font-size: 1.15rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .content {
+        padding: 1rem;
+    }
+}

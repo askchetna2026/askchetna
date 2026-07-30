@@ -17,8 +17,14 @@ export default async function AdminAstrologersPage() {
         <div className={styles.page}>
             <header className={styles.header}>
                 <h1 className={styles.title}>Astrologers</h1>
+                {/* Deliberately does NOT say "review applications" any more. It
+                    did, which made this indistinguishable from the Applications
+                    queue — two screens that appeared to do the same job. This
+                    one is the roster of profiles that already exist. */}
                 <p className={styles.subtitle}>
-                    Review applications, suspend accounts, and set individual revenue shares.
+                    Existing astrologer profiles. Suspend or reinstate an account and set
+                    individual revenue shares. New applicants are screened under
+                    Applications.
                 </p>
             </header>
 

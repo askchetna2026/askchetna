@@ -1,5 +1,7 @@
+/* Top padding comes from the admin layout's content area now; keeping 40px
+   here as well left a conspicuous gap under the sidebar heading. */
 .page {
-    padding: 40px 0 60px;
+    padding: 0 0 40px;
 }
 
 .header {

@@ -709,3 +709,10 @@
         min-width: 120px;
     }
 }
+
+/* Content wrapper for the dashboard sections. The page chrome — container,
+   sidebar and padded content area — moved to src/app/admin/layout.tsx so the
+   astrologer queues share it; this is just the box the sections render into. */
+.dashboard {
+    display: block;
+}

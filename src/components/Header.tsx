@@ -176,8 +176,12 @@ export default function Header() {
                           already on the session (see the session callback in
                           auth.ts), so no extra request is needed — and every
                           admin route re-checks server-side regardless. */}
+                      {/* /admin, not /admin/astrologers — the console's own
+                          sidebar reaches every section from there. Deep-linking
+                          to one queue was why the app appeared to have an admin
+                          area containing nothing but astrologers. */}
                       {session?.user?.isAdmin && (
-                        <Link href="/admin/astrologers" className={`${styles.mobileNavLink} ${pathname.startsWith('/admin') ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                        <Link href="/admin" className={`${styles.mobileNavLink} ${pathname.startsWith('/admin') ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
                           <UserCog size={20} /> Admin
                         </Link>
                       )}

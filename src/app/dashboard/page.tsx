@@ -90,7 +90,10 @@ export default function DashboardPage() {
     const [creditRequests, setCreditRequests] = useState<UserCreditRequest[]>([]);
     const [creditRequestEligibility, setCreditRequestEligibility] = useState<CreditRequestEligibility>({
         welcomeBonusConsumed: false,
-        remainingWelcomeCredits: 10,
+        // 0 until the API answers, matching the fallback the API itself returns.
+        // This used to be 10, which stated a specific remaining balance that was
+        // never checked and is no longer even the size of the grant.
+        remainingWelcomeCredits: 0,
         hasPendingRequest: false,
         canRequest: false
     });
@@ -216,7 +219,7 @@ export default function DashboardPage() {
             } else {
                 setCreditRequestEligibility({
                     welcomeBonusConsumed: false,
-                    remainingWelcomeCredits: 10,
+                    remainingWelcomeCredits: 0,
                     hasPendingRequest: false,
                     canRequest: false
                 });

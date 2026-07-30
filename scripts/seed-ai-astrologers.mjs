@@ -19,6 +19,12 @@
  * would imply a specific human endorses this, and a fabricated credential is
  * exactly what invites a store rejection. Each bio says plainly that it is an
  * AI, because the UI badge should not be the only disclosure.
+ *
+ * PORTRAITS
+ * `photoUrl` points at drawn art committed under `public/art/astrologers`,
+ * produced by `npm run art:astrologers`. Illustrated rather than photoreal for
+ * the same reason the names are not honorifics: a photograph of a person who
+ * does not exist is a claim, and this one would be false.
  */
 
 import { PrismaClient } from '@prisma/client';
@@ -42,6 +48,7 @@ seeker is paying for the time.
 const AI_ASTROLOGERS = [
     {
         displayName: 'Vidhi',
+        photoUrl: '/art/astrologers/vidhi.webp',
         bio:
             'AI astrologer for career, work and money questions. Vidhi reads the ' +
             'timing in your chart and helps you think through a decision — what is ' +
@@ -64,6 +71,7 @@ or invest in, say that is for a qualified adviser and return to the pattern.`,
     },
     {
         displayName: 'Maitri',
+        photoUrl: '/art/astrologers/maitri.webp',
         bio:
             'AI astrologer for relationships, family and the questions that are ' +
             'harder to put into words. Maitri listens first, and looks at what is ' +
@@ -105,10 +113,14 @@ async function main() {
                 where: { id: existing.id },
                 data: {
                     bio: spec.bio,
+                    photoUrl: spec.photoUrl,
                     languages: spec.languages,
                     specialities: spec.specialities,
                     aiSystemPrompt: spec.aiSystemPrompt,
                     // status and creditsPerBlock deliberately untouched.
+                    // photoUrl IS overwritten: nothing else sets it for a
+                    // persona, so a re-run is how redrawn art reaches the
+                    // directory.
                 },
             });
             console.log(
@@ -122,6 +134,7 @@ async function main() {
             data: {
                 displayName: spec.displayName,
                 bio: spec.bio,
+                photoUrl: spec.photoUrl,
                 languages: spec.languages,
                 specialities: spec.specialities,
                 isAI: true,

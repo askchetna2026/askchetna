@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
+import { getWelcomeBonusCredits } from '@/lib/welcomeBonus';
 import { Prisma } from '@prisma/client';
 
 async function ensureWelcomeBonusGranted(userId: string) {
@@ -34,10 +35,7 @@ async function ensureWelcomeBonusGranted(userId: string) {
         return;
     }
 
-    const welcomeBonusSetting = await prisma.serviceCost.findUnique({
-        where: { key: "WELCOME_BONUS" }
-    });
-    const bonusAmount = welcomeBonusSetting ? welcomeBonusSetting.credits : 10;
+    const bonusAmount = await getWelcomeBonusCredits();
 
     await prisma.$transaction([
         prisma.creditPack.create({

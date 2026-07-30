@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Send, PhoneOff } from 'lucide-react';
 import SessionTimer from './SessionTimer';
 import ExtendPrompt from './ExtendPrompt';
+import AstrologerAvatar from './AstrologerAvatar';
 import styles from './ChatSession.module.css';
 
 /**
@@ -179,6 +180,13 @@ export default function ChatSession({ consultationId }: { consultationId: string
     return (
         <div className={styles.session}>
             <header className={styles.header}>
+                {/* photoUrl has been carried through the API since the session
+                    endpoint was written; this is the first thing to render it. */}
+                <AstrologerAvatar
+                    name={status.astrologer.displayName}
+                    photoUrl={status.astrologer.photoUrl}
+                    size={40}
+                />
                 <div className={styles.who}>
                     <span className={styles.name}>{status.astrologer.displayName}</span>
                     <span className={styles.meta}>

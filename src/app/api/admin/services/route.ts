@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { checkAdminAccess } from '@/lib/admin';
 import prisma from '@/lib/prisma';
+import { DEFAULT_WELCOME_BONUS_CREDITS } from '@/lib/welcomeBonus';
 
 export async function GET(req: NextRequest) {
     if (!await checkAdminAccess()) {
@@ -23,7 +24,7 @@ export async function GET(req: NextRequest) {
                 update: {},
                 create: {
                     key,
-                    credits: key === 'WELCOME_BONUS' ? 10 : 5,
+                    credits: key === 'WELCOME_BONUS' ? DEFAULT_WELCOME_BONUS_CREDITS : 5,
                     description: key === 'WELCOME_BONUS' ? 'Credits given on sign-up' : `Unlock ${key} Analysis`
                 }
             });

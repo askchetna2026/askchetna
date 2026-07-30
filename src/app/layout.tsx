@@ -6,7 +6,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import AuthProvider from '@/components/AuthProvider';
 import WelcomeBanner from '@/components/WelcomeBanner';
-import prisma from '@/lib/prisma';
+import { getWelcomeBonusCredits } from '@/lib/welcomeBonus';
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, absoluteUrl } from '@/lib/site';
 import { PLATFORM_BOOTSTRAP_SCRIPT } from '@/lib/platform';
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar';
@@ -100,17 +100,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  let welcomeBonusAmount = 10;
-  try {
-    const welcomeBonusSetting = await prisma.serviceCost.findUnique({
-      where: { key: 'WELCOME_BONUS' }
-    });
-    if (welcomeBonusSetting) {
-      welcomeBonusAmount = welcomeBonusSetting.credits;
-    }
-  } catch (error) {
-    console.error('Failed to fetch welcome bonus amount:', error);
-  }
+  const welcomeBonusAmount = await getWelcomeBonusCredits();
 
   const schemaGraph = {
     '@context': 'https://schema.org',

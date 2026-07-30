@@ -417,6 +417,19 @@
   background: transparent;
   border-top: 1px solid rgba(212, 175, 55, 0.15);
   position: relative;
+  /* The .cardRight reveal starts at x:+50 and only animates to 0 once scrolled
+     into view, so every card below the fold sits 50px right of where it lands.
+     That widened the page to 389px at a 375px viewport — measured on
+     document.body.scrollWidth, since body's own overflow-x:hidden means
+     documentElement.scrollWidth reports nothing wrong.
+
+     Clipped at the section rather than removing the horizontal motion: the
+     offset is only reachable while the card is off-screen, and the cards sit
+     ~36px inside a full-bleed section, so nothing visible — including the
+     shadow — reaches this edge. `clip` in preference to `hidden`, which would
+     make this a scroll container. */
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 .sectionHeader {

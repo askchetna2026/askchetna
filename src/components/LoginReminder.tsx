@@ -11,6 +11,32 @@ export default function LoginReminder() {
     const { status } = useSession();
     const pathname = usePathname();
     const [isVisible, setIsVisible] = useState(false);
+    const [bonusCredits, setBonusCredits] = useState<number | null>(null);
+
+    // Rendered by the layout on every page, so the amount cannot be passed down
+    // from a server component the way WelcomeBanner's is. Fetched only once the
+    // reminder is actually going to be shown — this component sits on every
+    // route and most visitors never see it.
+    useEffect(() => {
+        if (!isVisible || bonusCredits !== null) return;
+
+        let cancelled = false;
+        void (async () => {
+            try {
+                const res = await fetch('/api/public/welcome-bonus', { cache: 'no-store' });
+                const data = await res.json();
+                if (!cancelled && typeof data?.bonusAmount === 'number') {
+                    setBonusCredits(data.bonusAmount);
+                }
+            } catch {
+                // Leave it null: the list item drops the count rather than
+                // showing a number that might be wrong.
+            }
+        })();
+        return () => {
+            cancelled = true;
+        };
+    }, [isVisible, bonusCredits]);
 
     useEffect(() => {
         // Only show if unauthenticated, not on login page, 
@@ -59,7 +85,11 @@ export default function LoginReminder() {
                             <ul className={styles.unlockList}>
                                 <li>Full birth chart</li>
                                 <li>Dasha timing</li>
-                                <li>AI questions (10 free)</li>
+                                <li>
+                                    {bonusCredits === null
+                                        ? 'AI questions (free to start)'
+                                        : `AI questions (${bonusCredits} free)`}
+                                </li>
                             </ul>
                         </div>
                     </div>

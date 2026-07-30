@@ -6,6 +6,9 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import bcrypt from "bcryptjs"
 import prisma from "@/lib/prisma"
 import { rateLimit } from "@/lib/rateLimit"
+// Safe on the Edge despite the proxy importing this module: welcomeBonus pulls
+// in nothing beyond @/lib/prisma, which is already imported above.
+import { getWelcomeBonusCredits } from "@/lib/welcomeBonus"
 // NOTE: firebase-admin is NOT imported at the top level on purpose.
 //
 // src/proxy.ts imports this module and runs on the Edge runtime. firebase-admin
@@ -437,10 +440,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                         where: { userId: user.id, packType: "WELCOME_BONUS" }
                     });
                     if (!existingBonus) {
-                        const welcomeBonusSetting = await prisma.serviceCost.findUnique({
-                            where: { key: "WELCOME_BONUS" }
-                        });
-                        const bonusAmount = welcomeBonusSetting ? welcomeBonusSetting.credits : 10;
+                        const bonusAmount = await getWelcomeBonusCredits();
 
                         await prisma.creditPack.create({
                             data: {

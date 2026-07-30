@@ -139,6 +139,31 @@ resubmission. Rebuild only for plugin changes, permissions, icons, or native con
 - Keep the "patterns, not predictions" framing. Deterministic fortune-telling
   claims attract scrutiny.
 
+## AI providers
+
+Four are supported: `gemini`, `openai`, `deepseek`, `kimi` (alias `moonshot`).
+Keys: `GOOGLE_AI_API_KEY`, `OPENAI_API_KEY`, `DEEPSEEK_API_KEY`, `KIMI_API_KEY`.
+Kimi also takes `KIMI_BASE_URL` — Moonshot serves `.ai` and `.cn` endpoints and
+an account only works on the one it was created for; the wrong one returns 401
+with nothing mentioning the region.
+
+Selection, highest priority first:
+
+```
+AI_PROVIDER_<FLOW> / AI_MODEL_<FLOW>   per-flow override, e.g. AI_PROVIDER_CLARITY_ASK=kimi
+AI_STRATEGY=HYBRID                     per-flow best-of-breed defaults
+AI_PROVIDER                            single provider for everything (default gemini)
+```
+
+Flows: `CLARITY_ASK`, `TIMING_INSIGHT`, `PLANET_INSIGHTS`, `JOURNAL_ANALYSIS`,
+`SYNASTRY_ANALYSIS`, `REPORT_GENERATION`, `CONSULTATION_REPLY`.
+
+**Fallback is automatic and no longer Gemini-specific.** A missing key, a 429,
+a 401/403, a 5xx or a network failure moves to the next *configured* provider
+in order (openai, deepseek, kimi, gemini) and only throws once all of them
+fail. The earlier code fell back to Gemini specifically, which could not help in
+the case that actually matters — Gemini being the provider that is down.
+
 ## Useful scripts
 
 ```

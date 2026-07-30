@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { Check, X, Loader2, Pause } from 'lucide-react';
+import { Check, X, Loader2, Pause, Coins, Bot } from 'lucide-react';
 import styles from './AdminAstrologerReview.module.css';
 
 /**
@@ -25,10 +25,15 @@ type Astrologer = {
     languages: string[];
     specialities: string[];
     revenueSharePct: number | null;
+    /** Credits per block. Null follows the global default of 1. */
+    creditsPerBlock: number | null;
+    isAI: boolean;
+    aiSystemPrompt: string | null;
     isAvailable: boolean;
     createdAt: string;
     rejectionReason: string | null;
-    user: { email: string; phone: string | null };
+    /** Null for an AI persona — there is no account behind one. */
+    user: { email: string; phone: string | null } | null;
     creditsServed: number;
     earnedPaise: number;
     unpaidPaise: number;
@@ -121,6 +126,41 @@ export default function AdminAstrologerReview() {
         void update(id, { revenueSharePct: pct });
     };
 
+    /**
+     * What one block of this astrologer's time costs the seeker.
+     *
+     * Applies to future sessions only — a consultation snapshots the rate when
+     * it opens, so this cannot change what a running or settled session charged.
+     */
+    const setPrice = (id: string, current: number | null) => {
+        const raw = window.prompt(
+            'Credits charged per block for this astrologer. Leave blank to follow the global default of 1.\n\nApplies to NEW sessions only.',
+            current === null ? '' : String(current)
+        );
+        if (raw === null) return;
+        const trimmed = raw.trim();
+        if (trimmed === '') {
+            void update(id, { creditsPerBlock: null });
+            return;
+        }
+        const credits = Number(trimmed);
+        if (!Number.isInteger(credits) || credits < 1 || credits > 100) {
+            setError('Price must be a whole number of credits between 1 and 100.');
+            return;
+        }
+        void update(id, { creditsPerBlock: credits });
+    };
+
+    /** Persona text for an AI astrologer. Editable so tuning needs no deploy. */
+    const setPersona = (id: string, current: string | null) => {
+        const raw = window.prompt(
+            'Persona and instructions for this AI astrologer.\n\nHouse rules (no fixed predictions, no medical/legal/financial instruction, never claim to be human) are enforced separately and cannot be removed here.',
+            current ?? ''
+        );
+        if (raw === null) return;
+        void update(id, { aiSystemPrompt: raw });
+    };
+
     return (
         <div className={styles.wrap}>
             <div className={styles.tabs} role="tablist">
@@ -161,10 +201,18 @@ export default function AdminAstrologerReview() {
                     <article key={a.id} className={styles.card}>
                         <div className={styles.head}>
                             <div>
-                                <h3 className={styles.name}>{a.displayName}</h3>
+                                <h3 className={styles.name}>
+                                    {a.displayName}
+                                    {a.isAI && <span className={styles.aiTag}>AI</span>}
+                                </h3>
+                                {/* An AI persona has no account, so user is null
+                                    here — reading .email off it crashed the list. */}
                                 <p className={styles.contact}>
-                                    {a.user.email}
-                                    {a.user.phone ? ` · ${a.user.phone}` : ''}
+                                    {a.isAI
+                                        ? 'AI persona · no account'
+                                        : a.user
+                                          ? `${a.user.email}${a.user.phone ? ` · ${a.user.phone}` : ''}`
+                                          : 'No account on file'}
                                 </p>
                             </div>
                             <span className={`${styles.badge} ${styles[a.status.toLowerCase()] ?? ''}`}>
@@ -184,11 +232,23 @@ export default function AdminAstrologerReview() {
                                 <dd>{a.specialities.join(', ') || '—'}</dd>
                             </div>
                             <div>
+                                <dt>Price</dt>
+                                <dd>
+                                    {a.creditsPerBlock === null
+                                        ? 'Global default (1 credit/block)'
+                                        : `${a.creditsPerBlock} credit${a.creditsPerBlock === 1 ? '' : 's'}/block`}
+                                </dd>
+                            </div>
+                            <div>
                                 <dt>Revenue share</dt>
                                 <dd>
-                                    {a.revenueSharePct === null
-                                        ? 'Global default'
-                                        : `${a.revenueSharePct}%`}
+                                    {/* Meaningless for an AI persona: there is
+                                        nobody to pay, so no earning is written. */}
+                                    {a.isAI
+                                        ? 'n/a — platform revenue'
+                                        : a.revenueSharePct === null
+                                          ? 'Global default'
+                                          : `${a.revenueSharePct}%`}
                                 </dd>
                             </div>
                             <div>
@@ -210,6 +270,22 @@ export default function AdminAstrologerReview() {
                         )}
 
                         <div className={styles.actions}>
+                            <button
+                                className={styles.secondary}
+                                disabled={busy === a.id}
+                                onClick={() => setPrice(a.id, a.creditsPerBlock)}
+                            >
+                                <Coins size={15} /> Set price
+                            </button>
+                            {a.isAI && (
+                                <button
+                                    className={styles.secondary}
+                                    disabled={busy === a.id}
+                                    onClick={() => setPersona(a.id, a.aiSystemPrompt)}
+                                >
+                                    <Bot size={15} /> Edit persona
+                                </button>
+                            )}
                             {a.status !== 'APPROVED' && (
                                 <button
                                     className={styles.approve}

@@ -33,11 +33,15 @@ export async function GET(request: Request) {
             languages: true,
             specialities: true,
             revenueSharePct: true,
+            creditsPerBlock: true,
+            isAI: true,
+            aiSystemPrompt: true,
             isAvailable: true,
             createdAt: true,
             approvedAt: true,
             approvedBy: true,
             rejectionReason: true,
+            // Null for an AI persona, which has no account behind it.
             user: { select: { email: true, phone: true } },
         },
     });

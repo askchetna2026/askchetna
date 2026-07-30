@@ -243,3 +243,18 @@
     color: var(--text-muted);
     font-style: italic;
 }
+
+/* Marks an AI persona in the roster. Disclosure is not optional — an AI
+   presented as a person is deceptive, and both stores treat it as such. */
+.aiTag {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--accent-iris);
+    color: var(--accent-iris);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    vertical-align: middle;
+}

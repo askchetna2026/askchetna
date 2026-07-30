@@ -5,6 +5,10 @@ import { remainingSeconds, LIVE_STATUSES, endConsultation } from '@/lib/consulta
 
 const MAX_BODY = 4000;
 
+// Generating a reply is a model round trip. The default would cut it off on a
+// slow completion and leave the seeker's paid block with nothing in it.
+export const maxDuration = 60;
+
 /** Participants and the live/expired state of a session, in one read. */
 async function loadParticipation(consultationId: string, userId: string) {
     const consultation = await prisma.consultation.findUnique({
@@ -14,11 +18,21 @@ async function loadParticipation(consultationId: string, userId: string) {
             userId: true,
             status: true,
             deadlineAt: true,
-            astrologer: { select: { userId: true } },
+            astrologer: {
+                select: {
+                    id: true,
+                    userId: true,
+                    isAI: true,
+                    aiSystemPrompt: true,
+                    displayName: true,
+                },
+            },
         },
     });
     if (!consultation) return null;
 
+    // astrologer.userId is null for an AI persona, and a null never matches a
+    // signed-in id — so only the seeker is ever a participant in those.
     const isParticipant =
         consultation.userId === userId || consultation.astrologer.userId === userId;
     if (!isParticipant) return null;
@@ -139,8 +153,82 @@ export async function POST(
         select: { id: true, sentAt: true },
     });
 
+    const { astrologer } = found.consultation;
+
+    // A human astrologer answers from their own dashboard; nothing more to do.
+    if (!astrologer.isAI) {
+        return NextResponse.json({
+            id: message.id,
+            sentAt: message.sentAt.toISOString(),
+        });
+    }
+
+    // ---- AI persona: generate and store the reply in the same request ----
+    //
+    // Stored under the astrologer's id as senderId, which is what makes GET
+    // report it as not-mine and render it on the astrologer's side. There is no
+    // user id to use, which is the whole reason userId is nullable.
+    let reply: { id: string; body: string; sentAt: string } | null = null;
+    try {
+        const { generateConsultationReply } = await import('@/lib/ai/geminiService');
+
+        const history = await prisma.consultationMessage.findMany({
+            where: { consultationId: id, id: { not: message.id } },
+            orderBy: { sentAt: 'desc' },
+            take: 20,
+            select: { senderId: true, body: true },
+        });
+
+        const generated = await generateConsultationReply({
+            persona:
+                astrologer.aiSystemPrompt?.trim() ||
+                `You are ${astrologer.displayName}, an astrologer on AskChetna.`,
+            history: history
+                .reverse()
+                .map((m) => ({
+                    role: m.senderId === astrologer.id ? ('astrologer' as const) : ('seeker' as const),
+                    body: m.body,
+                })),
+            message: text,
+        });
+
+        const stored = await prisma.consultationMessage.create({
+            data: {
+                consultationId: id,
+                senderId: astrologer.id,
+                body: generated.slice(0, MAX_BODY),
+            },
+            select: { id: true, body: true, sentAt: true },
+        });
+        reply = {
+            id: stored.id,
+            body: stored.body,
+            sentAt: stored.sentAt.toISOString(),
+        };
+    } catch (error) {
+        // The seeker's message is already saved and their block is already paid
+        // for, so a model failure must not 500 the send. Surfacing it as a
+        // message keeps the session usable and tells them to try again, rather
+        // than leaving them staring at silence.
+        console.error('[consultation] AI reply failed:', error);
+        const stored = await prisma.consultationMessage.create({
+            data: {
+                consultationId: id,
+                senderId: astrologer.id,
+                body: 'I could not compose a reply just then. Please send that again.',
+            },
+            select: { id: true, body: true, sentAt: true },
+        });
+        reply = {
+            id: stored.id,
+            body: stored.body,
+            sentAt: stored.sentAt.toISOString(),
+        };
+    }
+
     return NextResponse.json({
         id: message.id,
         sentAt: message.sentAt.toISOString(),
+        reply,
     });
 }

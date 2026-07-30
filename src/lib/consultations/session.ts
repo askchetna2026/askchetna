@@ -45,12 +45,28 @@ export async function startConsultation(
 
     const astrologer = await prisma.astrologer.findUnique({
         where: { id: astrologerId },
-        select: { id: true, status: true, isAvailable: true, revenueSharePct: true },
+        select: {
+            id: true,
+            status: true,
+            isAvailable: true,
+            revenueSharePct: true,
+            creditsPerBlock: true,
+            isAI: true,
+        },
     });
 
-    if (!astrologer || astrologer.status !== 'APPROVED' || !astrologer.isAvailable) {
+    // An AI persona is never "away", so the presence requirement does not apply
+    // to it — there is no browser holding it online and no heartbeat to go
+    // stale. Approval still does: an AI astrologer that has not been approved
+    // must no more take sessions than a human one.
+    const available = astrologer?.isAI ? true : astrologer?.isAvailable;
+    if (!astrologer || astrologer.status !== 'APPROVED' || !available) {
         return { ok: false, reason: 'ASTROLOGER_UNAVAILABLE' };
     }
+
+    // Per-astrologer rate, falling back to the historical 1-credit block.
+    // Guarded against a zero or negative override making sessions free.
+    const creditsPerBlock = Math.max(1, astrologer.creditsPerBlock ?? 1);
 
     // Self-heal before the one-session check.
     //
@@ -78,7 +94,7 @@ export async function startConsultation(
             const spend = await spendCredits(
                 tx,
                 userId,
-                1,
+                creditsPerBlock,
                 `Consultation (${kind.toLowerCase()}) — first block`
             );
             if (!spend.ok) {
@@ -99,12 +115,13 @@ export async function startConsultation(
                     startedAt: now,
                     deadlineAt: new Date(now.getTime() + blockSeconds * 1000),
                     blocksCharged: 1,
-                    creditsCharged: 1,
+                    creditsCharged: creditsPerBlock,
                     // Snapshots. Never joined live — see the model comment.
                     secondsPerBlock: blockSeconds,
                     creditValuePaise: settings.CREDIT_VALUE_PAISE,
                     revenueSharePct:
                         astrologer.revenueSharePct ?? settings.ASTROLOGER_REVENUE_PCT,
+                    creditsPerBlock,
                 },
                 select: { id: true, deadlineAt: true },
             });
@@ -152,6 +169,7 @@ export async function extendConsultation(
                 secondsPerBlock: true,
                 kind: true,
                 creditsCharged: true,
+                creditsPerBlock: true,
             },
         });
 
@@ -162,10 +180,15 @@ export async function extendConsultation(
             return { ok: false as const, reason: 'EXPIRED' as const };
         }
 
+        // The rate SNAPSHOTTED when this session opened, not the astrologer's
+        // current one. Re-reading it live would let a repricing mid-session
+        // change what the user is charged for the block they are already in.
+        const creditsPerBlock = Math.max(1, consultation.creditsPerBlock);
+
         const spend = await spendCredits(
             tx,
             userId,
-            1,
+            creditsPerBlock,
             `Consultation (${consultation.kind.toLowerCase()}) — extension`,
             { consultationId }
         );
@@ -189,7 +212,7 @@ export async function extendConsultation(
             data: {
                 deadlineAt: nextDeadline,
                 blocksCharged: { increment: 1 },
-                creditsCharged: { increment: 1 },
+                creditsCharged: { increment: creditsPerBlock },
             },
             select: { deadlineAt: true, creditsCharged: true },
         });
@@ -232,6 +255,7 @@ export async function endConsultation(
                 creditsCharged: true,
                 creditValuePaise: true,
                 revenueSharePct: true,
+                astrologer: { select: { isAI: true } },
             },
         });
 
@@ -265,15 +289,23 @@ export async function endConsultation(
             data: { status: reason, endedAt, billedSeconds },
         });
 
-        const amount = earningsPaise(
-            consultation.creditsCharged,
-            consultation.creditValuePaise,
-            consultation.revenueSharePct
-        );
+        // Zero for an AI persona, so the reported figure matches the ledger
+        // rather than describing an earning that was deliberately not written.
+        const amount = consultation.astrologer.isAI
+            ? 0
+            : earningsPaise(
+                  consultation.creditsCharged,
+                  consultation.creditValuePaise,
+                  consultation.revenueSharePct
+              );
 
         // Only settle if something was actually charged. A session that failed
         // before any block opened owes nobody anything.
-        if (consultation.creditsCharged > 0) {
+        //
+        // An AI persona is never settled either: there is no person behind it,
+        // so an earning row would accrue a real payout obligation to nobody and
+        // inflate the payout run. The revenue is the platform's.
+        if (consultation.creditsCharged > 0 && !consultation.astrologer.isAI) {
             await tx.astrologerEarning.create({
                 data: {
                     astrologerId: consultation.astrologerId,

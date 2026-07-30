@@ -150,3 +150,18 @@
     opacity: 0.45;
     cursor: default;
 }
+
+/* Marks an AI persona in the public directory. Required disclosure — see the
+   comment at the render site. */
+.aiTag {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 2px 7px;
+    border-radius: 999px;
+    border: 1px solid var(--accent-iris);
+    color: var(--accent-iris);
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    vertical-align: middle;
+}

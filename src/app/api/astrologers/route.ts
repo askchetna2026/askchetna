@@ -34,6 +34,8 @@ export async function GET(request: Request) {
             specialities: true,
             isAvailable: true,
             lastSeenAt: true,
+            isAI: true,
+            creditsPerBlock: true,
         },
         orderBy: [{ isAvailable: 'desc' }, { displayName: 'asc' }],
         take: 100,
@@ -47,7 +49,15 @@ export async function GET(request: Request) {
         photoUrl: a.photoUrl,
         languages: a.languages,
         specialities: a.specialities,
-        online: a.isAvailable && !!a.lastSeenAt && a.lastSeenAt.getTime() > cutoff,
+        // Disclosed to the client so the directory can label it. Never inferred
+        // from the name or bio — an AI persona presented as a person is
+        // deceptive, and both stores treat it as such.
+        isAI: a.isAI,
+        /// What one block costs. Null means the global default of 1 credit.
+        creditsPerBlock: a.creditsPerBlock ?? 1,
+        // An AI persona has no browser to hold it online and no heartbeat to go
+        // stale, so presence does not apply — it is always reachable.
+        online: a.isAI || (a.isAvailable && !!a.lastSeenAt && a.lastSeenAt.getTime() > cutoff),
     }));
 
     return NextResponse.json({

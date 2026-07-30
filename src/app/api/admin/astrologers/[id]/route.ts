@@ -27,7 +27,15 @@ export async function PATCH(
     const session = await auth();
     const { id } = await params;
 
-    let body: { status?: string; revenueSharePct?: number | null; rejectionReason?: string };
+    let body: {
+        status?: string;
+        revenueSharePct?: number | null;
+        rejectionReason?: string;
+        creditsPerBlock?: number | null;
+        displayName?: string;
+        bio?: string;
+        aiSystemPrompt?: string;
+    };
     try {
         body = await request.json();
     } catch {
@@ -72,6 +80,63 @@ export async function PATCH(
         }
     }
 
+    // What a block of this astrologer's time costs. Applies to FUTURE sessions
+    // only — a consultation snapshots the rate when it opens, so repricing
+    // cannot change what a session already running or already settled charged.
+    if (body.creditsPerBlock !== undefined) {
+        if (body.creditsPerBlock === null) {
+            data.creditsPerBlock = null; // Back to the global default.
+        } else {
+            const credits = Number(body.creditsPerBlock);
+            // Upper bound is a guard against a typo emptying someone's balance
+            // in one block, not a product limit.
+            if (!Number.isInteger(credits) || credits < 1 || credits > 100) {
+                return NextResponse.json(
+                    { error: 'creditsPerBlock must be a whole number between 1 and 100' },
+                    { status: 400 }
+                );
+            }
+            data.creditsPerBlock = credits;
+        }
+    }
+
+    // Persona editing, restricted to AI astrologers. A human astrologer's own
+    // name and bio are theirs to write, and an admin quietly rewriting them
+    // would be a different feature with different expectations.
+    const editsPersona =
+        body.displayName !== undefined ||
+        body.bio !== undefined ||
+        body.aiSystemPrompt !== undefined;
+
+    if (editsPersona) {
+        const target = await prisma.astrologer.findUnique({
+            where: { id },
+            select: { isAI: true },
+        });
+        if (!target) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+        if (!target.isAI) {
+            return NextResponse.json(
+                { error: 'Only AI astrologers can have their profile edited here.' },
+                { status: 400 }
+            );
+        }
+
+        if (body.displayName !== undefined) {
+            const name = body.displayName.trim();
+            if (name.length < 2 || name.length > 60) {
+                return NextResponse.json(
+                    { error: 'Display name must be between 2 and 60 characters' },
+                    { status: 400 }
+                );
+            }
+            data.displayName = name;
+        }
+        if (body.bio !== undefined) data.bio = body.bio.trim().slice(0, 2000) || null;
+        if (body.aiSystemPrompt !== undefined) {
+            data.aiSystemPrompt = body.aiSystemPrompt.trim().slice(0, 8000) || null;
+        }
+    }
+
     if (Object.keys(data).length === 0) {
         return NextResponse.json({ error: 'Nothing to update' }, { status: 400 });
     }
@@ -84,6 +149,8 @@ export async function PATCH(
             displayName: true,
             status: true,
             revenueSharePct: true,
+            creditsPerBlock: true,
+            isAI: true,
             isAvailable: true,
             approvedAt: true,
         },

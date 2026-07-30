@@ -455,8 +455,31 @@ model AppSetting {
 /// an ordinary account, and an approval workflow that a boolean cannot express.
 model Astrologer {
   id          String   @id @default(cuid())
-  userId      String   @unique
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// Null for an AI persona, which has no account to sign in with. Postgres
+  /// permits many NULLs under a unique index, so @unique still holds one
+  /// profile per real user.
+  userId      String?  @unique
+  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// An AI persona rather than a person.
+  ///
+  /// Modelled as a flag on Astrologer rather than a separate table so AI
+  /// astrologers inherit the directory, availability, consultation, billing and
+  /// admin surfaces already built. A parallel model would have meant a second
+  /// implementation of every one of those.
+  ///
+  /// Must be disclosed in the UI wherever one appears — both stores treat an
+  /// undisclosed AI persona presented as a person as deceptive.
+  isAI Boolean @default(false)
+
+  /// Persona and expertise, injected as the system prompt. Only meaningful when
+  /// isAI. Editable from the admin console so a persona can be tuned without a
+  /// deploy.
+  aiSystemPrompt String? @db.Text
+
+  /// Optional provider/model override, e.g. "openai:gpt-4o". Null uses the
+  /// default for the consultation flow.
+  aiModel String?
 
   displayName  String
   bio          String?  @db.Text
@@ -473,6 +496,15 @@ model Astrologer {
   /// Per-astrologer override of ASTROLOGER_REVENUE_PCT. Null means use the
   /// global default, so changing the default moves everyone who has no override.
   revenueSharePct Int?
+
+  /// What one block of this astrologer's time costs, in credits. Null means the
+  /// global default (1), so raising the default moves everyone without an
+  /// override — same rule as revenueSharePct.
+  ///
+  /// Snapshotted onto Consultation when a session opens and never joined live:
+  /// repricing an astrologer must not silently rewrite the cost of sessions
+  /// already billed.
+  creditsPerBlock Int?
 
   /// Manual online toggle, and a heartbeat. Availability needs both: a toggle
   /// alone leaves ghosts online after a crash.
@@ -534,6 +566,10 @@ model Consultation {
   secondsPerBlock  Int
   creditValuePaise Int
   revenueSharePct  Int
+  /// Credits per block at the moment this session opened. Defaults to 1, which
+  /// is what every consultation billed before per-astrologer pricing existed —
+  /// so historical rows keep their real cost rather than inheriting a new rate.
+  creditsPerBlock  Int @default(1)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

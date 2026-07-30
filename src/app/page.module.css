@@ -24,6 +24,15 @@
   padding: 140px 24px 80px;
   position: relative;
   z-index: 1;
+
+  /* Clips the decorative mandala, which is 700px wide and sits at right:-100px.
+     It is meant to bleed off the edge, but without clipping here it widened the
+     PAGE instead: at a 375px viewport the body measured 475px. `overflow-x:
+     hidden` on body was masking that, which is not the same as fixing it — in a
+     WebView the content is still laid out off-screen, and it is why the app
+     felt like it panned sideways. Clipping at the section produces the same
+     visual bleed with no page-level overflow. */
+  overflow: hidden;
 }
 
 .heroContainer {
@@ -448,6 +457,9 @@
   width: 100%;
   max-width: 500px;
   padding: 40px 32px;
+  /* Same reason as .hero: .featureArt is a 120px watermark at right:-10px, and
+     without clipping it pushed the card's bounds past the viewport. */
+  overflow: hidden;
   background: rgba(18, 22, 64, 0.4); /* #121640 - Soft BG matching new palette */
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);

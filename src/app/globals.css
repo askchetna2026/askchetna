@@ -179,6 +179,48 @@ body {
   color: var(--foreground);
   line-height: 1.6;
   transition: background-color 0.5s ease, background 0.5s ease, color 0.5s ease;
+
+  /* Sticky footer.
+
+     Without this the footer had no reason to sit anywhere in particular, so on
+     a refresh — or on any page that fetches its content client-side — it
+     rendered immediately under the header while the page was still empty, then
+     jumped down once content arrived. Reserving the viewport height and letting
+     .app-main absorb the slack keeps it at the bottom throughout.
+
+     Safe despite the cosmic background layers: every one of them is
+     position: fixed, so none is a flow child of body. */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  /* Small-viewport unit accounts for mobile browser chrome; ignored where
+     unsupported, leaving the 100vh above in force. */
+  min-height: 100svh;
+}
+
+/* Absorbs the leftover height so the footer is pushed to the bottom of the
+   viewport on short pages, and sits below the content on long ones.
+   `0 auto` rather than `1` so the basis stays on the content's own height. */
+.app-main {
+  flex: 1 0 auto;
+
+  /* flex-grow alone does NOT solve this, which is worth stating because it
+     looks like it should. The footer is ~627px tall; on a 720px viewport the
+     header, banner and footer together already exceed the viewport, so there
+     is no free space for main to absorb and grow resolves to nothing.
+
+     Reserving a minimum is what actually stops the footer appearing directly
+     under the header while a page is empty — during a refresh, or on any page
+     that fetches its content client-side and renders nothing meanwhile.
+     Matches the 70vh used by the loading.tsx fallback so the two agree. */
+  min-height: 70vh;
+  min-height: 70svh;
+}
+
+/* Never compress the footer to make room. */
+body > footer,
+.app-main ~ footer {
+  flex-shrink: 0;
 }
 
 a {

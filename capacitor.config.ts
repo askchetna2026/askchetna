@@ -116,11 +116,28 @@ const config: CapacitorConfig = {
             // forever. The web app still calls hide() on first paint, which
             // shortens this in the normal case; auto-hide is the safety net.
             launchAutoHide: true,
-            launchShowDuration: 2000,
+
+            // This is a FALLBACK duration, not the expected one.
+            //
+            // It was 2000, which is shorter than a cold start that has to fetch
+            // a remote site over mobile data. The splash dismissed itself before
+            // the first paint and left the user looking at an empty WebView —
+            // the "app opens to a blank screen" report.
+            //
+            // NativeAppShell calls hide() as soon as the site paints, so in the
+            // normal case this number is never reached and the splash is as
+            // brief as it always was. It only matters when the site is slow or
+            // unreachable, which is exactly when dismissing early is wrong.
+            launchShowDuration: 15000,
+
             backgroundColor: '#0B0F2F',
             androidScaleType: 'CENTER_CROP',
-            showSpinner: false,
+
+            // Something has to move while a slow network is being waited on; a
+            // motionless splash for several seconds reads as a hung app.
+            showSpinner: true,
             androidSpinnerStyle: 'small',
+            iosSpinnerStyle: 'small',
             splashFullScreen: true,
             splashImmersive: false,
         },

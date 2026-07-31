@@ -153,7 +153,7 @@
     padding: 12px 14px;
     border-radius: 8px;
     border: 1px solid rgba(159, 122, 234, 0.28);
-    background: rgba(11, 15, 47, 0.5);
+    background: var(--card-bg);
     color: var(--foreground);
     font: inherit;
 }

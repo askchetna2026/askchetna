@@ -28,7 +28,7 @@
 
 /* Rules Box */
 .rulesBox {
-    background: linear-gradient(180deg, rgba(18, 22, 64, 0.6) 0%, rgba(11, 15, 47, 0.4) 100%);
+    background: var(--card-bg);
     border: none;
     padding: 24px 32px;
     border-radius: var(--radius-lg);
@@ -74,7 +74,7 @@
     gap: 16px;
     max-width: 800px;
     margin: 40px auto 0;
-    background: rgba(11, 15, 47, 0.8);
+    background: var(--card-bg);
     padding: 16px;
     border-radius: 32px;
     box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(93, 63, 211, 0.1);
@@ -180,7 +180,7 @@
 }
 
 .section {
-    background: linear-gradient(180deg, rgba(18, 22, 64, 0.8) 0%, rgba(11, 15, 47, 0.95) 100%);
+    background: var(--card-bg);
     padding: 32px;
     border-radius: var(--radius-lg);
     border: none;
@@ -214,7 +214,7 @@
 }
 
 .phaseSection {
-    background: linear-gradient(180deg, rgba(18, 22, 64, 0.8) 0%, rgba(11, 15, 47, 0.95) 100%);
+    background: var(--card-bg);
 }
 
 .section p {
@@ -225,7 +225,7 @@
 
 /* Verdict Section */
 .verdictSection {
-    background: linear-gradient(180deg, rgba(18, 22, 64, 0.8) 0%, rgba(11, 15, 47, 0.95) 100%);
+    background: var(--card-bg);
 }
 .verdictSection::after {
     content: '';
@@ -588,7 +588,7 @@
 .sampleResponseContent {
     padding: 24px;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
-    background: rgba(10, 10, 15, 0.2);
+    background: var(--card-bg);
 }
 
 /* Character Input Guide */

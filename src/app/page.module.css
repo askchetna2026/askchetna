@@ -21,7 +21,10 @@
 }
 
 .hero {
-  padding: 140px 24px 80px;
+  /* Was 140px of top padding to clear the old fixed header while a mandala sat
+     behind the text. The illustrated banner now opens the page and carries its
+     own margin, so this only needs breathing room underneath. */
+  padding: 8px 24px 80px;
   position: relative;
   z-index: 1;
 
@@ -208,7 +211,16 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 80px 24px;
-  border-top: 1px solid rgba(212, 175, 55, 0.15);
+}
+
+/* Only the newsletter takes the sunk band. These two sections sit next to each
+   other, so tinting both would merge them into one long band and lose the beat
+   the alternation exists to create. Full-bleed so the ground reads as a change
+   of surface rather than a wide card. */
+.newsletterSection {
+  max-width: none;
+  background: var(--bg-soft);
+  border-block: 1px solid var(--card-border);
 }
 
 .pathwaysIntro {
@@ -231,19 +243,26 @@
   flex-direction: column;
   gap: 14px;
   padding: 28px;
-  border-radius: 22px;
+  border-radius: var(--radius-sm);
   text-decoration: none;
-  border: 1px solid rgba(212, 175, 55, 0.16);
+  border: 1px solid var(--card-border);
+  /* The navy beneath the gold wash is gone; the wash itself stays, now over
+     paper. Keeping the radial gradient means the card still catches a little
+     warmth at its top corner rather than being flat. */
   background:
-    radial-gradient(circle at top right, rgba(212, 175, 55, 0.1), transparent 30%),
-    rgba(18, 22, 64, 0.42);
-  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.28);
-  transition: transform 0.28s ease, border-color 0.28s ease, box-shadow 0.28s ease;
+    radial-gradient(circle at top right, rgba(181, 137, 46, 0.10), transparent 34%),
+    var(--card-bg);
+  box-shadow: var(--shadow-card);
+  transition: transform 200ms var(--ease-out), border-color 200ms var(--ease-out), box-shadow 200ms var(--ease-out);
+}
+
+.pathwayCard:active {
+  transform: scale(0.995);
 }
 
 .pathwayCard:hover {
-  transform: translateY(-4px);
-  border-color: rgba(212, 175, 55, 0.36);
+  transform: translateY(-3px);
+  border-color: var(--accent-gold-decor);
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.34);
 }
 
@@ -415,7 +434,6 @@
 .howItWorks {
   padding: 120px 24px;
   background: transparent;
-  border-top: 1px solid rgba(212, 175, 55, 0.15);
   position: relative;
   /* The .cardRight reveal starts at x:+50 and only animates to 0 once scrolled
      into view, so every card below the fold sits 50px right of where it lands.
@@ -430,6 +448,11 @@
      make this a scroll container. */
   overflow-x: hidden;
   overflow-x: clip;
+  /* Sunk band. Alternating grounds carry the section rhythm that eight
+     identical hairlines could not — a rule repeated everywhere ranks
+     nothing. Hairlines top and bottom now mark a real change of surface. */
+  background: var(--bg-soft);
+  border-block: 1px solid var(--card-border);
 }
 
 .sectionHeader {
@@ -552,7 +575,6 @@
   padding: 120px 24px;
   background: transparent;
   position: relative;
-  border-top: 1px solid rgba(212, 175, 55, 0.15);
 }
 
 .philosophySection::before {
@@ -858,9 +880,13 @@
 .testimonialsSection {
   padding: 100px 24px;
   background: transparent;
-  border-top: 1px solid rgba(212, 175, 55, 0.15);
   position: relative;
   text-align: center;
+  /* Sunk band. Alternating grounds carry the section rhythm that eight
+     identical hairlines could not — a rule repeated everywhere ranks
+     nothing. Hairlines top and bottom now mark a real change of surface. */
+  background: var(--bg-soft);
+  border-block: 1px solid var(--card-border);
 }
 
 .testimonialsGrid {
@@ -909,7 +935,6 @@
 .creditsSection {
   padding: 100px 24px;
   background: transparent;
-  border-top: 1px solid rgba(212, 175, 55, 0.15);
   position: relative;
   text-align: center;
 }
@@ -988,7 +1013,6 @@
 .liveSampleSection {
   padding: 100px 24px;
   background: transparent;
-  border-top: 1px solid rgba(212, 175, 55, 0.15);
   position: relative;
   text-align: center;
 }
@@ -1096,7 +1120,7 @@
 
 .teaserInput {
   padding: 12px 20px;
-  background: rgba(10, 10, 15, 0.5);
+  background: var(--card-bg);
   border: 1px solid rgba(212, 175, 55, 0.3);
   border-radius: 50px;
   color: var(--foreground);
@@ -1135,7 +1159,7 @@
 .teaserResultBox {
   margin-top: 32px;
   padding: 24px;
-  background: rgba(10, 10, 15, 0.4);
+  background: var(--card-bg);
   border-radius: 16px;
   text-align: left;
   border-left: 4px solid var(--accent-gold);

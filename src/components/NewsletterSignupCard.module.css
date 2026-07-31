@@ -3,12 +3,14 @@
     grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
     gap: 28px;
     padding: 32px;
-    border-radius: 28px;
-    border: 1px solid rgba(212, 175, 55, 0.18);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--card-border);
+    /* Navy base swapped for paper; the gold wash stays so the card still catches
+       warmth at its top corner instead of going flat. */
     background:
-        radial-gradient(circle at top right, rgba(212, 175, 55, 0.12), transparent 35%),
-        linear-gradient(180deg, rgba(18, 22, 64, 0.75), rgba(11, 15, 47, 0.92));
-    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+        radial-gradient(circle at top right, rgba(181, 137, 46, 0.12), transparent 35%),
+        var(--card-bg);
+    box-shadow: var(--shadow-card);
 }
 
 .copyBlock {

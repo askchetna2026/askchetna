@@ -429,40 +429,47 @@ h3 { font-size: clamp(1.125rem, 3vw, 1.5rem); letter-spacing: 0.05em; }
    ═══════════════════════════════════════════════ */
 
 /* Sacred Card Border & Background - Enhanced Glassmorphism */
+/* A sheet of paper resting on the page.
+   The tile is a different scale to the sheet behind it and centred rather than
+   tiled from the origin, so the two grains do not line up — that misalignment
+   is what makes a card read as paper ON the page instead of a hole cut IN it. */
 .sacred-card {
   position: relative;
-  background: var(--card-bg);
+  background-color: var(--card-bg);
+  background-image: var(--paper-tex);
+  background-repeat: repeat;
+  background-size: 380px 380px;
+  background-position: center;
+  background-blend-mode: var(--paper-tex-blend);
   border: 1px solid var(--card-border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
   overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+  /* Named properties, not `all`: `all` animates layout and drops frames. */
+  transition: transform 200ms var(--ease-out),
+              border-color 200ms var(--ease-out),
+              box-shadow 200ms var(--ease-out);
 }
 
-.sacred-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.5), transparent);
-  z-index: 1;
+/* Hover is a lift of a few pixels, not eight. Paper does not levitate, and the
+   old 8px + 60px glow was doing a glassmorphic impression the material no
+   longer supports. Gated so a tap on mobile does not stick in the hover state. */
+@media (hover: hover) and (pointer: fine) {
+  .sacred-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent-gold-decor);
+    box-shadow: var(--shadow-float);
+  }
 }
 
-.sacred-card:hover {
-  transform: translateY(-8px);
-  border-color: rgba(212, 175, 55, 0.4);
-  box-shadow:
-    0 30px 60px -15px rgba(0, 0, 0, 0.6),
-    0 0 40px -5px rgba(212, 175, 55, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
-  background: var(--card-bg);
+/* Anything card-shaped is usually pressable; acknowledge the press. */
+.sacred-card:active {
+  transform: scale(0.995);
 }
 
 .sacred-card.active {
   border-color: var(--accent-gold);
-  box-shadow:
-    0 20px 40px -10px rgba(212, 175, 55, 0.3),
-    0 0 20px rgba(212, 175, 55, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  box-shadow: var(--shadow-float);
 }
 
 /* Decorative Section Divider */
@@ -601,15 +608,16 @@ h3 { font-size: clamp(1.125rem, 3vw, 1.5rem); letter-spacing: 0.05em; }
   position: relative;
   font-family: var(--font-heading);
   letter-spacing: 0.1em;
-  /* Both were hardcoded to the DARK theme's golds (#D4AF37 -> #B8860B) with
-     near-black text, so this button ignored the theme entirely and sat bright
-     gold on parchment while every other gold control went deep. Tokens make it
-     follow the theme; --bg-primary is the app's "text on a gold fill" colour. */
+  /* Kumkum, flat. The gradient was a hangover from the dark theme, and gold
+     doing the call to action is what forced it to be legible-as-text in the
+     first place — moving the action onto coral frees gold to be ornament.
+     Flat rather than graduated because a gradient's contrast changes across the
+     fill, so it cannot be measured to a single ratio. 5.92:1. */
   color: var(--bg-primary);
-  background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-dim) 100%);
+  background: var(--accent-coral);
   border: none;
   padding: 12px 32px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;

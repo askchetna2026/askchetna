@@ -14,6 +14,7 @@ import PanchangWidget from '@/components/PanchangWidget';
 import CosmicMandala from '@/components/CosmicMandala';
 import NewsletterSignupCard from '@/components/NewsletterSignupCard';
 import RashiMedallions from '@/components/sections/RashiMedallions';
+import Masthead from '@/components/Masthead';
 import { useProfile } from '@/context/ProfileContext';
 import { trackEvent } from '@/lib/analytics/client';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
@@ -172,22 +173,12 @@ export default function Home() {
               ═══════════════════════════════════ */}
           <div className={styles.bgWrapper}>
             <section className={styles.hero}>
-              {/* Rotating mandala watermark */}
-              <div className={styles.mandalaHero} aria-hidden="true">
-                <CosmicMandala size={700} opacity={0.1} animate />
-              </div>
+              {/* The illustrated banner replaces the mandala watermark: it is the
+                  first impression, and a watermark behind text was doing none of
+                  the work the artwork can. */}
+              <Masthead />
 
               <div className={styles.heroContainer}>
-                {/* Vedic cosmic label */}
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6 }}
-                  className={styles.heroLabel}
-                >
-                  <span className="cosmic-label">✦ Jyotish Vidya · Vedic Astrology ✦</span>
-                </motion.div>
-
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}

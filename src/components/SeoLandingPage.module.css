@@ -20,12 +20,13 @@
 .storyCard,
 .faqCard,
 .linkCard {
-    border-radius: 28px;
-    border: 1px solid rgba(212, 175, 55, 0.14);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--card-border);
+    /* See NewsletterSignupCard — same navy base, same swap. */
     background:
-        radial-gradient(circle at top right, rgba(212, 175, 55, 0.09), transparent 34%),
-        linear-gradient(180deg, rgba(18, 22, 64, 0.74), rgba(11, 15, 47, 0.92));
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.22);
+        radial-gradient(circle at top right, rgba(181, 137, 46, 0.09), transparent 34%),
+        var(--card-bg);
+    box-shadow: var(--shadow-card);
 }
 
 .heroText {

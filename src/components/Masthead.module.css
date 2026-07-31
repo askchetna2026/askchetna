@@ -1,0 +1,85 @@
+.masthead {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: var(--space-4) clamp(14px, 3.5vw, 44px) var(--space-2);
+}
+
+.plate {
+    position: relative;
+}
+
+/* Multiply, not a border: the illustration's cream ground dissolves into the
+   page so the line work sits ON the paper. Framing it would put a rectangle
+   around art that was drawn to float. */
+.art {
+    display: block;
+    width: 100%;
+    height: auto;
+    mix-blend-mode: multiply;
+}
+
+.ring {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    color: var(--accent-gold-decor);
+}
+
+/* The wordmark sits in the quiet space the illustration leaves above her head.
+   Percentages rather than pixels so it tracks the plate at every width. */
+.wordmark {
+    position: absolute;
+    left: 50%;
+    top: 9.5%;
+    transform: translateX(-50%);
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: clamp(1.05rem, 3.3vw, 2.35rem);
+    letter-spacing: 0.34em;
+    /* Balances the tracking, which otherwise pushes the visual centre left. */
+    text-indent: 0.34em;
+    text-transform: uppercase;
+    color: var(--foreground);
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.tagline {
+    margin: var(--space-3) 0 0;
+    text-align: center;
+    font-size: clamp(0.56rem, 1.15vw, 0.72rem);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent-gold);
+}
+
+@keyframes mastheadTurn {
+    to { transform: rotate(360deg); }
+}
+
+/* Slow enough to feel rather than watch. transform-box keeps the origin in the
+   SVG's own user units, so it stays centred on the portrait at any size. */
+.rashiRing,
+.nakshatraRing {
+    transform-box: view-box;
+    transform-origin: 702px 365px;
+    animation: mastheadTurn linear infinite;
+}
+
+.rashiRing {
+    animation-duration: 280s;
+}
+
+.nakshatraRing {
+    animation-duration: 190s;
+    animation-direction: reverse;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .rashiRing,
+    .nakshatraRing {
+        animation: none;
+    }
+}

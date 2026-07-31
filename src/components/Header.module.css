@@ -8,7 +8,7 @@
 }
 
 [data-theme='light'] .header {
-    background: rgba(253, 244, 227, 0.85);
+    background: var(--background);
     box-shadow: 0 4px 24px rgba(44, 27, 24, 0.06), inset 0 -1px 0 rgba(184, 134, 11, 0.2);
 }
 
@@ -106,8 +106,11 @@
 
 .loginBtn {
     padding: 10px 24px;
-    background: #1B2B41;
-    color: white;
+    /* Was a hardcoded navy pill with white text — the only dark control on a
+       parchment page. */
+    background: transparent;
+    color: var(--accent-gold);
+    border: 1px solid var(--card-border);
     border-radius: 50px;
     font-size: 0.9rem;
     font-weight: 500;
@@ -325,8 +328,9 @@
     display: block;
     width: 100%;
     padding: 14px;
-    background: #1B2B41;
-    color: white;
+    background: transparent;
+    color: var(--accent-gold);
+    border: 1px solid var(--card-border);
     text-align: center;
     border-radius: 12px;
     font-weight: 600;

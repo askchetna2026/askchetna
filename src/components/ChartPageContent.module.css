@@ -533,7 +533,7 @@
 }
 
 .vargaCard:hover {
-    background: linear-gradient(180deg, rgba(25, 30, 80, 0.8) 0%, rgba(15, 20, 60, 0.95) 100%);
+    background: var(--card-bg);
     transform: translateY(-8px);
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(159, 122, 234, 0.25);
 }

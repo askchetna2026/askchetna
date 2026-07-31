@@ -338,7 +338,7 @@
 }
 
 .guidanceSection {
-    background: linear-gradient(180deg, rgba(29, 21, 52, 0.8) 0%, rgba(15, 11, 30, 0.95) 100%);
+    background: var(--card-bg);
 }
 .guidanceSection::before {
     background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.8), transparent);

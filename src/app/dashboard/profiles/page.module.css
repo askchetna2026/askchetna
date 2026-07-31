@@ -290,7 +290,7 @@
     bottom: 30px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(15, 15, 15, 0.95);
+    background: var(--card-bg);
     border: 1px solid var(--card-border);
     border-radius: 12px;
     padding: 16px 24px;

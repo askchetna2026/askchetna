@@ -143,9 +143,18 @@
 
 /* From the Blog section */
 .blogSection {
-  max-width: 1200px;
+  max-width: none;
   margin: 0 auto;
   padding: 80px 24px;
+  /* Sunk band — see .testimonialsSection. Full-bleed so the ground reads as a
+     change of surface rather than a very wide card. */
+  background: var(--bg-soft);
+  border-block: 1px solid var(--card-border);
+}
+
+.blogSection > * {
+  max-width: 1200px;
+  margin-inline: auto;
 }
 
 .blogGrid {
@@ -373,7 +382,7 @@
 .zodiacSection {
   border-top: 1px solid rgba(212, 175, 55, 0.1);
   border-bottom: 1px solid rgba(212, 175, 55, 0.1);
-  background: rgba(22, 11, 32, 0.3);
+  background: var(--bg-soft);
   overflow: hidden;
   padding: 16px 0;
 }
@@ -448,11 +457,6 @@
      make this a scroll container. */
   overflow-x: hidden;
   overflow-x: clip;
-  /* Sunk band. Alternating grounds carry the section rhythm that eight
-     identical hairlines could not — a rule repeated everywhere ranks
-     nothing. Hairlines top and bottom now mark a real change of surface. */
-  background: var(--bg-soft);
-  border-block: 1px solid var(--card-border);
 }
 
 .sectionHeader {
@@ -1012,9 +1016,14 @@
 /* Live AI Sample */
 .liveSampleSection {
   padding: 100px 24px;
-  background: transparent;
   position: relative;
   text-align: center;
+  /* Sunk band — see .testimonialsSection. The beat runs rāśi (paper), live
+     sample (sunk), credits (paper), testimonials (sunk), how-it-works (paper),
+     blog (sunk), and so on. No two tinted sections may touch, or they merge
+     into one long band and the alternation stops meaning anything. */
+  background: var(--bg-soft);
+  border-block: 1px solid var(--card-border);
 }
 
 .liveSampleContainer {

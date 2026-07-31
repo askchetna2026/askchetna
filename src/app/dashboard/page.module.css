@@ -661,7 +661,7 @@
 }
 
 .lifeReportCard {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    background: var(--card-bg);
     border-radius: 24px;
     padding: 40px;
     margin-bottom: 40px;
@@ -674,9 +674,8 @@
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
 }
 
-[data-theme='light'] .lifeReportCard {
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-}
+/* The light-theme twin went with the dark theme: .lifeReportCard is paper in
+   the only palette there is now. */
 
 .lifeReportCard::before {
     content: '';

@@ -11,7 +11,7 @@
     left: 50%;
     transform: translateX(-50%);
     width: 260px;
-    background: var(--card-bg, #1a1a2e);
+    background: var(--card-bg);
     border: 1px solid var(--accent-gold);
     border-radius: 12px;
     padding: 14px 16px;

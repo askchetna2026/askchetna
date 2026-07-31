@@ -1,7 +1,5 @@
 .widget {
     background: var(--card-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--card-border);
     box-shadow: var(--glass-shadow);
     border-radius: var(--radius-md);

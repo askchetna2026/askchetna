@@ -7,7 +7,6 @@ import { useSession, signOut } from 'next-auth/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './Header.module.css';
 import Logo from './Logo';
-import ThemeToggle from './ThemeToggle';
 import ProfileMenu from './ProfileMenu';
 import { Menu, X, CreditCard, LayoutDashboard, LogOut, Info, BookOpen, MessageSquare, Sparkles, Users, UserCog, Settings } from 'lucide-react';
 import { PAYMENTS_ENABLED } from '@/lib/paymentConfig';
@@ -105,7 +104,6 @@ export default function Header() {
           </nav>
 
           <div className={styles.actions}>
-            <ThemeToggle />
             {status === 'authenticated' ? (
               // Dashboard, Account, App Info, Admin and sign out were five
               // separate items competing for space in the bar. One profile
@@ -245,11 +243,6 @@ export default function Header() {
                 </nav>
 
                 <div className={styles.mobileActions}>
-                  <div className={styles.mobileSeparator} />
-                  <div className={styles.mobileRow}>
-                    <span>Appearance</span>
-                    <ThemeToggle />
-                  </div>
                   {status === 'authenticated' ? (
                     <button
                       className={styles.mobileSignOut}

@@ -32,7 +32,6 @@
     padding: 40px;
     border-radius: var(--radius-lg);
     border: 1px solid var(--card-border);
-    backdrop-filter: blur(12px);
     height: fit-content;
 }
 
@@ -74,7 +73,6 @@
     padding: 40px;
     border-radius: var(--radius-lg);
     border: 1px solid var(--card-border);
-    backdrop-filter: blur(12px);
 }
 
 .formGroup {

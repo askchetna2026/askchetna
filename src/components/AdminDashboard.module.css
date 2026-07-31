@@ -350,7 +350,7 @@
 }
 
 .deleteBtn {
-    background: rgba(244, 67, 54, 0.1);
+    background: var(--card-bg);
     color: #f44336;
     border-color: rgba(244, 67, 54, 0.2);
 }
@@ -393,7 +393,7 @@
 }
 
 .rejectedBadge {
-    background: rgba(244, 67, 54, 0.12);
+    background: var(--card-bg);
     color: #f44336;
     border: 1px solid rgba(244, 67, 54, 0.2);
 }
@@ -421,7 +421,7 @@
 }
 
 .rejectBtn {
-    background: rgba(244, 67, 54, 0.12);
+    background: var(--card-bg);
     color: #f44336;
     border-color: rgba(244, 67, 54, 0.2);
 }

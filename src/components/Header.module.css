@@ -2,11 +2,9 @@
     position: sticky;
     top: 0;
     z-index: 1000;
-    background: rgba(11, 15, 47, 0.85);
+    background: var(--background);
     border-bottom: none;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5), inset 0 -1px 0 rgba(159, 122, 234, 0.2);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
 }
 
 [data-theme='light'] .header {
@@ -119,8 +117,7 @@
     text-decoration: none;
     white-space: nowrap;
     padding: 0 1.5rem;
-    background: rgba(10, 10, 15, 0.7);
-    backdrop-filter: blur(12px);
+    background: var(--background);
     border-bottom: 1px solid rgba(212, 175, 55, 0.15);
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
     z-index: 1000;
@@ -205,7 +202,6 @@
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(8px);
     z-index: 1050;
 }
 
@@ -350,8 +346,7 @@
     padding: 6px 14px;
     border-radius: 20px;
     transition: all 0.3s ease;
-    background: rgba(10, 10, 15, 0.4);
-    backdrop-filter: blur(8px);
+    background: var(--bg-soft);
     white-space: nowrap;
 }
 

@@ -86,7 +86,6 @@
     padding: 40px;
     border-radius: var(--radius-md);
     border: 1px solid var(--card-border);
-    backdrop-filter: blur(12px);
     box-shadow: var(--glass-shadow);
     flex: 1;
     transition: all 0.3s ease;

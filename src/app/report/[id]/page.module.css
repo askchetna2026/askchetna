@@ -159,7 +159,6 @@
 /* Paywall Styles */
 .paywall {
     background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
     border-radius: 32px;
     padding: 60px 40px;
     text-align: center;

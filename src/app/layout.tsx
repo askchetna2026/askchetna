@@ -92,7 +92,11 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
-  themeColor: '#0B0F2F',
+  /* Matches the parchment default, so the browser and Android status bar chrome
+     no longer sits navy against a light page. The native app icon and splash are
+     still built on #0B0F2F and need regenerating (`npm run assets`) plus fresh
+     App Store screenshots — tracked separately. */
+  themeColor: '#F2EAD5',
 };
 
 export default async function RootLayout({
@@ -127,7 +131,7 @@ export default async function RootLayout({
   };
 
   return (
-    <html lang="en" data-theme="dark" suppressHydrationWarning>
+    <html lang="en" data-theme="light" suppressHydrationWarning>
       <body className={`${inter.variable} ${playfair.variable}`}>
         {/*
           Tags <html> with .native-app / data-app-platform before first paint so
@@ -137,6 +141,12 @@ export default async function RootLayout({
           including the static SEO landing pages — into dynamic rendering.
         */}
         <script dangerouslySetInnerHTML={{ __html: PLATFORM_BOOTSTRAP_SCRIPT }} />
+        {/*
+          No theme bootstrap. AskChetna has ONE palette — the parchment
+          manuscript — so data-theme is a constant on <html> above rather than
+          something restored from storage. Any leftover 'chetna-theme' value in
+          a returning visitor's localStorage is simply ignored.
+        */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaGraph) }}

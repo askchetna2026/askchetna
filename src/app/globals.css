@@ -1,33 +1,62 @@
 :root {
-  /* Ancient Manuscript Palette - LIGHT MODE */
-  --background: #FDF4E3;
-  --background-rgb: 253, 244, 227;
-  --bg-soft: #F4E8D1;
-  --bg-soft-rgb: 244, 232, 209;
-  --bg-primary: #FDF4E3;
+  /* ═══ MANUSCRIPT PALETTE — the default surface ═══════════════════════════
+     Warm parchment rather than the old near-white cream, so the paper texture
+     (--paper-tex, applied on body) reads as a sheet rather than as noise.
+     Every pair below was measured; none sits under 4.5:1 on paper or panel.
 
-  --foreground: #2C1B18;
-  --foreground-rgb: 44, 27, 24;
+     The rule that keeps it that way: a colour used as a SURFACE and the same
+     colour used as TEXT are different tokens. Collapsing them is what made
+     --accent-gold unreadable before, and it is the one mistake to never repeat. */
+  --background: #F2EAD5;
+  --background-rgb: 242, 234, 213;
+  --bg-soft: #EAE0C8;
+  --bg-soft-rgb: 234, 224, 200;
+  --bg-primary: #F2EAD5;
+  /* Raised surfaces — cards, panels, popovers. */
+  --bg-panel: #F6F0DF;
 
-  --primary: #4A2E2B;
-  /* Muted body copy. #8E7A77 measured 3.45:1 on a card and 3.7:1 on the page —
-     under the 4.5:1 AA floor either way, which is what made secondary text on
-     the light theme read as washed out rather than quiet. */
-  --secondary: #6B4E4A;
-  --text-muted: #75605C;
+  /* Text ramp. Darkened from the previous set on feedback that copy sat too
+     close to the parchment: body moved 9.27 -> 11.34:1, muted 5.42 -> 7.06:1. */
+  --foreground: #251A11;
+  --foreground-rgb: 37, 26, 17;
+  --primary: #3A2B1E;
+  --secondary: #3A2B1E;
+  --text-muted: #5C4A32;
 
-  /* Gold has to be genuinely dark to survive on #FDF4E3 parchment: it is used
-     as a TEXT colour ~270 times and only ~55 times as a surface, so the token
-     is tuned for legibility first. #B8860B ("darkgoldenrod") measured 2.8-3.0:1
-     against the page and cards, which is why gold headings, labels and links
-     were the single largest source of unreadable text in this theme.
-     #8B5E10 measures 5.19:1 on the page and 4.89:1 on a card, and still reads
-     as antique gold rather than brown. Buttons that fill with it pair it with
-     --bg-primary, which clears AA in the other direction. */
-  --accent-gold: #8B5E10;
-  --accent-gold-rgb: 139, 94, 16;
-  --accent-gold-dim: #6E4A0D;
+  /* Gold splits in two, and the SAFE value keeps the plain name.
+     ~274 call sites already write `color: var(--accent-gold)` and only ~55 use
+     it as a surface. Giving the plain token the brighter decorative value broke
+     all 274 at once — 2.66:1. The default has to be the one that is safe
+     everywhere; the risky one is the opt-in. */
+  /* #8B5E10 cleared the page (4.72:1) but only reached 4.17:1 on the darker
+     --bg-soft panels, which is where /about puts its emphasis text. Tuned to
+     the WORST ground rather than the most common one: 5.70 on paper, 6.01 on
+     panel, 5.03 on soft. Headroom matters here because the token lands on ~274
+     call sites across surfaces nobody has measured individually. */
+  --accent-gold: #7C520D;
+  --accent-gold-rgb: 124, 82, 13;
+  --accent-gold-text: #7C520D;
+  /* Ornament and fills ONLY — never text on parchment. */
+  --accent-gold-decor: #B5892E;
+  --accent-gold-dim: #5C3D0A;
+
+  /* Kumkum carries the call to action, which frees gold to be ornament again.
+     Same rule: the plain token is legible both as text on paper (5.33:1) and
+     as a fill behind --bg-primary (5.92:1). */
+  --accent-coral: #A33F1C;
+  --accent-coral-text: #A33F1C;
+  --accent-coral-decor: #C4603A;
+  --accent-coral-deep: #8E3517;
+  --accent-sage: #7E8F6B;
+  --accent-sage-deep: #5E6B50;
   --accent-rose: #C48E8E;
+  --accent-neelam: #26315C;
+
+  /* Seamless 600px tile, mirror-folded from a scan so the edges match.
+     6 KB — cheap enough to sit on every surface. */
+  --paper-tex: url('/art/texture/parchment-tile.webp');
+  --paper-tex-blend: multiply;
+  --paper-tex-opacity: 1;
 
   /* Semantic and brand accents. These were defined only under
      [data-theme='dark'], so components using them had nothing to fall back to in
@@ -47,21 +76,45 @@
   --accent-iris: #4A2FA8;
   --brand-secondary: #4A2FA8;
 
-  --card-bg: rgba(244, 232, 209, 0.65);
-  /* Tracks --accent-gold-rgb above. Borders carry no contrast requirement, but
-     leaving them on the old lighter gold would make them drift from every
-     bordered element that also uses the token for its text. */
-  --card-border: rgba(139, 94, 16, 0.25);
-  --border-soft: rgba(139, 94, 16, 0.15);
-
-  --glass-shadow: 0 12px 40px -10px rgba(16, 20, 32, 0.1);
+  /* Cards are SOLID paper now. The old value was 65%-opacity cream over cream,
+     which barely separated from the page and needed a blur behind it to read
+     as anything at all. */
+  --card-bg: #F6F0DF;
+  --card-border: #D3C29C;
+  --border-soft: rgba(139, 94, 16, 0.18);
 
   --font-main: var(--font-main), sans-serif;
   --font-heading: var(--font-heading), serif;
 
-  --radius-sm: 8px;
-  --radius-md: 16px;
-  --radius-lg: 32px;
+  /* ═══ SCALES ══════════════════════════════════════════════════════════════
+     There were 129 distinct box-shadows, 32 border-radius values and no spacing
+     scale at all. Four of each, and paper edges are crisp — 16px pill corners
+     read as app chrome, not print. */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+
+  --shadow-raise: 0 1px 2px rgba(37, 26, 17, .06);
+  --shadow-card: 0 1px 2px rgba(37, 26, 17, .06), 0 10px 24px -16px rgba(37, 26, 17, .28);
+  --shadow-float: 0 2px 5px rgba(37, 26, 17, .08), 0 18px 36px -20px rgba(37, 26, 17, .40);
+  --shadow-modal: 0 4px 10px rgba(37, 26, 17, .10), 0 34px 70px -30px rgba(37, 26, 17, .52);
+  /* Retained: ~40 call sites still reference it. Now a plain card shadow. */
+  --glass-shadow: var(--shadow-card);
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-8: 48px;
+  --space-10: 64px;
+  --space-12: 80px;
+  --space-16: 120px;
+
+  --ease-out: cubic-bezier(.23, 1, .32, 1);
+  --ease-in-out: cubic-bezier(.77, 0, .175, 1);
 
   /* Height of the native app's bottom tab bar, EXCLUDING the safe-area inset
      the bar adds underneath it. Anything that anchors to the bottom of the
@@ -83,102 +136,23 @@
   --app-rail-breakpoint: 600px;
 }
 
-[data-theme='dark'] {
-  --background: #0B0F2F;
-  --background-rgb: 11, 15, 47;
-  --bg-soft: #121640;
-  --bg-soft-rgb: 18, 22, 64;
-  --bg-primary: #0B0F2F;
-  --foreground: #DFE0FF;
-  --foreground-rgb: 223, 224, 255;
-  --primary: #DFE0FF;
-  --secondary: #C7C5CF;
-  --brand-secondary: #5D3FD3;
-  --text-muted: #B3B2B9; /* Increased contrast for readability */
-  --success: #4ECDC4;
-  --success-bg: rgba(78, 205, 196, 0.15);
-  --warning: #F7B731;
-  --warning-bg: rgba(247, 183, 49, 0.15);
-  --error: #FF6B9D;
-  --error-bg: rgba(255, 107, 157, 0.15);
-  --accent-gold: #D4AF37;
-  --accent-gold-rgb: 212, 175, 55;
-  --accent-gold-dim: #9E8329;
-  --accent-iris: #5D3FD3;
-  --card-bg: rgba(18, 22, 64, 0.4);
-  --card-border: rgba(212, 175, 55, 0.2);
-  --border-soft: rgba(93, 63, 211, 0.2);
-  --glass-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.8), 0 0 30px -5px rgba(93, 63, 211, 0.15);
 
-  /* Cosmic palette - Nebula & Stars */
-  --nebula-purple: rgba(159, 122, 234, 0.35);
-  --nebula-purple-light: rgba(184, 159, 232, 0.25);
-  --nebula-indigo: rgba(93, 63, 211, 0.4);
-  --nebula-blue: rgba(74, 144, 226, 0.3);
-  --star-white: #E8E9FF;
-  --moon-silver: #C7C5CF;
-  --cosmic-glow: #D4AF37;
+/* ONE PALETTE. There is no dark theme and no [data-theme='light'] block.
 
-  /* Planets - Chart colors */
-  --planet-sun: #FFD700;
-  --planet-moon: #F0F0F0;
-  --planet-mars: #E74C3C;
-  --planet-mercury: #3498DB;
-  --planet-venus: #F39C12;
-  --planet-jupiter: #8E44AD;
-  --planet-saturn: #95A5A6;
-  --planet-rahu: #2C3E50;
-  --planet-ketu: #34495E;
+   :root above is the parchment manuscript, and it is the whole system. <html>
+   carries a constant data-theme="light" purely so the ~32 existing
+   [data-theme='light'] rules in CSS modules keep matching — flattening those
+   selectors would change their specificity and silently reorder the cascade,
+   which is not worth it for a prefix nobody sees.
 
-  /* Elements - Vedic */
-  --element-fire: #E74C3C;
-  --element-earth: #8B7355;
-  --element-air: #87CEEB;
-  --element-water: #3498DB;
-}
+   The second palette was removed deliberately. It shipped the old generic
+   navy-and-gold identity as an option, and every contrast bug this cycle came
+   from two palettes drifting apart: a duplicate light block holding brighter
+   --success and --error than :root, gold doing both fill and text duty, and
+   semantic colours defined in one place but not the other. One source of truth
+   is the fix for all of it.
 
-[data-theme='light'] {
-  --background: #FDF4E3;
-  --background-rgb: 253, 244, 227;
-  --bg-soft: #F4E8D1;
-  --bg-soft-rgb: 244, 232, 209;
-  --bg-primary: #FDF4E3;
-  --foreground: #2C1B18;
-  --foreground-rgb: 44, 27, 24;
-  --primary: #4A2E2B;
-  --secondary: #6B4E4A;
-  /* Keep these three in step with the :root block above — :root is the light
-     palette too (it is what an unset data-theme falls back to), so a value
-     changed in only one place fixes the theme for half the visitors. */
-  --text-muted: #75605C;
-  /* These four used to hold BRIGHTER values than the :root block, silently
-     undoing the darkening :root did for contrast — and :root's comment says
-     that darkening was deliberate. The bright green measured 2.55:1 on the
-     "Available" pill in the astrologer directory, the bright red 3.80:1 on its
-     own tint. Both now match :root. */
-  --success: #256B29;
-  --success-bg: rgba(46, 125, 50, 0.12);
-  --error: #B3261E;
-  --error-bg: rgba(179, 38, 30, 0.10);
-  --accent-gold: #8B5E10;
-  --accent-gold-rgb: 139, 94, 16;
-  --accent-gold-dim: #6E4A0D;
-  --accent-rose: #C48E8E;
-
-  /* --warning and the iris accents had no light-mode value at all, which is one
-     reason screens using them hardcoded the dark hexes and then stayed dark
-     regardless of theme. Darkened from their dark counterparts to hold contrast
-     against the #FDF4E3 parchment rather than glow against navy.
-     (--success and --error are already defined above in this block.) */
-  --warning: #B26A00;
-  --warning-bg: rgba(178, 106, 0, 0.12);
-  --accent-iris: #4A2FA8;
-  --brand-secondary: #4A2FA8;
-  --card-bg: rgba(244, 232, 209, 0.65);
-  --card-border: rgba(139, 94, 16, 0.25);
-  --border-soft: rgba(139, 94, 16, 0.15);
-  --glass-shadow: 0 12px 40px -10px rgba(44, 27, 24, 0.1);
-}
+   Night is now a SECTION treatment (--accent-neelam), not a theme. */
 
 * {
   box-sizing: border-box;
@@ -258,9 +232,6 @@ a {
   opacity: 0.7;
 }
 
-[data-theme='dark'] ::placeholder {
-  color: rgba(255, 255, 255, 0.45);
-}
 
 /* ═══════════════════════════════════════════════
    COSMIC BACKGROUND SYSTEM
@@ -279,16 +250,6 @@ a {
   transition: opacity 1s ease;
 }
 
-[data-theme='dark'] .cosmic-bg-overlay {
-  background:
-    radial-gradient(circle at 15% 15%, var(--nebula-purple) 0%, transparent 45%),
-    radial-gradient(circle at 85% 85%, var(--nebula-indigo) 0%, transparent 45%),
-    radial-gradient(circle at 50% 50%, var(--nebula-gold) 0%, transparent 60%),
-    radial-gradient(circle at 80% 20%, rgba(159, 122, 234, 0.25) 0%, transparent 35%);
-  /* The element is already position:fixed, so the gradient stays put without
-     background-attachment:fixed — which forces a full-viewport repaint on every
-     scroll frame and causes scroll jank. */
-}
 
 /* GPU-composited rotation for decorative mandalas (replaces per-frame SMIL repaint) */
 @keyframes cosmicSpin {
@@ -313,8 +274,6 @@ a {
   *,
   *::before,
   *::after {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
   }
 
   .stars-layer-1,
@@ -381,20 +340,48 @@ a {
   opacity: 0;
 }
 
-[data-theme='dark'] .stars-layer-1,
-[data-theme='dark'] .stars-layer-2,
-[data-theme='dark'] .central-portal-glow {
-  opacity: 1;
-}
+/* Star field stays hidden. It belonged to the dark theme, and on parchment a
+   scatter of white points reads as dust on the page rather than sky. The night
+   treatment now lives in specific indigo sections, not as a global layer. */
 
-/* Global Texture/Noise Overlay */
+/* ═══════════════════════════════════════════════
+   PAPER
+   ═══════════════════════════════════════════════
+   Real scanned fibre, mirror-folded into a seamless 600px tile (6 KB). This
+   replaces a procedural feTurbulence layer that sat at opacity 0.03 — present
+   in the markup, invisible on screen, and uniform in a way real paper never is.
+
+   Fixed rather than scrolling, so the page reads as ink moving across one sheet
+   instead of the sheet moving with it. */
 .noise-overlay {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
+  inset: 0;
   z-index: -3;
   pointer-events: none;
-  opacity: 0.03;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: var(--paper-tex-opacity);
+  mix-blend-mode: var(--paper-tex-blend);
+  background-image: var(--paper-tex);
+  background-repeat: repeat;
+  background-size: 600px 600px;
+}
+
+/* Any raised surface is paper too. `.papered` is the opt-in for cards, panels
+   and blocks; the tile is scaled differently and centred so its grain does not
+   line up with the sheet behind it, which is what would make a card look like a
+   hole cut in the page rather than a sheet resting on it. */
+.papered {
+  background-color: var(--card-bg);
+  background-image: var(--paper-tex);
+  background-repeat: repeat;
+  background-size: 380px 380px;
+  background-position: center;
+  background-blend-mode: var(--paper-tex-blend);
+}
+
+/* Flat line art — zodiac medallions, motifs — sits ON the paper rather than in
+   a box. Their white/cream ground multiplies away and the grain shows through. */
+.on-paper {
+  mix-blend-mode: multiply;
 }
 
 /* ═══════════════════════════════════════════════
@@ -407,14 +394,9 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: 0.05em; /* Increased tracking for luxurious feel */
 }
 
-[data-theme='dark'] h1,
-[data-theme='dark'] h2 {
-  background: linear-gradient(to bottom, #F4E8D1 0%, #D4AF37 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.15));
-}
+/* The gold gradient headings were dark-theme only. On parchment, headings are
+   solid ink — a gradient clipped to text would sit at roughly 3:1 here and
+   cannot be measured reliably, since the ratio changes down the glyph. */
 
 /* Fluid heading scale.
    These were fixed rem, so a phone got the full desktop size: 56px h1 on a
@@ -450,8 +432,6 @@ h3 { font-size: clamp(1.125rem, 3vw, 1.5rem); letter-spacing: 0.05em; }
 .sacred-card {
   position: relative;
   background: var(--card-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--card-border);
   border-radius: var(--radius-md);
   box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.1);
@@ -474,7 +454,7 @@ h3 { font-size: clamp(1.125rem, 3vw, 1.5rem); letter-spacing: 0.05em; }
     0 30px 60px -15px rgba(0, 0, 0, 0.6),
     0 0 40px -5px rgba(212, 175, 55, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.15);
-  background: rgba(18, 22, 64, 0.5);
+  background: var(--card-bg);
 }
 
 .sacred-card.active {
@@ -730,9 +710,7 @@ h3 { font-size: clamp(1.125rem, 3vw, 1.5rem); letter-spacing: 0.05em; }
 }
 
 .glassmorphism-card {
-  background: rgba(18, 22, 64, 0.4);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: var(--card-bg);
   border: 1px solid rgba(212, 175, 55, 0.2);
   border-radius: 16px;
   box-shadow:

@@ -75,14 +75,13 @@ export default function NativeAppShell() {
                 const { StatusBar, Style } = await import('@capacitor/status-bar');
 
                 const applyStatusBarTheme = async () => {
-                    const theme = document.documentElement.getAttribute('data-theme');
-                    // Style.Dark means "light text on a dark bar".
-                    await StatusBar.setStyle({ style: theme === 'light' ? Style.Light : Style.Dark });
+                    // One palette: parchment. Style.Light means dark text on a light bar.
+                    await StatusBar.setStyle({ style: Style.Light });
                     if (platform === 'android') {
                         // iOS uses the translucent bar configured via
                         // apple-mobile-web-app-status-bar-style instead.
                         await StatusBar.setBackgroundColor({
-                            color: theme === 'light' ? '#FDF4E3' : '#0B0F2F',
+                            color: '#F2EAD5',
                         });
                     }
                 };

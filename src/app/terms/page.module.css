@@ -23,7 +23,6 @@
     padding: 48px;
     border-radius: var(--radius-lg);
     border: 1px solid var(--card-border);
-    backdrop-filter: blur(12px);
     box-shadow: var(--glass-shadow);
 }
 

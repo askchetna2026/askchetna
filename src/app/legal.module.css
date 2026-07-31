@@ -98,7 +98,7 @@
 }
 
 .warningBox {
-    background: rgba(244, 67, 54, 0.1);
+    background: var(--card-bg);
     border-left: 4px solid #f44336;
     padding: 24px;
     margin: 32px 0;

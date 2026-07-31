@@ -52,10 +52,6 @@
     opacity: 1;
 }
 
-[data-theme='dark'] .footerLinks a:hover {
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-}
-
 [data-theme='light'] .footerLinks a {
     color: var(--accent-gold-dim);
     opacity: 1;

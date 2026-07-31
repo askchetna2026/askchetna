@@ -1,15 +1,9 @@
 .tabsContainer {
     background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(10px);
     border: 1px solid rgba(212, 175, 55, 0.2);
     border-radius: var(--radius-lg);
     padding: 12px;
     margin-bottom: 24px;
-}
-
-[data-theme='dark'] .tabsContainer {
-    background: rgba(20, 20, 30, 0.7);
-    border-color: rgba(212, 175, 55, 0.3);
 }
 
 .tabsScroller {
@@ -49,10 +43,6 @@
     min-width: 120px;
     color: var(--foreground);
     /* Ensure text is visible */
-}
-
-[data-theme='dark'] .tab {
-    background: rgba(30, 30, 40, 0.5);
 }
 
 .tab:hover {

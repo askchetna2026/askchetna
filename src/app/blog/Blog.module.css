@@ -52,7 +52,6 @@
     border: 1px solid var(--border-soft);
     border-radius: 12px;
     background: rgba(var(--background-rgb), 0.5);
-    backdrop-filter: blur(10px);
     overflow: hidden;
 }
 
@@ -142,7 +141,6 @@
 
 .fullPost {
     background: rgba(var(--background-rgb), 0.5);
-    backdrop-filter: blur(10px);
     border: 1px solid var(--border-soft);
     border-radius: 16px;
     padding: 48px;

@@ -142,7 +142,6 @@
     align-items: center;
     justify-content: center;
     gap: 16px;
-    backdrop-filter: blur(16px);
     transition: all 0.3s ease;
 }
 
@@ -256,7 +255,6 @@
     font-family: var(--font-heading);
     font-size: 1.5rem;
     color: white;
-    backdrop-filter: blur(4px);
     transition: all 0.5s ease;
     mix-blend-mode: multiply;
 }
@@ -310,7 +308,6 @@
     border-radius: var(--radius-md);
     border: 1px solid var(--card-border);
     box-shadow: var(--glass-shadow);
-    backdrop-filter: blur(16px);
 }
 
 .insightCard h4 {

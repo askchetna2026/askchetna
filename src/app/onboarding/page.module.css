@@ -128,7 +128,6 @@
     padding: 32px;
     border-radius: var(--radius-md);
     border: 1px solid var(--card-border);
-    backdrop-filter: blur(12px);
     text-align: left;
     margin-bottom: 32px;
 }

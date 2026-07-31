@@ -1,7 +1,5 @@
 .widget {
     background: var(--card-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--card-border);
     box-shadow: var(--glass-shadow);
     border-radius: var(--radius-md);
@@ -219,7 +217,6 @@
     width: 100vw;
     height: 100vh;
     background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(4px);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -231,7 +228,6 @@
 .modalContent {
     background: var(--card-bg);
     border: 1px solid var(--card-border);
-    backdrop-filter: blur(24px);
     border-radius: 16px;
     padding: 32px;
     max-width: 500px;

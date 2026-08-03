@@ -4,4 +4,6 @@
     <string name="title_activity_main">AskChetna</string>
     <string name="package_name">com.askchetnam.app</string>
     <string name="custom_url_scheme">com.askchetnam.app</string>
+
+    <string name="default_web_client_id">898101418366-559oe49bcu1j3luu3reqsq061s0jei3i.apps.googleusercontent.com</string>    
 </resources>

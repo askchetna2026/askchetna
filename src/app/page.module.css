@@ -92,10 +92,13 @@
   max-width: 600px;
 }
 
-/* Quote Section */
+/* Quote Section.
+   Was 100px of top margin on top of the headline block's own 40px, inside a
+   hero that already opens with a 595px illustrated banner — nearly 1,940px
+   before a visitor reached anything they could act on. */
 .quoteSection {
   max-width: 800px;
-  margin: 100px auto 60px;
+  margin: var(--space-8) auto var(--space-6);
   text-align: center;
 }
 
@@ -213,6 +216,148 @@
   font-size: 0.85rem;
   font-weight: 600;
   letter-spacing: 0.03em;
+}
+
+/* ─── How It Works: editorial collage ─────────────────────────────────────
+   Was five stacked cards revealing with `x: ±50`, which pushed page width on
+   mobile before the reveal ran. Now three alternating rows: a flat illustration
+   multiplied onto the paper with a data chip riding over its corner. */
+.steps {
+  max-width: 1080px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(var(--space-8), 7vw, var(--space-12));
+}
+
+.step {
+  display: grid;
+  gap: var(--space-5);
+  align-items: center;
+}
+
+@media (min-width: 880px) {
+  .step {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(var(--space-6), 5vw, 56px);
+  }
+  /* Alternate which side the art sits on. Order, not direction — reversing the
+     row would also reverse reading order for a screen reader. */
+  .stepFlip .collage {
+    order: 2;
+  }
+}
+
+/* Overlap via grid areas rather than absolute positioning: an absolutely
+   placed chip is exactly what widens the page on a narrow viewport. */
+.collage {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(12, minmax(0, 1fr));
+  aspect-ratio: 1 / 0.94;
+}
+
+.collageArt {
+  grid-area: 1 / 1 / 12 / 12;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  /* The illustration's cream ground dissolves into the sheet. */
+  mix-blend-mode: multiply;
+}
+
+.collageChip {
+  grid-area: 9 / 7 / 13 / 13;
+  z-index: 2;
+  align-self: end;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-4);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-float);
+}
+
+.chipKey {
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--accent-gold);
+}
+
+.chipValue {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  color: var(--foreground);
+}
+
+.stepNum {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.stepNum > span:first-child {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  color: var(--accent-coral);
+}
+
+.stepKicker {
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--accent-coral);
+}
+
+.stepTitle {
+  font-family: var(--font-heading);
+  font-size: clamp(1.2rem, 2.4vw, 1.6rem);
+  color: var(--foreground);
+  margin: var(--space-2) 0 0;
+  letter-spacing: 0.01em;
+}
+
+.stepText {
+  font-size: 0.96rem;
+  line-height: 1.7;
+  color: var(--secondary);
+  margin-top: var(--space-3);
+  max-width: 46ch;
+}
+
+.stepNote {
+  font-size: 0.86rem;
+  line-height: 1.6;
+  font-style: italic;
+  color: var(--text-muted);
+  margin-top: var(--space-3);
+  padding-left: var(--space-3);
+  border-left: 2px solid var(--card-border);
+  max-width: 46ch;
+}
+
+.stepsCta {
+  max-width: 640px;
+  margin: clamp(var(--space-8), 6vw, var(--space-10)) auto 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.stepsCtaText {
+  font-family: var(--font-heading);
+  font-size: clamp(1.05rem, 2vw, 1.25rem);
+  line-height: 1.6;
+  color: var(--foreground);
 }
 
 .pathwaysSection,

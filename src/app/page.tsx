@@ -424,110 +424,113 @@ export default function Home() {
               <div className="sacred-divider"></div>
             </div>
 
-            <div className={styles.featuresGrid}>
-              <motion.div 
-                className={`${styles.featureCard} ${styles.cardLeft} sacred-card`}
-                initial={{ opacity: 0, x: -50, y: 50 }}
-                whileInView={{ opacity: 1, x: 0, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-              >
-                <div className={styles.featureArt} aria-hidden="true">
-                  <Image src="/art/steps/step-1.png" alt="" width={400} height={534} />
-                </div>
-                <div className={`${styles.featureIcon} ${styles.iconColors}`}>
-                  <span className="planet-glyph">☉</span>
-                </div>
-                <h3 className={styles.featureTitle}>1. See Your Cosmic Blueprint</h3>
-                <p className={styles.featureText}>
-                  We calculate your exact birth chart using precise astronomical positions. 
-                  <span style={{ display: 'block', marginTop: '12px', fontSize: '0.85rem', fontStyle: 'italic', opacity: 0.85 }}>
-                    Example: Ever wonder why you feel like an introvert but take charge in public? Your Ascendant tells the story of your social style.
-                  </span>
-                </p>
-              </motion.div>
-
-              <motion.div 
-                className={`${styles.featureCard} ${styles.cardRight} sacred-card`}
-                initial={{ opacity: 0, x: 50, y: 50 }}
-                whileInView={{ opacity: 1, x: 0, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-              >
-                <div className={`${styles.featureIcon} ${styles.iconColors}`}>
-                  <span className="planet-glyph">☽</span>
-                </div>
-                <h3 className={styles.featureTitle}>2. Understand Life Patterns</h3>
-                <p className={styles.featureText}>
-                  Explore placements through behavior and psychological triggers, not static fortune-telling.
-                  <span style={{ display: 'block', marginTop: '12px', fontSize: '0.85rem', fontStyle: 'italic', opacity: 0.85 }}>
-                    Scenario: Priya kept changing careers. Her chart showed Rahu in the 10th house—a restlessness around status. Once she understood it, she stopped blaming herself.
-                  </span>
-                </p>
-              </motion.div>
-
-              <motion.div 
-                className={`${styles.featureCard} ${styles.cardLeft} sacred-card`}
-                initial={{ opacity: 0, x: -50, y: 50 }}
-                whileInView={{ opacity: 1, x: 0, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-              >
-                <div className={`${styles.featureIcon} ${styles.iconColors}`}>
-                  <span className="planet-glyph">♃</span>
-                </div>
-                <h3 className={styles.featureTitle}>3. Deep Dive into Life Themes</h3>
-                <p className={styles.featureText}>
-                  Generate specific focus reports analyzing career, wealth, and relationships without fear-mongering.
-                  <span style={{ display: 'block', marginTop: '12px', fontSize: '0.85rem', fontStyle: 'italic', opacity: 0.85 }}>
-                    Scenario: Arjun felt torn between design and business. His D10 chart showed a dual-calling, helping him merge both instead of choosing one.
-                  </span>
-                </p>
-              </motion.div>
-
-              <motion.div 
-                className={`${styles.featureCard} ${styles.cardRight} sacred-card`}
-                initial={{ opacity: 0, x: 50, y: 50 }}
-                whileInView={{ opacity: 1, x: 0, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-              >
-                <div className={styles.featureArt} aria-hidden="true">
-                  <Image src="/art/steps/step-3.png" alt="" width={400} height={534} />
-                </div>
-                <div className={`${styles.featureIcon} ${styles.iconColors}`}>
-                  <span className="planet-glyph">♄</span>
-                </div>
-                <h3 className={styles.featureTitle}>4. Map Your Life Timeline (Dasha)</h3>
-                <p className={styles.featureText}>
-                  Learn which planetary seasons govern your current years, showing what to build and what to release.
-                  <span style={{ display: 'block', marginTop: '12px', fontSize: '0.85rem', fontStyle: 'italic', opacity: 0.85 }}>
-                    Scenario: Entering a Saturn phase? It&apos;s time for slow discipline, not reckless expansion. Knowing this timeline saves you from burn-out.
-                  </span>
-                </p>
-              </motion.div>
-
-              <motion.div 
-                className={`${styles.featureCard} ${styles.cardCenter} sacred-card`}
-                initial={{ opacity: 0, y: 50 }}
+            <div className={styles.steps}>
+              <motion.article
+                className={`${styles.step}${0 % 2 === 1 ? ' ' + styles.stepFlip : ''}`}
+                initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
+                viewport={{ once: true, margin: '-80px' }}
+                transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
               >
-                <div className={styles.featureArt} aria-hidden="true">
-                  <Image src="/art/steps/step-2.png" alt="" width={400} height={534} />
+                <div className={styles.collage}>
+                  <Image
+                    className={styles.collageArt}
+                    src="/art/scenes/kundali-desk.png"
+                    alt="A kundali chart drawn on handmade paper beside a brass lamp"
+                    width={1024}
+                    height={1024}
+                    sizes="(max-width: 880px) 100vw, 500px"
+                  />
+                  <div className={styles.collageChip}>
+                    <div className={styles.chipKey}>Ascendant</div>
+                    <div className={styles.chipValue}>Meṣa 14°22′</div>
+                  </div>
                 </div>
-                <div className={`${styles.featureIcon} ${styles.iconColors}`}>
-                  <span className="planet-glyph">☿</span>
+
+                <div className={styles.stepBody}>
+                  <div className={styles.stepNum}>
+                    <span>1</span>
+                    <span className={styles.stepKicker}>Cast</span>
+                  </div>
+                  <h3 className={styles.stepTitle}>Your chart, calculated exactly</h3>
+                  <p className={styles.stepText}>Sidereal positions worked from your exact birth moment and place — the same mathematics a Jyotiṣī would do by hand, finished in a second.</p>
+                  <p className={styles.stepNote}>Ever wonder why you feel like an introvert but take charge in public? Your ascendant tells the story of your social style.</p>
                 </div>
-                <h3 className={styles.featureTitle}>5. Consult Chetna AI</h3>
-                <p className={styles.featureText}>
-                  Ask focused questions about career path blocks, relationship struggles, or life transitions.
-                  <span style={{ display: 'block', marginTop: '12px', fontSize: '0.85rem', fontStyle: 'italic', opacity: 0.85 }}>
-                    Scenario: Instead of &ldquo;Will I get married?&rdquo;, ask: &ldquo;Why do I pull away when someone gets close?&rdquo; and reflect on your Venus/7th house dynamics.
-                  </span>
-                </p>
-              </motion.div>
+              </motion.article>
+
+              <motion.article
+                className={`${styles.step}${1 % 2 === 1 ? ' ' + styles.stepFlip : ''}`}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-80px' }}
+                transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+              >
+                <div className={styles.collage}>
+                  <Image
+                    className={styles.collageArt}
+                    src="/art/scenes/journal-diya.png"
+                    alt="An open journal beside a burning diya"
+                    width={1024}
+                    height={1024}
+                    sizes="(max-width: 880px) 100vw, 500px"
+                  />
+                  <div className={styles.collageChip}>
+                    <div className={styles.chipKey}>Your question</div>
+                    <div className={styles.chipValue}>“Why this, again?”</div>
+                  </div>
+                </div>
+
+                <div className={styles.stepBody}>
+                  <div className={styles.stepNum}>
+                    <span>2</span>
+                    <span className={styles.stepKicker}>Read</span>
+                  </div>
+                  <h3 className={styles.stepTitle}>The pattern beneath the question</h3>
+                  <p className={styles.stepText}>Placements read through behaviour and psychological pattern, never as fixed fortune. Focus reports go deeper on career, wealth and relationships without fear-mongering.</p>
+                  <p className={styles.stepNote}>Priya kept changing careers. Her chart showed Rāhu in the 10th house — a restlessness around status. Once she understood it, she stopped blaming herself.</p>
+                </div>
+              </motion.article>
+
+              <motion.article
+                className={`${styles.step}${2 % 2 === 1 ? ' ' + styles.stepFlip : ''}`}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-80px' }}
+                transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+              >
+                <div className={styles.collage}>
+                  <Image
+                    className={styles.collageArt}
+                    src="/art/scenes/tulsi-constellation.png"
+                    alt="A tulsi plant whose stem becomes a constellation"
+                    width={1024}
+                    height={1024}
+                    sizes="(max-width: 880px) 100vw, 500px"
+                  />
+                  <div className={styles.collageChip}>
+                    <div className={styles.chipKey}>Current daśā</div>
+                    <div className={styles.chipValue}>Guru · 4y 2m left</div>
+                  </div>
+                </div>
+
+                <div className={styles.stepBody}>
+                  <div className={styles.stepNum}>
+                    <span>3</span>
+                    <span className={styles.stepKicker}>Return</span>
+                  </div>
+                  <h3 className={styles.stepTitle}>Watch the season turn</h3>
+                  <p className={styles.stepText}>Daśā periods move over years, not days. Knowing which planetary season governs your current stretch shows what to build now and what to let ripen.</p>
+                  <p className={styles.stepNote}>Entering a Śani phase? That asks for slow discipline, not reckless expansion. Knowing the timeline is what saves you from burning out against it.</p>
+                </div>
+              </motion.article>
+            </div>
+
+            <div className={styles.stepsCta}>
+              <p className={styles.stepsCtaText}>
+                Then bring the question that is already keeping you up — not
+                &ldquo;will I marry?&rdquo; but &ldquo;why do I pull away when someone gets close?&rdquo;
+              </p>
+              <Link href="/clarity" className="primary-btn-cosmic">Ask Chetna AI</Link>
             </div>
           </section>
 

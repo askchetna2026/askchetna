@@ -24,14 +24,14 @@
     color: var(--foreground);
 }
 
-.active {
-    background-color: var(--accent-gold);
-    color: #1a1a1a;
-}
-
+/* Was a gold fill with #1a1a1a text. --accent-gold has to stay dark enough to
+   be legible AS TEXT on parchment, so using it as a fill under near-black type
+   left the selected item dark-on-dark and unreadable. Same button colour as
+   the rest of the site, cream label: 8.85:1. */
+.active,
 .active:hover {
-    background-color: var(--accent-gold);
-    color: #1a1a1a;
+    background-color: var(--btn-bg);
+    color: var(--btn-fg);
 }
 
 /* Separates the consultations queues from the rest of the console. Without it

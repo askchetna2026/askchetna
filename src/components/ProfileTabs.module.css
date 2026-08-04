@@ -24,7 +24,7 @@
 }
 
 .tabsScroller::-webkit-scrollbar-thumb {
-    background: var(--accent-gold);
+    background: var(--accent-gold-decor);
     border-radius: 3px;
 }
 
@@ -52,9 +52,9 @@
 }
 
 .tab.active {
-    background: var(--accent-gold);
+    background: var(--btn-bg);
     border-color: var(--accent-gold);
-    color: #1a1a1a;
+    color: var(--btn-fg);
     /* Dark text for better contrast on gold */
     font-weight: 600;
 }

@@ -22,12 +22,15 @@
         height: 52px;
         padding: 0 20px;
         border-radius: 50px;
-        background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-dim));
-        color: var(--bg-primary);
+        /* Flat button red, not a gold gradient. Both golds are now dark enough to
+       be legible as TEXT on parchment, so a gradient between them under a light
+       glyph was two dark browns with the icon lost in the middle. */
+    background: var(--btn-bg);
+        color: var(--btn-fg);
         font-weight: 700;
         font-size: 0.9rem;
         letter-spacing: 0.02em;
-        box-shadow: 0 4px 16px rgba(212, 175, 55, 0.45);
+        box-shadow: 0 4px 16px rgba(122, 44, 18, 0.38);
         z-index: 600;
         animation: fabPulse 2.4s infinite;
     }
@@ -43,7 +46,7 @@
 
 @keyframes fabPulse {
     0%, 100% {
-        box-shadow: 0 4px 16px rgba(212, 175, 55, 0.45);
+        box-shadow: 0 4px 16px rgba(122, 44, 18, 0.38);
     }
     50% {
         box-shadow: 0 4px 22px rgba(212, 175, 55, 0.7), 0 0 0 6px rgba(212, 175, 55, 0.1);

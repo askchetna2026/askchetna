@@ -113,8 +113,8 @@
     padding: 14px 28px;
     border-radius: 999px;
     border: none;
-    background: var(--accent-gold);
-    color: var(--bg-primary);
+    background: var(--btn-bg);
+    color: var(--btn-fg);
     font-weight: 700;
     font-size: 0.95rem;
     cursor: pointer;

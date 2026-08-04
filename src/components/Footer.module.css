@@ -25,12 +25,16 @@
     }
 }
 
+/* Column headings read as SMALL CAPS labels rather than as headlines. At
+   1.1rem they competed with the page's own h2s for weight; a footer heading
+   only has to name its column. */
 .footerSection h3 {
-    font-family: var(--font-heading);
-    font-size: 1.1rem;
-    color: var(--secondary);
-    margin-bottom: 24px;
-    letter-spacing: 0.1em;
+    font-family: var(--font-heading), serif;
+    font-size: 0.78rem;
+    color: var(--foreground);
+    margin-bottom: 18px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
     font-weight: 600;
 }
 
@@ -40,118 +44,195 @@
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
 }
 
-.footerLinks a, .footerLinks span {
-    color: rgba(58, 35, 26, 0.75);
+/* Was rgba(58,35,26,.75). Translucent ink over a MOVING grain is a contrast
+   ratio that changes down the column — it measured 4.66:1 over the darkest
+   tile and better elsewhere, which is not a thing you can hold a floor on.
+   Solid token, 7.71:1 everywhere. */
+.footerLinks a {
+    color: var(--text-muted);
     text-decoration: none;
-    font-size: 0.95rem;
-    transition: all 0.2s ease;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    transition: color 200ms var(--ease-out);
 }
 
-.footerLinks a:hover {
-    color: var(--secondary);
-    padding-left: 4px;
+/* No padding-left on hover: shifting a link on hover moves the target out from
+   under the cursor, and in a tight column it nudges the whole list. */
+@media (hover: hover) and (pointer: fine) {
+    .footerLinks a:hover {
+        color: var(--accent-coral-text);
+    }
 }
 
+/* Was #a34828 !important — the retired coral, hardcoded, at 3.39:1. */
 .readMoreLink {
     font-style: italic;
-    color: #a34828 !important;
+    color: var(--accent-coral-text);
 }
 
-.subscribeForm {
+.appPrompt {
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid var(--card-border);
+}
+
+.subscribe {
+    margin-top: 22px;
+}
+
+.subscribeLabel {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+.subscribeRow {
     display: flex;
-    margin-top: 16px;
-    border-bottom: 1px solid #d8c39e;
-    padding-bottom: 4px;
+    gap: 8px;
+    align-items: stretch;
 }
 
+/* A REAL field. It was `background: transparent; border: none` with a single
+   hairline underneath — on a textured sheet that is not readable as somewhere
+   to type. A filled, bordered, inset box is the only thing that says "input"
+   without a caption explaining it. */
 .subscribeInput {
-    flex-grow: 1;
-    background: transparent;
-    border: none;
-    outline: none;
-    font-size: 0.9rem;
-    color: var(--secondary);
+    flex: 1 1 auto;
+    min-width: 0;
+    background: var(--bg-panel);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-xs);
+    padding: 10px 12px;
+    font-size: 0.88rem;
     font-family: var(--font-main);
+    color: var(--foreground);
+    /* Sits INTO the page rather than on it — the inverse of the card shadow,
+       which is what distinguishes a field from a button at a glance. */
+    box-shadow: inset 0 1px 2px rgba(37, 26, 17, 0.09);
+    transition: border-color 160ms var(--ease-out), box-shadow 160ms var(--ease-out);
 }
 
+/* Was rgba(58,35,26,.4) — 2.09:1, effectively invisible. Placeholder text is
+   still text. */
 .subscribeInput::placeholder {
-    color: rgba(58, 35, 26, 0.4);
+    color: var(--text-muted);
+    opacity: 0.85;
 }
 
+.subscribeInput:focus {
+    outline: none;
+    border-color: var(--accent-coral-text);
+    box-shadow: inset 0 1px 2px rgba(37, 26, 17, 0.09),
+                0 0 0 3px rgba(122, 44, 18, 0.16);
+}
+
+/* Was a bare "→" glyph with no border and an aria-label doing all the work.
+   A word is unambiguous and gives the button a hit area. */
 .subscribeBtn {
-    background: transparent;
-    border: none;
-    color: var(--secondary);
-    font-size: 1.2rem;
+    flex: none;
+    background: var(--accent-coral-text);
+    border: 1px solid var(--accent-coral-text);
+    border-radius: var(--radius-xs);
+    color: #FBF6E8;
+    font-family: inherit;
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0 16px;
     cursor: pointer;
+    transition: background-color 160ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .subscribeBtn:hover {
+        background: var(--accent-coral-deep);
+        border-color: var(--accent-coral-deep);
+    }
 }
 
 .legalSubNav {
     display: flex;
-    gap: 16px;
-    margin-top: 32px;
-    font-size: 0.8rem;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    margin-top: 28px;
+    padding-top: 18px;
+    border-top: 1px solid var(--card-border);
+    font-size: 0.72rem;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.1em;
 }
 
+/* Was rgba(58,35,26,.6) — 3.26:1 at 0.8rem uppercase, the smallest and
+   lightest text in the footer and the one most in need of the floor. */
 .legalSubNav a {
-    color: rgba(58, 35, 26, 0.6);
+    color: var(--text-muted);
     text-decoration: none;
 }
 
+@media (hover: hover) and (pointer: fine) {
+    .legalSubNav a:hover {
+        color: var(--accent-coral-text);
+    }
+}
+
+/* A colophon, the way a printed book signs off: mark, name, date line.
+   Centred as a stack rather than left-aligned like the link columns — it is
+   not a fourth list of links and should not scan as one. */
 .logoSection {
     display: flex;
-    align-items: flex-start;
-    justify-content: center;
-}
-
-.monogramLogo {
-    display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
+    text-align: center;
+    gap: 4px;
 }
 
-.monogramSvg {
-    animation: rotate 60s linear infinite;
+/* Ornament, so it takes the decorative gold rather than the text-safe one. */
+.footerMark {
+    color: var(--accent-gold-decor);
 }
 
-.monogramText {
-    font-family: var(--font-main);
-    font-size: 11px;
-    fill: var(--secondary);
+.footerWordmark {
+    font-family: var(--font-heading), serif;
+    font-size: 1.28rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
+    color: var(--foreground);
+    margin-top: 6px;
 }
 
-@keyframes rotate {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+.footerColophon {
+    font-size: 0.6rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--text-muted);
 }
 
 .footerBottom {
     max-width: 1400px;
-    margin: 60px auto 0;
-    padding-top: 24px;
-    border-top: 1px solid rgba(184, 134, 11, 0.2);
+    margin: 48px auto 0;
+    padding-top: 22px;
+    border-top: 1px solid var(--card-border);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
     text-align: center;
 }
 
 .copyright {
-    color: var(--secondary);
-    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-size: 0.8rem;
 }
 
 .productRule {
-    color: var(--secondary);
-    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-size: 0.8rem;
     font-style: italic;
     max-width: 500px;
 }

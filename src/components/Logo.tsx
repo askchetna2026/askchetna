@@ -3,8 +3,11 @@
 import { useEffect, useId, useState } from 'react';
 
 export default function Logo({ width = 120, height = 40, onDark = false }: { width?: number, height?: number, onDark?: boolean }) {
-    // Site defaults to the dark theme (see <html data-theme="dark"> in layout.tsx).
-    const [isDark, setIsDark] = useState(true);
+    // There is ONE theme now — layout.tsx pins <html data-theme="light"> and the
+    // manuscript palette is the only one defined. This defaulted to `true`, so
+    // the first paint drew the light-on-dark variant (#F5D87A gold, #DFE0FF ink)
+    // on parchment — about 1.2:1, i.e. an invisible logo until the effect ran.
+    const [isDark, setIsDark] = useState(false);
     const gid = useId();
 
     useEffect(() => {

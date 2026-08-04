@@ -98,8 +98,8 @@
     align-items: center;
     justify-content: center;
     gap: 10px;
-    background: var(--accent-gold);
-    color: #1a1a1a;
+    background: var(--btn-bg);
+    color: var(--btn-fg);
     /* Improved contrast / Consistency */
     border: none;
     border-radius: 8px;

@@ -76,8 +76,8 @@
 }
 
 .submitBtn {
-    background: var(--accent-gold);
-    color: var(--bg-primary);
+    background: var(--btn-bg);
+    color: var(--btn-fg);
     border: none;
     padding: 16px;
     border-radius: 12px;

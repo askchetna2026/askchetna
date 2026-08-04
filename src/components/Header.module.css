@@ -94,7 +94,7 @@
     left: 0;
     width: 100%;
     height: 2px;
-    background: var(--accent-gold);
+    background: var(--accent-gold-decor);
     border-radius: 2px;
     box-shadow: 0 0 8px var(--accent-gold);
 }
@@ -353,7 +353,7 @@
 
 .navCta {
     padding: 8px 20px;
-    background: var(--accent-gold);
+    background: var(--btn-bg);
     /* Hardcoded navy here meant the header CTA kept dark-on-gold in the light
        theme, where the gold fill is deep enough that it stopped clearing AA.
        --bg-primary is the app's "text on a gold fill" colour in both themes. */

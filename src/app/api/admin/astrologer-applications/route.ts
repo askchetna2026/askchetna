@@ -17,6 +17,12 @@ import prisma from '@/lib/prisma';
 
 const NEEDS_ACTION = ['SUBMITTED', 'UNDER_REVIEW', 'APPLICANT_RESPONDED'];
 
+/// The middle of the chain, as one tab. Verification and final approval are
+/// three separate statuses but one job — "applications I have screened and not
+/// yet published" — and three more tabs to hold a handful of rows each would
+/// bury the queue that actually has work in it.
+const IN_PROGRESS = ['SHORTLISTED', 'VERIFICATION_PENDING', 'VERIFIED', 'FINAL_APPROVAL'];
+
 export async function GET(request: Request) {
     if (!(await checkAdminAccess())) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -28,6 +34,7 @@ export async function GET(request: Request) {
 
     const where: Record<string, unknown> = {};
     if (status === 'NEEDS_ACTION') where.status = { in: NEEDS_ACTION };
+    else if (status === 'IN_PROGRESS') where.status = { in: IN_PROGRESS };
     else if (status !== 'ALL') where.status = status;
 
     if (search) {
@@ -75,6 +82,7 @@ export async function GET(request: Request) {
         counts: {
             ...byStatus,
             NEEDS_ACTION: NEEDS_ACTION.reduce((n, s) => n + (byStatus[s] ?? 0), 0),
+            IN_PROGRESS: IN_PROGRESS.reduce((n, s) => n + (byStatus[s] ?? 0), 0),
             ALL: counts.reduce((n, c) => n + c._count, 0),
         },
     });

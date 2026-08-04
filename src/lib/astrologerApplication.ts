@@ -144,6 +144,96 @@ export const BLOCKING_STATUSES = [
 ] as const;
 
 /** Applicant-facing labels. Internal review states are not exposed verbatim. */
+/**
+ * The admin review chain, as a table rather than as scattered `if`s.
+ *
+ * `from` is the point. Before this existed the API accepted any action from any
+ * status, so an application could be published straight out of SUBMITTED — the
+ * verification steps were advisory, which is the same as not having them. Every
+ * transition is now checked against where the application actually is.
+ *
+ * The order below is the order a reviewer walks:
+ *
+ *   SUBMITTED -> UNDER_REVIEW -> SHORTLISTED -> VERIFICATION_PENDING
+ *             -> VERIFIED -> FINAL_APPROVAL -> ACTIVE
+ *
+ * Only the last step creates a public `Astrologer` record. Everything before it
+ * is review state and must never reach the directory (spec §28).
+ *
+ * Shared with the admin UI so the buttons on screen and the transitions the
+ * server will accept cannot drift apart.
+ */
+export const APPLICATION_ACTIONS = {
+    START_REVIEW: {
+        to: 'UNDER_REVIEW',
+        from: ['SUBMITTED', 'APPLICANT_RESPONDED'],
+        label: 'Start review',
+    },
+    SHORTLIST: {
+        to: 'SHORTLISTED',
+        from: ['SUBMITTED', 'UNDER_REVIEW', 'APPLICANT_RESPONDED'],
+        label: 'Shortlist',
+    },
+    START_VERIFICATION: {
+        to: 'VERIFICATION_PENDING',
+        from: ['SHORTLISTED'],
+        label: 'Begin verification',
+    },
+    MARK_VERIFIED: {
+        to: 'VERIFIED',
+        from: ['VERIFICATION_PENDING'],
+        label: 'Mark verified',
+    },
+    APPROVE: {
+        to: 'FINAL_APPROVAL',
+        from: ['VERIFIED'],
+        label: 'Give final approval',
+    },
+    /** The only action that publishes anything. */
+    PUBLISH: {
+        to: 'ACTIVE',
+        from: ['FINAL_APPROVAL'],
+        label: 'Publish profile',
+    },
+    REQUEST_INFO: {
+        to: 'REQUEST_MORE_INFORMATION',
+        from: [
+            'SUBMITTED',
+            'UNDER_REVIEW',
+            'APPLICANT_RESPONDED',
+            'SHORTLISTED',
+            'VERIFICATION_PENDING',
+        ],
+        label: 'Request more information',
+    },
+    REJECT: {
+        to: 'REJECTED',
+        // Rejectable at any point up to and including final approval. Not from
+        // ACTIVE: a published astrologer is suspended on the Astrologer record,
+        // which also forces them offline — rejecting the application would
+        // leave them live in the directory.
+        from: [
+            'SUBMITTED',
+            'UNDER_REVIEW',
+            'APPLICANT_RESPONDED',
+            'SHORTLISTED',
+            'VERIFICATION_PENDING',
+            'VERIFIED',
+            'FINAL_APPROVAL',
+        ],
+        label: 'Reject',
+    },
+} as const;
+
+export type ApplicationAction = keyof typeof APPLICATION_ACTIONS;
+
+/** Which actions an admin may take on an application in `status`. */
+export function allowedActions(status: string): ApplicationAction[] {
+    return (Object.keys(APPLICATION_ACTIONS) as ApplicationAction[]).filter((a) =>
+        (APPLICATION_ACTIONS[a].from as readonly string[]).includes(status)
+    );
+}
+
 export const STATUS_LABELS: Record<string, string> = {
     DRAFT: 'Draft',
     SUBMITTED: 'Submitted',

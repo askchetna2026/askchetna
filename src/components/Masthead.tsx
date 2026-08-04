@@ -23,12 +23,23 @@ const CY = 365;
 const R_RASHI = 214;
 const R_NAKSHATRA = 236;
 
+/**
+ * Trig output, rounded before it reaches an attribute.
+ *
+ * Math.sin/cos are not required to be bit-identical across engines, and they
+ * are not: Node rendered 171.87633495607022 where the browser produced
+ * ...025. React compares the two strings during hydration, finds them
+ * different, and logs a mismatch on every homepage load. Three decimals is
+ * far finer than a 1408-unit viewBox can show and is stable everywhere.
+ */
+const r3 = (n: number) => Math.round(n * 1000) / 1000;
+
 function ringMarks() {
   const spokes = [];
   for (let i = 0; i < 12; i++) {
     const a = (i / 12) * Math.PI * 2 - Math.PI / 2;
-    const inner = { x: CX + Math.cos(a) * (R_RASHI - 9), y: CY + Math.sin(a) * (R_RASHI - 9) };
-    const outer = { x: CX + Math.cos(a) * (R_RASHI + 9), y: CY + Math.sin(a) * (R_RASHI + 9) };
+    const inner = { x: r3(CX + Math.cos(a) * (R_RASHI - 9)), y: r3(CY + Math.sin(a) * (R_RASHI - 9)) };
+    const outer = { x: r3(CX + Math.cos(a) * (R_RASHI + 9)), y: r3(CY + Math.sin(a) * (R_RASHI + 9)) };
     spokes.push(
         <g key={i}>
             <line x1={inner.x} y1={inner.y} x2={outer.x} y2={outer.y} />
@@ -51,8 +62,8 @@ function nakshatraDots() {
     return (
         <circle
             key={i}
-            cx={CX + Math.cos(a) * R_NAKSHATRA}
-            cy={CY + Math.sin(a) * R_NAKSHATRA}
+            cx={r3(CX + Math.cos(a) * R_NAKSHATRA)}
+            cy={r3(CY + Math.sin(a) * R_NAKSHATRA)}
             r={i % 3 ? 1.6 : 3}
             fill="currentColor"
             stroke="none"

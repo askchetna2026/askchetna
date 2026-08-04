@@ -258,3 +258,13 @@
     letter-spacing: 0.06em;
     vertical-align: middle;
 }
+
+/* Avatar and name travel together; the status badge stays pushed to the far
+   edge by .head's space-between. Without this group the avatar became a third
+   flex child and the three spread across the row. */
+.identity {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}

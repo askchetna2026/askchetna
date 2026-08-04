@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { Check, X, Loader2, Pause, Coins, Bot } from 'lucide-react';
+import AstrologerAvatar from './AstrologerAvatar';
 import styles from './AdminAstrologerReview.module.css';
 
 /**
@@ -21,6 +22,7 @@ type Astrologer = {
     id: string;
     displayName: string;
     bio: string | null;
+    photoUrl: string | null;
     status: string;
     languages: string[];
     specialities: string[];
@@ -200,6 +202,16 @@ export default function AdminAstrologerReview() {
                 {astrologers?.map((a) => (
                     <article key={a.id} className={styles.card}>
                         <div className={styles.head}>
+                            {/* The console showed no picture at all — not a broken
+                                one. The list query never selected photoUrl and
+                                nothing here rendered it, so the committed AI
+                                persona art was invisible to admins. */}
+                            <div className={styles.identity}>
+                            <AstrologerAvatar
+                                name={a.displayName}
+                                photoUrl={a.photoUrl}
+                                size={44}
+                            />
                             <div>
                                 <h3 className={styles.name}>
                                     {a.displayName}
@@ -214,6 +226,7 @@ export default function AdminAstrologerReview() {
                                           ? `${a.user.email}${a.user.phone ? ` · ${a.user.phone}` : ''}`
                                           : 'No account on file'}
                                 </p>
+                            </div>
                             </div>
                             <span className={`${styles.badge} ${styles[a.status.toLowerCase()] ?? ''}`}>
                                 {a.status}

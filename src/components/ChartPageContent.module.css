@@ -47,8 +47,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: var(--accent-gold);
-    color: var(--bg-primary);
+    background: var(--btn-bg);
+    color: var(--btn-fg);
     border: none;
     border-radius: 999px;
     padding: 10px 18px;
@@ -562,8 +562,8 @@
 }
 
 .analysisBtn.active {
-    background: var(--accent-gold);
-    color: var(--bg-primary);
+    background: var(--btn-bg);
+    color: var(--btn-fg);
     border-color: var(--accent-gold);
 }
 
@@ -795,8 +795,8 @@
 }
 
 .unlockBtn {
-    background: var(--accent-gold);
-    color: var(--bg-primary);
+    background: var(--btn-bg);
+    color: var(--btn-fg);
     border: none;
     padding: 10px 24px;
     border-radius: 100px;
@@ -878,8 +878,8 @@
 }
 
 .categoryBtn.active {
-    background: var(--accent-gold);
-    color: var(--bg-primary);
+    background: var(--btn-bg);
+    color: var(--btn-fg);
     box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
 }
 
@@ -894,8 +894,8 @@
 
 .initializeBtn {
     margin-top: 24px;
-    background: var(--accent-gold);
-    color: var(--bg-primary);
+    background: var(--btn-bg);
+    color: var(--btn-fg);
     padding: 12px 32px;
     border-radius: 50px;
     font-weight: 700;
@@ -1345,8 +1345,8 @@
 }
 
 .btnConfirm {
-    background: var(--accent-gold);
-    color: var(--bg-primary);
+    background: var(--btn-bg);
+    color: var(--btn-fg);
     border: none;
     padding: 10px 24px;
     border-radius: 8px;

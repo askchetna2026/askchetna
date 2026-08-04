@@ -29,6 +29,9 @@ export async function GET(request: Request) {
             id: true,
             displayName: true,
             bio: true,
+            // Was omitted, so the admin console had no photo to show even for
+            // the AI personas, which DO have committed artwork.
+            photoUrl: true,
             status: true,
             languages: true,
             specialities: true,

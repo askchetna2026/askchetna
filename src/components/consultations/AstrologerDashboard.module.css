@@ -156,8 +156,8 @@
 .join {
     padding: 11px 22px;
     border-radius: 999px;
-    background: var(--accent-gold);
-    color: var(--bg-primary);
+    background: var(--btn-bg);
+    color: var(--btn-fg);
     font-weight: 700;
     font-size: 0.87rem;
     text-decoration: none;

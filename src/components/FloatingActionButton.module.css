@@ -7,11 +7,14 @@
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-dim));
-    color: var(--bg-primary);
+    /* Flat button red, not a gold gradient. Both golds are now dark enough to
+       be legible as TEXT on parchment, so a gradient between them under a light
+       glyph was two dark browns with the icon lost in the middle. */
+    background: var(--btn-bg);
+    color: var(--btn-fg);
     /* Improved contrast */
     border: none;
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+    box-shadow: 0 4px 12px rgba(122, 44, 18, 0.35);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -34,7 +37,7 @@
 
     0%,
     100% {
-        box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+        box-shadow: 0 4px 12px rgba(122, 44, 18, 0.35);
     }
 
     50% {

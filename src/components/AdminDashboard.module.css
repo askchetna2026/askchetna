@@ -344,8 +344,8 @@
 }
 
 .editBtn:hover {
-    background: var(--accent-gold);
-    color: #1a1a1a;
+    background: var(--btn-bg);
+    color: var(--btn-fg);
     /* Improved contrast */
 }
 

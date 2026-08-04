@@ -220,8 +220,8 @@
     padding: 15px 30px;
     border-radius: 999px;
     border: none;
-    background: var(--accent-gold);
-    color: var(--bg-primary);
+    background: var(--btn-bg);
+    color: var(--btn-fg);
     font-weight: 700;
     font-size: 1rem;
     font-family: inherit;

@@ -192,8 +192,8 @@
     align-items: center;
     gap: 8px;
     padding: 10px 20px;
-    background: var(--accent-gold);
-    color: var(--bg-primary);
+    background: var(--btn-bg);
+    color: var(--btn-fg);
     border-radius: 8px;
     font-weight: 600;
     font-size: 0.9rem;
@@ -248,8 +248,8 @@
 .createLink {
     display: inline-block;
     padding: 12px 24px;
-    background: var(--accent-gold);
-    color: var(--bg-primary);
+    background: var(--btn-bg);
+    color: var(--btn-fg);
     border-radius: 8px;
     font-weight: 600;
     transition: all 0.2s ease;

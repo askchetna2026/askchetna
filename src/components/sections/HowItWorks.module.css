@@ -1,0 +1,233 @@
+/* The three steps, each a four-layer collage.
+   Illustration, a data card that overlaps it, an ink arrow, and a row of
+   motifs. The overlap is the point: a picture and a caption sitting in
+   separate boxes reads as a stock template, whereas a card that sits ON the
+   drawing reads as something assembled by hand. */
+
+.section {
+  padding-block: clamp(42px, 6.5vw, 78px);
+  padding-inline: var(--gutter, clamp(14px, 3.5vw, 44px));
+  /* A tint rather than a solid fill, so the paper grain behind it still shows
+     through and the band reads as a wash on the same sheet. */
+  background: var(--band-alt-bg);
+  border-block: 1px solid var(--card-border);
+}
+
+.inner {
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+.header {
+  margin-bottom: clamp(26px, 4vw, 44px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.intro {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  max-width: 52ch;
+  margin: 0 auto;
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(44px, 6.5vw, 76px);
+}
+
+.step {
+  display: grid;
+  gap: 22px;
+  align-items: center;
+}
+
+@media (min-width: 880px) {
+  .step {
+    grid-template-columns: 1.02fr 0.98fr;
+    gap: 46px;
+  }
+  /* Alternating sides. Three identical rows scan as a list; alternating them
+     makes the eye travel, which is what carries a reader down a long band. */
+  .flip .collage {
+    order: 2;
+  }
+}
+
+/* A 12x12 bed so the card and the arrow can be placed against the artwork by
+   grid area rather than by absolute offsets that drift at other widths.
+   The ratio matches the plates (1024x1024) so `object-fit: contain` fits
+   exactly — letterboxing would leave the arrow floating on bare paper beside
+   the drawing rather than pointing across it. The illustration spans 11 of the
+   12 tracks, so 11/12 of the box in each axis: still square. */
+.collage {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(12, minmax(0, 1fr));
+  aspect-ratio: 1 / 1;
+}
+
+.collage > * {
+  min-width: 0;
+}
+
+.illus {
+  grid-area: 1 / 1 / 12 / 12;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  /* The plate's cream ground multiplies away into the parchment instead of
+     sitting in a visible box. */
+  mix-blend-mode: multiply;
+}
+
+.card {
+  grid-area: 9 / 7 / 13 / 13;
+  z-index: 4;
+  background-color: var(--card-bg);
+  background-image: var(--paper-tex);
+  background-repeat: repeat;
+  background-size: 340px 340px;
+  background-position: center;
+  background-blend-mode: var(--paper-tex-blend);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-xs);
+  padding: 14px 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  box-shadow: var(--shadow-float);
+}
+
+.cardKey {
+  font-size: 0.55rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-gold-text);
+  font-weight: 700;
+}
+
+.cardValue {
+  font-family: var(--font-heading), serif;
+  color: var(--foreground);
+  font-size: 0.98rem;
+}
+
+.cardNote {
+  font-size: 0.71rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+/* Sits ON the plate, pointing across it into the card. Inset one track from
+   the edge so it never reads as a stray mark on the page. */
+.arrow {
+  grid-area: 10 / 2 / 13 / 6;
+  z-index: 5;
+  align-self: center;
+  width: 100%;
+  height: auto;
+  color: var(--accent-coral-decor);
+}
+
+.title {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.number {
+  font-family: var(--font-heading), serif;
+  font-size: 1.3rem;
+  color: var(--accent-coral-text);
+}
+
+.heading {
+  font-size: clamp(1.05rem, 2.2vw, 1.38rem);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.sub {
+  font-family: var(--font-heading), serif;
+  font-style: italic;
+  color: var(--accent-coral-text);
+  font-size: 0.98rem;
+  margin-top: 3px;
+}
+
+.text {
+  font-size: 0.89rem;
+  line-height: 1.6;
+  max-width: 42ch;
+  margin-top: 11px;
+  color: var(--text-muted);
+}
+
+.motifs {
+  display: flex;
+  gap: 13px;
+  margin-top: 16px;
+  color: var(--accent-sage-deep);
+}
+
+.motif {
+  width: 26px;
+  height: 26px;
+  flex: none;
+}
+
+.cta {
+  margin-top: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-coral-text);
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .cta:hover {
+    color: var(--accent-coral-deep);
+  }
+}
+
+/* On a phone the card would cover a third of a much smaller drawing, so it
+   steps out of the overlap and sits under it instead. */
+@media (max-width: 560px) {
+  .collage {
+    aspect-ratio: auto;
+    display: block;
+  }
+
+  .illus {
+    height: auto;
+  }
+
+  /* Still overlapping, just less of it. Flush against the plate's bottom edge
+     the card reads as a caption bar bolted on; pulled up over the drawing and
+     inset from both sides it still reads as a card resting on it. */
+  .card {
+    position: relative;
+    margin-top: -52px;
+    margin-inline: 20px;
+  }
+
+  .arrow {
+    display: none;
+  }
+}

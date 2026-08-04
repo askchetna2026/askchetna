@@ -57,8 +57,8 @@
 }
 
 .createBtn {
-    background: var(--accent-gold);
-    color: var(--bg-primary);
+    background: var(--btn-bg);
+    color: var(--btn-fg);
     padding: 12px 24px;
     border-radius: 100px;
     font-weight: 700;

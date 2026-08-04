@@ -2,8 +2,27 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { Loader2, Search, Check, X, HelpCircle, ArrowLeft } from 'lucide-react';
-import { STATUS_LABELS } from '@/lib/astrologerApplication';
+import {
+    STATUS_LABELS,
+    APPLICATION_ACTIONS,
+    allowedActions,
+} from '@/lib/astrologerApplication';
 import styles from './AdminApplicationReview.module.css';
+
+/** What the reviewer is being asked to do at each step, in their words. */
+const STEP_HINTS: Record<string, string> = {
+    SUBMITTED: 'Read the application, then start the review or shortlist directly.',
+    APPLICANT_RESPONDED: 'The applicant has answered your request. Review again.',
+    UNDER_REVIEW: 'Shortlisting records that they passed first screening. It does not publish anything.',
+    SHORTLISTED:
+        'Next: verification. Check identity, credentials and the claims made about their practice.',
+    VERIFICATION_PENDING:
+        'Mark verified once you have checked identity and credentials. Nothing is public yet.',
+    VERIFIED: 'Verified. Give final approval when you are satisfied they should take consultations.',
+    FINAL_APPROVAL:
+        'Publishing creates their public profile and puts them in the directory. This is the step that makes them visible.',
+    ACTIVE: 'Published. Manage rates, suspension and payouts from the Astrologers screen.',
+};
 
 /**
  * Application review queue and detail (spec §23–25).
@@ -28,10 +47,13 @@ type Detail = Record<string, unknown> & {
     adminNotes: string | null;
 };
 
-const TABS = ['NEEDS_ACTION', 'SUBMITTED', 'SHORTLISTED', 'REJECTED', 'ALL'] as const;
+/* "In review" covers SHORTLISTED -> FINAL_APPROVAL: screened but not yet
+   published. Without it those four statuses were only reachable under All,
+   which is where a shortlisted applicant went to be forgotten. */
+const TABS = ['NEEDS_ACTION', 'IN_PROGRESS', 'ACTIVE', 'REJECTED', 'ALL'] as const;
 const TAB_LABELS: Record<string, string> = {
-    NEEDS_ACTION: 'Needs action', SUBMITTED: 'Submitted',
-    SHORTLISTED: 'Shortlisted', REJECTED: 'Rejected', ALL: 'All',
+    NEEDS_ACTION: 'Needs action', IN_PROGRESS: 'In review',
+    ACTIVE: 'Published', REJECTED: 'Rejected', ALL: 'All',
 };
 
 export default function AdminApplicationReview() {
@@ -154,12 +176,27 @@ export default function AdminApplicationReview() {
         void act('REQUEST_INFO', message);
     };
 
+    // Confirmed, because it is the only action here with an effect outside the
+    // review queue: it puts a real person in front of paying users.
+    const publish = () => {
+        const name = (detail?.displayName as string) || 'this applicant';
+        if (
+            !window.confirm(
+                `Publish ${name}?\n\nThis creates their public astrologer profile and lists them in the directory. It cannot be undone from this screen — after publishing, use the Astrologers screen to suspend.`
+            )
+        ) {
+            return;
+        }
+        void act('PUBLISH');
+    };
+
     // ---- detail ----
     if (openId) {
         if (!detail) {
             return <p className={styles.loading}><Loader2 size={16} className={styles.spin} /> Loading…</p>;
         }
 
+        const available = allowedActions(detail.status);
         const s = (k: string) => (detail[k] as string) || '—';
         const arr = (k: string) => {
             const v = detail[k] as string[] | undefined;
@@ -275,23 +312,46 @@ export default function AdminApplicationReview() {
                     {notesSaved && <span className={styles.savedNote}>Notes saved.</span>}
                 </section>
 
+                {/* Only the transitions valid from THIS status. The three fixed
+                    buttons that used to sit here were offered from every state,
+                    including ones where the server would now refuse them. */}
                 <div className={styles.actions}>
-                    <button className={styles.approve} onClick={() => act('SHORTLIST')} disabled={busy}>
-                        <Check size={15} /> Shortlist
-                    </button>
-                    <button className={styles.secondary} onClick={requestInfo} disabled={busy}>
-                        <HelpCircle size={15} /> Request more information
-                    </button>
-                    <button className={styles.reject} onClick={reject} disabled={busy}>
-                        <X size={15} /> Reject
-                    </button>
+                    {available.map((a) => {
+                        if (a === 'REQUEST_INFO') {
+                            return (
+                                <button key={a} className={styles.secondary} onClick={requestInfo} disabled={busy}>
+                                    <HelpCircle size={15} /> {APPLICATION_ACTIONS[a].label}
+                                </button>
+                            );
+                        }
+                        if (a === 'REJECT') {
+                            return (
+                                <button key={a} className={styles.reject} onClick={reject} disabled={busy}>
+                                    <X size={15} /> {APPLICATION_ACTIONS[a].label}
+                                </button>
+                            );
+                        }
+                        if (a === 'PUBLISH') {
+                            return (
+                                <button key={a} className={styles.approve} onClick={publish} disabled={busy}>
+                                    <Check size={15} /> {APPLICATION_ACTIONS[a].label}
+                                </button>
+                            );
+                        }
+                        return (
+                            <button key={a} className={styles.approve} onClick={() => act(a)} disabled={busy}>
+                                <Check size={15} /> {APPLICATION_ACTIONS[a].label}
+                            </button>
+                        );
+                    })}
+                    {available.length === 0 && (
+                        <p className={styles.footnote}>
+                            No further action — this application is {(STATUS_LABELS[detail.status] ?? detail.status).toLowerCase()}.
+                        </p>
+                    )}
                 </div>
 
-                <p className={styles.footnote}>
-                    Shortlisting records that the applicant passed first screening. It does
-                    not publish a profile — verification, pricing and payout setup come
-                    first.
-                </p>
+                <p className={styles.footnote}>{STEP_HINTS[detail.status] ?? ''}</p>
             </div>
         );
     }

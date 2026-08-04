@@ -109,8 +109,8 @@
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    background: var(--accent-gold);
-    color: #101010;
+    background: var(--btn-bg);
+    color: var(--btn-fg);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -404,8 +404,8 @@
 }
 
 .actionLink:hover {
-    background: var(--accent-gold);
-    color: var(--background);
+    background: var(--btn-bg);
+    color: var(--btn-fg);
 }
 
 @media (max-width: 768px) {

@@ -33,9 +33,15 @@
      the WORST ground rather than the most common one: 5.70 on paper, 6.01 on
      panel, 5.03 on soft. Headroom matters here because the token lands on ~274
      call sites across surfaces nobody has measured individually. */
-  --accent-gold: #7C520D;
-  --accent-gold-rgb: 124, 82, 13;
-  --accent-gold-text: #7C520D;
+  /* Re-measured against the TEXTURED sheet, not the flat token.
+     #7C520D cleared 4.5:1 on a flat #F2EAD5, but the paper tile multiplies the
+     page down to #E4D4AF on average and #D1C29B in the darkest grain — where
+     that gold measured 3.86:1 and failed. Text has to clear the DARKEST point
+     of the grain it can land on, because the grain moves and the type does not.
+     #5C3D0A measures 5.58:1 there. */
+  --accent-gold: #5C3D0A;
+  --accent-gold-rgb: 92, 61, 10;
+  --accent-gold-text: #5C3D0A;
   /* Ornament and fills ONLY — never text on parchment. */
   --accent-gold-decor: #B5892E;
   --accent-gold-dim: #5C3D0A;
@@ -43,19 +49,63 @@
   /* Kumkum carries the call to action, which frees gold to be ornament again.
      Same rule: the plain token is legible both as text on paper (5.33:1) and
      as a fill behind --bg-primary (5.92:1). */
-  --accent-coral: #A33F1C;
-  --accent-coral-text: #A33F1C;
+  /* Same re-measurement: #A33F1C was 3.61:1 against the darkest grain. This
+     carries every CTA on the site, so it is the last token that can afford to
+     be borderline. #7A2C12 measures 5.40:1. */
+  --accent-coral: #7A2C12;
+  --accent-coral-text: #7A2C12;
   --accent-coral-decor: #C4603A;
-  --accent-coral-deep: #8E3517;
+  --accent-coral-deep: #63220E;
+  /* ═══ THE BUTTON ═══════════════════════════════════════════════════════
+     One colour for every call to action on the site: kumkum red, cream label.
+     Buttons were split between gold fills and coral fills, which read as two
+     different products — and the gold ones were the unreadable half, because
+     --accent-gold has to stay dark enough to work as TEXT on parchment and a
+     dark fill under dark text is invisible.
+
+     Use these three, not the raw accent tokens, anywhere a control is filled.
+     Ornament (rules, dots, medallion strokes) keeps --accent-gold-decor. */
+  --btn-bg: #7A2C12;
+  --btn-bg-hover: #63220E;
+  --btn-fg: #FBF6E8;
+
   --accent-sage: #7E8F6B;
   --accent-sage-deep: #5E6B50;
   --accent-rose: #C48E8E;
   --accent-neelam: #26315C;
+  /* The night surface has its own text ramp. Reusing the parchment ramp on
+     indigo is how the previous version ended up hardcoding cream hexes inline
+     at every call site — these are the measured pairs against --accent-neelam:
+     fg 11.9:1, heading 10.5:1, muted 8.4:1. */
+  --night-fg: #E9E4F2;
+  --night-heading: #F0E0BC;
+  --night-muted: #C8C2DE;
+  /* Ink for text sitting ON gold, e.g. a filled button inside a night band. */
+  --night-ink: #221806;
+
+  /* Alternating band wash. A TINT, not a fill: the paper tile sits behind it,
+     so a band that separates two sections still reads as the same sheet rather
+     than a second surface pasted on top. */
+  --band-alt-bg: rgba(224, 208, 172, 0.28);
 
   /* Seamless 600px tile, mirror-folded from a scan so the edges match.
      6 KB — cheap enough to sit on every surface. */
   --paper-tex: url('/art/texture/parchment-tile.webp');
   --paper-tex-blend: multiply;
+  /* Full strength. Half was tried and washed out: the tile's mottling is what
+     makes the sheet read as parchment rather than as a cream fill, and at 0.5
+     it flattened into "slightly uneven beige".
+
+     The trade is real and deliberate. Multiplying a tile that averages 227/255
+     pulls the sheet to #E4D4AF on average and #D1C29B in the darkest grain, so
+     the rendered page is warmer and darker than the raw --background token.
+
+     MEASURE AGAINST #D1C29B, NOT #F2EAD5. The darkest grain is what type can
+     land on, and it moves while the type does not. Body ink clears it at
+     9.61:1, but the gold and coral text tokens measured 3.86 and 3.61 at their
+     old values and had to be darkened — see the notes on those tokens. Lowering
+     the texture instead does not work: coral still only reaches 4.16:1 at 0.65
+     strength, by which point the grain has stopped reading as paper. */
   --paper-tex-opacity: 1;
 
   /* Semantic and brand accents. These were defined only under
@@ -160,6 +210,36 @@
   margin: 0;
 }
 
+html {
+  background: var(--background);
+  transition: background-color 0.5s ease;
+}
+
+/* THE SHEET. The paper lives on `body`, and it has to be here rather than on a
+   fixed overlay behind the content — that is the whole reason the illustrations
+   used to sit in visible boxes.
+
+   `mix-blend-mode: multiply` blends an element with its BACKDROP inside the
+   nearest stacking context. A texture layer parked at z-index -3 is not in that
+   backdrop, so a plate drawn on a white ground multiplied against nothing, kept
+   its white, and read as a pale rectangle pasted on the page. With the tile on
+   body, every `.on-paper` illustration blends into the actual grain and its
+   ground disappears.
+
+   Consequence worth knowing: body's background paints ABOVE anything at a
+   negative z-index, so the old .noise-overlay approach cannot be revived
+   alongside this one. Pick one. */
+body {
+  background-color: var(--background);
+  background-image: var(--paper-tex);
+  background-repeat: repeat;
+  background-size: 600px 600px;
+  /* Fixed, so the page reads as ink moving across one sheet rather than the
+     sheet scrolling with it. */
+  background-attachment: fixed;
+  background-blend-mode: var(--paper-tex-blend);
+}
+
 html,
 body {
   width: 100%;
@@ -174,10 +254,9 @@ body {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   font-family: var(--font-main);
-  background: var(--background);
   color: var(--foreground);
   line-height: 1.6;
-  transition: background-color 0.5s ease, background 0.5s ease, color 0.5s ease;
+  transition: color 0.5s ease;
 
   /* Sticky footer.
 
@@ -352,17 +431,38 @@ a {
    in the markup, invisible on screen, and uniform in a way real paper never is.
 
    Fixed rather than scrolling, so the page reads as ink moving across one sheet
-   instead of the sheet moving with it. */
+   instead of the sheet moving with it.
+
+   Composited against its OWN background-color rather than with mix-blend-mode
+   against the page. mix-blend-mode blends with whatever the backdrop happens to
+   be, which at z-index -3 is the canvas — and canvas blending is not something
+   to rely on. background-blend-mode mixes the colour and the image inside this
+   one element, so the result is the same everywhere regardless of what sits
+   behind it. */
+/* Carries the vignette ONLY. The grain moved to `body` (see THE SHEET above);
+   leaving a second textured layer here would double the tile and darken the
+   page twice. */
 .noise-overlay {
   position: fixed;
   inset: 0;
   z-index: -3;
   pointer-events: none;
-  opacity: var(--paper-tex-opacity);
-  mix-blend-mode: var(--paper-tex-blend);
-  background-image: var(--paper-tex);
-  background-repeat: repeat;
-  background-size: 600px 600px;
+}
+
+/* The sheet is lit from the middle. A page of even parchment edge to edge reads
+   as a flat colour swatch; a few percent of falloff at the corners is what makes
+   it read as a physical sheet under a lamp. Kept under the content layer and
+   non-interactive, so it tints without ever catching a click. */
+.noise-overlay::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 120% 80% at 50% 40%,
+    transparent 55%,
+    rgba(90, 66, 38, 0.1) 100%
+  );
 }
 
 /* Any raised surface is paper too. `.papered` is the opt-in for cards, panels

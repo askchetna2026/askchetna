@@ -1292,9 +1292,9 @@
 
 .teaserSubmitBtn {
   padding: 12px 32px;
-  background: var(--accent-gold);
+  background: var(--btn-bg);
   /* See NewsletterSignupCard.submitButton — same hardcoded navy, same fix. */
-  color: var(--bg-primary);
+  color: var(--btn-fg);
   font-weight: 700;
   border-radius: 50px;
   border: 1px solid var(--accent-gold);
@@ -1595,13 +1595,18 @@
 /* ═══════════════════════════════════
    THE NINE GRAHAS (Midnight Blue Section)
    ═══════════════════════════════════ */
+/* The one night surface on the page, and it is NEELAM — not the retired
+   #0B0F2F brand navy. That hex belonged to the dark theme this palette
+   replaced; left in place it read as a slab of a different design system
+   dropped into the manuscript. Its text colours were tuned against it too, so
+   the whole block moves together or none of it does. */
 .nineGrahasSection {
-  background: #0b0f2f;
-  color: #fdf4e3;
-  padding: 80px 24px;
+  background: var(--accent-neelam);
+  color: var(--night-fg);
+  padding: clamp(44px, 6.5vw, 80px) 24px;
   position: relative;
   overflow: hidden;
-  border-block: 1px solid rgba(212, 175, 55, 0.25);
+  border-block: 1px solid var(--accent-gold-decor);
 }
 
 .nineGrahasContainer {
@@ -1625,11 +1630,15 @@
   align-items: flex-start;
 }
 
+.nineGrahasLabel {
+  color: var(--night-heading);
+}
+
 .nineGrahasTitle {
   font-family: var(--font-heading);
   font-size: 2.4rem;
   letter-spacing: 0.08em;
-  color: #d4af37;
+  color: var(--night-heading);
   margin-top: 8px;
   text-transform: uppercase;
 }
@@ -1637,36 +1646,61 @@
 .nineGrahasDivider {
   width: 60px;
   height: 2px;
-  background: #d4af37;
+  background: var(--accent-gold-decor);
   margin: 16px 0 24px;
 }
 
 .nineGrahasDescription {
   font-size: 1.05rem;
   line-height: 1.7;
-  color: rgba(253, 244, 227, 0.88);
+  color: var(--night-muted);
   margin-bottom: 28px;
 }
 
+.nineGrahasActions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+/* Square corners, not a 30px pill. Pills read as app chrome; the rest of this
+   design is print, and print buttons have corners. */
 .nineGrahasCtaBtn {
   display: inline-flex;
   align-items: center;
   gap: 10px;
   padding: 12px 24px;
-  border: 1px solid #d4af37;
-  border-radius: 30px;
-  color: #d4af37;
+  border: 1px solid var(--accent-gold-decor);
+  border-radius: var(--radius-xs);
+  color: var(--night-heading);
   text-decoration: none;
-  font-size: 0.88rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  transition: all 0.25s ease;
+  transition: background-color 200ms var(--ease-out), color 200ms var(--ease-out);
 }
 
-.nineGrahasCtaBtn:hover {
-  background: #d4af37;
-  color: #0b0f2f;
+@media (hover: hover) and (pointer: fine) {
+  .nineGrahasCtaBtn:hover {
+    background: var(--accent-gold-decor);
+    color: var(--night-ink);
+  }
+}
+
+.nineGrahasCtaLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--night-heading);
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 2px;
 }
 
 .grahasGrid {
@@ -1680,21 +1714,24 @@
   align-items: center;
   gap: 12px;
   padding: 14px 16px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(212, 175, 55, 0.2);
-  border-radius: 12px;
-  transition: border-color 0.25s ease, transform 0.25s ease;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(181, 137, 46, 0.32);
+  border-radius: var(--radius-xs);
+  transition: border-color 200ms var(--ease-out), transform 200ms var(--ease-out),
+    background-color 200ms var(--ease-out);
 }
 
-.grahaCard:hover {
-  border-color: #d4af37;
-  transform: translateY(-2px);
-  background: rgba(212, 175, 55, 0.08);
+@media (hover: hover) and (pointer: fine) {
+  .grahaCard:hover {
+    border-color: var(--accent-gold-decor);
+    transform: translateY(-2px);
+    background: rgba(181, 137, 46, 0.12);
+  }
 }
 
 .grahaGlyph {
   font-size: 1.6rem;
-  color: #d4af37;
+  color: var(--accent-gold-decor);
   line-height: 1;
 }
 
@@ -1713,16 +1750,18 @@
   font-family: var(--font-heading);
   font-size: 0.92rem;
   font-weight: 600;
-  color: #fdf4e3;
+  color: var(--night-fg);
 }
 
+/* Was 0.6 alpha on cream — 4.1:1 against neelam, under the floor for 11.5px
+   text. The muted token is the measured value. */
 .grahaEnglish {
   font-size: 0.72rem;
-  color: rgba(253, 244, 227, 0.6);
+  color: var(--night-muted);
 }
 
 .grahaDesc {
   font-size: 0.72rem;
-  color: rgba(253, 244, 227, 0.75);
+  color: var(--night-muted);
   margin-top: 2px;
 }

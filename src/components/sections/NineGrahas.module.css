@@ -1,0 +1,131 @@
+/* The one night surface on the page.
+   NEELAM, not the retired #0B0F2F brand navy — that hex belonged to the dark
+   theme this palette replaced, and left in place it read as a slab of a
+   different design system dropped into the manuscript. */
+
+.section {
+  background: var(--accent-neelam);
+  color: var(--night-fg);
+  padding-block: clamp(44px, 6.5vw, 80px);
+  padding-inline: clamp(14px, 3.5vw, 44px);
+  position: relative;
+  overflow: hidden;
+  border-block: 1px solid var(--accent-gold-decor);
+}
+
+.inner {
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+.title {
+  font-family: var(--font-heading), serif;
+  font-size: clamp(1.4rem, 3.3vw, 2.05rem);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--night-heading);
+  margin: 0;
+}
+
+.grid {
+  display: grid;
+  gap: 26px;
+  align-items: center;
+  margin-top: 26px;
+}
+
+@media (min-width: 860px) {
+  .grid {
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 46px;
+  }
+}
+
+.copy {
+  color: var(--night-muted);
+  font-size: 0.92rem;
+  line-height: 1.7;
+  max-width: 42ch;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+/* Square corners, not a 30px pill. Pills read as app chrome; the rest of this
+   design is print, and print buttons have corners. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  border: 1px solid var(--accent-gold-decor);
+  border-radius: var(--radius-xs);
+  color: var(--night-heading);
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: background-color 200ms var(--ease-out), color 200ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover {
+    background: var(--accent-gold-decor);
+    color: var(--night-ink);
+  }
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--night-heading);
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 2px;
+}
+
+.orbit {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* One keyframe, nine periods. `transform-box: view-box` makes transform-origin
+   resolve against the SVG's own coordinate system rather than each group's
+   bounding box, which is what keeps every body turning about the sun instead
+   of spinning on its own axis. */
+.spin {
+  transform-box: view-box;
+  animation: turn var(--dur, 200s) linear infinite;
+}
+
+/* Both ends written out. With only a `to`, the implicit `from` is the element's
+   current `transform`, which resolves to `none` — and interpolating none ->
+   rotate(360deg) relies on the engine treating none as an identity ROTATION
+   rather than an identity matrix. Stating rotate(0deg) removes the question. */
+@keyframes turn {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spin {
+    animation: none;
+  }
+}

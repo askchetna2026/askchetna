@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import styles from './Footer.module.css';
-import { Mail, Youtube, Instagram, Facebook } from 'lucide-react';
 import GetTheApp from './GetTheApp';
+import ChetnaMark from './ChetnaMark';
 
 export default function Footer() {
     return (
@@ -30,7 +30,11 @@ export default function Footer() {
                         <li><Link href="/consult">Book a Session</Link></li>
                         <li><Link href="/glossary">The Jyotiṣa Glossary</Link></li>
                     </ul>
-                    <GetTheApp />
+                    {/* Was butted straight against the last link, so "Mobile apps
+                        coming soon" read as a sixth list item. */}
+                    <div className={styles.appPrompt}>
+                        <GetTheApp />
+                    </div>
                 </div>
 
                 {/* CONNECT */}
@@ -47,20 +51,29 @@ export default function Footer() {
                                 Join our Telegram community
                             </a>
                         </li>
-                        <li>
-                            <span>Subscribe to our new moon newsletter</span>
-                        </li>
                     </ul>
-                    <form className={styles.subscribeForm} onSubmit={(e) => e.preventDefault()}>
-                        <input
-                            type="email"
-                            placeholder="Email Address"
-                            className={styles.subscribeInput}
-                            required
-                        />
-                        <button type="submit" className={styles.subscribeBtn} aria-label="Subscribe">
-                            →
-                        </button>
+
+                    {/* The newsletter line used to sit in the list above as a
+                        bare <span> — it looked like a link, wasn't one, and left
+                        the input labelled by placeholder alone. It is the field's
+                        label now, which fixes both. */}
+                    <form className={styles.subscribe} onSubmit={(e) => e.preventDefault()}>
+                        <label className={styles.subscribeLabel} htmlFor="footer-newsletter">
+                            Subscribe to our new moon newsletter
+                        </label>
+                        <div className={styles.subscribeRow}>
+                            <input
+                                id="footer-newsletter"
+                                type="email"
+                                placeholder="you@example.com"
+                                className={styles.subscribeInput}
+                                autoComplete="email"
+                                required
+                            />
+                            <button type="submit" className={styles.subscribeBtn}>
+                                Join
+                            </button>
+                        </div>
                     </form>
                     {/* Legal Links embedded below connect */}
                     <div className={styles.legalSubNav}>
@@ -71,20 +84,14 @@ export default function Footer() {
                     </div>
                 </div>
 
-                {/* LOGO */}
+                {/* LOGO — the real emblem, set as a colophon.
+                    Replaced a placeholder that spun "ASKCHETNA • ASTROLOGY FOR
+                    AWARENESS •" around a plain dot: not the brand mark, and at
+                    11px on a rotating circle the words were unreadable anyway. */}
                 <div className={`${styles.footerSection} ${styles.logoSection}`}>
-                    <div className={styles.monogramLogo}>
-                        {/* Circular text logo placeholder */}
-                        <svg viewBox="0 0 100 100" width="120" height="120" className={styles.monogramSvg}>
-                            <path id="circlePath" d="M 50, 50 m -40, 0 a 40,40 0 1,1 80,0 a 40,40 0 1,1 -80,0" fill="none" />
-                            <text className={styles.monogramText}>
-                                <textPath href="#circlePath" startOffset="0%">
-                                    ASKCHETNA • ASTROLOGY FOR AWARENESS •
-                                </textPath>
-                            </text>
-                            <circle cx="50" cy="50" r="8" fill="#a34828" />
-                        </svg>
-                    </div>
+                    <ChetnaMark size={96} className={styles.footerMark} />
+                    <div className={styles.footerWordmark}>AskChetna</div>
+                    <div className={styles.footerColophon}>Jyotiṣa · Since 2024</div>
                 </div>
             </div>
 

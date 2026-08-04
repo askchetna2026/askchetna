@@ -112,5 +112,8 @@ function friendlyError(raw: string): string {
     if (message.includes('account-exists')) {
         return 'An account already exists with this email using a different sign-in method.';
     }
-    return 'Google sign-in could not be completed. Please try again.';
+    const detail = raw.trim().slice(0, 200);
+    return detail
+        ? `Google sign-in failed. Google reported: ${detail}`
+        : 'Google sign-in could not be completed. Please try again.';
 }

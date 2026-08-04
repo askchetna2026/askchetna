@@ -19,6 +19,14 @@ name: Android Release
 on:
   workflow_dispatch:
     inputs:
+      serverUrl:
+        description: 'Which deployment the app loads'
+        required: false
+        default: 'https://www.askchetna.com'
+        type: choice
+        options:
+          - 'https://www.askchetna.com'
+          - 'https://preview.askchetna.com'
       versionName:
         description: 'versionName, e.g. 1.0.1 (blank keeps build.gradle value)'
         required: false
@@ -76,7 +84,9 @@ jobs:
         # Regenerates capacitor.config.json and copies mobile/shell into the
         # native project. Both are gitignored, so without this the build would
         # use whatever stale copy happened to exist — or none at all.
-        run: npx cap sync android
+        env:
+          CAP_SERVER_URL: ${{ inputs.serverUrl || 'https://www.askchetna.com' }}
+        run: npm run cap:sync
 
       - name: Decode keystore
         env:

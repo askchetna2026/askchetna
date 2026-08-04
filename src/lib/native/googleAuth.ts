@@ -42,7 +42,15 @@ export async function signInWithGoogleNative(): Promise<NativeGoogleOutcome> {
     try {
         const { FirebaseAuthentication } = await import('@capacitor-firebase/authentication');
 
-        await FirebaseAuthentication.signInWithGoogle();
+        try {
+            // Force the standard native Google Account Picker by disabling Credential Manager One Tap.
+            // One Tap fails with 'No credentials available' or '[28439] User disabled' when no saved passkey
+            // is stored or when One Tap prompt suppression is active on the device.
+            await FirebaseAuthentication.signInWithGoogle({ useCredentialManager: false });
+        } catch (firstErr) {
+            console.info('[googleAuth] signInWithGoogle with useCredentialManager: false failed, trying default:', firstErr);
+            await FirebaseAuthentication.signInWithGoogle();
+        }
 
         // forceRefresh keeps auth_time recent; the server rejects stale
         // verifications (see MAX_AUTH_AGE_SECONDS in src/lib/firebaseAdmin.ts).

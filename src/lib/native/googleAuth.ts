@@ -106,6 +106,9 @@ function friendlyError(raw: string): string {
     if (message.includes('10:') || message.includes('developer_error')) {
         return 'Google sign-in is not configured for this build. The app\'s signing fingerprint needs to be added in Firebase.';
     }
+    if (message.includes('28439') || message.includes('user disabled the feature') || message.includes('one tap')) {
+        return 'Google sign-in prompts are disabled on your phone. Check Android Settings > Google > Settings for Google apps > Google Account sign-in prompts, or try again.';
+    }
     if (message.includes('network')) {
         return 'Network problem. Check your connection and try again.';
     }

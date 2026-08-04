@@ -77,6 +77,12 @@
     margin-bottom: 12px;
 }
 
+/* Make the rashi images darker and blend beautifully with the parchment */
+.medallion :global(img) {
+    mix-blend-mode: multiply;
+    filter: brightness(0.5) contrast(1.4) sepia(0.2) hue-rotate(-10deg);
+}
+
 .name {
     font-family: var(--font-heading);
     font-size: 1.05rem;

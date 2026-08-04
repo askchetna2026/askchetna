@@ -1534,13 +1534,62 @@
 /* Photographs are texture here, not content. Anyone who has asked for reduced
    motion or is on a slow connection loses nothing by dropping them, and on the
    light theme they darken the parchment too much to be worth keeping. */
-:global([data-theme='light']) .philosophySection::before,
-:global([data-theme='light']) .liveSampleSection::before,
-:global([data-theme='light']) .newsletterSection::before,
-:global([data-theme='light']) .testimonialsSection::before,
-:global([data-theme='light']) .creditsSection::before,
-:global([data-theme='light']) .hero::before {
-  opacity: 0.10;
+.orbitSvg {
+  width: 100%;
+  max-width: 440px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.vintageSectionTitle {
+  font-family: var(--font-heading);
+  font-size: 2.2rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #3a231a;
+  text-align: center;
+}
+
+.vintageSectionDivider {
+  width: 40px;
+  height: 2px;
+  background: #b8860b;
+  margin: 12px auto 40px;
+}
+
+.stepCard {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+  align-items: center;
+  margin-bottom: 64px;
+}
+
+@media (min-width: 768px) {
+  .stepCard {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.stepCardFlip {
+  direction: ltr;
+}
+
+.stepSub {
+  font-family: var(--font-heading);
+  font-style: italic;
+  color: #a34828;
+  font-size: 1.05rem;
+  margin-top: 4px;
+  margin-bottom: 12px;
+}
+
+.stepGlyphs {
+  font-size: 1.3rem;
+  color: #b8860b;
+  letter-spacing: 0.4em;
+  margin-top: 16px;
 }
 
 /* ═══════════════════════════════════

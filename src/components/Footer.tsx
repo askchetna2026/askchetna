@@ -9,69 +9,82 @@ export default function Footer() {
     return (
         <footer className={styles.footer}>
             <div className={styles.footerContent}>
-                {/* About Section */}
-                <div className={`${styles.footerSection} ${styles.aboutSection}`}>
-                    <h3>About AskChetna</h3>
-                    <p>
-                        An awareness-first astrology platform designed to support reflection, understanding, and conscious decision-making.
-                    </p>
-                    <div className={styles.socialLinks}>
-                        <a href="mailto:hello@askchetna.com" className={styles.socialIcon} aria-label="Email">
-                            <Mail size={18} />
-                        </a>
-                        <a href="#" className={styles.socialIcon} aria-label="YouTube">
-                            <Youtube size={18} />
-                        </a>
-                        <a href="#" className={styles.socialIcon} aria-label="Instagram">
-                            <Instagram size={18} />
-                        </a>
-                        <a href="#" className={styles.socialIcon} aria-label="Facebook">
-                            <Facebook size={18} />
-                        </a>
-                    </div>
+                {/* LATEST JOURNALS */}
+                <div className={styles.footerSection}>
+                    <h3>LATEST JOURNALS</h3>
+                    <ul className={styles.footerLinks}>
+                        <li><Link href="/blog/alchemy-of-saturn">The Alchemy of Saturn</Link></li>
+                        <li><Link href="/blog/ishta-devata">Finding Your Ishta Devata</Link></li>
+                        <li><Link href="/blog/venus-12th-house">Venus in the 12th House</Link></li>
+                        <li><Link href="/blog" className={styles.readMoreLink}>Read More...</Link></li>
+                    </ul>
                 </div>
 
-                {/* Quick Links */}
-                <div className={`${styles.footerSection} ${styles.exploreSection}`}>
-                    <h3>Explore</h3>
+                {/* RESOURCES */}
+                <div className={styles.footerSection}>
+                    <h3>RESOURCES</h3>
                     <ul className={styles.footerLinks}>
-                        <li><Link href="/about">About</Link></li>
-                        <li><Link href="/how-it-works">How It Works</Link></li>
-                        <li><Link href="/chart">Your Chart</Link></li>
-                        <li><Link href="/timing">Timing & Phases</Link></li>
-                        <li><Link href="/synastry">Relationships</Link></li>
-                        <li><Link href="/blog">Blog</Link></li>
-                        <li><Link href="/glossary">Glossary</Link></li>
-                        <li><Link href="/clarity">Ask Chetna AI</Link></li>
-                        <li><Link href="/consult">Talk to an Astrologer</Link></li>
-                        <li><Link href="/astrologer/register">Become an Astrologer</Link></li>
+                        <li><Link href="/chart">Cast Your Chart</Link></li>
+                        <li><Link href="/aura">Read Your Daily Focus</Link></li>
+                        <li><Link href="/synastry">Calculate Compatibility</Link></li>
+                        <li><Link href="/consult">Book a Session</Link></li>
+                        <li><Link href="/glossary">The Jyotiṣa Glossary</Link></li>
                     </ul>
                     <GetTheApp />
                 </div>
 
-                {/* Legal Links. Kept in the app's compact footer too — App Store
-                    5.1.1 and Play both want these reachable in-app. */}
-                <div className={`${styles.footerSection} ${styles.legalSection}`}>
-                    <h3>Legal</h3>
+                {/* CONNECT */}
+                <div className={styles.footerSection}>
+                    <h3>CONNECT</h3>
                     <ul className={styles.footerLinks}>
-                        <li><Link href="/disclaimer">Disclaimer</Link></li>
-                        <li><Link href="/privacy">Privacy Policy</Link></li>
-                        <li><Link href="/terms">Terms of Service</Link></li>
-                        <li><Link href="/refund">Refund Policy</Link></li>
-                        <li><Link href="/contact">Contact Us</Link></li>
-                        {/* Version and update status. Sits here rather than in
-                            Explore because this is the column that survives in
-                            the app's compact footer — and the app is where
-                            "which build am I on?" actually gets asked. Reachable
-                            signed out: the header only exposes it once you are
-                            authenticated, but the page needs no session. */}
-                        {/* App Info reports the running build and update state.
-                            That is meaningful inside the app and meaningless in a
-                            browser, so the web footer offers the download instead
-                            — see GetTheApp, which hides itself under .native-app
-                            while this entry hides itself outside it. */}
-                        <li className={styles.appOnly}><Link href="/app-info">App Info</Link></li>
+                        <li>
+                            <a href="#" target="_blank" rel="noopener noreferrer">
+                                Follow us on Instagram
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" target="_blank" rel="noopener noreferrer">
+                                Join our Telegram community
+                            </a>
+                        </li>
+                        <li>
+                            <span>Subscribe to our new moon newsletter</span>
+                        </li>
                     </ul>
+                    <form className={styles.subscribeForm} onSubmit={(e) => e.preventDefault()}>
+                        <input
+                            type="email"
+                            placeholder="Email Address"
+                            className={styles.subscribeInput}
+                            required
+                        />
+                        <button type="submit" className={styles.subscribeBtn} aria-label="Subscribe">
+                            →
+                        </button>
+                    </form>
+                    {/* Legal Links embedded below connect */}
+                    <div className={styles.legalSubNav}>
+                        <Link href="/disclaimer">Disclaimer</Link>
+                        <Link href="/privacy">Privacy</Link>
+                        <Link href="/terms">Terms</Link>
+                        <Link href="/contact">Contact</Link>
+                    </div>
+                </div>
+
+                {/* LOGO */}
+                <div className={`${styles.footerSection} ${styles.logoSection}`}>
+                    <div className={styles.monogramLogo}>
+                        {/* Circular text logo placeholder */}
+                        <svg viewBox="0 0 100 100" width="120" height="120" className={styles.monogramSvg}>
+                            <path id="circlePath" d="M 50, 50 m -40, 0 a 40,40 0 1,1 80,0 a 40,40 0 1,1 -80,0" fill="none" />
+                            <text className={styles.monogramText}>
+                                <textPath href="#circlePath" startOffset="0%">
+                                    ASKCHETNA • ASTROLOGY FOR AWARENESS •
+                                </textPath>
+                            </text>
+                            <circle cx="50" cy="50" r="8" fill="#a34828" />
+                        </svg>
+                    </div>
                 </div>
             </div>
 

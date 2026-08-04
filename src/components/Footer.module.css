@@ -1,100 +1,147 @@
 .footer {
     background: transparent;
-    border-top: none;
-    box-shadow: 0 -1px 0 rgba(159, 122, 234, 0.4);
     padding: 60px 24px 32px;
-    margin-top: 100px;
+    margin-top: 60px;
 }
 
 .footerContent {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 48px;
-    margin-bottom: 48px;
+    grid-template-columns: 1fr;
+    gap: 40px;
+}
+
+@media (min-width: 768px) {
+    .footerContent {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .footerContent {
+        grid-template-columns: 1fr 1fr 1.5fr 1fr;
+        gap: 60px;
+    }
 }
 
 .footerSection h3 {
-    font-size: 0.9rem;
-    text-transform: uppercase;
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    color: var(--secondary);
+    margin-bottom: 24px;
     letter-spacing: 0.1em;
-    color: var(--accent-gold);
-    margin-bottom: 20px;
     font-weight: 600;
-}
-
-.footerSection p {
-    color: var(--foreground);
-    line-height: 1.7;
-    font-size: 0.95rem;
-    opacity: 0.9;
 }
 
 .footerLinks {
     list-style: none;
     padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
-.footerLinks li {
-    margin-bottom: 12px;
-}
-
-.footerLinks a {
-    color: var(--accent-gold);
+.footerLinks a, .footerLinks span {
+    color: rgba(58, 35, 26, 0.75);
+    text-decoration: none;
     font-size: 0.95rem;
     transition: all 0.2s ease;
-    opacity: 0.8;
 }
 
 .footerLinks a:hover {
-    color: var(--foreground);
-    opacity: 1;
+    color: var(--secondary);
+    padding-left: 4px;
 }
 
-[data-theme='light'] .footerLinks a {
-    color: var(--accent-gold-dim);
-    opacity: 1;
+.readMoreLink {
+    font-style: italic;
+    color: #a34828 !important;
 }
 
-[data-theme='light'] .footerSection h3 {
-    color: var(--accent-gold-dim);
+.subscribeForm {
+    display: flex;
+    margin-top: 16px;
+    border-bottom: 1px solid #d8c39e;
+    padding-bottom: 4px;
 }
 
-.socialLinks {
+.subscribeInput {
+    flex-grow: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 0.9rem;
+    color: var(--secondary);
+    font-family: var(--font-main);
+}
+
+.subscribeInput::placeholder {
+    color: rgba(58, 35, 26, 0.4);
+}
+
+.subscribeBtn {
+    background: transparent;
+    border: none;
+    color: var(--secondary);
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.legalSubNav {
     display: flex;
     gap: 16px;
-    margin-top: 16px;
+    margin-top: 32px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
-.socialIcon {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: 1px solid var(--card-border);
+.legalSubNav a {
+    color: rgba(58, 35, 26, 0.6);
+    text-decoration: none;
+}
+
+.logoSection {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
-    color: var(--secondary);
-    transition: all 0.2s ease;
 }
 
-.socialIcon:hover {
-    border-color: var(--accent-gold);
-    color: var(--accent-gold);
+.monogramLogo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.monogramSvg {
+    animation: rotate 60s linear infinite;
+}
+
+.monogramText {
+    font-family: var(--font-main);
+    font-size: 11px;
+    fill: var(--secondary);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 .footerBottom {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding-top: 32px;
-    border-top: none;
-    box-shadow: 0 -1px 0 rgba(159, 122, 234, 0.2);
+    max-width: 1400px;
+    margin: 60px auto 0;
+    padding-top: 24px;
+    border-top: 1px solid rgba(184, 134, 11, 0.2);
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 16px;
+    gap: 12px;
+    text-align: center;
 }
 
 .copyright {
@@ -110,28 +157,14 @@
 }
 
 @media (max-width: 768px) {
-    .footerContent {
-        grid-template-columns: 1fr;
-        gap: 32px;
-    }
-
     .footerBottom {
         flex-direction: column;
         text-align: center;
     }
 }
-/* ==========================================================================
-   Native app footer
-   ==========================================================================
-   A three-column marketing footer is the single loudest "this is a website"
-   signal inside an app, and with a tab bar directly beneath it the links are
-   unreachable anyway. Collapse to a legal strip: the Explore links are all in
-   the tab bar or the header drawer, but Privacy/Terms/Disclaimer/Refund/Contact
-   have to stay reachable in-app for both stores, so they survive as a row. */
 
-:global(html.native-app) .aboutSection,
-:global(html.native-app) .exploreSection,
-:global(html.native-app) .legalSection h3 {
+/* App overrides */
+:global(html.native-app) .footerSection {
     display: none;
 }
 
@@ -144,21 +177,6 @@
     gap: 0;
 }
 
-:global(html.native-app) .legalSection .footerLinks {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 6px 16px;
-}
-
-:global(html.native-app) .legalSection .footerLinks li {
-    margin: 0;
-}
-
-:global(html.native-app) .legalSection .footerLinks a {
-    font-size: 0.8rem;
-}
-
 :global(html.native-app) .footerBottom {
     padding-top: 16px;
     flex-direction: column;
@@ -166,19 +184,6 @@
     gap: 4px;
 }
 
-/* The disclaimer is a product rule, not decoration — keep it. The copyright is
-   web furniture. */
 :global(html.native-app) .copyright {
     display: none;
-}
-
-/* App Info is only meaningful inside the app; the web footer shows the download
-   prompt instead (GetTheApp). Mirror-image of the rule in GetTheApp.module.css,
-   which hides that component under .native-app. */
-.appOnly {
-    display: none;
-}
-
-:global(html.native-app) .appOnly {
-    display: list-item;
 }

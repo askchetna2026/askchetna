@@ -105,51 +105,37 @@
 }
 
 .loginBtn {
+    background: #A34828;
+    color: #FDF4E3;
     padding: 10px 24px;
-    /* Was a hardcoded navy pill with white text — the only dark control on a
-       parchment page. */
-    background: transparent;
-    color: var(--accent-gold);
-    border: 1px solid var(--card-border);
     border-radius: 50px;
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-family: var(--font-heading);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
     border: none;
     cursor: pointer;
     text-decoration: none;
     white-space: nowrap;
-    padding: 0 1.5rem;
-    background: var(--background);
-    border-bottom: 1px solid rgba(212, 175, 55, 0.15);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(163, 72, 40, 0.3);
 }
 
 .loginBtn:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(27, 43, 65, 0.2);
+    box-shadow: 0 4px 12px rgba(163, 72, 40, 0.4);
+    background: #8e3f23;
 }
 
-/* The desktop Sign In pill had no light-theme rule, so it stayed a near-black
-   capsule on the parchment page — white-on-black passes contrast, which is why
-   it survived the audit, but it is the only dark control on a light page.
-   Mirrors [data-theme='light'] .mobileSignInBtn so both breakpoints agree.
-   NOTE: .loginBtn above also carries header-bar declarations (a translucent
-   dark background, border-bottom, z-index 1000) that look pasted in from
-   .header; that dark background is what this has to override. */
 [data-theme='light'] .loginBtn {
-    background: rgba(184, 134, 11, 0.06);
-    color: var(--accent-gold-dim);
-    border: 1px solid rgba(184, 134, 11, 0.45);
-    box-shadow: none;
+    background: #A34828;
+    color: #FDF4E3;
+    border: none;
 }
 
 [data-theme='light'] .loginBtn:hover {
-    background: rgba(184, 134, 11, 0.12);
-    border-color: var(--accent-gold);
-    box-shadow: none;
+    background: #8e3f23;
 }
 
 .authGroup {

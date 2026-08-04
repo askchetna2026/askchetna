@@ -95,10 +95,12 @@ export default function Header() {
               </>
             ) : (
               <>
-                <Link href="/" className={`${styles.navLink} ${pathname === '/' ? styles.activeLink : ''}`}>Home</Link>
-                <Link href="/about" className={`${styles.navLink} ${pathname === '/about' ? styles.activeLink : ''}`}>About</Link>
+                <Link href="/aura" className={`${styles.navLink} ${pathname === '/aura' ? styles.activeLink : ''}`}>Aura/Navamsa</Link>
+                <Link href="/chart" className={`${styles.navLink} ${pathname === '/chart' ? styles.activeLink : ''}`}>Kundli/Chart</Link>
                 <Link href="/blog" className={`${styles.navLink} ${pathname === '/blog' ? styles.activeLink : ''}`}>Blog</Link>
-                <Link href="/clarity" className={`${styles.navCta} ${pathname === '/clarity' ? styles.navCtaActive : ''}`}>Ask Chetna AI</Link>
+                <Link href="/consult" className={`${styles.navLink} ${pathname === '/consult' ? styles.activeLink : ''}`}>Consultations</Link>
+                <Link href="/journal" className={`${styles.navLink} ${pathname === '/journal' ? styles.activeLink : ''}`}>Journal</Link>
+                <Link href="/about" className={`${styles.navLink} ${pathname === '/about' ? styles.activeLink : ''}`}>About</Link>
               </>
             )}
           </nav>
@@ -111,7 +113,7 @@ export default function Header() {
               // it hosts account deletion and both stores want that findable.
               <ProfileMenu />
             ) : (
-              <Link href="/login" className={styles.loginBtn}>Sign In</Link>
+              <Link href="/login" className={styles.loginBtn}>KNOW YOUR PRAKRITI</Link>
             )}
           </div>
         </div>

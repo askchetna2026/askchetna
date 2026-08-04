@@ -284,10 +284,56 @@ export default function Home() {
 
           {/* ═══════════════════════════════════
               THE TWELVE RASHIS
-              Was a scrolling row of Unicode glyphs; now an illustrated
-              medallion grid. Art drops into the slots in RashiMedallions.
               ═══════════════════════════════════ */}
           <RashiMedallions />
+
+          {/* ═══════════════════════════════════
+              THE NINE GRAHAS (Midnight Blue Section)
+              ═══════════════════════════════════ */}
+          <section className={styles.nineGrahasSection}>
+            <div className={styles.nineGrahasContainer}>
+              <div className={styles.nineGrahasLeft}>
+                <span className="cosmic-label" style={{ color: '#D4AF37' }}>✦ Navagraha · Celestial Bodies ✦</span>
+                <h2 className={styles.nineGrahasTitle}>THE NINE GRAHAS</h2>
+                <div className={styles.nineGrahasDivider}></div>
+                <p className={styles.nineGrahasDescription}>
+                  Every reading begins with where the sun was standing at the moment you arrived — and where the nine grahas sit relative to your ascendant. Learn how each planetary energy shapes your inner experience.
+                </p>
+                <div className={styles.nineGrahasActions}>
+                  <Link href="/chart" className={styles.nineGrahasCtaBtn}>
+                    Explore Your Planetary Map <ArrowRight size={16} />
+                  </Link>
+                </div>
+              </div>
+
+              <div className={styles.nineGrahasRight}>
+                <div className={styles.grahasGrid}>
+                  {[
+                    { glyph: '☉', sa: 'Sūrya', en: 'Sun', desc: 'Vitality & Soul' },
+                    { glyph: '☽', sa: 'Chandra', en: 'Moon', desc: 'Mind & Memory' },
+                    { glyph: '♂', sa: 'Maṅgala', en: 'Mars', desc: 'Drive & Courage' },
+                    { glyph: '☿', sa: 'Budha', en: 'Mercury', desc: 'Intellect & Speech' },
+                    { glyph: '♃', sa: 'Guru', en: 'Jupiter', desc: 'Wisdom & Grace' },
+                    { glyph: '♀', sa: 'Śukra', en: 'Venus', desc: 'Love & Harmony' },
+                    { glyph: '♄', sa: 'Śani', en: 'Saturn', desc: 'Time & Maturity' },
+                    { glyph: '☊', sa: 'Rāhu', en: 'North Node', desc: 'Threshold & Desire' },
+                    { glyph: '☋', sa: 'Ketu', en: 'South Node', desc: 'Release & Origins' },
+                  ].map((planet) => (
+                    <div key={planet.sa} className={styles.grahaCard}>
+                      <span className={styles.grahaGlyph}>{planet.glyph}</span>
+                      <div className={styles.grahaMeta}>
+                        <div className={styles.grahaNames}>
+                          <span className={styles.grahaSanskrit}>{planet.sa}</span>
+                          <span className={styles.grahaEnglish}>({planet.en})</span>
+                        </div>
+                        <span className={styles.grahaDesc}>{planet.desc}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
 
           {/* ═══════════════════════════════════
               LIVE AI SAMPLE RESPONSES

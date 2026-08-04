@@ -86,19 +86,54 @@
     margin: 0;
 }
 
+.englishRow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+}
+
 .english {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--accent-gold);
-    margin-top: 2px;
 }
 
-.trait {
-    margin-top: 10px;
+.dotSeparator {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+}
+
+.dateRange {
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.dailyQuote {
+    margin-top: 12px;
     font-size: 0.82rem;
     line-height: 1.55;
-    color: var(--text-muted);
+    font-style: italic;
+    color: var(--foreground);
+    opacity: 0.9;
+}
+
+.actionBtn {
+    margin-top: 14px;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-gold);
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.card:hover .actionBtn {
+    color: var(--accent-gold-hover, #d4af37);
+    text-decoration: underline;
 }
 
 @media (prefers-reduced-motion: reduce) {

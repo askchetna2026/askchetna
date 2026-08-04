@@ -19,14 +19,13 @@ import styles from './RashiMedallions.module.css';
  */
 export default function RashiMedallions() {
     return (
-        <section className={styles.section} id="rashis">
+        <section className={styles.section} id="daily-guidance">
             <div className={styles.header}>
-                <span className="cosmic-label">❋ Dvadasha Rashi · The Twelve ❋</span>
-                <h2 className="mystic-text">The Twelve Rashis</h2>
+                <span className="cosmic-label">❋ Daily Guidance ❋</span>
+                <h2 className="mystic-text">Daily Guidance</h2>
                 <div className="sacred-divider"></div>
                 <p className={styles.intro}>
-                    Twelve recurring patterns, not twelve fortunes. Your chart weights them
-                    differently — which is why the same sky reads differently for each person.
+                    Twelve archetypal patterns, calculated for self-awareness. Select your sidereal sign to explore today&apos;s reflection.
                 </p>
             </div>
 
@@ -37,9 +36,6 @@ export default function RashiMedallions() {
                         href={`/rashi/${rashi.slug}`}
                         className={`${styles.card} sacred-card`}
                     >
-                        {/* The illustration carries its own dotted ring and draws the
-                            sign itself, so no CSS frame or glyph overlay is needed —
-                            both would double up on it. */}
                         <div className={styles.medallion}>
                             <ImageSlot
                                 src={rashiArt(rashi)}
@@ -51,8 +47,17 @@ export default function RashiMedallions() {
                         </div>
 
                         <h3 className={styles.name}>{rashi.sa}</h3>
-                        <span className={styles.english}>{rashi.en}</span>
-                        <p className={styles.trait}>{rashi.trait}</p>
+                        <div className={styles.englishRow}>
+                            <span className={styles.english}>{rashi.en}</span>
+                            <span className={styles.dotSeparator}>•</span>
+                            <span className={styles.dateRange}>{rashi.dateRange}</span>
+                        </div>
+
+                        <p className={styles.dailyQuote}>&ldquo;{rashi.dailyQuote}&rdquo;</p>
+
+                        <span className={styles.actionBtn}>
+                            Read Guidance →
+                        </span>
                     </Link>
                 ))}
             </div>

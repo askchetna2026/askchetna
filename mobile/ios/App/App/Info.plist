@@ -88,5 +88,21 @@
 		<string>http</string>
 	</array>
 
+	<!--
+	  Required for Google Sign-In redirect on iOS. Matches the REVERSED_CLIENT_ID
+	  from GoogleService-Info.plist.
+	-->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.898101418366-i8ntuq26thvdb4ok052pe52uvgmvmvcr</string>
+			</array>
+		</dict>
+	</array>
+
 </dict>
 </plist>

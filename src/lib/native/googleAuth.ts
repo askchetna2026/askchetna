@@ -42,21 +42,6 @@ export async function signInWithGoogleNative(): Promise<NativeGoogleOutcome> {
     try {
         const { FirebaseAuthentication } = await import('@capacitor-firebase/authentication');
 
-        // Clear any existing Firebase session FIRST.
-        //
-        // signInWithGoogle() on a device that already holds a session can return
-        // without re-authenticating, leaving `auth_time` at whenever the user
-        // originally signed in. The server rejects tokens older than 5 minutes, so
-        // once an attempt failed, every retry after that reused the same stale
-        // auth_time and failed the freshness check too — the failure became
-        // permanent rather than transient.
-        //
-        // releaseGoogleFirebaseSession() only runs on success, so this is what
-        // guarantees a genuinely fresh sign-in after any earlier failure.
-        try {
-            await FirebaseAuthentication.signOut();
-        } catch { /* nothing to sign out of */ }
-
         await FirebaseAuthentication.signInWithGoogle();
 
         // forceRefresh keeps auth_time recent; the server rejects stale
@@ -108,6 +93,9 @@ function friendlyError(raw: string): string {
     }
     if (message.includes('28439') || message.includes('user disabled the feature') || message.includes('one tap')) {
         return 'Google sign-in prompts are disabled on your phone. Check Android Settings > Google > Settings for Google apps > Google Account sign-in prompts, or try again.';
+    }
+    if (message.includes('no credentials available') || message.includes('nocredential')) {
+        return 'No Google account credentials available on this device. Please sign into a Google account in Android Settings and try again.';
     }
     if (message.includes('network')) {
         return 'Network problem. Check your connection and try again.';

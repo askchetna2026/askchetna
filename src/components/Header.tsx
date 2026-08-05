@@ -113,7 +113,15 @@ export default function Header() {
               // it hosts account deletion and both stores want that findable.
               <ProfileMenu />
             ) : (
-              <Link href="/login" className={styles.loginBtn}>KNOW YOUR PRAKRITI</Link>
+              // Two doors, because they serve different people. "Know your
+              // prakriti" is the hook for a first-time visitor; it is not a
+              // word a RETURNING user scans for, so it was the only control in
+              // the bar and there was effectively no way to sign in from the
+              // desktop home page.
+              <>
+                <Link href="/login" className={styles.signInLink}>Sign in</Link>
+                <Link href="/login?mode=signup" className={styles.loginBtn}>KNOW YOUR PRAKRITI</Link>
+              </>
             )}
           </div>
         </div>

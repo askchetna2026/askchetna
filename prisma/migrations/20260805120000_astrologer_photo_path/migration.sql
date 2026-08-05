@@ -1,0 +1,17 @@
+-- Self-serve profile photo for a published astrologer.
+--
+-- PURELY ADDITIVE: one nullable column, no ALTER to anything existing and no
+-- backfill. A profile with photoPath NULL keeps resolving its portrait through
+-- the latest application, exactly as it did before, so every astrologer
+-- approved before this keeps their photo without being touched.
+--
+-- Still has to be applied BEFORE the code that reads it ships. Prisma SELECTs
+-- every column by default, and `astrologers` is read on the directory, the
+-- desk, every consultation and every appointment — so against a database that
+-- has not seen this, all of those 500 with P2022.
+--
+-- Kept separate from the application's profilePhotoPath deliberately. That
+-- column is part of the record an admin reviewed and must stay as submitted;
+-- this one is the photo currently published, which is the astrologer's to
+-- change.
+ALTER TABLE "astrologers" ADD COLUMN "photoPath" TEXT;

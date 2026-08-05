@@ -416,12 +416,39 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         async jwt({ token, user }) {
             if (user) {
                 token.id = user.id
+
+                // Which front door this account gets.
+                //
+                // Read ONCE, at sign-in, and carried on the token — because the
+                // home page is where it is needed and the home page must stay
+                // statically renderable. Calling auth() from `/` to answer this
+                // would push every anonymous visit through a function, which is
+                // exactly what the root layout avoids reading headers() for.
+                //
+                // Goes stale for the length of a session if somebody is
+                // approved after signing in. Nothing becomes unreachable when
+                // it does: /astrologer is in the profile menu for everyone and
+                // re-checks against the database, so the only thing waiting for
+                // the next sign-in is which page `/` opens on.
+                try {
+                    const astrologer = await prisma.astrologer.findUnique({
+                        where: { userId: user.id },
+                        select: { status: true },
+                    });
+                    token.astrologerStatus = astrologer?.status ?? null;
+                } catch (error) {
+                    // Never block a sign-in over a landing-page preference.
+                    console.error("Error reading astrologer status for token:", error);
+                    token.astrologerStatus = null;
+                }
             }
             return token
         },
         async session({ session, token }) {
             if (session.user) {
                 session.user.id = token.id as string;
+                session.user.astrologerStatus =
+                    (token.astrologerStatus as string | null) ?? null;
 
                 // Server-side check for admin status
                 const adminEmails = process.env.ADMIN_EMAILS?.split(',').map(e => e.trim().toLowerCase()) || [];
@@ -526,6 +553,10 @@ declare module "next-auth" {
         user: {
             id: string;
             isAdmin?: boolean;
+            /** PENDING | APPROVED | SUSPENDED | REJECTED, or null for the vast
+             *  majority of accounts that have no astrologer profile. Snapshotted
+             *  at sign-in; see the jwt callback. */
+            astrologerStatus?: string | null;
             name?: string | null;
             email?: string | null;
             image?: string | null;

@@ -1,0 +1,794 @@
+/*
+ * The astrologer's home. Same manuscript ground as the rest of the site, but
+ * laid out as a working spread rather than a page to be read: state across the
+ * top, unanswered work on the left, the ledger on the right.
+ */
+
+.page {
+    padding-bottom: 60px;
+}
+
+.shell {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding-inline: clamp(16px, 3.5vw, 40px);
+}
+
+.eyebrow {
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--accent-gold);
+}
+
+/* ══ The way back to the seeker product ══════════════════════════════════ */
+
+.strip {
+    border-bottom: 1px solid var(--card-border);
+}
+
+.strip .shell {
+    display: flex;
+    justify-content: flex-end;
+    padding-block: 12px;
+}
+
+.asSeeker {
+    font-size: 0.7rem;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--btn-bg);
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 2px;
+}
+
+/* ══ Duty band ═══════════════════════════════════════════════════════════
+   ON DUTY inverts to night. An astrologer goes on duty when the sky is being
+   read — the ground carries the state, so no badge has to. */
+
+.duty {
+    border-bottom: 1px solid var(--card-border);
+    transition: background-color 0.45s var(--ease-out);
+}
+
+.dutyIn {
+    display: flex;
+    align-items: center;
+    gap: clamp(16px, 3vw, 40px);
+    padding-block: clamp(20px, 3.4vw, 34px);
+    flex-wrap: wrap;
+}
+
+.dutyState {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+    flex: 1;
+}
+
+.lamp {
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    flex: none;
+}
+
+.dutyTitle {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: clamp(1.25rem, 2.6vw, 1.72rem);
+    letter-spacing: 0.02em;
+    margin: 0;
+    text-wrap: balance;
+}
+
+.dutyDesc {
+    font-size: 0.86rem;
+    margin-top: 2px;
+}
+
+.page[data-duty='on'] .duty {
+    background: var(--accent-neelam);
+    border-bottom-color: var(--accent-gold-decor);
+}
+
+.page[data-duty='on'] .dutyTitle {
+    color: var(--night-heading);
+}
+
+.page[data-duty='on'] .dutyDesc {
+    color: var(--night-muted);
+}
+
+.page[data-duty='on'] .eyebrow {
+    color: var(--night-heading);
+}
+
+.page[data-duty='on'] .lamp {
+    background: #8fbf7f;
+    box-shadow: 0 0 0 5px rgba(143, 191, 127, 0.22);
+}
+
+.page[data-duty='off'] .duty {
+    background: var(--bg-soft);
+}
+
+.page[data-duty='off'] .dutyTitle {
+    color: var(--foreground);
+}
+
+.page[data-duty='off'] .dutyDesc {
+    color: var(--text-muted);
+}
+
+.page[data-duty='off'] .lamp {
+    background: var(--card-border);
+    box-shadow: 0 0 0 5px rgba(211, 194, 156, 0.3);
+}
+
+/* ══ Buttons ═════════════════════════════════════════════════════════════ */
+
+.btnFill,
+.btnQuiet,
+.btnNight {
+    font: inherit;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-size: 0.76rem;
+    padding: 11px 22px;
+    border-radius: var(--radius-xs);
+    border: 1px solid transparent;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.18s var(--ease-out), color 0.18s var(--ease-out);
+}
+
+.btnFill {
+    background: var(--btn-bg);
+    color: var(--btn-fg);
+    border-color: var(--btn-bg);
+}
+
+.btnFill:hover:not(:disabled) {
+    background: var(--btn-bg-hover);
+    border-color: var(--btn-bg-hover);
+}
+
+.btnNight {
+    background: transparent;
+    color: var(--night-heading);
+    border-color: var(--accent-gold-decor);
+}
+
+.btnNight:hover:not(:disabled) {
+    background: var(--accent-gold-decor);
+    color: var(--night-ink);
+}
+
+.btnQuiet {
+    background: transparent;
+    color: var(--btn-bg);
+    border-color: var(--btn-bg);
+}
+
+.btnQuiet:hover:not(:disabled) {
+    background: var(--btn-bg);
+    color: var(--btn-fg);
+}
+
+.btnFill:active,
+.btnQuiet:active,
+.btnNight:active {
+    transform: scale(0.98);
+}
+
+.btnFill:disabled,
+.btnQuiet:disabled,
+.btnNight:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.btnSm {
+    padding: 8px 15px;
+    font-size: 0.7rem;
+}
+
+/* ══ Working spread ══════════════════════════════════════════════════════ */
+
+.spread {
+    display: grid;
+    gap: clamp(24px, 3vw, 38px);
+    padding-block: clamp(26px, 4vw, 44px);
+}
+
+@media (min-width: 900px) {
+    .spread {
+        grid-template-columns: 1.45fr 0.95fr;
+        align-items: start;
+    }
+}
+
+.col {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(20px, 2.6vw, 30px);
+    min-width: 0;
+}
+
+.head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 13px;
+    flex-wrap: wrap;
+}
+
+.head h2 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.count {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.rule {
+    flex: 1;
+    height: 1px;
+    background: var(--card-border);
+    min-width: 20px;
+}
+
+.card {
+    background-color: var(--card-bg);
+    background-image: var(--paper-tex);
+    background-size: 380px 380px;
+    background-position: center;
+    background-blend-mode: var(--paper-tex-blend);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-xs);
+    box-shadow: var(--shadow-card);
+}
+
+.card + .card {
+    margin-top: 12px;
+}
+
+/* ── Live session: the only thing with a live edge ── */
+
+.live {
+    padding: 20px;
+    border-left: 3px solid var(--accent-sage-deep);
+}
+
+.liveTop {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.liveWho {
+    font-family: var(--font-heading);
+    font-size: 1.14rem;
+}
+
+.liveQ {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    margin-top: 5px;
+    max-width: 52ch;
+}
+
+.clock {
+    font-family: var(--font-heading);
+    font-size: 1.72rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--foreground);
+    line-height: 1;
+    text-align: right;
+}
+
+.clock small {
+    display: block;
+    font-family: var(--font-main);
+    font-size: 0.58rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 700;
+    margin-top: 5px;
+}
+
+.meter {
+    height: 3px;
+    background: var(--bg-soft);
+    margin-top: 16px;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.meter i {
+    display: block;
+    height: 100%;
+    background: var(--accent-sage-deep);
+    transition: width 1s linear;
+}
+
+.liveAct {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+}
+
+/* ── Waiting queue ── */
+
+.queue {
+    display: flex;
+    flex-direction: column;
+}
+
+.q {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 15px 18px;
+    border-bottom: 1px solid var(--card-border);
+    text-decoration: none;
+    color: inherit;
+}
+
+.q:last-child {
+    border-bottom: none;
+}
+
+.q:hover {
+    background: var(--band-alt-bg);
+}
+
+.qBody {
+    flex: 1;
+    min-width: 0;
+}
+
+.qName {
+    display: block;
+    font-weight: 600;
+    font-size: 0.94rem;
+}
+
+.qMeta {
+    display: block;
+    font-size: 0.76rem;
+    color: var(--text-muted);
+    margin-top: 1px;
+}
+
+.qWait {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    text-align: right;
+}
+
+.qWait b {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--foreground);
+    font-weight: 600;
+}
+
+.empty {
+    padding: 34px 20px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.88rem;
+}
+
+.empty b {
+    display: block;
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    color: var(--foreground);
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.emptyAct {
+    display: block;
+    margin-top: 15px;
+}
+
+.inlineLink {
+    color: var(--btn-bg);
+    font-weight: 600;
+}
+
+.upFoot {
+    padding: 14px 18px;
+    border-top: 1px solid var(--card-border);
+}
+
+/* ── Appointment requests ──────────────────────────────────────────────
+   Unanswered work, so it sits in the left column with the live queue and
+   carries an amber edge. */
+
+.req {
+    padding: 18px 20px;
+    border-left: 3px solid var(--warning);
+}
+
+.req + .req {
+    border-top: 1px solid var(--card-border);
+}
+
+.reqTop {
+    display: flex;
+    gap: 13px;
+    align-items: flex-start;
+}
+
+.reqBody {
+    flex: 1;
+    min-width: 0;
+}
+
+.reqName {
+    font-weight: 600;
+    font-size: 0.94rem;
+}
+
+.reqMeta {
+    font-size: 0.76rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.slot {
+    margin-top: 12px;
+    padding: 10px 13px;
+    background: var(--band-alt-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-xs);
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.slot b {
+    font-family: var(--font-heading);
+    font-size: 1.02rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.slot span {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+}
+
+.reqAct {
+    display: flex;
+    gap: 9px;
+    margin-top: 13px;
+    flex-wrap: wrap;
+}
+
+.counter {
+    margin-top: 13px;
+}
+
+.counterLabel {
+    display: block;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--text-muted);
+}
+
+.counterInput {
+    display: block;
+    margin-top: 6px;
+    width: 100%;
+    max-width: 280px;
+    font: inherit;
+    padding: 9px 11px;
+    color: var(--foreground);
+    background: var(--background);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-xs);
+}
+
+.counterHint {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: 7px;
+    line-height: 1.5;
+}
+
+.note {
+    margin-top: 12px;
+    padding: 14px 16px;
+    border: 1px dashed var(--card-border);
+    border-radius: var(--radius-xs);
+    font-size: 0.76rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+.note b {
+    color: var(--foreground);
+}
+
+/* ── Upcoming: a commitment, not a task, so it is a quiet list ── */
+
+.up {
+    display: flex;
+    flex-direction: column;
+}
+
+.upRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 18px;
+    border-bottom: 1px solid var(--card-border);
+}
+
+.upRow:last-child {
+    border-bottom: none;
+}
+
+.upDate {
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.upDate small {
+    display: block;
+    font-family: var(--font-main);
+    font-size: 0.63rem;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-top: 2px;
+}
+
+.upName {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.88rem;
+}
+
+.upName small {
+    display: block;
+    color: var(--text-muted);
+    font-size: 0.74rem;
+}
+
+/* ── Today's tally ── */
+
+.tally {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.tally div {
+    padding: 16px 14px;
+    border-right: 1px solid var(--card-border);
+    text-align: center;
+}
+
+.tally div:last-child {
+    border-right: none;
+}
+
+.tally b {
+    display: block;
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+
+.tally span {
+    display: block;
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-top: 7px;
+    font-weight: 700;
+}
+
+/* ── Earnings: money is checked on its own rhythm, so it is its own block ── */
+
+.money {
+    padding: 18px 20px;
+}
+
+.moneyRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 14px;
+}
+
+.moneyRow + .moneyRow {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--card-border);
+}
+
+.moneyKey {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+.moneyVal {
+    font-family: var(--font-heading);
+    font-size: 1.28rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.moneySmall {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+}
+
+.moneyNote {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: 14px;
+    line-height: 1.5;
+}
+
+/* ── Public profile ── */
+
+.prof {
+    padding: 18px 20px;
+}
+
+.profTop {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+}
+
+.profName {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+}
+
+.profSub {
+    font-size: 0.74rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 14px;
+}
+
+.tag {
+    font-size: 0.66rem;
+    letter-spacing: 0.06em;
+    padding: 4px 9px;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-xs);
+    color: var(--text-muted);
+    background: var(--band-alt-bg);
+}
+
+.profFoot {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--card-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.profHint {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+/* ══ States ══════════════════════════════════════════════════════════════ */
+
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 60px 20px;
+    color: var(--text-muted);
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.gate {
+    max-width: 560px;
+    margin: 60px auto;
+    padding: 28px 24px;
+    text-align: center;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-xs);
+}
+
+.gateTitle {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    margin-bottom: 8px;
+}
+
+.gateDetail {
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+.error,
+.notice {
+    margin-top: 16px;
+    padding: 11px 14px;
+    border-radius: var(--radius-xs);
+    font-size: 0.85rem;
+}
+
+.error {
+    color: var(--error);
+    background: var(--error-bg);
+    border: 1px solid var(--error);
+}
+
+.notice {
+    color: var(--success);
+    background: var(--success-bg);
+    border: 1px solid var(--success);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .duty,
+    .meter i,
+    .btnFill,
+    .btnQuiet,
+    .btnNight,
+    .spin {
+        transition-duration: 1ms;
+        animation-duration: 1ms;
+    }
+}

@@ -36,7 +36,10 @@ export default function Home() {
     });
   }, [isLoggedIn]);
 
-
+  // An approved astrologer never gets here: the proxy rewrites "/" to their own
+  // desk before this renders. Branching in this component instead would paint
+  // the seeker home first and swap it out, because the server cannot know who
+  // is asking until the session resolves on the client.
 
   return (
     <main className={styles.main}>

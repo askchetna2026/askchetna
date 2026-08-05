@@ -180,3 +180,61 @@ export async function sendLifecycleEmailMessage(to: string, subject: string, htm
         return { success: false, error };
     }
 }
+
+
+/**
+ * Appointment reminder, sent alongside the push notification.
+ *
+ * Plain and short by design: this arrives on a phone an hour before a reading,
+ * and the only things that matter are who, when, and how to get there.
+ */
+export async function sendAppointmentReminderEmail(
+    to: string,
+    d: {
+        seekerName: string;
+        astrologerName: string;
+        when: string;
+        lead: '24 hours' | '1 hour';
+        ref: string;
+    }
+) {
+    if (!process.env.SMTP_HOST) {
+        console.error('Appointment reminder skipped: SMTP is not configured.');
+        return;
+    }
+
+    const soon = d.lead === '1 hour';
+    const subject = soon
+        ? `Your reading with ${d.astrologerName} starts soon`
+        : `Reminder: your reading with ${d.astrologerName} tomorrow`;
+
+    const html = `
+      <div style="font-family:Georgia,serif;max-width:520px;margin:0 auto;padding:28px;
+                  background:#F2EAD5;color:#251A11">
+        <p style="letter-spacing:.2em;text-transform:uppercase;font-size:11px;
+                  color:#5C3D0A;margin:0 0 18px">AskChetna</p>
+        <h1 style="font-size:20px;margin:0 0 14px">Namaste ${d.seekerName},</h1>
+        <p style="font-size:15px;line-height:1.6;margin:0 0 18px">
+          Your reading with <strong>${d.astrologerName}</strong> is
+          ${soon ? 'about an hour away' : 'tomorrow'}.
+        </p>
+        <p style="font-size:17px;margin:0 0 22px;padding:14px 16px;
+                  background:#F6F0DF;border:1px solid #D3C29C">${d.when} IST</p>
+        <a href="https://www.askchetna.com/dashboard"
+           style="display:inline-block;background:#7A2C12;color:#FBF6E8;
+                  padding:12px 24px;text-decoration:none;font-size:13px;
+                  letter-spacing:.06em;text-transform:uppercase">Open AskChetna</a>
+        <p style="font-size:12px;color:#5C4A32;margin:24px 0 0">
+          Reference ${d.ref}. If you can no longer make it, cancel from your
+          dashboard — credits are returned in full up to 12 hours before.
+        </p>
+      </div>`;
+
+    await transporter.sendMail({
+        from: formatFrom(lifecycleFromEmail, lifecycleFromName),
+        replyTo: lifecycleReplyTo,
+        to,
+        subject,
+        html,
+    });
+}

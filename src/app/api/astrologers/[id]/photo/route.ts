@@ -26,7 +26,7 @@ export async function GET(
 
     const astrologer = await prisma.astrologer.findUnique({
         where: { id },
-        select: { status: true, userId: true },
+        select: { status: true, userId: true, photoPath: true },
     });
 
     // 404, not 403: a rejected or pending applicant should not be distinguishable
@@ -35,20 +35,27 @@ export async function GET(
         return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
 
-    // The path lives on the application; the published profile only points here.
-    const application = await prisma.astrologerApplication.findFirst({
-        where: { userId: astrologer.userId, profilePhotoPath: { not: null } },
-        orderBy: { submittedAt: 'desc' },
-        select: { profilePhotoPath: true },
-    });
+    // A photo the astrologer has published themselves wins. Falling back to the
+    // application is what lets every profile approved before `photoPath` existed
+    // keep its portrait with no backfill — and it is a fallback, not a merge, so
+    // replacing a photo cannot resurrect the one submitted with the application.
+    let path = astrologer.photoPath;
+    if (!path) {
+        const application = await prisma.astrologerApplication.findFirst({
+            where: { userId: astrologer.userId, profilePhotoPath: { not: null } },
+            orderBy: { submittedAt: 'desc' },
+            select: { profilePhotoPath: true },
+        });
+        path = application?.profilePhotoPath ?? null;
+    }
 
-    if (!application?.profilePhotoPath) {
+    if (!path) {
         return NextResponse.json({ error: 'No photo' }, { status: 404 });
     }
 
     // Signed for a little longer than the cache below, so a browser never holds
     // a URL that has already expired.
-    const url = await signedPhotoUrl(application.profilePhotoPath, 3600);
+    const url = await signedPhotoUrl(path, 3600);
     if (!url) {
         return NextResponse.json({ error: 'Storage unavailable' }, { status: 503 });
     }

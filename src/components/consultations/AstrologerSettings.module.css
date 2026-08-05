@@ -1,0 +1,350 @@
+/* Settings for an astrologer's own practice. Same manuscript ground as their
+   desk, laid out as a single reading column — this is a form to work down, not
+   a dashboard to scan. */
+
+.page {
+    padding: 32px 0 70px;
+}
+
+.shell {
+    max-width: 780px;
+    margin: 0 auto;
+    padding-inline: clamp(16px, 3.5vw, 40px);
+}
+
+.top {
+    margin-bottom: 26px;
+}
+
+.eyebrow {
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--accent-gold);
+}
+
+.title {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: clamp(1.4rem, 3vw, 1.9rem);
+    color: var(--foreground);
+    margin: 4px 0 10px;
+    text-wrap: balance;
+}
+
+.back {
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--btn-bg);
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 2px;
+}
+
+.card {
+    background-color: var(--card-bg);
+    background-image: var(--paper-tex);
+    background-size: 380px 380px;
+    background-position: center;
+    background-blend-mode: var(--paper-tex-blend);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-xs);
+    box-shadow: var(--shadow-card);
+    padding: 22px 24px 24px;
+}
+
+.card + .card {
+    margin-top: 26px;
+}
+
+.head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.head h2 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.rule {
+    flex: 1;
+    height: 1px;
+    background: var(--card-border);
+    min-width: 20px;
+}
+
+.explain {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.65;
+    margin-bottom: 18px;
+}
+
+.explain b {
+    color: var(--foreground);
+}
+
+/* ── Fields ────────────────────────────────────────────────────────────── */
+
+.field {
+    display: block;
+    margin-bottom: 20px;
+}
+
+.fieldset {
+    border: 0;
+    padding: 0;
+    margin: 0 0 20px;
+}
+
+.label {
+    display: block;
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-bottom: 7px;
+    padding: 0;
+}
+
+.input,
+.textarea,
+.select,
+.time {
+    font: inherit;
+    width: 100%;
+    padding: 10px 12px;
+    color: var(--foreground);
+    background: var(--background);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-xs);
+}
+
+.textarea {
+    resize: vertical;
+    line-height: 1.6;
+}
+
+.input:focus-visible,
+.textarea:focus-visible,
+.select:focus-visible,
+.time:focus-visible {
+    outline: 2px solid var(--btn-bg);
+    outline-offset: 2px;
+}
+
+.counter {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 5px;
+}
+
+/* ── Chips ─────────────────────────────────────────────────────────────── */
+
+.chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.chip {
+    font: inherit;
+    font-size: 0.74rem;
+    padding: 6px 12px;
+    color: var(--text-muted);
+    background: transparent;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-xs);
+    cursor: pointer;
+    transition: background-color 0.15s var(--ease-out), color 0.15s var(--ease-out);
+}
+
+.chip:hover {
+    border-color: var(--btn-bg);
+    color: var(--btn-bg);
+}
+
+.chipOn {
+    background: var(--btn-bg);
+    color: var(--btn-fg);
+    border-color: var(--btn-bg);
+    font-weight: 600;
+}
+
+.chipOn:hover {
+    background: var(--btn-bg-hover);
+    color: var(--btn-fg);
+}
+
+/* ── Hours rows ────────────────────────────────────────────────────────── */
+
+.rows {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    flex-wrap: wrap;
+}
+
+.select {
+    width: auto;
+    flex: 1 1 140px;
+    min-width: 130px;
+}
+
+.time {
+    width: auto;
+    flex: 0 1 128px;
+    min-width: 110px;
+}
+
+.dash {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+.remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    flex: none;
+    color: var(--text-muted);
+    background: transparent;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-xs);
+    cursor: pointer;
+}
+
+.remove:hover {
+    color: var(--error);
+    border-color: var(--error);
+}
+
+.emptyRow {
+    font-size: 0.84rem;
+    color: var(--text-muted);
+    padding: 18px 0;
+}
+
+.addRow {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font: inherit;
+    font-size: 0.74rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-weight: 700;
+    padding: 8px 14px;
+    color: var(--btn-bg);
+    background: transparent;
+    border: 1px dashed var(--btn-bg);
+    border-radius: var(--radius-xs);
+    cursor: pointer;
+}
+
+.addRow:hover {
+    background: var(--band-alt-bg);
+}
+
+/* ── Footer ────────────────────────────────────────────────────────────── */
+
+.foot {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid var(--card-border);
+}
+
+.btnFill {
+    font: inherit;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-size: 0.76rem;
+    padding: 11px 22px;
+    border-radius: var(--radius-xs);
+    border: 1px solid var(--btn-bg);
+    background: var(--btn-bg);
+    color: var(--btn-fg);
+    cursor: pointer;
+    transition: background-color 0.18s var(--ease-out);
+}
+
+.btnFill:hover:not(:disabled) {
+    background: var(--btn-bg-hover);
+    border-color: var(--btn-bg-hover);
+}
+
+.btnFill:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.ok,
+.bad {
+    font-size: 0.82rem;
+    line-height: 1.5;
+    flex: 1 1 240px;
+}
+
+.ok {
+    color: var(--success);
+}
+
+.bad {
+    color: var(--error);
+}
+
+/* ── States ────────────────────────────────────────────────────────────── */
+
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 60px 20px;
+    color: var(--text-muted);
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .chip,
+    .btnFill,
+    .spin {
+        transition-duration: 1ms;
+        animation-duration: 1ms;
+    }
+}

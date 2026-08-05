@@ -14,14 +14,27 @@ import styles from './AstrologerApplicationForm.module.css';
  *
  * The preview is a local object URL, so it appears instantly rather than after
  * a round trip through storage and a signed URL.
+ *
+ * Serves two callers on purpose. An APPLICANT stages a photo and the form sends
+ * the returned path along at submit; a PUBLISHED astrologer replaces the live
+ * one and there is nothing to submit afterwards. Same picker, same limits, same
+ * "location data is removed" promise — a second implementation would drift from
+ * this one on exactly that sentence.
  */
 export default function PhotoUploadField({
     onUploaded,
+    endpoint = '/api/astrologer-applications/photo',
+    initialPreview = null,
 }: {
+    /** Called with the storage path (staging) or the served URL (publishing). */
     onUploaded: (path: string | null) => void;
+    endpoint?: string;
+    /** An already-published portrait, so the field does not start empty for
+     *  somebody who plainly has one. */
+    initialPreview?: string | null;
 }) {
     const inputRef = useRef<HTMLInputElement>(null);
-    const [preview, setPreview] = useState<string | null>(null);
+    const [preview, setPreview] = useState<string | null>(initialPreview);
     /** The live object URL, so it can be revoked without reading it back out of state. */
     const previewRef = useRef<string | null>(null);
     const [uploading, setUploading] = useState(false);
@@ -51,7 +64,7 @@ export default function PhotoUploadField({
         try {
             const body = new FormData();
             body.append('photo', file);
-            const res = await fetch('/api/astrologer-applications/photo', {
+            const res = await fetch(endpoint, {
                 method: 'POST',
                 body,
             });
@@ -61,7 +74,8 @@ export default function PhotoUploadField({
                 setUploadError(data.message ?? data.error ?? 'Could not upload that image.');
                 return;
             }
-            onUploaded(data.path);
+            // Staging returns a storage path; publishing returns the served URL.
+            onUploaded(data.path ?? data.photoUrl ?? null);
             setDone(true);
         } catch {
             setUploadError('Upload failed. Check your connection and try again.');

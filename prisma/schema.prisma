@@ -13,17 +13,17 @@ datasource db {
 
 // User model for authentication
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  password      String?   // Null for OAuth users
-  name          String?
-  image         String?   // Profile picture from OAuth
-  emailVerified DateTime?
+  id              String    @id @default(cuid())
+  email           String    @unique
+  password        String? // Null for OAuth users
+  name            String?
+  image           String? // Profile picture from OAuth
+  emailVerified   DateTime?
   // Phone sign-in (native apps). Nullable because the vast majority of
   // existing accounts are email/Google only; email stays the required
   // identity so nothing downstream (newsletter, reports, lifecycle mail)
   // has to cope with a null address. Stored E.164, e.g. "+919876543210".
-  phone         String?   @unique
+  phone           String?   @unique
   phoneVerifiedAt DateTime?
 
   /// Account deletion, required in-app by BOTH App Store guideline 5.1.1(v) and
@@ -39,26 +39,27 @@ model User {
   deletionScheduledFor DateTime?
 
   welcomeBonusNotifiedAt DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  isSubscribed  Boolean   @default(true) // For Newsletter
-  
-  profiles      Profile[]
-  questions     Question[]
-  creditPacks   CreditPack[]
-  journalEntries JournalEntry[]
-  accounts      Account[]
-  sessions      Session[]
-  exports       ExportRecord[]
-  creditHistory CreditTransaction[]
-  creditRequests CreditRequest[]
-  topics        Topic[]
-  posts         Post[]
-  profileLimits UserProfileLimit[]
-  lifecycleEmails LifecycleEmail[]
-  deviceTokens  DeviceToken[]
-  astrologer    Astrologer?
-  consultations Consultation[]
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+  isSubscribed           Boolean   @default(true) // For Newsletter
+
+  profiles               Profile[]
+  questions              Question[]
+  creditPacks            CreditPack[]
+  journalEntries         JournalEntry[]
+  accounts               Account[]
+  sessions               Session[]
+  exports                ExportRecord[]
+  creditHistory          CreditTransaction[]
+  creditRequests         CreditRequest[]
+  topics                 Topic[]
+  posts                  Post[]
+  profileLimits          UserProfileLimit[]
+  lifecycleEmails        LifecycleEmail[]
+  deviceTokens           DeviceToken[]
+  astrologer             Astrologer?
+  consultations          Consultation[]
+  appointments           Appointment[]
   astrologerApplications AstrologerApplication[]
 
   /// Lets the purge cron find due accounts without scanning the whole table.
@@ -73,25 +74,25 @@ model User {
 /// `token` and reassigns `userId`, so a notification can never be delivered to
 /// the previous owner of the device.
 model DeviceToken {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  token       String   @unique
-  platform    String   // "ios" | "android"
+  token       String  @unique
+  platform    String // "ios" | "android"
   appVersion  String?
   deviceModel String?
 
   /// Refreshed each time the app registers, so stale installs can be pruned.
-  lastSeenAt  DateTime @default(now())
+  lastSeenAt DateTime @default(now())
 
   /// Set when the user opts out, signs out, or FCM reports the token as
   /// unregistered. Rows are disabled rather than deleted to keep delivery
   /// history meaningful.
-  disabledAt  DateTime?
+  disabledAt DateTime?
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([userId, disabledAt])
 }
@@ -110,9 +111,9 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-  
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   @@unique([provider, providerAccountId])
 }
 
@@ -127,28 +128,28 @@ model Session {
 
 // Birth chart profile
 model Profile {
-  id            String    @id @default(cuid())
-  userId        String
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  name          String
-  dateOfBirth   DateTime
-  timeOfBirth   String    // Stored as "HH:MM" format
-  placeOfBirth  String
-  latitude      Float
-  longitude     Float
-  timezone      String
-  gender        String    @default("other") // Mandatory field: "male", "female", or "other"
-  
-  chartData     Json?     // Complete calculated chart positions
-  report        Report?
-  isActive      Boolean   @default(true)    // Whether this profile is active
-  unlockedCharts Json?     // Array of unlocked chart keys e.g. ["D2", "D10"]
-  disabledAt    DateTime?                   // When this profile was disabled
-  disabledReason String?                    // Why it was disabled (e.g., "Overwritten by newer version")
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name         String
+  dateOfBirth  DateTime
+  timeOfBirth  String // Stored as "HH:MM" format
+  placeOfBirth String
+  latitude     Float
+  longitude    Float
+  timezone     String
+  gender       String   @default("other") // Mandatory field: "male", "female", or "other"
+
+  chartData      Json? // Complete calculated chart positions
+  report         Report?
+  isActive       Boolean   @default(true) // Whether this profile is active
+  unlockedCharts Json? // Array of unlocked chart keys e.g. ["D2", "D10"]
+  disabledAt     DateTime? // When this profile was disabled
+  disabledReason String? // Why it was disabled (e.g., "Overwritten by newer version")
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
   @@index([userId])
   @@index([userId, isActive])
 }
@@ -158,47 +159,47 @@ model Report {
   profileId String   @unique
   profile   Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
   status    String   @default("pending") // pending, purchased, generated
-  content   Json?    // Cached AI report content
+  content   Json? // Cached AI report content
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 // AI Clarity questions
 model Question {
-  id            String    @id @default(cuid())
-  userId        String
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   questionText  String
-  response      Json      // 6-section AI answer structure
-  chartSnapshot Json      // Chart data at time of question
-  
-  isPaid        Boolean   @default(false)
-  paymentId     String?   // Razorpay payment ID
-  amount        Int?      // Amount in paise
-  
-  createdAt     DateTime  @default(now())
-  
+  response      Json // 6-section AI answer structure
+  chartSnapshot Json // Chart data at time of question
+
+  isPaid    Boolean @default(false)
+  paymentId String? // Razorpay payment ID
+  amount    Int? // Amount in paise
+
+  createdAt DateTime @default(now())
+
   @@index([userId])
   @@index([createdAt])
 }
 
 // Credit packs purchased
 model CreditPack {
-  id              String    @id @default(cuid())
-  userId          String
-  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  packType        String    // "5_PACK" or "10_PACK"
-  questionsTotal  Int       // 5 or 10
-  questionsUsed   Int       @default(0)
-  
-  purchasedAt     DateTime  @default(now())
-  expiresAt       DateTime? // Null = never expires
-  
-  paymentId       String    // Razorpay payment ID
-  amount          Int       // Amount paid in paise
-  
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  packType       String // "5_PACK" or "10_PACK"
+  questionsTotal Int // 5 or 10
+  questionsUsed  Int    @default(0)
+
+  purchasedAt DateTime  @default(now())
+  expiresAt   DateTime? // Null = never expires
+
+  paymentId String // Razorpay payment ID
+  amount    Int // Amount paid in paise
+
   @@index([userId])
 }
 
@@ -207,7 +208,7 @@ model VerificationToken {
   identifier String
   token      String   @unique
   expires    DateTime
-  
+
   @@unique([identifier, token])
 }
 
@@ -217,8 +218,8 @@ model JournalEntry {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   content   String
-  date      String   // Using "YYYY-MM-DD" format
-  transit   Json?    // Optional: capture transit data for that day
+  date      String // Using "YYYY-MM-DD" format
+  transit   Json? // Optional: capture transit data for that day
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -228,14 +229,14 @@ model JournalEntry {
 
 // Dynamic Pricing Configuration
 model PricingPlan {
-  id          String   @id @default(cuid())
-  key         String   @unique // e.g. "SINGLE_QUESTION", "CREDIT_PACK_5"
+  id          String  @id @default(cuid())
+  key         String  @unique // e.g. "SINGLE_QUESTION", "CREDIT_PACK_5"
   name        String
   description String?
-  price       Int      // Amount in paise (e.g. 14900 for ₹149)
-  currency    String   @default("INR")
-  credits     Int      @default(0) // Number of credits this plan gives (0 for n/a)
-  isActive    Boolean  @default(true)
+  price       Int // Amount in paise (e.g. 14900 for ₹149)
+  currency    String  @default("INR")
+  credits     Int     @default(0) // Number of credits this plan gives (0 for n/a)
+  isActive    Boolean @default(true)
 
   /// App Store product identifier for this pack, e.g.
   /// "com.askchetnam.app.credits_10". Set only for plans purchasable on iOS,
@@ -251,8 +252,8 @@ model PricingPlan {
   /// `price` above, which stays the INR/Razorpay figure for web and Android.
   appleProductId String? @unique
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // Service Credit Configuration
@@ -267,9 +268,9 @@ model ServiceCost {
 // Analytics Tracking
 model AnalyticsEvent {
   id        String   @id @default(cuid())
-  type      String   // PAGE_VIEW, FEATURE_USE
+  type      String // PAGE_VIEW, FEATURE_USE
   path      String?
-  userId    String?  // Optional, for logged-out users
+  userId    String? // Optional, for logged-out users
   visitorId String?
   country   String?
   city      String?
@@ -284,21 +285,21 @@ model AnalyticsEvent {
 
 // Admin Newsletters
 model Newsletter {
-  id             String   @id @default(cuid())
-  subject        String
-  content        String   @db.Text
+  id              String   @id @default(cuid())
+  subject         String
+  content         String   @db.Text
   recipientsCount Int
-  sentAt         DateTime @default(now())
+  sentAt          DateTime @default(now())
 }
 
 model NewsletterSubscriber {
-  id             String   @id @default(cuid())
-  email          String   @unique
-  isSubscribed   Boolean  @default(true)
-  subscribedAt   DateTime @default(now())
+  id             String    @id @default(cuid())
+  email          String    @unique
+  isSubscribed   Boolean   @default(true)
+  subscribedAt   DateTime  @default(now())
   unsubscribedAt DateTime?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   @@index([isSubscribed])
 }
@@ -308,8 +309,8 @@ model ExportRecord {
   id        String   @id @default(cuid())
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  chartType String   // e.g. "D1", "D9"
-  url       String   // URL to download
+  chartType String // e.g. "D1", "D9"
+  url       String // URL to download
   createdAt DateTime @default(now())
 
   @@index([userId])
@@ -320,26 +321,26 @@ model CreditTransaction {
   id          String   @id @default(cuid())
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  amount      Int      // Negative for usage, positive for adding
-  description String   // e.g. "Unlocked D9 Chart", "Purchased 5 Credits"
+  amount      Int // Negative for usage, positive for adding
+  description String // e.g. "Unlocked D9 Chart", "Purchased 5 Credits"
   createdAt   DateTime @default(now())
-  metadata    Json?    // Optional extra info
+  metadata    Json? // Optional extra info
 
   @@index([userId])
 }
 
 model CreditRequest {
-  id               String   @id @default(cuid())
+  id               String    @id @default(cuid())
   userId           String
-  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   requestedCredits Int
-  reason           String?  @db.Text
-  status           String   @default("PENDING")
-  adminNote        String?  @db.Text
+  reason           String?   @db.Text
+  status           String    @default("PENDING")
+  adminNote        String?   @db.Text
   reviewedBy       String?
   reviewedAt       DateTime?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
   @@index([userId, status])
   @@index([status, createdAt])
@@ -385,24 +386,24 @@ model UserProfileLimit {
   id          String   @id @default(cuid())
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  extraSlots  Int      @default(0)  // Number of purchased additional slots
+  extraSlots  Int      @default(0) // Number of purchased additional slots
   purchasedAt DateTime @default(now())
-  
+
   @@index([userId])
 }
 
 model LifecycleEmail {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   campaignKey String
-  dedupeKey   String   @unique
+  dedupeKey   String    @unique
   subject     String
-  status      String   @default("pending")
+  status      String    @default("pending")
   metadata    Json?
   sentAt      DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   @@index([userId, campaignKey])
   @@index([campaignKey, createdAt])
@@ -454,12 +455,12 @@ model AppSetting {
 /// astrologers carry payout, verification and rate data that has no meaning for
 /// an ordinary account, and an approval workflow that a boolean cannot express.
 model Astrologer {
-  id          String   @id @default(cuid())
+  id     String  @id @default(cuid())
   /// Null for an AI persona, which has no account to sign in with. Postgres
   /// permits many NULLs under a unique index, so @unique still holds one
   /// profile per real user.
-  userId      String?  @unique
-  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String? @unique
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   /// An AI persona rather than a person.
   ///
@@ -481,17 +482,30 @@ model Astrologer {
   /// default for the consultation flow.
   aiModel String?
 
-  displayName  String
-  bio          String?  @db.Text
-  photoUrl     String?
+  displayName String
+  bio         String?  @db.Text
+  /// Where the published portrait is SERVED from — always the pointer route
+  /// `/api/astrologers/<id>/photo`, never a signed URL, which would be dead
+  /// within the hour while the profile stayed live.
+  photoUrl    String?
+  /// Where the published portrait actually LIVES, as an object path in the
+  /// private bucket.
+  ///
+  /// Separate from the application's `profilePhotoPath` on purpose. The
+  /// application is the record of what an admin reviewed and must stay as
+  /// submitted; this is the photo currently published, which the astrologer may
+  /// replace whenever they like. Null means fall back to the application, which
+  /// is what every profile approved before this column keeps doing — so no
+  /// backfill is needed.
+  photoPath   String?
   languages    String[] // ISO codes, e.g. ["hi","en"]
   specialities String[] // e.g. ["career","relationships"]
 
   /// PENDING | APPROVED | SUSPENDED | REJECTED. Only APPROVED may take sessions.
-  status      String    @default("PENDING")
-  approvedAt  DateTime?
-  approvedBy  String?
-  rejectionReason String? @db.Text
+  status          String    @default("PENDING")
+  approvedAt      DateTime?
+  approvedBy      String?
+  rejectionReason String?   @db.Text
 
   /// Per-astrologer override of ASTROLOGER_REVENUE_PCT. Null means use the
   /// global default, so changing the default moves everyone who has no override.
@@ -508,19 +522,21 @@ model Astrologer {
 
   /// Manual online toggle, and a heartbeat. Availability needs both: a toggle
   /// alone leaves ghosts online after a crash.
-  isAvailable Boolean  @default(false)
+  isAvailable Boolean   @default(false)
   lastSeenAt  DateTime?
 
   /// Payout destination. Nullable because it is collected after approval, not
   /// at registration. See the tax note in the plan before extending this.
   payoutAccountRef String?
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   consultations Consultation[]
   earnings      AstrologerEarning[]
   payouts       Payout[]
+  availability  AstrologerAvailability[]
+  appointments  Appointment[]
 
   @@index([status, isAvailable])
   @@map("astrologers")
@@ -537,15 +553,15 @@ model Astrologer {
 /// will change, and a live join would silently rewrite every historical earning
 /// and break reconciliation against payouts already made.
 model Consultation {
-  id           String   @id @default(cuid())
+  id           String     @id @default(cuid())
   userId       String
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   astrologerId String
   astrologer   Astrologer @relation(fields: [astrologerId], references: [id])
 
   /// CHAT | AUDIO | VIDEO. Present from day one so adding a mode is a config
   /// row and a transport adapter, not a second billing path.
-  kind   String @default("CHAT")
+  kind String @default("CHAT")
 
   /// REQUESTED | ACTIVE | ENDED_BY_USER | ENDED_BY_ASTROLOGER
   /// ENDED_NO_EXTENSION | ENDED_TIMEOUT | FAILED
@@ -587,12 +603,12 @@ model Consultation {
 }
 
 model ConsultationMessage {
-  id             String   @id @default(cuid())
+  id             String       @id @default(cuid())
   consultationId String
   consultation   Consultation @relation(fields: [consultationId], references: [id], onDelete: Cascade)
   senderId       String
-  body           String   @db.Text
-  sentAt         DateTime @default(now())
+  body           String       @db.Text
+  sentAt         DateTime     @default(now())
   readAt         DateTime?
 
   @@index([consultationId, sentAt])
@@ -608,10 +624,10 @@ model ConsultationMessage {
 /// The unique constraint on consultationId is the idempotency guard — settling
 /// the same session twice is a duplicate key error rather than double pay.
 model AstrologerEarning {
-  id             String   @id @default(cuid())
+  id             String       @id @default(cuid())
   astrologerId   String
-  astrologer     Astrologer @relation(fields: [astrologerId], references: [id])
-  consultationId String   @unique
+  astrologer     Astrologer   @relation(fields: [astrologerId], references: [id])
+  consultationId String       @unique
   consultation   Consultation @relation(fields: [consultationId], references: [id])
 
   creditsServed Int
@@ -629,7 +645,7 @@ model AstrologerEarning {
 }
 
 model Payout {
-  id           String   @id @default(cuid())
+  id           String     @id @default(cuid())
   astrologerId String
   astrologer   Astrologer @relation(fields: [astrologerId], references: [id])
 
@@ -640,9 +656,9 @@ model Payout {
   amountPaise   Int
 
   /// PENDING | PROCESSING | PAID | FAILED
-  status    String  @default("PENDING")
+  status    String    @default("PENDING")
   reference String? // bank or RazorpayX payout id
-  notes     String? @db.Text
+  notes     String?   @db.Text
   paidAt    DateTime?
 
   createdAt DateTime @default(now())
@@ -680,37 +696,37 @@ model AstrologerApplication {
   status String @default("SUBMITTED")
 
   // ---- Section 1: about you ----
-  fullName    String
-  displayName String
-  email       String
-  phone       String
-  country     String
-  city        String
+  fullName         String
+  displayName      String
+  email            String
+  phone            String
+  country          String
+  city             String
   /// Storage path, not a URL. Photos stay private until a profile is published
   /// (spec §30), so they are served through short-lived signed URLs generated
   /// per request rather than a permanent public link.
   profilePhotoPath String?
 
   // ---- Section 2: practice ----
-  primaryPractice      String
-  primaryPracticeOther String?
-  additionalPractices  String[]
-  yearsOfExperience    String
-  learningMethods      String[]
-  learningMethodOther  String?
-  teacherGuruInstitute String?
-  hasFormalQualification Boolean @default(false)
+  primaryPractice        String
+  primaryPracticeOther   String?
+  additionalPractices    String[]
+  yearsOfExperience      String
+  learningMethods        String[]
+  learningMethodOther    String?
+  teacherGuruInstitute   String?
+  hasFormalQualification Boolean  @default(false)
   qualificationName      String?
 
   // ---- Section 3: expertise ----
   areasOfExpertise      String[]
   areasOfExpertiseOther String?
-  specialization        String? @db.Text
+  specialization        String?  @db.Text
 
   // ---- Section 4: languages and methods ----
-  languages            String[]
-  languageOther        String?
-  consultationMethods  String[]
+  languages             String[]
+  languageOther         String?
+  consultationMethods   String[]
   availabilityFrequency String
 
   // ---- Section 5: previous experience ----
@@ -719,37 +735,138 @@ model AstrologerApplication {
   professionalProfileUrl         String?
 
   // ---- Section 6-8: screening answers ----
-  aboutYou                    String  @db.Text
-  consultationApproach        String  @db.Text
-  sensitiveQuestionsApproach  String  @db.Text
-  whyJoinAskchetna            String  @db.Text
-  predictionCommunication     String
+  aboutYou                     String  @db.Text
+  consultationApproach         String  @db.Text
+  sensitiveQuestionsApproach   String  @db.Text
+  whyJoinAskchetna             String  @db.Text
+  predictionCommunication      String
   predictionCommunicationOther String? @db.Text
 
   // ---- Section 9: declarations ----
   // Stored individually rather than as one flag: they are separate consents and
   // an audit needs to show which was given, not merely that a box was ticked.
-  declarationAccuracy             Boolean @default(false)
-  declarationNoGuarantee          Boolean @default(false)
-  declarationTerms                Boolean @default(false)
-  declarationAdditionalVerification Boolean @default(false)
-  declaredAt                      DateTime?
+  declarationAccuracy               Boolean   @default(false)
+  declarationNoGuarantee            Boolean   @default(false)
+  declarationTerms                  Boolean   @default(false)
+  declarationAdditionalVerification Boolean   @default(false)
+  declaredAt                        DateTime?
 
   // ---- review ----
-  submittedAt DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  reviewedAt  DateTime?
-  reviewedBy  String?
+  submittedAt     DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  reviewedAt      DateTime?
+  reviewedBy      String?
   /// Never shown to the applicant. Spec §25: internal notes stay internal.
-  adminNotes  String?   @db.Text
+  adminNotes      String?   @db.Text
   /// Shown to the applicant, so it must be written for them to read.
-  rejectionReason String? @db.Text
+  rejectionReason String?   @db.Text
   /// What the admin has asked the applicant to supply, when status is
   /// REQUEST_MORE_INFORMATION.
-  infoRequest     String? @db.Text
+  infoRequest     String?   @db.Text
   infoRequestedAt DateTime?
 
   @@index([status, submittedAt])
   @@index([userId])
   @@map("astrologer_applications")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Appointments
+// ═══════════════════════════════════════════════════════════════════════════
+
+/// A recurring weekly window in which an astrologer will take booked sessions.
+///
+/// Authored in the astrologer's OWN local time and stored as a zone name rather
+/// than an offset. An offset would be wrong twice a year in any country that
+/// observes DST, and wrong permanently if the astrologer relocates — the window
+/// means "my Tuesday evening", not "+05:30 on Tuesday".
+///
+/// Minutes-from-local-midnight rather than a DateTime: this repeats forever and
+/// has no date. Storing a date would invite reading it as one.
+model AstrologerAvailability {
+  id           String     @id @default(cuid())
+  astrologerId String
+  astrologer   Astrologer @relation(fields: [astrologerId], references: [id], onDelete: Cascade)
+
+  /// 0 = Sunday, matching JavaScript's getDay().
+  dayOfWeek   Int
+  startMinute Int
+  endMinute   Int
+  /// IANA zone, e.g. "Asia/Kolkata".
+  timezone    String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([astrologerId, dayOfWeek])
+  @@map("astrologer_availability")
+}
+
+/// A session booked for a future time.
+///
+/// Deliberately SEPARATE from Consultation. A Consultation is a session that is
+/// happening — it has messages, billing and an earning. An Appointment is a
+/// promise about a time, and most of its life is spent before any of that
+/// exists. Collapsing them would mean every consultation query had to filter
+/// out sessions that had not started.
+///
+/// Credits are taken at CONFIRMED, not at request and not at start: the moment
+/// both sides have agreed is the moment the astrologer's time stops being
+/// available to anyone else, so that is what the seeker is paying to hold.
+model Appointment {
+  id  String @id @default(cuid())
+  /// Human-quotable, e.g. AP-3F9A21. Support conversations need something a
+  /// person can read down a phone line.
+  ref String @unique
+
+  userId       String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  astrologerId String
+  astrologer   Astrologer @relation(fields: [astrologerId], references: [id])
+
+  /// Always UTC. Rendered in each party's own zone at the edges.
+  startAt DateTime
+  blocks  Int      @default(1)
+
+  /// REQUESTED | COUNTERED | CONFIRMED | CANCELLED | COMPLETED | NO_SHOW | EXPIRED
+  status String @default("REQUESTED")
+
+  /// The astrologer's alternative, when they counter rather than accept. The
+  /// seeker either takes it — which moves startAt here and confirms — or lets
+  /// it lapse.
+  counterAt   DateTime?
+  counterNote String?   @db.Text
+
+  /// SNAPSHOTTED at confirmation, exactly as Consultation does it. An
+  /// astrologer's rate will change, and a live join would silently reprice an
+  /// appointment somebody has already paid for.
+  secondsPerBlock Int?
+  creditsPerBlock Int?
+  creditsCharged  Int  @default(0)
+
+  /// Set when the session actually opens, which is what links a promise to the
+  /// thing that fulfilled it.
+  consultationId String? @unique
+
+  /// One flag per reminder so a retry, or a scheduler that fires twice, cannot
+  /// send the same notice again.
+  remindedDayBefore  Boolean @default(false)
+  remindedHourBefore Boolean @default(false)
+
+  cancelledAt  DateTime?
+  /// SEEKER | ASTROLOGER | SYSTEM
+  cancelledBy  String?
+  cancelReason String?   @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /// Two people cannot hold the same astrologer at the same instant. Enforced
+  /// in the database because two confirmations racing is exactly the case an
+  /// application-level check loses.
+  @@unique([astrologerId, startAt])
+  @@index([astrologerId, status, startAt])
+  @@index([userId, startAt])
+  @@index([status, startAt])
+  @@map("appointments")
 }

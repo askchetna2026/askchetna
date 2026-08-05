@@ -2,8 +2,7 @@ import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
-import AstrologerDashboard from '@/components/consultations/AstrologerDashboard';
-import styles from './page.module.css';
+import AstrologerHome from '@/components/consultations/AstrologerHome';
 
 export const metadata: Metadata = {
     title: 'Astrologer Dashboard | AskChetna',
@@ -28,17 +27,9 @@ export default async function AstrologerHomePage() {
         redirect('/astrologer/register');
     }
 
-    return (
-        <div className={styles.page}>
-            <header className={styles.header}>
-                <h1 className={styles.title}>Your consultations</h1>
-                <p className={styles.subtitle}>
-                    Go available to appear in the directory. You stay listed while this page
-                    is open.
-                </p>
-            </header>
-
-            <AstrologerDashboard />
-        </div>
-    );
+    // The same screen `/` gives an approved astrologer. This route stays as the
+    // stable address for it — it is what the profile menu links to, and what an
+    // astrologer approved since their last sign-in reaches while the flag on
+    // their session token is still stale.
+    return <AstrologerHome />;
 }

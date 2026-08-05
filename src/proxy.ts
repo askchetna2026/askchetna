@@ -32,6 +32,21 @@ const protectedPaths = [
     ...(PAYMENTS_ENABLED ? ["/pricing"] : [])
 ]
 
+/**
+ * Is there a session cookie at all?
+ *
+ * The cheap gate in front of every session lookup on "/". Anonymous traffic —
+ * which is every crawler and most visitors — carries no such cookie, so it
+ * never reaches `auth()` and the marketing page stays statically served.
+ *
+ * Matched by suffix rather than by exact name: Auth.js prefixes the cookie with
+ * `__Secure-` over HTTPS and splits it into `.0`, `.1` chunks once it grows past
+ * 4 KB, and an exact match would quietly stop working in production.
+ */
+function hasSessionCookie(request: NextRequest): boolean {
+    return request.cookies.getAll().some((c) => c.name.includes("authjs.session-token"))
+}
+
 export async function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl
 
@@ -41,21 +56,28 @@ export async function proxy(request: NextRequest) {
      * "/" is a marketing page: a long scroll that explains the product and asks
      * for a signup. That is the right landing for a browser and the wrong one
      * for someone who already installed the app and signed in — they want the
-     * product, not the pitch. Signed-in native requests get the dashboard.
+     * product, not the pitch. Signed-in native requests get the dashboard, and
+     * an APPROVED astrologer gets their own desk on every platform.
      *
      * Rewrite rather than redirect: the URL stays "/", so there is no extra
      * round trip on cold start and no visible bounce. AppTabBar matches "/" for
      * the Today tab so the bar still highlights correctly.
      *
-     * Gated on the app User-Agent FIRST, deliberately. Browser traffic — which
-     * includes every crawler — never reaches the session lookup, so "/" stays
-     * fast and statically served for the SEO pages, and Googlebot still sees
-     * the marketing page.
+     * This has to happen HERE rather than in the page component. "/" is a client
+     * component, so the server renders it before the session is known — which
+     * means branching in React paints the seeker home and then swaps it for the
+     * astrologer's, a visible flash of the wrong page on every load.
+     *
+     * The astrologer status rides on the session token (see the jwt callback),
+     * so deciding this costs a cookie decode and no database round trip.
      */
-    if (pathname === "/" && parseAppPlatform(request.headers.get("user-agent")) !== "web") {
+    if (pathname === "/" && hasSessionCookie(request)) {
         try {
             const session = await auth()
-            if (session) {
+            if (session?.user?.astrologerStatus === "APPROVED") {
+                return NextResponse.rewrite(new URL("/astrologer", request.url))
+            }
+            if (session && parseAppPlatform(request.headers.get("user-agent")) !== "web") {
                 return NextResponse.rewrite(new URL("/dashboard", request.url))
             }
         } catch {

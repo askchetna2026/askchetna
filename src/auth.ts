@@ -465,6 +465,57 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             } catch (error) {
                 console.error("Error granting welcome bonus:", error);
             }
+
+            // Signing in IS going on duty, for an approved astrologer.
+            //
+            // Availability used to be a switch they had to remember to flip on
+            // the dashboard, so the directory read empty whenever somebody
+            // forgot — which looks identical to having no astrologers at all.
+            //
+            // One write per sign-in, and NO polling: presence is explicit
+            // (set here, cleared on sign-out) rather than proven by a repeating
+            // heartbeat. A 60s heartbeat would have cost ~14,400 function calls
+            // and the same number of row writes per astrologer per month, which
+            // is not a reasonable thing to spend a free tier on.
+            //
+            // `updateMany` deliberately — it filters and writes in one
+            // statement, so a normal user's sign-in costs no extra SELECT.
+            // Restricted to APPROVED so a suspended profile cannot put itself
+            // back in the directory by logging in.
+            try {
+                if (user?.id) {
+                    await prisma.astrologer.updateMany({
+                        where: { userId: user.id, status: "APPROVED" },
+                        data: { isAvailable: true, lastSeenAt: new Date() },
+                    });
+                }
+            } catch (error) {
+                // Never block a sign-in over presence.
+                console.error("Error setting astrologer availability on sign-in:", error);
+            }
+        },
+
+        /**
+         * Signing out is going off duty — the other half of explicit presence.
+         *
+         * Without this an astrologer who signed out would keep `isAvailable`
+         * true and stay listed until the staleness cap expired, which is the
+         * ghost the old heartbeat existed to prevent. One write, and only when
+         * a session actually ends.
+         */
+        async signOut(message) {
+            try {
+                const userId =
+                    "token" in message ? message.token?.sub : message.session?.userId;
+                if (userId) {
+                    await prisma.astrologer.updateMany({
+                        where: { userId },
+                        data: { isAvailable: false },
+                    });
+                }
+            } catch (error) {
+                console.error("Error clearing astrologer availability on sign-out:", error);
+            }
         }
     }
 })

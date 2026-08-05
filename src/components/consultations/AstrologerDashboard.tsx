@@ -8,14 +8,19 @@ import styles from './AstrologerDashboard.module.css';
 /**
  * The astrologer's own screen: go online, see who has arrived, review earnings.
  *
- * Being on this page IS the presence signal. It heartbeats while open, so the
- * directory's "online" state means "a browser is actually sitting here", not
- * merely "someone flipped a switch three days ago". Closing the tab takes them
- * offline within the presence window without any explicit action.
+ * Presence is NOT maintained here any more. Sign-in sets availability and
+ * sign-out clears it (see the auth events), so this page no longer has to prove
+ * liveness with a repeating write. The old 45s heartbeat cost a function call
+ * and a row write roughly 640 times a day per astrologer for a value that
+ * changes twice.
+ *
+ * The session poll stays, because an incoming consultation has to appear
+ * without a refresh — but at 8s it was 450 requests an hour from a single open
+ * tab, which is the largest single consumer of the free tier in the app. 30s is
+ * still well inside the window in which someone is deciding whether to wait.
  */
 
-const HEARTBEAT_MS = 45_000;
-const POLL_MS = 8_000;
+const POLL_MS = 30_000;
 
 type Live = {
     id: string;
@@ -88,21 +93,6 @@ export default function AstrologerDashboard() {
         const id = setInterval(load, POLL_MS);
         return () => clearInterval(id);
     }, [load]);
-
-    // Presence. heartbeatOnly so a background ping can never put someone online
-    // who had deliberately switched themselves off.
-    useEffect(() => {
-        if (!available) return;
-        const beat = () =>
-            void fetch('/api/astrologer/availability', {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ heartbeatOnly: true }),
-            }).catch(() => {});
-        beat();
-        const id = setInterval(beat, HEARTBEAT_MS);
-        return () => clearInterval(id);
-    }, [available]);
 
     const toggle = async () => {
         setToggling(true);

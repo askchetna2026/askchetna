@@ -2,8 +2,20 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
 
-/** How long after a heartbeat an astrologer still counts as online. */
-const PRESENCE_WINDOW_MS = 2 * 60 * 1000;
+/**
+ * Staleness cap, NOT a heartbeat window.
+ *
+ * Presence is explicit now: sign-in sets `isAvailable`, sign-out clears it.
+ * Nothing polls, because a 60s heartbeat costs a function call and a row write
+ * every minute per astrologer — tens of thousands a month for a signal that
+ * changes twice a day.
+ *
+ * This exists only to catch the case where neither end fired: a crashed
+ * browser, a killed app, a session that expired without a sign-out. Twelve
+ * hours is longer than any single sitting and short enough that a forgotten
+ * session does not advertise someone as available for days.
+ */
+const PRESENCE_WINDOW_MS = 12 * 60 * 60 * 1000;
 
 /**
  * The public directory: approved astrologers only.

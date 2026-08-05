@@ -160,6 +160,7 @@ export async function PATCH(
                 aboutYou: true,
                 languages: true,
                 areasOfExpertise: true,
+                profilePhotoPath: true,
             },
         });
         if (!full) return NextResponse.json({ error: 'Not found' }, { status: 404 });
@@ -186,8 +187,11 @@ export async function PATCH(
         // is the exact failure this whole feature exists to fix, and a profile
         // with the application still at FINAL_APPROVAL would re-publish on the
         // next click.
-        const [astrologer, app] = await prisma.$transaction([
-            prisma.astrologer.create({
+        // Interactive rather than the array form: photoUrl points at
+        // /api/astrologers/<id>/photo, and that id does not exist until the row
+        // is created.
+        const { astrologer, app } = await prisma.$transaction(async (tx) => {
+            const created = await tx.astrologer.create({
                 data: {
                     userId: full.userId,
                     displayName: full.displayName,
@@ -208,21 +212,30 @@ export async function PATCH(
                     status: 'APPROVED',
                     approvedAt: new Date(),
                     approvedBy: reviewer,
-                    // photoUrl stays null. The application's photo lives in a
-                    // PRIVATE bucket and is only readable through short-lived
-                    // signed URLs (spec §30); copying that path here would store
-                    // a link that expires. AstrologerAvatar falls back to a
-                    // generated initial, so the directory renders correctly.
-                    // Moving the photo to public storage is still to do.
                 },
                 select: { id: true, displayName: true, status: true },
-            }),
-            prisma.astrologerApplication.update({
+            });
+
+            // Set only when the applicant actually uploaded one, so
+            // AstrologerAvatar still falls back to a generated initial rather
+            // than to a broken image. A pointer, NOT a signed URL: signed links
+            // expire within the hour, and one stored on the profile would go
+            // dead while the profile stayed live.
+            if (full.profilePhotoPath) {
+                await tx.astrologer.update({
+                    where: { id: created.id },
+                    data: { photoUrl: `/api/astrologers/${created.id}/photo` },
+                });
+            }
+
+            const updatedApp = await tx.astrologerApplication.update({
                 where: { id },
                 data,
                 select: { id: true, ref: true, status: true, reviewedBy: true, reviewedAt: true },
-            }),
-        ]);
+            });
+
+            return { astrologer: created, app: updatedApp };
+        });
 
         return NextResponse.json({
             application: { ...app, reviewedAt: app.reviewedAt?.toISOString() ?? null },

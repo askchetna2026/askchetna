@@ -23,8 +23,8 @@
 }
 
 .phaseSummary {
-    background: linear-gradient(135deg, rgba(212, 175, 55, 0.08), rgba(159, 122, 234, 0.06));
-    border: 1px solid rgba(212, 175, 55, 0.3);
+    background: linear-gradient(135deg, rgba(181, 137, 46, 0.08), rgba(74, 47, 168, 0.06));
+    border: 1px solid rgba(181, 137, 46, 0.3);
     border-radius: var(--radius-lg);
     padding: 36px;
     text-align: left;
@@ -81,7 +81,7 @@
     border-radius: var(--radius-lg);
     padding: 40px;
     text-align: center;
-    box-shadow: 0 0 30px rgba(212, 175, 55, 0.1);
+    box-shadow: 0 0 30px rgba(181, 137, 46, 0.1);
     margin-bottom: 60px;
     position: relative;
     overflow: hidden;
@@ -177,7 +177,7 @@
 
 .activeItem {
     border-color: var(--accent-gold);
-    box-shadow: 0 0 20px rgba(212, 175, 55, 0.1);
+    box-shadow: 0 0 20px rgba(181, 137, 46, 0.1);
     transform: scale(1.05);
     z-index: 1;
 }
@@ -309,22 +309,22 @@
        gradient ran from deep gold to bright yellow and the parchment label
        vanished at the bright end. Both stops are tokens now, so the fill stays
        dark in the light theme and bright in the dark one. */
-    background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-dim));
-    color: var(--bg-primary);
+    background: var(--btn-bg);
+    color: var(--btn-fg);
     border: none;
     padding: 14px 28px;
     border-radius: 30px;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 10px 20px rgba(212, 175, 55, 0.2);
+    box-shadow: 0 10px 20px rgba(181, 137, 46, 0.2);
     margin-left: auto;
     margin-right: auto;
 }
 
 .aiRevealBtn:hover {
     transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 15px 30px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 15px 30px rgba(181, 137, 46, 0.3);
 }
 
 .aiRevealBtn:disabled {
@@ -352,7 +352,7 @@
 
 .aiCard {
     background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(212, 175, 55, 0.3);
+    border: 1px solid rgba(181, 137, 46, 0.3);
     border-radius: var(--radius-lg);
     padding: 40px;
     margin-bottom: 24px;

@@ -1,9 +1,9 @@
 .container {
     background: var(--card-bg);
-    border: 1px solid rgba(212, 175, 55, 0.3);
+    border: 1px solid rgba(181, 137, 46, 0.3);
     border-radius: var(--radius-lg);
     padding: 32px;
-    box-shadow: inset 0 1px 0 rgba(212, 175, 55, 0.4), 0 15px 40px rgba(0, 0, 0, 0.6);
+    box-shadow: inset 0 1px 0 rgba(181, 137, 46, 0.4), 0 15px 40px rgba(0, 0, 0, 0.6);
     position: relative;
     overflow: hidden;
 }
@@ -12,7 +12,7 @@
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0; height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.8), transparent);
+    background: linear-gradient(90deg, transparent, rgba(181, 137, 46, 0.8), transparent);
 }
 
 .header {
@@ -33,7 +33,7 @@
     font-family: var(--font-heading);
     color: var(--accent-gold);
     margin: 0;
-    text-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+    text-shadow: 0 0 15px rgba(181, 137, 46, 0.2);
 }
 
 .grid {
@@ -179,16 +179,16 @@
     flex-direction: column;
     gap: 4px;
     padding: 16px;
-    background: rgba(212, 175, 55, 0.03);
+    background: rgba(181, 137, 46, 0.03);
     border-radius: 12px;
-    border: 1px solid rgba(212, 175, 55, 0.15);
+    border: 1px solid rgba(181, 137, 46, 0.15);
     transition: all 0.3s ease;
 }
 
 .muhurtaItem:hover {
-    background: rgba(212, 175, 55, 0.08);
+    background: rgba(181, 137, 46, 0.08);
     transform: translateY(-2px);
-    border-color: rgba(212, 175, 55, 0.3);
+    border-color: rgba(181, 137, 46, 0.3);
 }
 
 .muhurtaLabel {

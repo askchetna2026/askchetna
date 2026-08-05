@@ -26,7 +26,7 @@
 
 .fab:hover {
     transform: scale(1.1) rotate(90deg);
-    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.6);
+    box-shadow: 0 6px 20px rgba(181, 137, 46, 0.6);
 }
 
 .fab:active {
@@ -41,7 +41,7 @@
     }
 
     50% {
-        box-shadow: 0 4px 20px rgba(212, 175, 55, 0.7), 0 0 0 8px rgba(212, 175, 55, 0.1);
+        box-shadow: 0 4px 20px rgba(181, 137, 46, 0.7), 0 0 0 8px rgba(181, 137, 46, 0.1);
     }
 }
 

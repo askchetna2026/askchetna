@@ -112,7 +112,7 @@
 }
 
 .analyzeBtn:hover {
-    background: rgba(212, 175, 55, 0.05);
+    background: rgba(181, 137, 46, 0.05);
 }
 
 .saveBtn:disabled,
@@ -129,8 +129,8 @@
 .analysisBox {
     margin-top: 8px;
     padding: 20px;
-    background: rgba(212, 175, 55, 0.05);
-    border: 1px solid rgba(212, 175, 55, 0.2);
+    background: rgba(181, 137, 46, 0.05);
+    border: 1px solid rgba(181, 137, 46, 0.2);
     border-radius: var(--radius-sm);
     animation: slideDown 0.4s ease-out;
 }

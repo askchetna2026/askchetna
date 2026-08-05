@@ -28,8 +28,8 @@
     justify-content: space-between;
     gap: 24px;
     align-items: flex-start;
-    background: linear-gradient(135deg, rgba(212, 175, 55, 0.08), rgba(255, 255, 255, 0.02));
-    border: 1px solid rgba(212, 175, 55, 0.2);
+    background: linear-gradient(135deg, rgba(181, 137, 46, 0.08), rgba(255, 255, 255, 0.02));
+    border: 1px solid rgba(181, 137, 46, 0.2);
     border-radius: var(--radius-lg);
     padding: 28px 32px;
     margin-bottom: 40px;
@@ -111,7 +111,7 @@
 
 .featured {
     border: 2px solid var(--accent-gold);
-    background: linear-gradient(135deg, rgba(212, 175, 55, 0.05), transparent);
+    background: linear-gradient(135deg, rgba(181, 137, 46, 0.05), transparent);
 }
 
 .cardLabel {
@@ -166,8 +166,8 @@
 .ctaBtn {
     display: inline-block;
     padding: 14px 32px;
-    background: var(--foreground);
-    color: var(--background);
+    background: var(--btn-bg);
+    color: var(--btn-fg);
     border-radius: 50px;
     font-weight: 500;
     transition: all 0.2s ease;
@@ -215,7 +215,7 @@
 
 .noteBox {
     padding: 24px 32px;
-    background: linear-gradient(135deg, rgba(212, 175, 55, 0.05), transparent);
+    background: linear-gradient(135deg, rgba(181, 137, 46, 0.05), transparent);
     border-left: 4px solid var(--accent-gold);
     border-radius: var(--radius-md);
     margin-top: 40px;

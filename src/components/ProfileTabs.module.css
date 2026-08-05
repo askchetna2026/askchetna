@@ -1,6 +1,6 @@
 .tabsContainer {
     background: rgba(255, 255, 255, 0.7);
-    border: 1px solid rgba(212, 175, 55, 0.2);
+    border: 1px solid rgba(181, 137, 46, 0.2);
     border-radius: var(--radius-lg);
     padding: 12px;
     margin-bottom: 24px;
@@ -34,7 +34,7 @@
     align-items: flex-start;
     gap: 2px;
     padding: 10px 16px;
-    border: 1px solid rgba(212, 175, 55, 0.2);
+    border: 1px solid rgba(181, 137, 46, 0.2);
     border-radius: var(--radius-md);
     background: rgba(255, 255, 255, 0.5);
     cursor: pointer;
@@ -46,7 +46,7 @@
 }
 
 .tab:hover {
-    background: rgba(212, 175, 55, 0.1);
+    background: rgba(181, 137, 46, 0.1);
     border-color: var(--accent-gold);
     transform: translateY(-2px);
 }
@@ -78,7 +78,7 @@
     align-items: center;
     justify-content: center;
     padding: 10px 16px;
-    border: 2px dashed rgba(212, 175, 55, 0.4);
+    border: 2px dashed rgba(181, 137, 46, 0.4);
     border-radius: var(--radius-md);
     background: transparent;
     color: var(--accent-gold);
@@ -88,7 +88,7 @@
 }
 
 .addTab:hover {
-    background: rgba(212, 175, 55, 0.1);
+    background: rgba(181, 137, 46, 0.1);
     border-color: var(--accent-gold);
     transform: scale(1.05);
 }

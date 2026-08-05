@@ -78,7 +78,7 @@
     font-family: var(--font-heading);
     z-index: 2;
     flex-shrink: 0;
-    box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 0 20px rgba(181, 137, 46, 0.3);
 }
 
 .content {

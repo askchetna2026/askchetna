@@ -27,13 +27,13 @@
     /* Inset shadow rather than border-top so the bar's box stays exactly
        --app-tabbar-height tall — a real border would add 1px that the body's
        padding-bottom doesn't account for, hiding a sliver of content. */
-    box-shadow: inset 0 1px 0 rgba(212, 175, 55, 0.18);
+    box-shadow: inset 0 1px 0 rgba(181, 137, 46, 0.18);
 }
 
 /* Both .native-app and data-theme sit on <html>, so this is one element. */
 :global(html.native-app[data-theme='light']) .tabBar {
     background: var(--background);
-    box-shadow: inset 0 1px 0 rgba(184, 134, 11, 0.22);
+    box-shadow: inset 0 1px 0 rgba(181, 137, 46, 0.22);
 }
 
 .tab {
@@ -114,11 +114,11 @@
            the status-bar inset has to be cleared. */
         padding-top: env(safe-area-inset-top, 0px);
 
-        box-shadow: inset -1px 0 0 rgba(212, 175, 55, 0.18);
+        box-shadow: inset -1px 0 0 rgba(181, 137, 46, 0.18);
     }
 
     :global(html.native-app[data-theme='light']) .tabBar {
-        box-shadow: inset -1px 0 0 rgba(184, 134, 11, 0.22);
+        box-shadow: inset -1px 0 0 rgba(181, 137, 46, 0.22);
     }
 
     :global(html.native-app) .tab {

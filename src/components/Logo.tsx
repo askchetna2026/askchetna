@@ -1,62 +1,39 @@
 'use client';
 
-import { useEffect, useId, useState } from 'react';
+import { useId } from 'react';
 
-export default function Logo({ width = 120, height = 40, onDark = false }: { width?: number, height?: number, onDark?: boolean }) {
-    // There is ONE theme now — layout.tsx pins <html data-theme="light"> and the
-    // manuscript palette is the only one defined. This defaulted to `true`, so
-    // the first paint drew the light-on-dark variant (#F5D87A gold, #DFE0FF ink)
-    // on parchment — about 1.2:1, i.e. an invisible logo until the effect ran.
-    const [isDark, setIsDark] = useState(false);
+/**
+ * The horizontal lockup: emblem plus wordmark.
+ *
+ * There is ONE theme. This used to detect `data-theme`, watch it with a
+ * MutationObserver, and fall back to `prefers-color-scheme` — carrying a whole
+ * light-on-dark palette for a dark theme that no longer exists in globals.css.
+ * Worse, it defaulted to that palette, so the first paint drew pale gold and
+ * #DFE0FF ink on parchment at roughly 1.2:1 until the effect corrected it.
+ *
+ * `onDark` is kept in the signature because it is a reasonable thing to want,
+ * but no caller passes it today and the header is `var(--background)`.
+ *
+ * Colours are literal rather than `var(...)`: these land in SVG gradient stops,
+ * where variable support is inconsistent enough not to rely on. They mirror
+ * --accent-gold-decor / --accent-gold-dim / --foreground.
+ */
+export default function Logo({
+    width = 120,
+    height = 40,
+    onDark = false,
+}: {
+    width?: number;
+    height?: number;
+    onDark?: boolean;
+}) {
     const gid = useId();
-
-    useEffect(() => {
-        const checkTheme = () => {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            if (currentTheme) {
-                setIsDark(currentTheme === 'dark');
-            } else {
-                setIsDark(window.matchMedia('(prefers-color-scheme: dark)').matches);
-            }
-        };
-
-        checkTheme();
-
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.attributeName === 'data-theme') {
-                    checkTheme();
-                }
-            });
-        });
-
-        observer.observe(document.documentElement, { attributes: true });
-
-        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-        const listener = (e: MediaQueryListEvent) => {
-            if (!document.documentElement.getAttribute('data-theme')) {
-                setIsDark(e.matches);
-            }
-        };
-        mediaQuery.addEventListener('change', listener);
-
-        return () => {
-            observer.disconnect();
-            mediaQuery.removeEventListener('change', listener);
-        };
-    }, []);
-
-    // The desktop header bar is always dark (rgba(11,15,47,...)), so it forces the
-    // light-on-dark variant via onDark. Other placements (e.g. the mobile menu, whose
-    // background follows var(--background)) stay theme-aware.
-    const useLightText = onDark || isDark;
-
-    // Palette is pulled straight from globals.css (light vs dark theme tokens).
-    const gold0 = useLightText ? '#F5D87A' : '#D4AF37';
-    const gold1 = useLightText ? '#C49A2B' : '#996515';
-    const ink = useLightText ? '#DFE0FF' : '#2C1B18';
     const goldId = `acGold-${gid}`;
     const gold = `url(#${goldId})`;
+
+    const gold0 = onDark ? '#F5D87A' : '#B5892E';
+    const gold1 = onDark ? '#C49A2B' : '#7C520D';
+    const ink = onDark ? '#F0E0BC' : '#251A11';
 
     return (
         <svg
@@ -74,18 +51,34 @@ export default function Logo({ width = 120, height = 40, onDark = false }: { wid
                 </linearGradient>
             </defs>
 
-            {/* Emblem: open zodiac ring forming a "C", with house dots and a central sparkle */}
-            <path d="M100.3,92.15 A50 50 0 1 1 100.3,27.85" fill="none" stroke={gold} strokeWidth="6" strokeLinecap="round" />
+            {/* Emblem: open zodiac ring forming a "C", house dots, central sparkle */}
+            <path
+                d="M100.3,92.15 A50 50 0 1 1 100.3,27.85"
+                fill="none"
+                stroke={gold}
+                strokeWidth="6"
+                strokeLinecap="round"
+            />
             <circle cx="62" cy="110" r="2" fill={gold} />
             <circle cx="26.64" cy="95.36" r="2" fill={gold} />
             <circle cx="12" cy="60" r="2" fill={gold} />
             <circle cx="26.64" cy="24.64" r="2" fill={gold} />
             <circle cx="62" cy="10" r="2" fill={gold} />
-            <path d="M62,48 Q63.8,58.2 74,60 Q63.8,61.8 62,72 Q60.2,61.8 50,60 Q60.2,58.2 62,48 Z" fill={gold} />
+            <path
+                d="M62,48 Q63.8,58.2 74,60 Q63.8,61.8 62,72 Q60.2,61.8 50,60 Q60.2,58.2 62,48 Z"
+                fill={gold}
+            />
 
-            {/* Wordmark uses the site heading font (Playfair Display) loaded in layout.tsx */}
-            <text x="130" y="78" fontFamily="var(--font-heading), Georgia, 'Times New Roman', serif" fontSize="50" fontWeight={700}>
-                <tspan fill={ink}>Ask</tspan><tspan fill={gold}>Chetna</tspan>
+            {/* Wordmark uses the site heading font (Playfair Display, layout.tsx) */}
+            <text
+                x="130"
+                y="78"
+                fontFamily="var(--font-heading), Georgia, 'Times New Roman', serif"
+                fontSize="50"
+                fontWeight={700}
+            >
+                <tspan fill={ink}>Ask</tspan>
+                <tspan fill={gold}>Chetna</tspan>
             </text>
         </svg>
     );

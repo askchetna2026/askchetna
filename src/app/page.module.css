@@ -16,7 +16,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at 50% 10%, rgba(212, 175, 55, 0.15), transparent 70%);
+  background: radial-gradient(circle at 50% 10%, rgba(181, 137, 46, 0.15), transparent 70%);
   z-index: 0;
 }
 
@@ -73,7 +73,7 @@
   margin-bottom: 40px;
   font-weight: 600;
   letter-spacing: 0.02em;
-  text-shadow: 0 0 60px rgba(212, 175, 55, 0.2);
+  text-shadow: 0 0 60px rgba(181, 137, 46, 0.2);
 }
 
 .heroSubtitle {
@@ -172,14 +172,14 @@
   flex-direction: column;
   gap: 14px;
   background: var(--card-bg, rgba(255, 255, 255, 0.03));
-  border: 1px solid rgba(212, 175, 55, 0.18);
+  border: 1px solid rgba(181, 137, 46, 0.18);
   border-radius: 18px;
   padding: 30px;
   transition: border-color 0.3s ease, transform 0.3s ease;
 }
 
 .blogCard:hover {
-  border-color: rgba(212, 175, 55, 0.5);
+  border-color: rgba(181, 137, 46, 0.5);
   transform: translateY(-4px);
 }
 
@@ -187,7 +187,7 @@
   width: 46px;
   height: 46px;
   border-radius: 12px;
-  background: rgba(212, 175, 55, 0.1);
+  background: rgba(181, 137, 46, 0.1);
   color: var(--accent-gold);
   display: flex;
   align-items: center;
@@ -449,15 +449,15 @@
   display: inline-flex;
   align-items: center;
   padding: 16px 40px;
-  background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-dim) 100%);
-  color: var(--bg-primary);
+  background: var(--btn-bg);
+  color: var(--btn-fg);
   border-radius: 50px;
   font-weight: 700;
   font-size: 1.05rem;
   transition: all 0.3s ease;
   border: none;
   cursor: pointer;
-  box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
+  box-shadow: 0 4px 20px rgba(181, 137, 46, 0.3);
   font-family: var(--font-heading);
   letter-spacing: 0.05em;
 }
@@ -479,7 +479,7 @@
 .primaryBtn:hover,
 .secondaryBtn:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 30px rgba(212, 175, 55, 0.4);
+  box-shadow: 0 8px 30px rgba(181, 137, 46, 0.4);
 }
 
 /* ─── Navagraha Planet Strip ─── */
@@ -490,8 +490,8 @@
   gap: 24px;
   margin-top: 80px;
   padding: 32px 0;
-  border-top: 1px solid rgba(212, 175, 55, 0.1);
-  border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+  border-top: 1px solid rgba(181, 137, 46, 0.1);
+  border-bottom: 1px solid rgba(181, 137, 46, 0.1);
 }
 
 .navagrahaItem {
@@ -505,13 +505,13 @@
 .planetGlyph {
   font-size: 1.8rem;
   color: var(--accent-gold);
-  text-shadow: 0 0 16px rgba(212, 175, 55, 0.6), 0 0 40px rgba(212, 175, 55, 0.2);
+  text-shadow: 0 0 16px rgba(181, 137, 46, 0.6), 0 0 40px rgba(181, 137, 46, 0.2);
   transition: text-shadow 0.3s ease;
   line-height: 1;
 }
 
 .navagrahaItem:hover .planetGlyph {
-  text-shadow: 0 0 24px rgba(212, 175, 55, 0.9), 0 0 60px rgba(212, 175, 55, 0.4);
+  text-shadow: 0 0 24px rgba(181, 137, 46, 0.9), 0 0 60px rgba(181, 137, 46, 0.4);
 }
 
 .planetSanskrit {
@@ -525,8 +525,8 @@
 
 /* ─── Zodiac Scroll Band ─── */
 .zodiacSection {
-  border-top: 1px solid rgba(212, 175, 55, 0.1);
-  border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+  border-top: 1px solid rgba(181, 137, 46, 0.1);
+  border-bottom: 1px solid rgba(181, 137, 46, 0.1);
   background: var(--bg-soft);
   overflow: hidden;
   padding: 16px 0;
@@ -554,7 +554,7 @@
 .zodiacGlyph {
   font-size: 1.6rem;
   color: var(--accent-gold);
-  text-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
+  text-shadow: 0 0 15px rgba(181, 137, 46, 0.6);
 }
 
 .zodiacSanskrit {
@@ -633,7 +633,7 @@
   bottom: 50px;
   left: 50%;
   width: 1px;
-  background: linear-gradient(to bottom, transparent, rgba(159, 122, 234, 0.3), rgba(212, 175, 55, 0.3), transparent);
+  background: linear-gradient(to bottom, transparent, rgba(74, 47, 168, 0.3), rgba(181, 137, 46, 0.3), transparent);
   transform: translateX(-50%);
   z-index: 0;
 }
@@ -649,7 +649,7 @@
   border: none; /* NO LINE RULE */
   border-radius: 20px;
   text-align: center;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(93, 63, 211, 0.08); /* Indigo glow */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(74, 47, 168, 0.08); /* Indigo glow */
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
@@ -673,9 +673,9 @@
 }
 
 .featureCard:hover {
-  background: rgba(93, 63, 211, 0.1); /* Iris hover */
+  background: rgba(74, 47, 168, 0.1); /* Iris hover */
   transform: translateY(-8px);
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 35px rgba(159, 122, 234, 0.25); /* Nebula Highlight Glow Pop */
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 35px rgba(74, 47, 168, 0.25); /* Nebula Highlight Glow Pop */
 }
 
 .featureIcon {
@@ -690,9 +690,9 @@
 }
 
 .iconColors {
-  background: rgba(212, 175, 55, 0.1);
-  color: #D4AF37;
-  box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+  background: rgba(181, 137, 46, 0.1);
+  color: var(--night-heading);
+  box-shadow: 0 0 20px rgba(181, 137, 46, 0.2);
 }
 
 .featureTitle {
@@ -733,7 +733,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at 50% 100%, rgba(212, 175, 55, 0.05), transparent 60%);
+  background: radial-gradient(circle at 50% 100%, rgba(181, 137, 46, 0.05), transparent 60%);
   z-index: 0;
 }
 
@@ -905,7 +905,7 @@
   border-color: var(--accent-gold);
   background: rgba(var(--accent-gold-rgb), 0.05);
   transform: translateY(-4px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(212, 175, 55, 0.15);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(181, 137, 46, 0.15);
 }
 
 .quickLinkItem:hover span {
@@ -1060,7 +1060,7 @@
 
 .testimonialCard:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 15px rgba(212, 175, 55, 0.1);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 15px rgba(181, 137, 46, 0.1);
 }
 
 .testimonialQuote {
@@ -1107,7 +1107,7 @@
 
 .creditCard:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 15px rgba(212, 175, 55, 0.1);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 15px rgba(181, 137, 46, 0.1);
 }
 
 .creditTitle {
@@ -1179,14 +1179,14 @@
   box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
   padding: 32px;
   text-align: left;
-  border: 1px solid rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(181, 137, 46, 0.1);
 }
 
 .sampleChatHeader {
   display: flex;
   align-items: center;
   gap: 12px;
-  border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+  border-bottom: 1px solid rgba(181, 137, 46, 0.1);
   padding-bottom: 16px;
   margin-bottom: 24px;
 }
@@ -1199,7 +1199,7 @@
 }
 
 .sampleQuestion {
-  background: rgba(212, 175, 55, 0.1);
+  background: rgba(181, 137, 46, 0.1);
   border-radius: 16px;
   padding: 16px 20px;
   margin-bottom: 24px;
@@ -1244,7 +1244,7 @@
   padding: 32px;
   background: var(--card-bg);
   border-radius: 20px;
-  border: 1px solid rgba(212, 175, 55, 0.15);
+  border: 1px solid rgba(181, 137, 46, 0.15);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
   text-align: center;
 }
@@ -1275,7 +1275,7 @@
 .teaserInput {
   padding: 12px 20px;
   background: var(--card-bg);
-  border: 1px solid rgba(212, 175, 55, 0.3);
+  border: 1px solid rgba(181, 137, 46, 0.3);
   border-radius: 50px;
   color: var(--foreground);
   font-size: 1rem;
@@ -1287,7 +1287,7 @@
 
 .teaserInput:focus {
   border-color: var(--accent-gold);
-  box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+  box-shadow: 0 0 10px rgba(181, 137, 46, 0.3);
 }
 
 .teaserSubmitBtn {
@@ -1307,7 +1307,7 @@
 .teaserSubmitBtn:hover {
   background: transparent;
   color: var(--accent-gold);
-  box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+  box-shadow: 0 0 15px rgba(181, 137, 46, 0.3);
 }
 
 .teaserResultBox {
@@ -1385,7 +1385,7 @@
 [data-theme='light'] .liveSampleContainer,
 [data-theme='light'] .teaserFormContainer {
   background: var(--card-bg);
-  border-color: rgba(184, 134, 11, 0.22);
+  border-color: rgba(181, 137, 46, 0.22);
 }
 
 [data-theme='light'] .zodiacSection {

@@ -10,8 +10,8 @@
 }
 
 .section {
-    background: rgba(159, 122, 234, 0.04);
-    border: 1px solid rgba(159, 122, 234, 0.14);
+    background: rgba(74, 47, 168, 0.04);
+    border: 1px solid rgba(74, 47, 168, 0.14);
     border-radius: 16px;
     padding: 28px;
     margin-bottom: 24px;
@@ -40,7 +40,7 @@
     justify-content: space-between;
     gap: 16px;
     padding: 12px 0;
-    border-bottom: 1px solid rgba(159, 122, 234, 0.1);
+    border-bottom: 1px solid rgba(74, 47, 168, 0.1);
 }
 
 .detailRow:last-child {
@@ -81,13 +81,13 @@
 }
 
 .secondaryBtn {
-    border: 1px solid rgba(212, 175, 55, 0.4);
+    border: 1px solid rgba(181, 137, 46, 0.4);
     background: transparent;
     color: var(--accent-gold);
 }
 
 .secondaryBtn:hover:not(:disabled) {
-    background: rgba(212, 175, 55, 0.1);
+    background: rgba(181, 137, 46, 0.1);
 }
 
 .dangerBtn {
@@ -152,7 +152,7 @@
     width: 100%;
     padding: 12px 14px;
     border-radius: 8px;
-    border: 1px solid rgba(159, 122, 234, 0.28);
+    border: 1px solid rgba(74, 47, 168, 0.28);
     background: var(--card-bg);
     color: var(--foreground);
     font: inherit;

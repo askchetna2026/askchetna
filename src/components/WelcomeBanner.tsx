@@ -60,14 +60,15 @@ export default function WelcomeBanner({ bonusAmount }: { bonusAmount: number }) 
                     <Link
                         href="/login"
                         style={{
-                            background: 'var(--accent-gold)',
-                            // Not '#000': black on the light theme's deep gold
-                            // measured 3.7:1, under AA. --bg-primary is the
-                            // app's "text on gold" colour and clears it in both
-                            // themes.
-                            color: 'var(--bg-primary)',
+                            // The one button colour. This was a gold fill, which
+                            // made it the odd control out on every screen it
+                            // appeared on — and gold is now dark enough to read
+                            // as text on parchment, so it was drifting toward
+                            // unreadable as a fill too.
+                            background: 'var(--btn-bg)',
+                            color: 'var(--btn-fg)',
                             padding: '6px 16px',
-                            borderRadius: '20px',
+                            borderRadius: 'var(--radius-xs)',
                             fontSize: '0.85rem',
                             fontWeight: 'bold',
                             textDecoration: 'none',

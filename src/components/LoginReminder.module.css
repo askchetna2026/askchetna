@@ -40,7 +40,7 @@
 .iconWrapper {
     width: 40px;
     height: 40px;
-    background: rgba(212, 175, 55, 0.1);
+    background: rgba(181, 137, 46, 0.1);
     color: var(--accent-gold);
     border-radius: 12px;
     display: flex;
@@ -111,7 +111,7 @@
 
 .loginBtn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 4px 12px rgba(181, 137, 46, 0.3);
 }
 
 @media (max-width: 480px) {

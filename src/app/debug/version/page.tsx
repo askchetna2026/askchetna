@@ -103,7 +103,7 @@ export default function VersionDebugPage() {
         )}
       </div>
 
-      <div style={{ marginTop: '40px', padding: '16px', background: 'rgba(93, 63, 211, 0.1)', borderRadius: '8px', border: '1px solid rgba(93, 63, 211, 0.2)' }}>
+      <div style={{ marginTop: '40px', padding: '16px', background: 'rgba(74, 47, 168, 0.1)', borderRadius: '8px', border: '1px solid rgba(74, 47, 168, 0.2)' }}>
         <h3 style={{ color: 'var(--accent-iris)', marginTop: 0 }}>Troubleshooting</h3>
         <ul style={{ color: 'var(--foreground)', fontSize: '14px' }}>
           <li>If "Is Native App" is NO: Check User-Agent string. APK needs to include "AskChetnaApp"</li>

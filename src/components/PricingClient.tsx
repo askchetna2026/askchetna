@@ -301,7 +301,7 @@ export default function PricingClient({ plans, platform }: PricingClientProps) {
                     name: session.user?.name || '',
                 },
                 theme: {
-                    color: '#D4AF37',
+                    color: 'var(--accent-gold-text)',
                 },
                 modal: {
                     ondismiss: function () {

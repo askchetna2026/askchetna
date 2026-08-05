@@ -104,7 +104,7 @@
 .formGroup textarea:focus {
     outline: none;
     border-color: var(--accent-gold);
-    box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.1);
+    box-shadow: 0 0 0 2px rgba(181, 137, 46, 0.1);
 }
 
 .formGroup textarea {
@@ -116,8 +116,8 @@
     align-items: center;
     gap: 8px;
     padding: 14px 32px;
-    background: var(--foreground);
-    color: var(--background);
+    background: var(--btn-bg);
+    color: var(--btn-fg);
     border: none;
     border-radius: 50px;
     font-size: 1rem;

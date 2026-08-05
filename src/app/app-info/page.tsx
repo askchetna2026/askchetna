@@ -69,7 +69,7 @@ export default function AppInfoPage() {
   };
 
   return (
-    <main style={{ minHeight: '100vh', background: 'linear-gradient(135deg, var(--background) 0%, #1a1a4d 100%)' }}>
+    <main style={{ minHeight: '100vh', background: 'transparent' }}>
       <div style={{ maxWidth: '600px', margin: '0 auto', padding: '24px', color: 'var(--foreground)' }}>
         {/* Back Button */}
         <Link
@@ -95,7 +95,7 @@ export default function AppInfoPage() {
           <h1 style={{ fontSize: '32px', fontWeight: 600, margin: '0 0 8px 0', color: 'var(--foreground)' }}>
             App Information
           </h1>
-          <p style={{ fontSize: '14px', color: 'rgba(var(--accent-gold-rgb), 0.8)', margin: 0 }}>
+          <p style={{ fontSize: '14px', color: 'var(--accent-gold-text)', margin: 0 }}>
             Version details and updates
           </p>
         </div>
@@ -105,7 +105,7 @@ export default function AppInfoPage() {
           padding: '24px',
           background: 'rgba(var(--bg-soft-rgb), 0.6)',
           border: '1px solid rgba(var(--accent-gold-rgb), 0.2)',
-          borderRadius: '12px',
+          borderRadius: 'var(--radius-sm)',
           marginBottom: '20px'
         }}>
           <div style={{ display: 'grid', gap: '20px' }}>
@@ -113,7 +113,7 @@ export default function AppInfoPage() {
             <div>
               <p style={{
                 fontSize: '12px',
-                color: 'rgba(var(--accent-gold-rgb), 0.7)',
+                color: 'var(--text-muted)',
                 margin: '0 0 8px 0',
                 textTransform: 'uppercase',
                 letterSpacing: '0.5px'
@@ -132,10 +132,10 @@ export default function AppInfoPage() {
             </div>
 
             {/* App Type */}
-            <div style={{ paddingTop: '12px', borderTop: '1px solid rgba(var(--accent-gold-rgb), 0.1)' }}>
+            <div style={{ paddingTop: '12px', borderTop: '1px solid var(--card-border)' }}>
               <p style={{
                 fontSize: '12px',
-                color: 'rgba(var(--accent-gold-rgb), 0.7)',
+                color: 'var(--text-muted)',
                 margin: '0 0 8px 0',
                 textTransform: 'uppercase',
                 letterSpacing: '0.5px'
@@ -164,9 +164,9 @@ export default function AppInfoPage() {
         {updateAvailable && (
           <div style={{
             padding: '24px',
-            background: 'rgba(78, 205, 196, 0.1)',
-            border: '2px solid rgba(78, 205, 196, 0.4)',
-            borderRadius: '12px',
+            background: 'var(--success-bg)',
+            border: '1px solid var(--success)',
+            borderRadius: 'var(--radius-sm)',
             marginBottom: '20px'
           }}>
             <div style={{ marginBottom: '16px' }}>
@@ -184,7 +184,7 @@ export default function AppInfoPage() {
               </h2>
               <p style={{
                 fontSize: '14px',
-                color: 'rgba(78, 205, 196, 0.9)',
+                color: 'var(--success)',
                 margin: 0,
                 lineHeight: '1.6'
               }}>
@@ -198,14 +198,14 @@ export default function AppInfoPage() {
               fontSize: '13px',
               marginBottom: '16px',
               paddingTop: '12px',
-              borderTop: '1px solid rgba(78, 205, 196, 0.2)'
+              borderTop: '1px solid var(--card-border)'
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'rgba(78, 205, 196, 0.7)' }}>New Version:</span>
+                <span style={{ color: 'var(--text-muted)' }}>New Version:</span>
                 <span style={{ fontFamily: 'monospace', fontWeight: 600 }}>v{updateAvailable.version}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'rgba(78, 205, 196, 0.7)' }}>Released:</span>
+                <span style={{ color: 'var(--text-muted)' }}>Released:</span>
                 <span>{new Date(updateAvailable.releaseDate).toLocaleDateString()}</span>
               </div>
               {isCriticalUpdate(updateAvailable) && (
@@ -213,9 +213,9 @@ export default function AppInfoPage() {
                   display: 'flex',
                   justifyContent: 'space-between',
                   padding: '8px 0',
-                  borderTop: '1px solid rgba(78, 205, 196, 0.2)'
+                  borderTop: '1px solid var(--card-border)'
                 }}>
-                  <span style={{ color: 'rgba(78, 205, 196, 0.7)' }}>Priority:</span>
+                  <span style={{ color: 'var(--text-muted)' }}>Priority:</span>
                   <span style={{ color: 'var(--error)', fontWeight: 600 }}>⚠️ Critical</span>
                 </div>
               )}
@@ -232,7 +232,7 @@ export default function AppInfoPage() {
                   : 'linear-gradient(135deg, var(--success) 0%, var(--success) 100%)',
                 color: 'var(--background)',
                 border: 'none',
-                borderRadius: '8px',
+                borderRadius: 'var(--radius-xs)',
                 fontSize: '14px',
                 fontWeight: 600,
                 cursor: loading ? 'not-allowed' : 'pointer',
@@ -250,13 +250,13 @@ export default function AppInfoPage() {
         {!updateAvailable && !loading && (
           <div style={{
             padding: '24px',
-            background: 'rgba(78, 205, 196, 0.05)',
-            border: '1px solid rgba(78, 205, 196, 0.2)',
-            borderRadius: '12px',
+            background: 'var(--success-bg)',
+            border: '1px solid var(--card-border)',
+            borderRadius: 'var(--radius-sm)',
             marginBottom: '20px',
             textAlign: 'center'
           }}>
-            <p style={{ margin: 0, color: 'rgba(78, 205, 196, 0.9)', fontSize: '14px' }}>
+            <p style={{ margin: 0, color: 'var(--success)', fontSize: '14px' }}>
               ✅ You're on the latest version
             </p>
           </div>
@@ -270,18 +270,18 @@ export default function AppInfoPage() {
             style={{
               width: '100%',
               padding: '12px',
-              background: 'rgba(93, 63, 211, 0.2)',
+              background: 'rgba(74, 47, 168, 0.2)',
               color: 'var(--accent-iris)',
-              border: '1px solid rgba(93, 63, 211, 0.4)',
-              borderRadius: '8px',
+              border: '1px solid rgba(74, 47, 168, 0.4)',
+              borderRadius: 'var(--radius-xs)',
               fontSize: '14px',
               fontWeight: 500,
               cursor: loading ? 'not-allowed' : 'pointer',
               transition: 'all 0.2s',
               opacity: loading ? 0.7 : 1
             }}
-            onMouseOver={(e) => !loading && (e.currentTarget.style.background = 'rgba(93, 63, 211, 0.3)')}
-            onMouseOut={(e) => (e.currentTarget.style.background = 'rgba(93, 63, 211, 0.2)')}
+            onMouseOver={(e) => !loading && (e.currentTarget.style.background = 'rgba(74, 47, 168, 0.3)')}
+            onMouseOut={(e) => (e.currentTarget.style.background = 'rgba(74, 47, 168, 0.2)')}
           >
             {loading ? '⟳ Checking for updates...' : '⟳ Check for Updates'}
           </button>
@@ -303,13 +303,13 @@ export default function AppInfoPage() {
             padding: '20px',
             background: 'rgba(var(--bg-soft-rgb), 0.4)',
             border: '1px solid rgba(var(--accent-gold-rgb), 0.15)',
-            borderRadius: '8px',
+            borderRadius: 'var(--radius-xs)',
             marginBottom: '24px',
             fontSize: '13px'
           }}>
             <p style={{
               fontSize: '12px',
-              color: 'rgba(var(--accent-gold-rgb), 0.6)',
+              color: 'var(--text-muted)',
               margin: '0 0 12px 0',
               textTransform: 'uppercase',
               letterSpacing: '0.5px'
@@ -318,11 +318,11 @@ export default function AppInfoPage() {
             </p>
             <div style={{ display: 'grid', gap: '8px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'rgba(var(--accent-gold-rgb), 0.6)' }}>Latest:</span>
+                <span style={{ color: 'var(--text-muted)' }}>Latest:</span>
                 <span style={{ fontFamily: 'monospace', color: 'var(--foreground)' }}>v{apiVersion.version}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'rgba(var(--accent-gold-rgb), 0.6)' }}>Status:</span>
+                <span style={{ color: 'var(--text-muted)' }}>Status:</span>
                 <span style={{ color: 'var(--success)' }}>Online ✓</span>
               </div>
             </div>
@@ -332,11 +332,11 @@ export default function AppInfoPage() {
         {/* Footer Info */}
         <div style={{
           padding: '16px',
-          background: 'rgba(93, 63, 211, 0.05)',
-          border: '1px solid rgba(93, 63, 211, 0.15)',
-          borderRadius: '8px',
+          background: 'rgba(74, 47, 168, 0.05)',
+          border: '1px solid rgba(74, 47, 168, 0.15)',
+          borderRadius: 'var(--radius-xs)',
           fontSize: '12px',
-          color: 'rgba(var(--accent-gold-rgb), 0.6)',
+          color: 'var(--text-muted)',
           lineHeight: '1.6',
           marginBottom: '24px'
         }}>
@@ -353,9 +353,9 @@ export default function AppInfoPage() {
           padding: '16px',
           background: 'rgba(var(--accent-gold-rgb), 0.05)',
           border: '1px solid rgba(var(--accent-gold-rgb), 0.15)',
-          borderRadius: '8px',
+          borderRadius: 'var(--radius-xs)',
           fontSize: '12px',
-          color: 'rgba(var(--accent-gold-rgb), 0.7)',
+          color: 'var(--text-muted)',
           lineHeight: '1.6'
         }}>
           <h3 style={{ margin: '0 0 12px 0', fontSize: '13px', color: 'var(--accent-gold)' }}>Privacy & Updates</h3>

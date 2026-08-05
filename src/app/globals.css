@@ -401,7 +401,7 @@ a {
     radial-gradient(3px 3px at 120px 200px, #fff, transparent),
     radial-gradient(4px 4px at 280px 20px, var(--accent-gold), transparent);
   background-size: 400px 400px;
-  filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.8));
+  filter: drop-shadow(0 0 10px rgba(181, 137, 46, 0.8));
   opacity: 0;
 }
 
@@ -415,7 +415,7 @@ a {
   height: 100vh;
   z-index: -2;
   pointer-events: none;
-  background: radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.12) 0%, rgba(93, 63, 211, 0.05) 40%, transparent 70%);
+  background: radial-gradient(circle at 50% 50%, rgba(181, 137, 46, 0.12) 0%, rgba(74, 47, 168, 0.05) 40%, transparent 70%);
   opacity: 0;
 }
 
@@ -597,10 +597,10 @@ h3 { font-size: clamp(1.125rem, 3vw, 1.5rem); letter-spacing: 0.05em; }
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--accent-gold);
-  border: 1px solid rgba(212, 175, 55, 0.3);
+  border: 1px solid rgba(181, 137, 46, 0.3);
   padding: 4px 12px;
   border-radius: 20px;
-  background: rgba(212, 175, 55, 0.05);
+  background: rgba(181, 137, 46, 0.05);
 }
 
 /* ═══════════════════════════════════════════════
@@ -635,20 +635,20 @@ h3 { font-size: clamp(1.125rem, 3vw, 1.5rem); letter-spacing: 0.05em; }
 
 @keyframes pulse-glow {
   0%, 100% {
-    box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+    box-shadow: 0 0 15px rgba(181, 137, 46, 0.4);
   }
   50% {
-    box-shadow: 0 0 30px rgba(212, 175, 55, 0.8);
+    box-shadow: 0 0 30px rgba(181, 137, 46, 0.8);
   }
 }
 
 @keyframes glow-float {
   0%, 100% {
-    filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.4));
+    filter: drop-shadow(0 0 8px rgba(181, 137, 46, 0.4));
     transform: translateY(0px);
   }
   50% {
-    filter: drop-shadow(0 0 16px rgba(212, 175, 55, 0.8));
+    filter: drop-shadow(0 0 16px rgba(181, 137, 46, 0.8));
     transform: translateY(-4px);
   }
 }
@@ -722,7 +722,7 @@ h3 { font-size: clamp(1.125rem, 3vw, 1.5rem); letter-spacing: 0.05em; }
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow:
-    0 4px 20px rgba(212, 175, 55, 0.3),
+    0 4px 20px rgba(181, 137, 46, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
   text-transform: uppercase;
   font-size: 0.9rem;
@@ -750,12 +750,12 @@ h3 { font-size: clamp(1.125rem, 3vw, 1.5rem); letter-spacing: 0.05em; }
 .primary-btn-cosmic:hover {
   transform: translateY(-2px);
   box-shadow:
-    0 10px 30px rgba(212, 175, 55, 0.6),
+    0 10px 30px rgba(181, 137, 46, 0.6),
     inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
 .primary-btn-cosmic:focus {
-  outline: 2px solid rgba(212, 175, 55, 0.5);
+  outline: 2px solid rgba(181, 137, 46, 0.5);
   outline-offset: 2px;
 }
 
@@ -775,15 +775,15 @@ h3 { font-size: clamp(1.125rem, 3vw, 1.5rem); letter-spacing: 0.05em; }
 }
 
 .secondary-btn-cosmic:hover {
-  background: rgba(212, 175, 55, 0.15);
+  background: rgba(181, 137, 46, 0.15);
   box-shadow:
-    inset 0 0 20px rgba(212, 175, 55, 0.2),
-    0 0 20px rgba(212, 175, 55, 0.1);
-  border-color: rgba(212, 175, 55, 0.8);
+    inset 0 0 20px rgba(181, 137, 46, 0.2),
+    0 0 20px rgba(181, 137, 46, 0.1);
+  border-color: rgba(181, 137, 46, 0.8);
 }
 
 .secondary-btn-cosmic:focus {
-  outline: 2px solid rgba(212, 175, 55, 0.5);
+  outline: 2px solid rgba(181, 137, 46, 0.5);
   outline-offset: 2px;
 }
 
@@ -799,7 +799,7 @@ h3 { font-size: clamp(1.125rem, 3vw, 1.5rem); letter-spacing: 0.05em; }
 .planet-glyph {
   font-size: 1.5rem;
   color: var(--accent-gold);
-  filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.6));
+  filter: drop-shadow(0 0 8px rgba(181, 137, 46, 0.6));
 }
 
 /* Cosmic Effect Utilities */
@@ -812,14 +812,14 @@ h3 { font-size: clamp(1.125rem, 3vw, 1.5rem); letter-spacing: 0.05em; }
   position: absolute;
   inset: -8px;
   border-radius: inherit;
-  background: radial-gradient(circle, rgba(212, 175, 55, 0.3), transparent 70%);
+  background: radial-gradient(circle, rgba(181, 137, 46, 0.3), transparent 70%);
   pointer-events: none;
   z-index: -1;
 }
 
 .glassmorphism-card {
   background: var(--card-bg);
-  border: 1px solid rgba(212, 175, 55, 0.2);
+  border: 1px solid rgba(181, 137, 46, 0.2);
   border-radius: 16px;
   box-shadow:
     0 20px 50px -10px rgba(0, 0, 0, 0.8),
@@ -827,7 +827,8 @@ h3 { font-size: clamp(1.125rem, 3vw, 1.5rem); letter-spacing: 0.05em; }
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, #D4AF37 0%, #5D3FD3 100%);
+  /* Retired brand gold + iris. Ornamental sweep, moved onto the palette. */
+  background: linear-gradient(135deg, #B5892E 0%, #4A2FA8 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -839,11 +840,11 @@ h3 { font-size: clamp(1.125rem, 3vw, 1.5rem); letter-spacing: 0.05em; }
 .text-muted-cosmic { color: var(--text-muted); }
 
 .bg-glow-gold {
-  box-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
+  box-shadow: 0 0 30px rgba(181, 137, 46, 0.2);
 }
 
 .bg-glow-iris {
-  box-shadow: 0 0 30px rgba(93, 63, 211, 0.2);
+  box-shadow: 0 0 30px rgba(74, 47, 168, 0.2);
 }
 
 .border-gold { border-color: var(--accent-gold); }

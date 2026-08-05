@@ -79,7 +79,7 @@
 .formGroup input:focus {
     outline: none;
     border-color: var(--accent-gold);
-    box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15), inset 0 0 10px rgba(212, 175, 55, 0.05);
+    box-shadow: 0 0 0 4px rgba(181, 137, 46, 0.15), inset 0 0 10px rgba(181, 137, 46, 0.05);
     background: rgba(var(--background-rgb), 1);
 }
 
@@ -115,8 +115,8 @@
     justify-content: center;
     gap: 10px;
     padding: 14px;
-    background: var(--foreground);
-    color: var(--background);
+    background: var(--btn-bg);
+    color: var(--btn-fg);
     border: none;
     border-radius: 8px;
     font-size: 1rem;

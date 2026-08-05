@@ -5,7 +5,7 @@
     align-items: center;
     justify-content: center;
     padding: 40px 24px;
-    background: linear-gradient(135deg, rgba(212, 175, 55, 0.03), transparent);
+    background: linear-gradient(135deg, rgba(181, 137, 46, 0.03), transparent);
 }
 
 .progressBar {
@@ -57,7 +57,7 @@
     height: 80px;
     margin: 0 auto 32px;
     border-radius: 50%;
-    background: rgba(212, 175, 55, 0.1);
+    background: rgba(181, 137, 46, 0.1);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -155,8 +155,8 @@
     align-items: center;
     gap: 8px;
     padding: 16px 48px;
-    background: var(--foreground);
-    color: var(--background);
+    background: var(--btn-bg);
+    color: var(--btn-fg);
     border: none;
     border-radius: 50px;
     font-size: 1.1rem;

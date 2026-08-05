@@ -50,7 +50,7 @@
     align-items: center;
     padding: 12px 28px;
     border-radius: 50px;
-    border: 1px solid rgba(212, 175, 55, 0.4);
+    border: 1px solid rgba(181, 137, 46, 0.4);
     color: var(--accent-gold);
     background: transparent;
     font-weight: 600;
@@ -59,7 +59,7 @@
 }
 
 .secondaryLink:hover {
-    background: rgba(212, 175, 55, 0.1);
+    background: rgba(181, 137, 46, 0.1);
 }
 
 .orb {

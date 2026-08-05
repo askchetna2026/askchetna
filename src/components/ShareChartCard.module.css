@@ -4,8 +4,8 @@
     gap: 8px;
     padding: 10px 20px;
     border-radius: 50px;
-    background: rgba(212, 175, 55, 0.1);
-    border: 1px solid rgba(212, 175, 55, 0.4);
+    background: rgba(181, 137, 46, 0.1);
+    border: 1px solid rgba(181, 137, 46, 0.4);
     color: var(--accent-gold);
     font-weight: 600;
     font-size: 0.9rem;
@@ -14,7 +14,7 @@
 }
 
 .shareBtn:hover {
-    background: rgba(212, 175, 55, 0.2);
+    background: rgba(181, 137, 46, 0.2);
 }
 
 .shareBtn:disabled {
@@ -37,17 +37,19 @@
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
-    background: linear-gradient(160deg, #1a1430 0%, #0d0b1a 100%);
-    color: #f5f1e6;
+    /* A share graphic, so it stays dark by design — but on the palette's night
+       surface (--accent-neelam) rather than the retired dark-theme purple. */
+    background: linear-gradient(160deg, #2E3A6B 0%, #1A2140 100%);
+    color: #E9E4F2;
     font-family: Georgia, 'Times New Roman', serif;
     position: relative;
-    border: 2px solid #d4af37;
+    border: 2px solid #B5892E;
 }
 
 .brand {
     font-size: 1.4rem;
     letter-spacing: 0.1em;
-    color: #d4af37;
+    color: #F0E0BC;
     font-weight: 700;
 }
 
@@ -71,7 +73,7 @@
     justify-content: space-between;
     flex-wrap: wrap;
     align-items: baseline;
-    border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+    border-bottom: 1px solid rgba(181, 137, 46, 0.25);
     padding-bottom: 10px;
 }
 
@@ -84,7 +86,7 @@
 
 .row strong {
     font-size: 1.5rem;
-    color: #d4af37;
+    color: #F0E0BC;
 }
 
 .tagline {
@@ -98,6 +100,6 @@
     margin-top: 6px;
     font-size: 0.95rem;
     letter-spacing: 0.1em;
-    color: #d4af37;
+    color: #F0E0BC;
     font-family: Arial, sans-serif;
 }

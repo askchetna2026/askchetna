@@ -331,7 +331,7 @@ export default function ChartDisplay({ data, isMoonChart, width = '100%', height
                             <div style={{
                                 padding: '20px 24px',
                                 borderLeft: '3px solid var(--accent-gold)',
-                                background: 'rgba(212, 175, 55, 0.06)',
+                                background: 'rgba(181, 137, 46, 0.06)',
                                 borderRadius: '0 16px 16px 0'
                             }}>
                                 <h6 style={{ color: 'var(--accent-gold)', margin: '0 0 6px 0', fontSize: '0.8rem', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px' }}>
@@ -406,7 +406,7 @@ export default function ChartDisplay({ data, isMoonChart, width = '100%', height
                             <stop offset="100%" stopColor="var(--nebula-gold)" />
                         </linearGradient>
                         <radialGradient id="houseGlow" cx="50%" cy="50%" r="50%">
-                            <stop offset="0%" stopColor="rgba(93, 63, 211, 0.2)" />
+                            <stop offset="0%" stopColor="rgba(74, 47, 168, 0.2)" />
                             <stop offset="100%" stopColor="rgba(18, 22, 64, 0.3)" />
                         </radialGradient>
                         <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
@@ -414,8 +414,8 @@ export default function ChartDisplay({ data, isMoonChart, width = '100%', height
                             <feComposite in="SourceGraphic" in2="blur" operator="over" />
                         </filter>
                         <radialGradient id="centerGlow" cx="50%" cy="50%" r="50%">
-                            <stop offset="0%" stopColor="rgba(212, 175, 55, 0.25)" />
-                            <stop offset="100%" stopColor="rgba(212, 175, 55, 0)" />
+                            <stop offset="0%" stopColor="rgba(181, 137, 46, 0.25)" />
+                            <stop offset="100%" stopColor="rgba(181, 137, 46, 0)" />
                         </radialGradient>
                     </defs>
 

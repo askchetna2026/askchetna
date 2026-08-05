@@ -94,8 +94,8 @@ export default function DashaDisplay({ dashas }: DashaDisplayProps) {
                     padding: clamp(24px, 4vw, 40px);
                     background: linear-gradient(180deg, rgba(22, 11, 32, 0.85) 0%, rgba(11, 5, 16, 0.95) 100%);
                     border-radius: var(--radius-lg);
-                    border: 1px solid rgba(212, 175, 55, 0.3);
-                    box-shadow: inset 0 1px 0 rgba(212, 175, 55, 0.4), 0 20px 50px rgba(0, 0, 0, 0.6);
+                    border: 1px solid rgba(181, 137, 46, 0.3);
+                    box-shadow: inset 0 1px 0 rgba(181, 137, 46, 0.4), 0 20px 50px rgba(0, 0, 0, 0.6);
                     backdrop-filter: blur(16px);
                     -webkit-backdrop-filter: blur(16px);
                 }
@@ -106,7 +106,7 @@ export default function DashaDisplay({ dashas }: DashaDisplayProps) {
                     font-size: clamp(1.4rem, 5vw, 2.2rem);
                     text-align: center;
                     margin-bottom: 8px;
-                    text-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+                    text-shadow: 0 0 15px rgba(181, 137, 46, 0.2);
                 }
 
                 .subtitle {
@@ -132,26 +132,26 @@ export default function DashaDisplay({ dashas }: DashaDisplayProps) {
 
                 .dasha-card {
                     background: rgba(11, 5, 16, 0.6);
-                    border: 1px solid rgba(212, 175, 55, 0.2);
+                    border: 1px solid rgba(181, 137, 46, 0.2);
                     padding: 20px;
                     border-radius: 12px;
                     transition: all 0.3s ease;
                     position: relative;
                     overflow: hidden;
-                    box-shadow: inset 0 1px 0 rgba(212, 175, 55, 0.1);
+                    box-shadow: inset 0 1px 0 rgba(181, 137, 46, 0.1);
                 }
 
                 .dasha-card:hover {
                     background: linear-gradient(180deg, rgba(30, 15, 45, 0.8) 0%, rgba(15, 8, 22, 0.95) 100%);
-                    border-color: rgba(212, 175, 55, 0.5);
+                    border-color: rgba(181, 137, 46, 0.5);
                     transform: translateY(-4px);
-                    box-shadow: inset 0 1px 0 rgba(212, 175, 55, 0.6), 0 10px 20px rgba(212, 175, 55, 0.1);
+                    box-shadow: inset 0 1px 0 rgba(181, 137, 46, 0.6), 0 10px 20px rgba(181, 137, 46, 0.1);
                 }
 
                 .dasha-card.current {
-                    background: linear-gradient(180deg, rgba(212, 175, 55, 0.1) 0%, rgba(11, 5, 16, 0.8) 100%);
+                    background: linear-gradient(180deg, rgba(181, 137, 46, 0.1) 0%, rgba(11, 5, 16, 0.8) 100%);
                     border: 1px solid var(--accent-gold);
-                    box-shadow: inset 0 1px 0 rgba(212, 175, 55, 0.8), 0 4px 15px rgba(212, 175, 55, 0.2);
+                    box-shadow: inset 0 1px 0 rgba(181, 137, 46, 0.8), 0 4px 15px rgba(181, 137, 46, 0.2);
                 }
 
                 .dasha-header {
@@ -205,8 +205,8 @@ export default function DashaDisplay({ dashas }: DashaDisplayProps) {
                 }
 
                 .ad-current {
-                    background: rgba(212, 175, 55, 0.2);
-                    border: 1px solid rgba(212, 175, 55, 0.3);
+                    background: rgba(181, 137, 46, 0.2);
+                    border: 1px solid rgba(181, 137, 46, 0.3);
                     color: var(--accent-gold);
                     font-weight: 700;
                 }

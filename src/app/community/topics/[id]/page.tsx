@@ -81,7 +81,7 @@ export default function TopicDetailPage({ params }: { params: Promise<{ id: stri
     if (loading) {
         return (
             <div className={styles.loader}>
-                <div style={{ width: '40px', height: '40px', border: '3px solid rgba(212, 175, 55, 0.1)', borderTopColor: 'var(--accent-gold)', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+                <div style={{ width: '40px', height: '40px', border: '3px solid rgba(181, 137, 46, 0.1)', borderTopColor: 'var(--accent-gold)', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
                 <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
             </div>
         );

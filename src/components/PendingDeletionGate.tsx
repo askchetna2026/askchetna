@@ -139,7 +139,7 @@ export default function PendingDeletionGate() {
                         borderRadius: 50,
                         border: 'none',
                         background: 'linear-gradient(135deg, var(--accent-gold), #ffc107)',
-                        color: '#1a1a1a',
+                        color: 'var(--btn-fg)',
                         font: 'inherit',
                         fontWeight: 700,
                         cursor: working ? 'default' : 'pointer',

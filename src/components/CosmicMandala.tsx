@@ -29,14 +29,14 @@ export default function CosmicMandala({
     >
       <defs>
         <radialGradient id="mandalaGold" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#D4AF37" stopOpacity="1" />
-          <stop offset="100%" stopColor="#D4AF37" stopOpacity="0" />
+          <stop offset="0%" stopColor="#B5892E" stopOpacity="1" />
+          <stop offset="100%" stopColor="#B5892E" stopOpacity="0" />
         </radialGradient>
       </defs>
 
       {/* Outer ring */}
-      <circle cx={cx} cy={cy} r={r * 0.95} fill="none" stroke="#D4AF37" strokeWidth="0.5" />
-      <circle cx={cx} cy={cy} r={r * 0.9} fill="none" stroke="#D4AF37" strokeWidth="0.3" />
+      <circle cx={cx} cy={cy} r={r * 0.95} fill="none" stroke="#B5892E" strokeWidth="0.5" />
+      <circle cx={cx} cy={cy} r={r * 0.9} fill="none" stroke="#B5892E" strokeWidth="0.3" />
 
       {/* 12-pointed star (zodiac wheel outer) */}
       {Array.from({ length: 12 }).map((_, i) => {
@@ -49,7 +49,7 @@ export default function CosmicMandala({
           <line
             key={`spoke-${i}`}
             x1={x1} y1={y1} x2={x2} y2={y2}
-            stroke="#D4AF37" strokeWidth="0.5" opacity="0.7"
+            stroke="#B5892E" strokeWidth="0.5" opacity="0.7"
           />
         );
       })}
@@ -60,14 +60,14 @@ export default function CosmicMandala({
         const px = Number((cx + r * 0.72 * Math.cos(midAngle)).toFixed(4));
         const py = Number((cy + r * 0.72 * Math.sin(midAngle)).toFixed(4));
         return (
-          <circle key={`dot-${i}`} cx={px} cy={py} r="1.5" fill="#D4AF37" opacity="0.6" />
+          <circle key={`dot-${i}`} cx={px} cy={py} r="1.5" fill="#B5892E" opacity="0.6" />
         );
       })}
 
       {/* Inner rings */}
-      <circle cx={cx} cy={cy} r={r * 0.6} fill="none" stroke="#D4AF37" strokeWidth="0.4" />
-      <circle cx={cx} cy={cy} r={r * 0.4} fill="none" stroke="#D4AF37" strokeWidth="0.3" />
-      <circle cx={cx} cy={cy} r={r * 0.2} fill="none" stroke="#D4AF37" strokeWidth="0.5" />
+      <circle cx={cx} cy={cy} r={r * 0.6} fill="none" stroke="#B5892E" strokeWidth="0.4" />
+      <circle cx={cx} cy={cy} r={r * 0.4} fill="none" stroke="#B5892E" strokeWidth="0.3" />
+      <circle cx={cx} cy={cy} r={r * 0.2} fill="none" stroke="#B5892E" strokeWidth="0.5" />
 
       {/* 6-pointed inner star (Shatkona / Star of Consciousness) */}
       {[0, 60, 120].map((deg) => {
@@ -90,7 +90,7 @@ export default function CosmicMandala({
               `${p3x},${p3y}`,
             ].join(' ')}
             fill="none"
-            stroke="#D4AF37"
+            stroke="#B5892E"
             strokeWidth="0.6"
             opacity="0.8"
           />
@@ -98,7 +98,7 @@ export default function CosmicMandala({
       })}
 
       {/* Center lotus dot */}
-      <circle cx={cx} cy={cy} r="4" fill="#D4AF37" opacity="0.9" />
+      <circle cx={cx} cy={cy} r="4" fill="#B5892E" opacity="0.9" />
       <circle cx={cx} cy={cy} r="2" fill="#fff" opacity="0.6" />
 
       {/* 8 petal lotus in middle ring */}
@@ -112,7 +112,7 @@ export default function CosmicMandala({
             cx={px} cy={py}
             rx={r * 0.07} ry={r * 0.035}
             fill="none"
-            stroke="#D4AF37"
+            stroke="#B5892E"
             strokeWidth="0.5"
             opacity="0.7"
             transform={`rotate(${i * 45 + 90}, ${px}, ${py})`}

@@ -37,9 +37,9 @@ export default function OfflinePage() {
                             line-height:1.6;max-width:460px;margin:0}
                         .ac-offline__actions{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:12px}
                         .ac-offline__btn{display:inline-flex;align-items:center;padding:12px 28px;border-radius:50px;
-                            border:1px solid rgba(212,175,55,.45);color:var(--accent-gold);background:transparent;
+                            border:1px solid rgba(181, 137, 46,.45);color:var(--accent-gold);background:transparent;
                             font:inherit;font-weight:600;cursor:pointer;transition:all .25s ease}
-                        .ac-offline__btn:hover{background:rgba(212,175,55,.12)}
+                        .ac-offline__btn:hover{background:rgba(181, 137, 46,.12)}
                         .ac-offline__hint{font-size:.9rem;color:var(--secondary,rgba(223,224,255,.55));margin:4px 0 0}
                     `,
                 }}

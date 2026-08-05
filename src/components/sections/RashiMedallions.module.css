@@ -138,7 +138,7 @@
 }
 
 .card:hover .actionBtn {
-    color: var(--accent-gold-hover, #d4af37);
+    color: var(--accent-coral-text);
     text-decoration: underline;
 }
 

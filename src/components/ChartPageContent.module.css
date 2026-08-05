@@ -11,7 +11,7 @@
     font-size: 3rem;
     color: var(--primary);
     margin-bottom: 16px;
-    text-shadow: 0 0 40px rgba(212, 175, 55, 0.2);
+    text-shadow: 0 0 40px rgba(181, 137, 46, 0.2);
 }
 
 .subtitle {
@@ -27,8 +27,8 @@
     margin-top: 20px;
     padding: 16px 18px;
     border-radius: 18px;
-    border: 1px solid rgba(212, 175, 55, 0.22);
-    background: rgba(212, 175, 55, 0.09);
+    border: 1px solid rgba(181, 137, 46, 0.22);
+    background: rgba(181, 137, 46, 0.09);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -60,7 +60,7 @@
 
 .purchaseNoticeBtn:hover {
     transform: translateY(-1px);
-    box-shadow: 0 8px 24px rgba(212, 175, 55, 0.25);
+    box-shadow: 0 8px 24px rgba(181, 137, 46, 0.25);
 }
 
 .formWrapper {
@@ -80,7 +80,7 @@
 .chartSection {
     margin-top: 80px;
     padding: 60px 20px;
-    background: radial-gradient(circle at 50% 50%, rgba(159, 122, 234, 0.08) 0%, transparent 60%);
+    background: radial-gradient(circle at 50% 50%, rgba(74, 47, 168, 0.08) 0%, transparent 60%);
     border-radius: 50%;
     border: none;
 }
@@ -143,9 +143,9 @@
 }
 
 .activeTab {
-    background: var(--foreground);
-    color: var(--background);
-    border-color: var(--foreground);
+    background: var(--btn-bg);
+    color: var(--btn-fg);
+    border-color: var(--btn-fg);
 }
 
 .tabContent {
@@ -177,18 +177,18 @@
     padding: 10px 24px;
     font-size: 0.95rem;
     font-weight: 600;
-    background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-dim) 100%);
-    color: var(--bg-primary);
+    background: var(--btn-bg);
+    color: var(--btn-fg);
     border: none;
     border-radius: 100px;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+    box-shadow: 0 4px 15px rgba(181, 137, 46, 0.2);
 }
 
 .addProfileBtn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 8px 25px rgba(181, 137, 46, 0.3);
     filter: brightness(1.1);
 }
 
@@ -213,7 +213,7 @@
 .backLinkBtn:hover {
     border-color: var(--accent-gold);
     color: var(--accent-gold);
-    background: rgba(212, 175, 55, 0.05);
+    background: rgba(181, 137, 46, 0.05);
 }
 
 .contentBlock {
@@ -261,7 +261,7 @@
 }
 
 .helpsBlock {
-    background: linear-gradient(135deg, rgba(212, 175, 55, 0.05), transparent);
+    background: linear-gradient(135deg, rgba(181, 137, 46, 0.05), transparent);
     padding: 24px;
     border-radius: var(--radius-md);
     border-left: 4px solid var(--accent-gold);
@@ -297,7 +297,7 @@
     font-size: 0.65rem;
     text-transform: uppercase;
     letter-spacing: 1px;
-    background: rgba(212, 175, 55, 0.1);
+    background: rgba(181, 137, 46, 0.1);
     color: var(--accent-gold);
     padding: 2px 8px;
     border-radius: 4px;
@@ -500,13 +500,13 @@
     padding: 32px;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7), 0 0 20px rgba(93, 63, 211, 0.15);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7), 0 0 20px rgba(74, 47, 168, 0.15);
     transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .trinityCard:hover {
     transform: translateY(-12px) scale(1.02);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 35px rgba(159, 122, 234, 0.3);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 35px rgba(74, 47, 168, 0.3);
 }
 
 .vargaCard {
@@ -518,7 +518,7 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(93, 63, 211, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(74, 47, 168, 0.1);
     transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
     overflow: hidden;
     min-height: 400px;
@@ -528,14 +528,14 @@
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0; height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(159, 122, 234, 0.4), transparent);
+    background: linear-gradient(90deg, transparent, rgba(74, 47, 168, 0.4), transparent);
     opacity: 0.5;
 }
 
 .vargaCard:hover {
     background: var(--card-bg);
     transform: translateY(-8px);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(159, 122, 234, 0.25);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(74, 47, 168, 0.25);
 }
 
 .analysisBtn {
@@ -558,7 +558,7 @@
 .analysisBtn:hover {
     border-color: var(--accent-gold);
     color: var(--primary);
-    background: rgba(212, 175, 55, 0.05);
+    background: rgba(181, 137, 46, 0.05);
 }
 
 .analysisBtn.active {
@@ -587,10 +587,10 @@
 
 /* Redesigned Interpretation Box */
 .interpretationBox {
-    background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(212, 175, 55, 0.05) 100%);
+    background: linear-gradient(135deg, rgba(181, 137, 46, 0.15) 0%, rgba(181, 137, 46, 0.05) 100%);
     padding: 32px;
     border-radius: 16px;
-    border: 2px solid rgba(212, 175, 55, 0.4);
+    border: 2px solid rgba(181, 137, 46, 0.4);
     margin: 0 0 24px 0;
     position: relative;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
@@ -622,7 +622,7 @@
     padding: 28px;
     background: rgba(var(--background-rgb), 0.05);
     border-radius: 14px;
-    border: 1px solid rgba(212, 175, 55, 0.25);
+    border: 1px solid rgba(181, 137, 46, 0.25);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
@@ -725,7 +725,7 @@
 }
 
 .exalted {
-    background: rgba(212, 175, 55, 0.2) !important;
+    background: rgba(181, 137, 46, 0.2) !important;
     color: var(--accent-gold) !important;
     border: 1px solid var(--accent-gold) !important;
 }
@@ -763,7 +763,7 @@
 
 .lockIcon {
     color: var(--accent-gold);
-    filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.5));
+    filter: drop-shadow(0 0 10px rgba(181, 137, 46, 0.5));
     animation: pulse 2s infinite ease-in-out;
 }
 
@@ -774,7 +774,7 @@
     transform: translate(-50%, -50%);
     width: 60px;
     height: 60px;
-    background: radial-gradient(circle, rgba(212, 175, 55, 0.2) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(181, 137, 46, 0.2) 0%, transparent 70%);
     border-radius: 50%;
     z-index: -1;
 }
@@ -804,12 +804,12 @@
     font-size: 0.9rem;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+    box-shadow: 0 4px 15px rgba(181, 137, 46, 0.2);
 }
 
 .unlockBtn:hover {
     transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 6px 20px rgba(181, 137, 46, 0.3);
 }
 
 @keyframes pulse {
@@ -880,13 +880,13 @@
 .categoryBtn.active {
     background: var(--btn-bg);
     color: var(--btn-fg);
-    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 4px 15px rgba(181, 137, 46, 0.3);
 }
 
 .initializeSection {
     margin-top: 60px;
     padding: 48px;
-    background: linear-gradient(135deg, rgba(212, 175, 55, 0.05) 0%, transparent 100%);
+    background: linear-gradient(135deg, rgba(181, 137, 46, 0.05) 0%, transparent 100%);
     border-radius: var(--radius-lg);
     border: 1px dashed var(--card-border);
     text-align: center;
@@ -906,7 +906,7 @@
 
 .initializeBtn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 8px 25px rgba(181, 137, 46, 0.3);
 }
 
 /* Card Container for Accordion */
@@ -923,7 +923,7 @@
 /* Tab Container */
 .tabContainer {
     background: var(--card-bg);
-    border: 2px solid rgba(212, 175, 55, 0.3);
+    border: 2px solid rgba(181, 137, 46, 0.3);
     border-radius: 16px;
     padding: 28px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -933,7 +933,7 @@
 .tabButtons {
     display: flex;
     gap: 12px;
-    border-bottom: 2px solid rgba(212, 175, 55, 0.2);
+    border-bottom: 2px solid rgba(181, 137, 46, 0.2);
     margin-bottom: 28px;
     overflow-x: auto;
     overflow-y: hidden;
@@ -950,7 +950,7 @@
 }
 
 .tabButtons::-webkit-scrollbar-thumb {
-    background: rgba(212, 175, 55, 0.3);
+    background: rgba(181, 137, 46, 0.3);
     border-radius: 2px;
 }
 
@@ -973,7 +973,7 @@
 
 .tabButton:hover {
     color: var(--accent-gold);
-    background: rgba(212, 175, 55, 0.08);
+    background: rgba(181, 137, 46, 0.08);
     border-radius: 8px 8px 0 0;
 }
 
@@ -993,7 +993,7 @@
     padding: 28px;
     background: rgba(var(--background-rgb), 0.05);
     border-radius: 12px;
-    border: 1px solid rgba(212, 175, 55, 0.2);
+    border: 1px solid rgba(181, 137, 46, 0.2);
 }
 
 .tabSection h4 {
@@ -1092,8 +1092,8 @@
     align-items: center;
     gap: 8px;
     padding: 8px 16px;
-    background: rgba(212, 175, 55, 0.1);
-    border: 1px solid rgba(212, 175, 55, 0.3);
+    background: rgba(181, 137, 46, 0.1);
+    border: 1px solid rgba(181, 137, 46, 0.3);
     border-radius: 8px;
     color: var(--accent-gold);
     font-size: 0.9rem;
@@ -1102,7 +1102,7 @@
 }
 
 .exportBtn:hover {
-    background: rgba(212, 175, 55, 0.2);
+    background: rgba(181, 137, 46, 0.2);
 }
 
 .drawerClose {
@@ -1357,7 +1357,7 @@
 
 .btnConfirm:hover {
     transform: scale(1.05);
-    box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+    box-shadow: 0 0 15px rgba(181, 137, 46, 0.4);
 }
 
 .btnPremium {
@@ -1436,7 +1436,7 @@
 }
 
 .insightCard:hover {
-    border-color: rgba(212, 175, 55, 0.4);
+    border-color: rgba(181, 137, 46, 0.4);
     background: rgba(255, 255, 255, 0.04);
 }
 

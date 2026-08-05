@@ -22,7 +22,7 @@
     padding: 48px 32px;
     max-width: 500px;
     width: 90vw;
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(93, 63, 211, 0.2);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(74, 47, 168, 0.2);
     z-index: 9999;
 }
 
@@ -40,7 +40,7 @@
 }
 
 .closeBtn:hover {
-    background: rgba(212, 175, 55, 0.1);
+    background: rgba(181, 137, 46, 0.1);
     color: var(--accent-gold);
 }
 
@@ -51,7 +51,7 @@
     width: 80px;
     height: 80px;
     margin: 0 auto 16px;
-    background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(255, 193, 7, 0.1));
+    background: linear-gradient(135deg, rgba(181, 137, 46, 0.1), rgba(255, 193, 7, 0.1));
     border-radius: 50%;
     color: var(--accent-gold);
 }
@@ -86,7 +86,7 @@
     align-items: center;
     gap: 16px;
     padding: 20px;
-    border: 1px solid rgba(159, 122, 234, 0.2);
+    border: 1px solid rgba(74, 47, 168, 0.2);
     border-radius: 16px;
     background: rgba(255, 255, 255, 0.03);
     cursor: pointer;
@@ -98,9 +98,9 @@
 
 .optionCard:hover {
     border-color: var(--accent-gold);
-    background: rgba(212, 175, 55, 0.08);
+    background: rgba(181, 137, 46, 0.08);
     transform: translateY(-4px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4), 0 0 15px rgba(212, 175, 55, 0.2);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4), 0 0 15px rgba(181, 137, 46, 0.2);
 }
 
 .disabledOption {
@@ -122,7 +122,7 @@
     justify-content: center;
     width: 48px;
     height: 48px;
-    background: rgba(212, 175, 55, 0.1);
+    background: rgba(181, 137, 46, 0.1);
     border-radius: var(--radius-md);
     color: var(--accent-gold);
 }
@@ -228,12 +228,12 @@
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 4px 12px rgba(181, 137, 46, 0.3);
 }
 
 .btnConfirm:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(212, 175, 55, 0.4);
+    box-shadow: 0 6px 16px rgba(181, 137, 46, 0.4);
     filter: brightness(1.1);
 }
 

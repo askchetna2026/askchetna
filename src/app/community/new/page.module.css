@@ -92,7 +92,7 @@
 
 .submitBtn:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 10px 20px -10px rgba(212, 175, 55, 0.5);
+    box-shadow: 0 10px 20px -10px rgba(181, 137, 46, 0.5);
 }
 
 .submitBtn:disabled {

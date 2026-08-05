@@ -111,7 +111,7 @@
 
 .selectedCard {
     border-color: var(--accent-gold);
-    background: rgba(212, 175, 55, 0.05);
+    background: rgba(181, 137, 46, 0.05);
     opacity: 1;
 }
 
@@ -202,7 +202,7 @@
 
 .viewButton:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 4px 12px rgba(181, 137, 46, 0.3);
 }
 
 .actionsGroup {
@@ -257,7 +257,7 @@
 
 .createLink:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 4px 12px rgba(181, 137, 46, 0.3);
 }
 
 .loadingContainer {

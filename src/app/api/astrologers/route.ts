@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
+import { photoPointer } from '@/lib/astrologerPhoto';
 
 /**
  * Staleness cap, NOT a heartbeat window.
@@ -67,25 +68,28 @@ export async function GET(request: Request) {
      * the rows are backfilled.
      */
     const unresolved = astrologers.filter((a) => !a.photoUrl && !a.photoPath && a.userId);
-    let hasApplicationPhoto = new Set<string>();
+    const applicationPhoto = new Map<string, string>();
     if (unresolved.length > 0) {
         const apps = await prisma.astrologerApplication.findMany({
             where: {
                 userId: { in: unresolved.map((a) => a.userId as string) },
                 profilePhotoPath: { not: null },
             },
-            select: { userId: true },
+            orderBy: { submittedAt: 'desc' },
+            select: { userId: true, profilePhotoPath: true },
             distinct: ['userId'],
         });
-        hasApplicationPhoto = new Set(apps.map((a) => a.userId));
+        for (const app of apps) {
+            if (app.profilePhotoPath) applicationPhoto.set(app.userId, app.profilePhotoPath);
+        }
     }
 
     const photoFor = (a: (typeof astrologers)[number]) => {
+        // A stored pointer wins — it is already versioned by whoever wrote it,
+        // and for an AI persona it is a static asset with no path behind it.
         if (a.photoUrl) return a.photoUrl;
-        if (a.photoPath || (a.userId && hasApplicationPhoto.has(a.userId))) {
-            return `/api/astrologers/${a.id}/photo`;
-        }
-        return null;
+        const path = a.photoPath ?? (a.userId ? applicationPhoto.get(a.userId) : null);
+        return photoPointer(a.id, path);
     };
 
     const cutoff = Date.now() - PRESENCE_WINDOW_MS;

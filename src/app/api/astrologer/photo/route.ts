@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
 import { uploadProfilePhoto, storageConfigured } from '@/lib/photoUpload';
+import { photoPointer } from '@/lib/astrologerPhoto';
 
 /**
  * Replaces a published astrologer's portrait.
@@ -85,22 +86,24 @@ export async function POST(request: Request) {
     // The old object is deliberately left in place. Deleting it would break any
     // signed URL already handed out and still inside its hour, and an orphaned
     // 40 KB WebP is a far cheaper problem than a portrait that 404s mid-session.
+    //
+    // The stored pointer is VERSIONED by the new object's path, which is what
+    // makes the change visible to everybody else. An unversioned pointer is a
+    // cache key that never changes, so seekers kept seeing the previous
+    // portrait for as long as the edge held it.
+    const photoUrl = photoPointer(astrologer.id, result.path);
     await prisma.astrologer.update({
         where: { id: astrologer.id },
         data: {
             photoPath: result.path,
-            // A pointer, never a signed URL. Set on every upload rather than
-            // only the first, so a profile that somehow lost it is repaired by
-            // the next photo change.
-            photoUrl: `/api/astrologers/${astrologer.id}/photo`,
+            // Set on every upload rather than only the first, so a profile that
+            // somehow lost its pointer is repaired by the next photo change.
+            photoUrl,
         },
     });
 
     return NextResponse.json({
-        // Cache-busted: the pointer route is cached for 15 minutes at the edge,
-        // so without this the astrologer uploads a new face and is shown the
-        // old one.
-        photoUrl: `/api/astrologers/${astrologer.id}/photo?v=${Date.now()}`,
+        photoUrl,
         bytes: result.bytes,
         message: 'Saved. Seekers see this photo now.',
     });

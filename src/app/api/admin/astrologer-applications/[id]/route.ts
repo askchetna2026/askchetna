@@ -3,6 +3,7 @@ import { auth } from '@/auth';
 import { checkAdminAccess } from '@/lib/admin';
 import prisma from '@/lib/prisma';
 import { signedPhotoUrl } from '@/lib/photoUpload';
+import { photoPointer } from '@/lib/astrologerPhoto';
 import { APPLICATION_ACTIONS, type ApplicationAction } from '@/lib/astrologerApplication';
 
 /**
@@ -224,7 +225,11 @@ export async function PATCH(
             if (full.profilePhotoPath) {
                 await tx.astrologer.update({
                     where: { id: created.id },
-                    data: { photoUrl: `/api/astrologers/${created.id}/photo` },
+                    // Versioned by the object path, so replacing the photo later
+                    // changes the URL and misses the edge cache. An unversioned
+                    // pointer left seekers on the previous portrait until it
+                    // expired.
+                    data: { photoUrl: photoPointer(created.id, full.profilePhotoPath) },
                 });
             }
 

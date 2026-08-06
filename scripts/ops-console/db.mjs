@@ -654,8 +654,14 @@ export async function promoteAstrologers({
              * because that is the one that 404s.
              */
             const sourcePointsAtBucket = a.photoUrl?.startsWith('/api/astrologers/');
+            // Versioned by the object path, matching what the app writes — an
+            // unversioned pointer is a cache key that never changes, so a later
+            // photo change would stay invisible behind the edge cache.
+            const version = destPhotoPath
+                ? (destPhotoPath.split('/').pop() ?? '').replace(/\.[^.]+$/, '')
+                : null;
             const destPhotoUrl = destPhotoPath
-                ? `/api/astrologers/${a.id}/photo`
+                ? `/api/astrologers/${a.id}/photo?v=${version}`
                 : (a.photoUrl && !sourcePointsAtBucket ? a.photoUrl : null);
 
             const data = {
@@ -718,23 +724,30 @@ export async function backfillPhotoUrls(file, onProgress) {
         });
 
         for (const a of rows) {
-            if (a.photoUrl) { untouched.push({ name: a.displayName, why: 'already set' }); continue; }
+            // An unversioned pointer is repaired too — it works, but a later
+            // photo change would sit behind the edge cache.
+            const needsVersion = a.photoUrl?.startsWith('/api/astrologers/') && !a.photoUrl.includes('?v=');
+            if (a.photoUrl && !needsVersion) {
+                untouched.push({ name: a.displayName, why: 'already set' });
+                continue;
+            }
 
-            let resolvable = Boolean(a.photoPath);
-            if (!resolvable && a.userId) {
+            let resolvedPath = a.photoPath ?? null;
+            if (!resolvedPath && a.userId) {
                 const app = await prisma.astrologerApplication.findFirst({
                     where: { userId: a.userId, profilePhotoPath: { not: null } },
                     orderBy: { submittedAt: 'desc' },
                     select: { profilePhotoPath: true },
                 }).catch(() => null);
-                resolvable = Boolean(app?.profilePhotoPath);
+                resolvedPath = app?.profilePhotoPath ?? null;
             }
 
-            if (!resolvable) { untouched.push({ name: a.displayName, why: 'no photo anywhere' }); continue; }
+            if (!resolvedPath) { untouched.push({ name: a.displayName, why: 'no photo anywhere' }); continue; }
 
+            const stem = (resolvedPath.split('/').pop() ?? '').replace(/\.[^.]+$/, '');
             await prisma.astrologer.update({
                 where: { id: a.id },
-                data: { photoUrl: `/api/astrologers/${a.id}/photo` },
+                data: { photoUrl: `/api/astrologers/${a.id}/photo?v=${stem}` },
             });
             fixed.push({ name: a.displayName, id: a.id });
             onProgress?.({ message: `${a.displayName}: pointer written` });

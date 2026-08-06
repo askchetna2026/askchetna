@@ -1,0 +1,63 @@
+name: Web CI
+
+# The web app had no CI at all — the three existing workflows build mobile
+# artifacts. Nothing checked that a push compiled, so the first thing to notice
+# a broken build was Vercel, after the commit had already landed on a branch
+# that deploys.
+on:
+  push:
+    branches: [preview, main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  # A newer push makes an in-flight run irrelevant; nobody is waiting on the
+  # result for a commit that has been superseded.
+  group: web-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      # `next build` runs the route modules, which import Prisma and the auth
+      # config, so the variables have to EXIST. They are deliberately not real:
+      # nothing here should touch a live database, and a build that silently
+      # needed one would be a finding in itself.
+      DATABASE_URL: postgresql://ci:ci@localhost:5432/ci?pgbouncer=true
+      DIRECT_URL: postgresql://ci:ci@localhost:5432/ci
+      NEXTAUTH_SECRET: ci-placeholder-not-a-real-secret
+      AUTH_SECRET: ci-placeholder-not-a-real-secret
+      NEXTAUTH_URL: http://localhost:3000
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Unit tests
+        run: npx vitest run --project unit
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      # Not gating on lint yet: there is a standing backlog of pre-existing
+      # errors, and a check that always fails is a check people learn to ignore.
+      # Reported so the number is visible and can be ratcheted down.
+      - name: Lint (advisory)
+        run: npx eslint src || true
+        continue-on-error: true
+
+      - name: Build
+        run: npx next build --webpack

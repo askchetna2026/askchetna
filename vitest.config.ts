@@ -15,6 +15,20 @@ export default defineConfig({
   test: {
     projects: [
       {
+        // Plain unit tests: no browser, no database. Deliberately scoped to the
+        // pure logic that decides money and time — refunds, the appointment
+        // status chain, zone conversion — because those are the places where
+        // being wrong is expensive and the code is cheap to exercise.
+        test: {
+          name: 'unit',
+          environment: 'node',
+          include: ['src/**/*.test.ts'],
+        },
+        resolve: {
+          alias: { '@': path.join(dirname, 'src') },
+        },
+      },
+      {
         extends: true,
         plugins: [
           // The plugin will run tests for the stories defined in your Storybook config

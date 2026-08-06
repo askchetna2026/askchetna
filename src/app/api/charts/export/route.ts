@@ -10,7 +10,7 @@ import { LOGO_DARK_FILE } from '@/lib/logoConfig';
 const wrapText = (text: string, font: PDFFont, size: number, maxWidth: number) => {
     if (typeof text !== 'string') return [];
     const paragraphs = text.split(/\r?\n/);
-    let lines: string[] = [];
+    const lines: string[] = [];
 
     for (const paragraph of paragraphs) {
         if (!paragraph) {
@@ -129,7 +129,7 @@ export async function POST(req: NextRequest) {
 
         // --- TITLE PAGE (Page 1) ---
         let page = pdfDoc.addPage();
-        let { width, height } = page.getSize();
+        const { width, height } = page.getSize();
 
 
 

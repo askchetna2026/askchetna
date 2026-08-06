@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
         const now = new Date();
 
         // 2. Find current Dasha and Antardasha
-        let currentDasha = { lord: 'Unknown', antardasha: 'Unknown' };
+        const currentDasha = { lord: 'Unknown', antardasha: 'Unknown' };
         if (chartData.dashas) {
             const mDasha = chartData.dashas.find((d: any) => {
                 const start = new Date(d.start);

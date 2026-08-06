@@ -152,7 +152,7 @@ export async function generateReportPDF(name: string, content: ReportContent, ch
         const signContent: Record<number, string[]> = {};
         if (data && data.planets) {
             Object.entries(data.planets).forEach(([pName, pData]: [string, any]) => {
-                let sign = Math.floor(pData.longitude / 30) + 1;
+                const sign = Math.floor(pData.longitude / 30) + 1;
                 // If using mock/simple data without longitude, fallback or check format
                 // Assuming standard 0-360 longitude
                 if (!signContent[sign]) signContent[sign] = [];
@@ -161,7 +161,7 @@ export async function generateReportPDF(name: string, content: ReportContent, ch
             });
             // Add Ascendant
             if (data.ascendant) {
-                let ascSign = Math.floor(data.ascendant / 30) + 1;
+                const ascSign = Math.floor(data.ascendant / 30) + 1;
                 if (!signContent[ascSign]) signContent[ascSign] = [];
                 signContent[ascSign].push('Asc');
             }

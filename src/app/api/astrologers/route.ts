@@ -117,72 +117,12 @@ export async function GET(request: Request) {
 }
 
 /**
- * Registers the signed-in user as an astrologer, pending approval.
+ * There is deliberately no POST here any more.
  *
- * Self-service registration with an admin gate: anyone may apply, nobody takes
- * consultations until an admin approves. Both stores scrutinise consultation
- * marketplaces, and an open door here is how the app ends up hosting people it
- * has never checked.
+ * A self-registration route used to create an Astrologer directly, bypassing
+ * the nine-section screening application. It was never a way in — the row was
+ * created PENDING and could not approve itself — but it was a second door to
+ * the same entity, and its only UI had already been removed. Applications now
+ * arrive through /api/astrologer-applications and become an Astrologer when an
+ * admin publishes them, which is the one path worth keeping correct.
  */
-export async function POST(request: Request) {
-    const session = await auth();
-    if (!session?.user?.id) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    let body: {
-        displayName?: string;
-        bio?: string;
-        languages?: string[];
-        specialities?: string[];
-    };
-    try {
-        body = await request.json();
-    } catch {
-        return NextResponse.json({ error: 'Invalid body' }, { status: 400 });
-    }
-
-    const displayName = (body.displayName ?? '').trim();
-    if (displayName.length < 2 || displayName.length > 60) {
-        return NextResponse.json(
-            { error: 'Display name must be between 2 and 60 characters' },
-            { status: 400 }
-        );
-    }
-
-    const existing = await prisma.astrologer.findUnique({
-        where: { userId: session.user.id },
-        select: { id: true, status: true },
-    });
-    if (existing) {
-        return NextResponse.json(
-            {
-                error: 'Already registered',
-                message:
-                    existing.status === 'PENDING'
-                        ? 'Your application is under review.'
-                        : `Your astrologer profile is ${existing.status.toLowerCase()}.`,
-                status: existing.status,
-            },
-            { status: 409 }
-        );
-    }
-
-    const astrologer = await prisma.astrologer.create({
-        data: {
-            userId: session.user.id,
-            displayName,
-            bio: (body.bio ?? '').trim().slice(0, 2000) || null,
-            languages: (body.languages ?? []).slice(0, 10),
-            specialities: (body.specialities ?? []).slice(0, 10),
-            // status defaults to PENDING; nothing here may grant approval.
-        },
-        select: { id: true, status: true },
-    });
-
-    return NextResponse.json({
-        id: astrologer.id,
-        status: astrologer.status,
-        message: 'Application received. An admin will review it shortly.',
-    });
-}

@@ -53,8 +53,24 @@ as the `phone-otp` provider does.
 **Never run `prisma migrate dev`.** It can offer to drop and recreate the schema.
 Migrations here are hand-written or generated with `prisma migrate diff`, placed in
 `prisma/migrations/<timestamp>_<name>/migration.sql`, and applied with
-`migrate deploy`. History was baselined (the DB predates migrations — it was built
-with `db push`); `scripts/baseline-migrations.ps1` documents that.
+`migrate deploy`.
+
+**History was squashed to a single baseline on 2026-08-07** —
+`00000000000000_baseline`, generated from the schema and creating all 33 tables.
+The sixteen migrations it replaced are kept for reference in
+`prisma/migrations-archive/`, outside Prisma's view.
+
+The reason matters, because it is the trap to avoid recreating: the old history
+had itself been baselined onto a database built with `db push`, so `init`
+created **7 tables while the schema declared 33**. Replaying it against an empty
+project died on the first migration that `ALTER`ed a table nothing had created
+(`P3018 — relation "AnalyticsEvent" does not exist`), which meant production
+could not be rebuilt from this repo. Every new migration from here must be
+replayable from empty; if you ever find yourself baselining onto an existing
+database again, the history stops being able to do that.
+
+All four environments (local, preview, prod, backup1) are baselined onto it and
+report a single applied migration.
 
 **There are THREE separate Supabase databases**, one per environment, each at a
 different point in migration history:

@@ -42,6 +42,8 @@ export async function GET(request: Request) {
             displayName: true,
             bio: true,
             photoUrl: true,
+            photoPath: true,
+            userId: true,
             languages: true,
             specialities: true,
             isAvailable: true,
@@ -53,12 +55,45 @@ export async function GET(request: Request) {
         take: 100,
     });
 
+    /**
+     * `photoUrl` is a denormalised pointer, written when a profile is published.
+     * When it is null the directory used to show an initial even though a photo
+     * existed and `/api/astrologers/[id]/photo` would have served it happily —
+     * which is what happened to every astrologer approved before that write was
+     * added, and looked like a rendering bug rather than stale data.
+     *
+     * So the column is treated as a cache, not the truth. The one extra query
+     * runs ONLY when some listed astrologer is missing it, and disappears once
+     * the rows are backfilled.
+     */
+    const unresolved = astrologers.filter((a) => !a.photoUrl && !a.photoPath && a.userId);
+    let hasApplicationPhoto = new Set<string>();
+    if (unresolved.length > 0) {
+        const apps = await prisma.astrologerApplication.findMany({
+            where: {
+                userId: { in: unresolved.map((a) => a.userId as string) },
+                profilePhotoPath: { not: null },
+            },
+            select: { userId: true },
+            distinct: ['userId'],
+        });
+        hasApplicationPhoto = new Set(apps.map((a) => a.userId));
+    }
+
+    const photoFor = (a: (typeof astrologers)[number]) => {
+        if (a.photoUrl) return a.photoUrl;
+        if (a.photoPath || (a.userId && hasApplicationPhoto.has(a.userId))) {
+            return `/api/astrologers/${a.id}/photo`;
+        }
+        return null;
+    };
+
     const cutoff = Date.now() - PRESENCE_WINDOW_MS;
     const withPresence = astrologers.map((a) => ({
         id: a.id,
         displayName: a.displayName,
         bio: a.bio,
-        photoUrl: a.photoUrl,
+        photoUrl: photoFor(a),
         languages: a.languages,
         specialities: a.specialities,
         // Disclosed to the client so the directory can label it. Never inferred

@@ -153,7 +153,7 @@ const server = createServer(async (req, res) => {
         }
 
         if (url.pathname === '/api/promote' && req.method === 'POST') {
-            const { sourceFile, destFile, ids, includePhotos, confirm } = await readBody(req);
+            const { sourceFile, destFile, ids, includePhotos, linkExisting, confirm } = await readBody(req);
             if (!sourceFile || !destFile) return json(res, 400, { error: 'Pick a source and a destination.' });
             if (sourceFile === destFile) return json(res, 400, { error: 'Source and destination are the same.' });
             if (!Array.isArray(ids) || ids.length === 0) return json(res, 400, { error: 'Select at least one astrologer.' });
@@ -169,6 +169,7 @@ const server = createServer(async (req, res) => {
                     promoteAstrologers({
                         sourceFile, destFile, ids,
                         includePhotos: includePhotos !== false,
+                        linkExisting: linkExisting !== false,
                         onProgress: (e) => job.log.push({ at: Date.now(), ...e }),
                     })
                 ),

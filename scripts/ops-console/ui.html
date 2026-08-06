@@ -323,6 +323,11 @@
           <span>Copy their photo files too
             <code>portraits live in a per-project bucket, so without this the row arrives and the picture 404s</code></span>
         </label>
+        <label class="check" style="margin-top:10px;text-transform:none;letter-spacing:0;font-weight:400;color:var(--ink)">
+          <input type="checkbox" id="proLink" checked>
+          <span>Link to the destination's existing account when the email already has one
+            <code>the same person signing up in both environments gets a different id in each; linking attaches the profile to the account already there instead of skipping</code></span>
+        </label>
 
         <div class="field hide" id="proConfirmWrap" style="margin-top:16px">
           <label for="proConfirm">Protected — type the destination filename to confirm</label>
@@ -522,7 +527,7 @@ async function boot() {
 
   // Environments table
   const t = $('envTable');
-  t.innerHTML = '<thead><tr><th>File</th><th>Supabase project</th><th class="n">Port</th><th>Direct URL</th><th>Notes</th></tr></thead>';
+  t.innerHTML = '<thead><tr><th>File</th><th>Supabase project</th><th class="n">Port</th><th>Direct URL</th><th>Storage key</th><th>Notes</th></tr></thead>';
   const tb = document.createElement('tbody');
   for (const e of ENVS) {
     const tr = document.createElement('tr');
@@ -532,9 +537,13 @@ async function boot() {
       const notes = e.warnings.length
         ? e.warnings.map((w) => `<div class="warn">⚠ ${w}</div>`).join('')
         : '<span class="same">—</span>';
+      const keyCell = e.serviceKeyRole === 'service_role'
+        ? '<code>service_role</code>'
+        : `<span class="tag">${e.serviceKeyRole ?? 'missing'}</span>`;
       tr.innerHTML = `<td>${e.file}${isProtected(e.file) ? '<span class="prot">protected</span>' : ''}</td>
         <td><code>${e.projectRef || '?'}</code></td><td class="n">${e.port}</td>
         <td>${e.hasDirect ? 'yes' : '<span class="tag">missing</span>'}</td>
+        <td>${keyCell}</td>
         <td style="white-space:normal">${notes}</td>`;
     }
     tb.appendChild(tr);
@@ -808,15 +817,28 @@ $('proLoad').onclick = async () => {
         a.hasPhoto ? 'has photo' : 'no photo',
         (a.specialities || []).slice(0, 3).join(', '),
       ].filter(Boolean).join(' · ');
+
+      // What will happen to the account behind a human profile, said plainly
+      // BEFORE anything runs — this is the decision people get wrong.
+      const acct = a.account || { kind: 'none' };
+      const accountNote = {
+        sameId: `<code style="color:var(--success)">${dst} already has this account under the same id — it will simply be linked.</code>`,
+        willLink: `<code style="color:var(--warning)">${dst} has a different account for ${acct.email}. The profile will be attached to THAT account, so their existing credits and history stay intact. Nothing is deleted.</code>`,
+        blocked: `<code style="color:var(--error)">${dst}'s account for ${acct.email} is already the astrologer "${acct.ownedBy}". One account cannot hold two profiles — this will be skipped.</code>`,
+        new: `<code>${dst} has no account for ${acct.email}; it will be created along with their sign-in links.</code>`,
+      }[acct.kind] || '';
       // Already-present profiles start unticked: promoting one again is an
       // update, which is legitimate but should be a deliberate choice. A name
       // clash starts unticked too, because promoting it makes a duplicate.
-      const risky = a.alreadyThere || a.nameClashId;
-      l.innerHTML = `<input type="checkbox" value="${a.id}" ${risky ? '' : 'checked'}>
+      const risky = a.alreadyThere || a.nameClashId || acct.kind === 'blocked';
+      l.innerHTML = `<input type="checkbox" value="${a.id}" ${risky ? '' : 'checked'} ${acct.kind === 'blocked' ? 'disabled' : ''}>
         <span>${a.displayName}
           ${a.alreadyThere ? `<span class="prot" style="background:var(--mute)">already in ${dst}</span>` : ''}
           ${a.nameClashId ? `<span class="prot" style="background:var(--warning)">duplicate name</span>` : ''}
+          ${acct.kind === 'willLink' ? `<span class="prot" style="background:var(--warning)">will link</span>` : ''}
+          ${acct.kind === 'blocked' ? `<span class="prot">cannot promote</span>` : ''}
           <code>${detail}</code>
+          ${accountNote}
           ${a.nameClashId ? `<code style="color:var(--warning)">${dst} already has an astrologer called ${a.displayName} under a different id — promoting this makes a second one. Delete or rename the one there first.</code>` : ''}
         </span>`;
       pick.appendChild(l);
@@ -844,7 +866,9 @@ $('runPromote').onclick = async () => {
   try {
     const { jobId } = await api('/promote', {
       sourceFile: src, destFile: dst, ids,
-      includePhotos: $('proPhotos').checked, confirm: $('proConfirm').value,
+      includePhotos: $('proPhotos').checked,
+      linkExisting: $('proLink').checked,
+      confirm: $('proConfirm').value,
     });
     for (;;) {
       await new Promise((r) => setTimeout(r, 500));
@@ -856,6 +880,7 @@ $('runPromote').onclick = async () => {
         else {
           const r = job.report;
           const bits = [`${r.promoted.length} promoted into ${dst}`];
+          if (r.linked?.length) bits.push(`${r.linked.length} linked to an existing account`);
           if (r.photos.length) bits.push(`${r.photos.length} photo file(s) copied`);
           if (r.skipped.length) bits.push(`${r.skipped.length} skipped`);
           say($('proRunMsg'), bits.join(' · ') +

@@ -71,6 +71,24 @@ export function describeUrl(raw) {
     }
 }
 
+/**
+ * A Supabase key is a JWT whose payload names the project and the role it acts
+ * as. Reading those two claims is the only reliable way to tell a service-role
+ * key from an anon key pasted into the same variable — and that mistake is
+ * SILENT, because an anon key against a private bucket returns an empty list
+ * rather than a permission error. Storage then appears to be configured and
+ * simply never works.
+ *
+ * Payload only. The signature is not verified and the key is never logged.
+ */
+function keyClaims(jwt) {
+    try {
+        return JSON.parse(Buffer.from(String(jwt).split('.')[1], 'base64').toString());
+    } catch {
+        return null;
+    }
+}
+
 export function describeEnv(file) {
     const env = readEnvFile(file);
     if (!env) return { file, ok: false, error: 'File not found' };
@@ -79,6 +97,34 @@ export function describeEnv(file) {
     const db = describeUrl(env.DATABASE_URL);
     const direct = describeUrl(env.DIRECT_URL);
     const warnings = [];
+
+    // ── Storage credentials ──
+    const storageRef = (() => {
+        try { return new URL(env.NEXT_PUBLIC_SUPABASE_URL).hostname.split('.')[0]; } catch { return null; }
+    })();
+    let serviceKeyRole = null;
+    if (!env.NEXT_PUBLIC_SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) {
+        warnings.push('No Supabase storage credentials, so photos cannot be read or written.');
+    } else {
+        if (storageRef && db?.projectRef && storageRef !== db.projectRef) {
+            warnings.push(
+                `NEXT_PUBLIC_SUPABASE_URL points at project ${storageRef} but DATABASE_URL points at ${db.projectRef} — storage and data are in different projects.`
+            );
+        }
+        const claims = keyClaims(env.SUPABASE_SERVICE_ROLE_KEY);
+        serviceKeyRole = claims?.role ?? 'unreadable';
+        if (serviceKeyRole !== 'service_role') {
+            warnings.push(
+                `SUPABASE_SERVICE_ROLE_KEY holds a "${serviceKeyRole}" key, not a service_role key. Photo upload and signed URLs will fail silently — an anon key returns an empty list instead of a permission error.`
+            );
+        }
+        if (claims?.ref && storageRef && claims.ref !== storageRef) {
+            warnings.push(`The service key belongs to project ${claims.ref}, not ${storageRef}.`);
+        }
+        if (claims?.exp && claims.exp * 1000 < Date.now()) {
+            warnings.push('The Supabase key has expired.');
+        }
+    }
     // The two ports are not interchangeable. 5432 is session mode and caps at 15
     // clients — a build or a burst of traffic exhausts it (EMAXCONNSESSION).
     if (db && db.port !== '6543') {
@@ -97,6 +143,8 @@ export function describeEnv(file) {
         port: db?.port ?? null,
         user: db?.user ?? null,
         hasDirect: Boolean(env.DIRECT_URL),
+        storageRef,
+        serviceKeyRole,
         warnings,
     };
 }
@@ -279,6 +327,48 @@ function storageFor(file) {
     });
 }
 
+/**
+ * Makes sure the destination project can actually take a photo.
+ *
+ * The key check comes FIRST, and that ordering is the whole point. An anon key
+ * against a private bucket does not raise a permission error — `listBuckets`
+ * simply returns an empty array, which reads exactly like "this project has no
+ * buckets". Acting on that appearance would mean trying to create a bucket that
+ * already exists, and reporting a storage problem as a missing-resource problem.
+ * Production had precisely this: a real bucket, and an anon key in the variable
+ * named SUPABASE_SERVICE_ROLE_KEY.
+ *
+ * A bucket is only created when the key is genuinely privileged, and PRIVATE to
+ * match preview — photos are served through short-lived signed URLs, and a
+ * public bucket would make every applicant's face guessable.
+ */
+async function ensureBucket(file, onProgress) {
+    const env = readEnvFile(file);
+    if (!env?.NEXT_PUBLIC_SUPABASE_URL || !env?.SUPABASE_SERVICE_ROLE_KEY) {
+        return { ok: false, error: `${file} has no Supabase storage credentials.` };
+    }
+
+    const role = keyClaims(env.SUPABASE_SERVICE_ROLE_KEY)?.role;
+    if (role !== 'service_role') {
+        return {
+            ok: false,
+            error: `${file}'s SUPABASE_SERVICE_ROLE_KEY holds a "${role ?? 'unreadable'}" key. ` +
+                `Storage reads as empty and writes fail. Copy the service_role key from ` +
+                `Supabase → Project Settings → API, and check Vercel's variables too.`,
+        };
+    }
+
+    const client = storageFor(file);
+    const { data: buckets, error } = await client.storage.listBuckets();
+    if (error) return { ok: false, error: error.message };
+    if ((buckets ?? []).some((b) => b.name === PHOTO_BUCKET)) return { ok: true, created: false };
+
+    const { error: mkErr } = await client.storage.createBucket(PHOTO_BUCKET, { public: false });
+    if (mkErr) return { ok: false, error: mkErr.message };
+    onProgress?.({ message: `Created the private "${PHOTO_BUCKET}" bucket in ${file}.` });
+    return { ok: true, created: true };
+}
+
 async function copyPhotoObject(sourceFile, destFile, path) {
     const from = storageFor(sourceFile);
     const to = storageFor(destFile);
@@ -339,6 +429,7 @@ export async function listAstrologers(sourceFile, destFile) {
 
         let existing = new Set();
         let nameClashes = new Map();
+        const emailMatches = new Map();
         if (dest) {
             const there = await dest.astrologer.findMany({
                 where: { id: { in: rows.map((r) => r.id) } },
@@ -358,6 +449,21 @@ export async function listAstrologers(sourceFile, destFile) {
             for (const d of sameName) {
                 if (!rows.some((r) => r.id === d.id)) nameClashes.set(d.displayName, d.id);
             }
+
+            // The same person signed up separately in each environment, so one
+            // email maps to two different user ids. Copying the source row is
+            // impossible (the email is unique) and deleting the destination's
+            // account would cascade away their profiles, credits and history —
+            // so the only sane move is to attach the profile to the account
+            // that is already there.
+            const emails = rows.map((r) => r.user?.email).filter(Boolean);
+            if (emails.length) {
+                const there = await dest.user.findMany({
+                    where: { email: { in: emails } },
+                    select: { id: true, email: true, astrologer: { select: { id: true, displayName: true } } },
+                });
+                for (const u of there) emailMatches.set(u.email, u);
+            }
         }
 
         return withPhotos.map((a) => ({
@@ -374,6 +480,20 @@ export async function listAstrologers(sourceFile, destFile) {
             /** Destination has this NAME under a different id — promoting would
              *  produce two of them. */
             nameClashId: existing.has(a.id) ? null : (nameClashes.get(a.displayName) ?? null),
+            /** What the destination already knows about this person's account.
+             *  `sameId` means the promotion just works; `willLink` means the
+             *  profile has to be attached to their existing account instead;
+             *  `blocked` means that account is already an astrologer. */
+            account: (() => {
+                if (!a.user?.email) return { kind: a.userId ? 'unknown' : 'none' };
+                const match = emailMatches.get(a.user.email);
+                if (!match) return { kind: 'new', email: a.user.email };
+                if (match.id === a.userId) return { kind: 'sameId', email: a.user.email };
+                if (match.astrologer && match.astrologer.id !== a.id) {
+                    return { kind: 'blocked', email: a.user.email, ownedBy: match.astrologer.displayName };
+                }
+                return { kind: 'willLink', email: a.user.email, destUserId: match.id };
+            })(),
         }));
     } finally {
         await source.$disconnect();
@@ -402,17 +522,31 @@ export async function listAstrologers(sourceFile, destFile) {
  *   - Consultations, earnings, payouts and applications are never copied. They
  *     are per-environment history and would be fiction anywhere else.
  */
-export async function promoteAstrologers({ sourceFile, destFile, ids, includePhotos = true, onProgress }) {
+export async function promoteAstrologers({
+    sourceFile, destFile, ids, includePhotos = true, linkExisting = true, onProgress,
+}) {
     const source = clientFor(sourceFile);
     const dest = clientFor(destFile);
-    const result = { promoted: [], skipped: [], photos: [] };
+    const result = { promoted: [], skipped: [], photos: [], linked: [] };
 
     try {
         const astrologers = await source.astrologer.findMany({ where: { id: { in: ids } } });
         if (astrologers.length === 0) throw new Error('None of those astrologers exist in the source.');
 
+        if (includePhotos) {
+            const bucket = await ensureBucket(destFile, onProgress);
+            if (!bucket.ok) {
+                onProgress?.({ message: `Photos will be skipped — ${destFile} storage unusable: ${bucket.error}` });
+                includePhotos = false;
+            }
+        }
+
         for (const a of astrologers) {
             const label = `${a.displayName}${a.isAI ? ' (AI)' : ''}`;
+            /** Which account the DESTINATION profile should hang off. Usually
+             *  the same id as the source, but not when the same person signed
+             *  up separately in each environment. */
+            let destUserId = a.userId;
 
             // ── The account behind a human astrologer ──
             if (a.userId) {
@@ -432,18 +566,54 @@ export async function promoteAstrologers({ sourceFile, destFile, ids, includePho
                                 ...(user.phone ? [{ phone: user.phone }] : []),
                             ],
                         },
-                        select: { id: true, email: true },
+                        select: { id: true, email: true, astrologer: { select: { id: true, displayName: true } } },
                     });
+
                     if (clash) {
-                        result.skipped.push({
-                            name: label,
-                            reason: `${destFile} already has a different account using ${clash.email}. Resolve that by hand — relinking it here would attach a live user to this profile.`,
+                        // That account is already somebody else's astrologer
+                        // profile. `Astrologer.userId` is unique, so this cannot
+                        // be resolved here at all.
+                        if (clash.astrologer && clash.astrologer.id !== a.id) {
+                            result.skipped.push({
+                                name: label,
+                                reason: `${destFile}'s account for ${clash.email} is already the astrologer "${clash.astrologer.displayName}". One account cannot hold two profiles.`,
+                            });
+                            onProgress?.({ message: `SKIPPED ${label} — that account is already an astrologer there` });
+                            continue;
+                        }
+                        if (!linkExisting) {
+                            result.skipped.push({
+                                name: label,
+                                reason: `${destFile} already has a different account using ${clash.email}. Turn on linking, or resolve it by hand.`,
+                            });
+                            onProgress?.({ message: `SKIPPED ${label} — email belongs to another account and linking is off` });
+                            continue;
+                        }
+                        // Attach to the account that is already there rather
+                        // than copying the source row. Deleting the destination
+                        // account instead would cascade away their profiles,
+                        // credits, journal and history — and take their OAuth
+                        // sign-in links with it.
+                        destUserId = clash.id;
+                        result.linked.push({ name: label, email: clash.email, destUserId: clash.id });
+                        onProgress?.({ message: `${label}: linked to the existing ${clash.email} account in ${destFile}` });
+                    } else {
+                        await dest.user.create({ data: user });
+
+                        // Sign-in links travel with the account. Without these a
+                        // Google or Apple astrologer arrives with a row they can
+                        // never log in to — the password column is null for an
+                        // OAuth user, so there is nothing else to authenticate
+                        // against.
+                        const accounts = await source.account.findMany({ where: { userId: user.id } });
+                        if (accounts.length) {
+                            await dest.account.createMany({ data: accounts, skipDuplicates: true });
+                        }
+                        onProgress?.({
+                            message: `${label}: created account ${user.email}` +
+                                (accounts.length ? ` with ${accounts.length} sign-in link(s)` : ' (password sign-in only)'),
                         });
-                        onProgress?.({ message: `SKIPPED ${label} — email already belongs to another account` });
-                        continue;
                     }
-                    await dest.user.create({ data: user });
-                    onProgress?.({ message: `${label}: created account ${user.email}` });
                 } else {
                     onProgress?.({ message: `${label}: account already present, left as is` });
                 }
@@ -472,15 +642,34 @@ export async function promoteAstrologers({ sourceFile, destFile, ids, includePho
                 }
             }
 
+            /**
+             * Where the destination should look for this portrait.
+             *
+             * An AI persona's photo is a STATIC asset in the repo
+             * (`/art/astrologers/vidhi.webp`), not an object in the bucket — it
+             * needs no copying and exists identically in every environment.
+             * Overwriting it with the bucket pointer erased those personas'
+             * artwork on promotion, which is the bug this distinction fixes.
+             * Only a pointer at an object we did not actually copy is unsafe,
+             * because that is the one that 404s.
+             */
+            const sourcePointsAtBucket = a.photoUrl?.startsWith('/api/astrologers/');
+            const destPhotoUrl = destPhotoPath
+                ? `/api/astrologers/${a.id}/photo`
+                : (a.photoUrl && !sourcePointsAtBucket ? a.photoUrl : null);
+
             const data = {
                 ...a,
+                // Points at whichever account this profile belongs to AT THE
+                // DESTINATION, which is not always the source's id.
+                userId: destUserId,
                 // Never arrive on duty. See the note above.
                 isAvailable: false,
                 lastSeenAt: null,
                 // Points at the object actually present in the destination
                 // bucket, or nothing — never at one that is not there.
                 photoPath: destPhotoPath,
-                photoUrl: destPhotoPath ? `/api/astrologers/${a.id}/photo` : null,
+                photoUrl: destPhotoUrl,
             };
 
             await dest.astrologer.upsert({
@@ -507,6 +696,53 @@ export async function promoteAstrologers({ sourceFile, destFile, ids, includePho
     }
 
     return result;
+}
+
+/**
+ * Repairs astrologers whose portrait exists but whose `photoUrl` pointer was
+ * never written.
+ *
+ * Every profile approved before the publish-photo step shipped is in this
+ * state: the application carries a photo, `/api/astrologers/[id]/photo` would
+ * serve it, and the directory shows an initial because the denormalised column
+ * is null. Nothing is uploaded or deleted here — it only writes the pointer
+ * where a photo is genuinely resolvable.
+ */
+export async function backfillPhotoUrls(file, onProgress) {
+    const prisma = clientFor(file);
+    const fixed = [];
+    const untouched = [];
+    try {
+        const rows = await prisma.astrologer.findMany({
+            select: { id: true, displayName: true, photoUrl: true, photoPath: true, userId: true },
+        });
+
+        for (const a of rows) {
+            if (a.photoUrl) { untouched.push({ name: a.displayName, why: 'already set' }); continue; }
+
+            let resolvable = Boolean(a.photoPath);
+            if (!resolvable && a.userId) {
+                const app = await prisma.astrologerApplication.findFirst({
+                    where: { userId: a.userId, profilePhotoPath: { not: null } },
+                    orderBy: { submittedAt: 'desc' },
+                    select: { profilePhotoPath: true },
+                }).catch(() => null);
+                resolvable = Boolean(app?.profilePhotoPath);
+            }
+
+            if (!resolvable) { untouched.push({ name: a.displayName, why: 'no photo anywhere' }); continue; }
+
+            await prisma.astrologer.update({
+                where: { id: a.id },
+                data: { photoUrl: `/api/astrologers/${a.id}/photo` },
+            });
+            fixed.push({ name: a.displayName, id: a.id });
+            onProgress?.({ message: `${a.displayName}: pointer written` });
+        }
+    } finally {
+        await prisma.$disconnect();
+    }
+    return { fixed, untouched };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

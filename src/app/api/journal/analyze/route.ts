@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
 import { generateJournalAnalysis } from '@/lib/ai/geminiService';
+import { guardAiSpend } from '@/lib/ai/costGuard';
 
 export async function POST(req: NextRequest) {
     try {
@@ -9,6 +10,9 @@ export async function POST(req: NextRequest) {
         if (!session?.user?.id) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
+
+        const limited = guardAiSpend(session.user.id, 'journal-analyze');
+        if (limited) return limited;
 
         const { date, content } = await req.json();
 

@@ -3,6 +3,7 @@ import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
 import { generateTimingInsight } from '@/lib/ai/geminiService';
 import { ChartData } from '@/lib/astrology/calculator';
+import { guardAiSpend } from '@/lib/ai/costGuard';
 
 export async function POST(req: NextRequest) {
     try {
@@ -10,6 +11,9 @@ export async function POST(req: NextRequest) {
         if (!session?.user?.id) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
+
+        const limited = guardAiSpend(session.user.id, 'timing-insight');
+        if (limited) return limited;
 
         const { profileId, currentDasha } = await req.json();
 

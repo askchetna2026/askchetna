@@ -2,13 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { generatePlanetInsights } from '@/lib/ai/geminiService';
 import { ChartData } from '@/lib/astrology/calculator';
+import { guardAiSpend } from '@/lib/ai/costGuard';
 
 export async function POST(req: NextRequest) {
     try {
         const session = await auth();
-        if (!session) {
+        // The id, not just the session: this call costs money at the provider
+        // and the limit below has to attach to somebody.
+        if (!session?.user?.id) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
+
+        const limited = guardAiSpend(session.user.id, 'planet-insights');
+        if (limited) return limited;
 
         const { chartData, chartName } = await req.json();
 
@@ -20,7 +26,7 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json({ insights });
 
-    } catch (error: any) {
+    } catch (error) {
         console.error('Planet insights error:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }

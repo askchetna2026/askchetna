@@ -7,6 +7,7 @@ import { sendLifeReportEmail } from '@/lib/mail';
 import { generateReportPDF, type ReportContent } from '@/lib/pdf';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { recordAnalyticsEvent } from '@/lib/analytics/server';
+import { guardAiSpend } from '@/lib/ai/costGuard';
 
 export async function POST(
     req: NextRequest,
@@ -33,6 +34,35 @@ export async function POST(
 
         if (report.profile.userId !== session.user.id) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        /**
+         * Serve what was already written.
+         *
+         * `Report.content` exists to cache the finished chapters, but this route
+         * regenerated them on every call and overwrote the cache with the
+         * result — so one purchased report could drive an unlimited number of
+         * the most expensive AI calls in the app, and a seeker re-opening their
+         * report got a subtly different one each time.
+         *
+         * `regenerate` is the deliberate way back in, for a report whose stored
+         * content is bad. It costs a fresh generation, so it goes through the
+         * same spend guard as the ungated flows.
+         */
+        const body = await req.json().catch(() => ({}));
+        const forceRegenerate = body?.regenerate === true;
+
+        if (!forceRegenerate && report.status === 'generated' && report.content) {
+            return NextResponse.json({
+                success: true,
+                cached: true,
+                content: report.content,
+            });
+        }
+
+        if (forceRegenerate) {
+            const limited = guardAiSpend(session.user.id, 'report-regenerate');
+            if (limited) return limited;
         }
 
         // 2. Generate content using Gemini

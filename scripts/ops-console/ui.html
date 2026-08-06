@@ -1,0 +1,1085 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Operations console — AskChetna</title>
+<style>
+  :root{
+    --paper:#F2EAD5; --panel:#F6F0DF; --soft:#EAE0C8; --rule:#D3C29C;
+    --ink:#251A11; --mute:#5C4A32; --gold:#5C3D0A; --gold-decor:#B5892E;
+    --kumkum:#7A2C12; --kumkum-deep:#63220E; --btn-fg:#FBF6E8;
+    --neelam:#26315C; --night-head:#F0E0BC; --night-mute:#C8C2DE;
+    --success:#256B29; --warning:#B26A00; --error:#B3261E;
+    --display:Georgia,"Iowan Old Style","Palatino Linotype",serif;
+    --ui:ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:ui-monospace,"Cascadia Mono",Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--paper);color:var(--ink);font:14px/1.55 var(--ui);-webkit-font-smoothing:antialiased}
+  h1,h2{font-family:var(--display);font-weight:600;margin:0}
+
+  .bar{background:var(--neelam);border-bottom:1px solid var(--gold-decor);padding:14px 22px;
+    display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .bar h1{color:var(--night-head);font-size:1.15rem;letter-spacing:.02em}
+  .bar p{color:var(--night-mute);font-size:.76rem;margin:0}
+
+  .app{display:grid;grid-template-columns:236px 1fr;min-height:calc(100% - 52px)}
+  @media(max-width:760px){.app{grid-template-columns:1fr}}
+
+  /* ── Sidebar: choose the operation first ── */
+  .side{background:var(--soft);border-right:1px solid var(--rule);padding:18px 0}
+  .sideTitle{font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;font-weight:700;
+    color:var(--mute);padding:0 18px;margin:0 0 8px}
+  .side nav{display:flex;flex-direction:column;margin-bottom:20px}
+  .op{font:inherit;text-align:left;background:transparent;border:0;border-left:3px solid transparent;
+    padding:10px 18px;cursor:pointer;color:var(--ink);font-size:.86rem}
+  .op:hover{background:rgba(211,194,156,.45)}
+  .op[aria-current="true"]{background:var(--panel);border-left-color:var(--kumkum);font-weight:700}
+  .op small{display:block;font-size:.68rem;color:var(--mute);font-weight:400;margin-top:1px}
+  .op[aria-current="true"] small{color:var(--mute)}
+  .danger-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--error);
+    margin-right:6px;vertical-align:middle}
+
+  /* ── Main pane ── */
+  main{padding:24px clamp(18px,3vw,34px) 60px;min-width:0}
+  .panel{display:none}
+  .panel.on{display:block}
+  .phead{margin-bottom:16px}
+  .phead h2{font-size:1.15rem}
+  .phead p{color:var(--mute);font-size:.85rem;margin:6px 0 0;max-width:70ch;line-height:1.6}
+
+  .card{background:var(--panel);border:1px solid var(--rule);border-radius:2px;padding:18px 20px;
+    box-shadow:0 1px 2px rgba(37,26,17,.05),0 10px 24px -18px rgba(37,26,17,.28);margin-bottom:18px}
+  .step{font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--gold);margin-bottom:10px}
+
+  label{display:block;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--mute);margin-bottom:6px}
+  select,input[type=text]{font:inherit;width:100%;max-width:340px;padding:10px 12px;color:var(--ink);
+    background:var(--paper);border:1px solid var(--rule);border-radius:2px}
+  select:focus-visible,input:focus-visible{outline:2px solid var(--kumkum);outline-offset:2px}
+  .row{display:flex;gap:18px;flex-wrap:wrap}
+  .row>div{flex:1 1 240px;min-width:0}
+  .field{margin-bottom:14px}
+
+  .checks{display:flex;flex-direction:column;gap:8px}
+  .check{display:flex;align-items:flex-start;gap:9px;font-size:.86rem;cursor:pointer}
+  .check input{margin-top:3px}
+  .check code{font-family:var(--mono);font-size:.72rem;color:var(--mute);display:block}
+
+  .meta{font-family:var(--mono);font-size:.72rem;color:var(--mute);margin-top:6px;word-break:break-all}
+  .warn{color:var(--warning);font-size:.74rem;margin-top:5px}
+  .prot{display:inline-block;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;
+    color:var(--btn-fg);background:var(--error);padding:2px 6px;border-radius:2px;margin-left:6px}
+
+  button.go{font:inherit;font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:.74rem;
+    padding:11px 20px;border-radius:2px;border:1px solid var(--kumkum);cursor:pointer;
+    background:var(--kumkum);color:var(--btn-fg);transition:background-color .15s}
+  button.go:hover:not(:disabled){background:var(--kumkum-deep);border-color:var(--kumkum-deep)}
+  button.go.red{background:var(--error);border-color:var(--error)}
+  button.go.red:hover:not(:disabled){background:#8f1e17;border-color:#8f1e17}
+  button.go:disabled{opacity:.45;cursor:not-allowed}
+
+  table{width:100%;border-collapse:collapse;font-size:.82rem}
+  th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--rule);white-space:nowrap}
+  th{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);
+    position:sticky;top:0;background:var(--panel)}
+  td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono)}
+  tr.diff td{background:rgba(178,106,0,.12)}
+  tr.gone td{background:rgba(179,38,30,.12)}
+  .tag{font-size:.66rem;color:var(--error);font-weight:700}
+  .same{color:var(--mute)}
+  .wrap{max-height:min(58vh,560px);overflow:auto;border:1px solid var(--rule);border-radius:2px}
+  .totals{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:14px}
+  .totals b{font-family:var(--display);font-size:1.3rem;display:block;font-variant-numeric:tabular-nums}
+  .totals span{font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);font-weight:700}
+
+  pre{font-family:var(--mono);font-size:.75rem;background:var(--soft);border:1px solid var(--rule);
+    border-radius:2px;padding:12px;overflow:auto;max-height:340px;margin:0;white-space:pre-wrap}
+  .msg{padding:10px 13px;border-radius:2px;font-size:.83rem;margin-top:14px}
+  .msg.err{color:var(--error);background:rgba(179,38,30,.10);border:1px solid var(--error)}
+  .msg.ok{color:var(--success);background:rgba(46,125,50,.12);border:1px solid var(--success)}
+  .note{font-size:.78rem;color:var(--mute);line-height:1.65;border:1px dashed var(--rule);
+    border-radius:2px;padding:12px 14px;margin-top:12px}
+  .note b{color:var(--ink)}
+  .hide{display:none}
+  .legend{font-size:.74rem;color:var(--mute);margin-top:10px}
+  .sw{display:inline-block;width:11px;height:11px;border:1px solid var(--rule);vertical-align:-1px;margin-right:5px}
+
+  /* ── Commercial tiles ── */
+  .grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));margin-bottom:6px}
+  .tile{background:var(--paper);border:1px solid var(--rule);border-radius:2px;padding:13px 14px}
+  .tile b{font-family:var(--display);font-size:1.55rem;line-height:1.1;display:block;font-variant-numeric:tabular-nums}
+  .tile span{display:block;font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);font-weight:700;margin-top:6px}
+  .tile em{display:block;font-style:normal;font-size:.72rem;color:var(--mute);margin-top:4px}
+  .tile.money b{color:var(--gold)}
+  .tile.owed b{color:var(--error)}
+  .tile.good b{color:var(--success)}
+  .csec{margin-bottom:18px}
+  .csec>h3{font-family:var(--display);font-weight:600;font-size:.95rem;letter-spacing:.14em;
+    text-transform:uppercase;margin:0 0 11px;display:flex;align-items:baseline;gap:11px}
+  .csec>h3::after{content:"";flex:1;height:1px;background:var(--rule)}
+  .mini{width:auto;min-width:min(100%,420px)}
+  .mini td,.mini th{padding:5px 12px 5px 0;border-bottom:1px solid rgba(211,194,156,.55)}
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <h1>Operations console</h1>
+  <p>Local only — reads your <code>.env.*</code> files directly. Nothing here is deployed.</p>
+</div>
+
+<div class="app">
+  <aside class="side">
+    <p class="sideTitle">Read only</p>
+    <nav>
+      <button class="op" data-op="commercial">Commercial overview<small>Supply, demand, revenue</small></button>
+      <button class="op" data-op="envs">Environments<small>Connections and warnings</small></button>
+      <button class="op" data-op="counts">Compare row counts<small>All tables, side by side</small></button>
+      <button class="op" data-op="structure">Validate structure<small>Tables and columns, side by side</small></button>
+      <button class="op" data-op="schema">Schema status<small>Which migrations are applied</small></button>
+    </nav>
+    <p class="sideTitle">Changes the destination</p>
+    <nav>
+      <button class="op" data-op="promote">Promote astrologers<small>Selected profiles only</small></button>
+      <button class="op" data-op="backup">Back up an environment<small>Structure, then all data</small></button>
+      <button class="op" data-op="apply">Apply schema<small>Create missing tables</small></button>
+      <button class="op" data-op="dry">Dry run copy<small>Rehearse, write nothing</small></button>
+      <button class="op" data-op="replace"><span class="danger-dot"></span>Replace data<small>Empties the destination</small></button>
+    </nav>
+  </aside>
+
+  <main>
+
+    <!-- ══ Commercial overview ══ -->
+    <div class="panel" id="p-commercial">
+      <div class="phead">
+        <h2>Commercial overview</h2>
+        <p>Who supplies the marketplace, who buys, what was paid and what is owed.
+           Read only.</p>
+      </div>
+
+      <div class="card">
+        <p class="step">Step 1 — choose an environment</p>
+        <div class="field"><label for="comEnv">Environment</label><select id="comEnv" autocomplete="off"></select>
+          <div class="meta" id="comMeta"></div></div>
+        <p class="step" style="margin-top:16px">Step 2 — run it</p>
+        <button class="go" id="runCom">Build overview</button>
+        <div id="comMsg"></div>
+      </div>
+
+      <div id="comResult"></div>
+    </div>
+
+    <!-- ══ Environments ══ -->
+    <div class="panel" id="p-envs">
+      <div class="phead">
+        <h2>Environments</h2>
+        <p>Every <code>.env.*</code> file found. The Supabase project is in the connection
+           <em>username</em>, not the host — all three share one pooler hostname, so
+           comparing hosts would tell you they are the same database when they are not.</p>
+      </div>
+      <div class="card"><div class="wrap"><table id="envTable"></table></div></div>
+    </div>
+
+    <!-- ══ Compare row counts ══ -->
+    <div class="panel" id="p-counts">
+      <div class="phead">
+        <h2>Compare row counts</h2>
+        <p>Counts every table in each selected environment and lines them up for comparison.
+           Reads only — nothing is written.</p>
+      </div>
+
+      <div class="card">
+        <p class="step">Step 1 — choose environments</p>
+        <div class="checks" id="countPick"></div>
+      </div>
+
+      <div class="card">
+        <p class="step">Step 2 — run it</p>
+        <button class="go" id="runCounts">Compare row counts</button>
+        <div id="countsMsg"></div>
+      </div>
+
+      <div class="card hide" id="countsResult">
+        <div class="totals" id="totals"></div>
+        <div class="wrap"><table id="countsTable"></table></div>
+        <p class="legend">
+          <span class="sw" style="background:rgba(178,106,0,.35)"></span>counts differ
+          <span class="sw" style="background:rgba(179,38,30,.35);margin-left:16px"></span>table missing in at least one environment
+        </p>
+        <div class="note">
+          Every model is read from <b>prisma/schema.prisma</b> at run time, so this list cannot
+          drift. The older <code>supabase-copy-db.js</code> and <code>backup-db.js</code> carry
+          hand-written lists of 20 and 19 models against the schema's 33, and silently skip the
+          astrologer, consultation and payments tables.
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ Validate structure ══ -->
+    <div class="panel" id="p-structure">
+      <div class="phead">
+        <h2>Validate structure</h2>
+        <p>Compares what two databases actually look like — every table and every column —
+           rather than which migrations they claim to have run. Reads only.</p>
+      </div>
+
+      <div class="card">
+        <p class="step">Step 1 — choose two environments</p>
+        <div class="row">
+          <div class="field"><label for="strA">First</label>
+            <select id="strA" autocomplete="off"></select><div class="meta" id="strAMeta"></div></div>
+          <div class="field"><label for="strB">Second</label>
+            <select id="strB" autocomplete="off"></select><div class="meta" id="strBMeta"></div></div>
+        </div>
+        <p class="step" style="margin-top:16px">Step 2 — run it</p>
+        <button class="go" id="runStructure">Validate structure</button>
+        <div id="strMsg"></div>
+      </div>
+
+      <div class="card hide" id="strResult">
+        <div class="totals" id="strTotals"></div>
+        <div class="wrap"><table id="strTable"></table></div>
+        <div class="note">
+          <b>Why this is not the same as Schema status.</b> <code>migrate status</code> reads
+          Prisma's own bookkeeping table, so it reports "up to date" for a database whose
+          columns were changed by hand, or where a migration was recorded but did not
+          finish. Row counts only notice a whole missing table. A single absent column is
+          invisible to both — and that is exactly the shape of the <code>P2022</code>
+          failures this project keeps hitting.
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ Schema status ══ -->
+    <div class="panel" id="p-schema">
+      <div class="phead">
+        <h2>Schema status</h2>
+        <p>Runs <code>prisma migrate status</code> against one environment — which migrations
+           it has, and which it is missing.</p>
+      </div>
+      <div class="card">
+        <p class="step">Step 1 — choose an environment</p>
+        <div class="field"><label for="schemaEnv">Environment</label><select id="schemaEnv" autocomplete="off"></select></div>
+        <p class="step" style="margin-top:16px">Step 2 — run it</p>
+        <button class="go" id="runSchema">Check status</button>
+        <div id="schemaMsg"></div>
+      </div>
+      <div class="card hide" id="schemaResult"><pre id="schemaOut"></pre></div>
+    </div>
+
+    <!-- ══ Apply schema ══ -->
+    <div class="panel" id="p-apply">
+      <div class="phead">
+        <h2>Apply schema</h2>
+        <p>Runs <code>prisma migrate deploy</code> against the destination, creating every table
+           a fresh database is missing. Safe to re-run — applied migrations are skipped. This
+           changes structure, never rows.</p>
+      </div>
+      <div class="card">
+        <p class="step">Step 1 — choose the destination</p>
+        <div class="field"><label for="applyEnv">Destination</label><select id="applyEnv" autocomplete="off"></select>
+          <div class="meta" id="applyMeta"></div></div>
+        <div class="field hide" id="applyConfirmWrap">
+          <label for="applyConfirm">Protected — type the filename to confirm</label>
+          <input type="text" id="applyConfirm" autocomplete="off" spellcheck="false">
+        </div>
+        <p class="step" style="margin-top:16px">Step 2 — run it</p>
+        <button class="go" id="runApply">Apply schema</button>
+        <div id="applyMsg"></div>
+      </div>
+      <div class="card hide" id="applyResult"><pre id="applyOut"></pre></div>
+    </div>
+
+    <!-- ══ Promote astrologers ══ -->
+    <div class="panel" id="p-promote">
+      <div class="phead">
+        <h2>Promote astrologers</h2>
+        <p>Copies chosen astrologer profiles — and, for human ones, the account behind
+           them — into another environment. Additive: nothing is emptied and no unrelated
+           row is touched, so a profile can be checked on preview and then moved to
+           production without dragging preview's sessions, earnings or test users along.</p>
+      </div>
+
+      <div class="card">
+        <p class="step">Step 1 — choose source and destination</p>
+        <div class="row">
+          <div class="field"><label for="proSrc">Source — where they exist now</label>
+            <select id="proSrc" autocomplete="off"></select><div class="meta" id="proSrcMeta"></div></div>
+          <div class="field"><label for="proDst">Destination — where they should go</label>
+            <select id="proDst" autocomplete="off"></select><div class="meta" id="proDstMeta"></div></div>
+        </div>
+        <button class="go" id="proLoad" style="background:transparent;color:var(--kumkum)">Load astrologers</button>
+        <div id="proMsg"></div>
+      </div>
+
+      <div class="card hide" id="proPickCard">
+        <p class="step">Step 2 — choose who to promote</p>
+        <div class="checks" id="proPick"></div>
+        <label class="check" style="margin-top:14px;text-transform:none;letter-spacing:0;font-weight:400;color:var(--ink)">
+          <input type="checkbox" id="proPhotos" checked>
+          <span>Copy their photo files too
+            <code>portraits live in a per-project bucket, so without this the row arrives and the picture 404s</code></span>
+        </label>
+
+        <div class="field hide" id="proConfirmWrap" style="margin-top:16px">
+          <label for="proConfirm">Protected — type the destination filename to confirm</label>
+          <input type="text" id="proConfirm" autocomplete="off" spellcheck="false">
+        </div>
+
+        <p class="step" style="margin-top:16px">Step 3 — execute</p>
+        <button class="go" id="runPromote">Promote selected</button>
+        <div id="proRunMsg"></div>
+        <div class="note">
+          <b>What travels:</b> the profile, its languages, specialities, rate, weekly
+          availability, the portrait file, and — for a human — their user account.
+          <b>What does not:</b> consultations, earnings, payouts and the application
+          record. Those are per-environment history and would be fiction anywhere else.
+          Everyone arrives <b>off duty</b>, because presence is set by signing in.
+        </div>
+      </div>
+
+      <div class="card hide" id="proResult"><pre id="proOut"></pre></div>
+    </div>
+
+    <!-- ══ Backup ══ -->
+    <div class="panel" id="p-backup">
+      <div class="phead">
+        <h2>Back up an environment</h2>
+        <p>The free Supabase tier has no backups, so this is the substitute. Point it at an
+           empty project: it builds the schema, copies every table, then counts both sides
+           and only reports success if they agree.</p>
+      </div>
+
+      <div class="card">
+        <p class="step">Step 1 — choose what to back up, and where to</p>
+        <div class="row">
+          <div class="field"><label for="bakSrc">Source — the data to preserve</label>
+            <select id="bakSrc" autocomplete="off"></select><div class="meta" id="bakSrcMeta"></div></div>
+          <div class="field"><label for="bakDst">Destination — the backup project</label>
+            <select id="bakDst" autocomplete="off"></select><div class="meta" id="bakDstMeta"></div></div>
+        </div>
+        <div class="note" id="bakHint">
+          The destination needs its own <code>.env.&lt;name&gt;</code> file with
+          <code>DATABASE_URL</code> (port 6543, <code>?pgbouncer=true</code>) and
+          <code>DIRECT_URL</code> (port 5432) for a fresh Supabase project. Create the file
+          and restart the console to see it here. The project can be completely empty —
+          the schema is built as step one.
+        </div>
+
+        <div class="field hide" id="bakConfirmWrap" style="margin-top:16px">
+          <label for="bakConfirm">Protected — type the destination filename to confirm</label>
+          <input type="text" id="bakConfirm" autocomplete="off" spellcheck="false">
+        </div>
+
+        <p class="step" style="margin-top:16px">Step 2 — run it</p>
+        <button class="go" id="runBackup">Build schema and back up</button>
+        <div id="bakMsg"></div>
+        <div class="note">
+          <b>The destination is emptied first.</b> Every backup is a full replacement, not
+          an increment — so the backup project holds one snapshot, the most recent. It is
+          also not a point-in-time restore: anything written to the source after this run
+          is not in it.
+        </div>
+      </div>
+
+      <div class="card hide" id="bakResult"><pre id="bakOut"></pre></div>
+    </div>
+
+    <!-- ══ Dry run / Replace share a panel shape ══ -->
+    <div class="panel" id="p-dry">
+      <div class="phead">
+        <h2>Dry run copy</h2>
+        <p>Reads every row the real copy would move and checks the destination has somewhere to
+           put it — then stops. Nothing is truncated and nothing is written. Run this first.</p>
+      </div>
+      <div class="card">
+        <p class="step">Step 1 — choose source and destination</p>
+        <div class="row">
+          <div class="field"><label for="drySrc">Source — read from</label><select id="drySrc" autocomplete="off"></select>
+            <div class="meta" id="drySrcMeta"></div></div>
+          <div class="field"><label for="dryDst">Destination — would be replaced</label><select id="dryDst" autocomplete="off"></select>
+            <div class="meta" id="dryDstMeta"></div></div>
+        </div>
+        <p class="step" style="margin-top:16px">Step 2 — run it</p>
+        <button class="go" id="runDry">Dry run</button>
+        <div id="dryMsg"></div>
+      </div>
+      <div class="card hide" id="dryResult"><pre id="dryOut"></pre></div>
+    </div>
+
+    <div class="panel" id="p-replace">
+      <div class="phead">
+        <h2>Replace data</h2>
+        <p>Empties every table at the destination, then copies all rows from the source in
+           foreign-key order. <b>This cannot be undone.</b></p>
+      </div>
+      <div class="card">
+        <p class="step">Step 1 — choose source and destination</p>
+        <div class="row">
+          <div class="field"><label for="repSrc">Source — read from</label><select id="repSrc" autocomplete="off"></select>
+            <div class="meta" id="repSrcMeta"></div></div>
+          <div class="field"><label for="repDst">Destination — will be emptied</label><select id="repDst" autocomplete="off"></select>
+            <div class="meta" id="repDstMeta"></div></div>
+        </div>
+
+        <p class="step" style="margin-top:16px">Step 2 — see what will be destroyed</p>
+        <button class="go" id="repCheck" style="background:transparent;color:var(--kumkum)">Measure both sides</button>
+        <div class="note" id="blast">Not measured yet.</div>
+
+        <div class="field hide" id="repConfirmWrap" style="margin-top:16px">
+          <label for="repConfirm">Protected — type the destination filename to confirm</label>
+          <input type="text" id="repConfirm" autocomplete="off" spellcheck="false">
+        </div>
+
+        <p class="step" style="margin-top:16px">Step 3 — execute</p>
+        <button class="go red" id="runReplace" disabled>Replace destination data</button>
+        <div id="repMsg"></div>
+      </div>
+      <div class="card hide" id="repResult"><pre id="repOut"></pre></div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+const TOKEN = new URLSearchParams(location.search).get('token');
+const $ = (id) => document.getElementById(id);
+let ENVS = [];
+let measured = null;
+
+async function api(path, body) {
+  const res = await fetch('/api' + path, {
+    method: body ? 'POST' : 'GET',
+    headers: { 'x-ops-token': TOKEN, ...(body ? { 'Content-Type': 'application/json' } : {}) },
+    ...(body ? { body: JSON.stringify(body) } : {}),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Request failed');
+  return data;
+}
+
+const say = (el, text, kind) => {
+  el.innerHTML = '';
+  if (!text) return;
+  const d = document.createElement('div');
+  d.className = 'msg ' + (kind || 'err');
+  d.textContent = text;
+  el.appendChild(d);
+};
+
+const isProtected = (f) => /prod/i.test(f);
+const envByFile = (f) => ENVS.find((e) => e.file === f);
+const fmt = (n) => (n == null ? '—' : n.toLocaleString());
+
+function describe(el, file) {
+  const e = envByFile(file);
+  if (!el) return;
+  el.innerHTML = '';
+  if (!e) return;
+  if (!e.ok) { el.textContent = e.error; return; }
+  el.textContent = `project ${e.projectRef || '?'} · port ${e.port}`;
+  if (isProtected(file)) {
+    const b = document.createElement('span');
+    b.className = 'prot'; b.textContent = 'protected';
+    el.appendChild(b);
+  }
+  for (const w of e.warnings) {
+    const d = document.createElement('div');
+    d.className = 'warn'; d.textContent = '⚠ ' + w;
+    el.appendChild(d);
+  }
+}
+
+// ── Sidebar ──────────────────────────────────────────────────────────────
+function show(op) {
+  for (const b of document.querySelectorAll('.op')) b.setAttribute('aria-current', String(b.dataset.op === op));
+  for (const p of document.querySelectorAll('.panel')) p.classList.toggle('on', p.id === 'p-' + op);
+  location.hash = op;
+}
+for (const b of document.querySelectorAll('.op')) b.onclick = () => show(b.dataset.op);
+
+// ── Boot ─────────────────────────────────────────────────────────────────
+function fill(sel, preferred) {
+  sel.innerHTML = '';
+  for (const e of ENVS) {
+    const o = document.createElement('option');
+    o.value = e.file; o.textContent = e.file;
+    sel.appendChild(o);
+  }
+  if (preferred) sel.value = preferred;
+}
+
+async function boot() {
+  const data = await api('/envs');
+  ENVS = data.envs;
+
+  const prod = ENVS.find((e) => /prod/i.test(e.file))?.file;
+  const preview = ENVS.find((e) => /preview/i.test(e.file))?.file;
+  const local = ENVS.find((e) => /local/i.test(e.file))?.file;
+
+  // Environments table
+  const t = $('envTable');
+  t.innerHTML = '<thead><tr><th>File</th><th>Supabase project</th><th class="n">Port</th><th>Direct URL</th><th>Notes</th></tr></thead>';
+  const tb = document.createElement('tbody');
+  for (const e of ENVS) {
+    const tr = document.createElement('tr');
+    if (!e.ok) {
+      tr.innerHTML = `<td>${e.file}</td><td colspan="4"><span class="tag">${e.error}</span></td>`;
+    } else {
+      const notes = e.warnings.length
+        ? e.warnings.map((w) => `<div class="warn">⚠ ${w}</div>`).join('')
+        : '<span class="same">—</span>';
+      tr.innerHTML = `<td>${e.file}${isProtected(e.file) ? '<span class="prot">protected</span>' : ''}</td>
+        <td><code>${e.projectRef || '?'}</code></td><td class="n">${e.port}</td>
+        <td>${e.hasDirect ? 'yes' : '<span class="tag">missing</span>'}</td>
+        <td style="white-space:normal">${notes}</td>`;
+    }
+    tb.appendChild(tr);
+  }
+  t.appendChild(tb);
+
+  // Compare picker — every environment ticked, since comparing all of them is
+  // the normal question.
+  const pick = $('countPick');
+  pick.innerHTML = '';
+  for (const e of ENVS) {
+    const l = document.createElement('label');
+    l.className = 'check';
+    l.innerHTML = `<input type="checkbox" value="${e.file}" ${e.ok ? 'checked' : 'disabled'}>
+      <span>${e.file}${isProtected(e.file) ? '<span class="prot">protected</span>' : ''}
+      <code>${e.ok ? 'project ' + (e.projectRef || '?') : e.error}</code></span>`;
+    pick.appendChild(l);
+  }
+
+  // Commercial questions are about the live business, so production is the
+  // sensible default here even though it is the protected environment —
+  // reading it changes nothing.
+  fill($('comEnv'), prod);
+  fill($('strA'), prod); fill($('strB'), preview);
+  fill($('schemaEnv'), preview);
+  fill($('applyEnv'), preview);
+  fill($('drySrc'), prod); fill($('dryDst'), preview);
+  fill($('repSrc'), prod); fill($('repDst'), local ?? preview);
+  // Promotion runs the other way to everything else: preview is where a profile
+  // is checked, production is where it goes once it passes.
+  fill($('proSrc'), preview); fill($('proDst'), prod);
+  fill($('bakSrc'), prod);
+  fill($('bakDst'), ENVS.find((e) => /backup|bak/i.test(e.file))?.file ?? local ?? preview);
+
+  const sync = () => {
+    describe($('comMeta'), $('comEnv').value);
+    describe($('strAMeta'), $('strA').value);
+    describe($('strBMeta'), $('strB').value);
+    describe($('applyMeta'), $('applyEnv').value);
+    describe($('drySrcMeta'), $('drySrc').value);
+    describe($('dryDstMeta'), $('dryDst').value);
+    describe($('repSrcMeta'), $('repSrc').value);
+    describe($('repDstMeta'), $('repDst').value);
+    $('applyConfirmWrap').classList.toggle('hide', !isProtected($('applyEnv').value));
+    $('applyConfirm').placeholder = $('applyEnv').value;
+    $('repConfirmWrap').classList.toggle('hide', !isProtected($('repDst').value));
+    $('repConfirm').placeholder = $('repDst').value;
+
+    describe($('proSrcMeta'), $('proSrc').value);
+    describe($('proDstMeta'), $('proDst').value);
+    $('proConfirmWrap').classList.toggle('hide', !isProtected($('proDst').value));
+    $('proConfirm').placeholder = $('proDst').value;
+
+    describe($('bakSrcMeta'), $('bakSrc').value);
+    describe($('bakDstMeta'), $('bakDst').value);
+    $('bakConfirmWrap').classList.toggle('hide', !isProtected($('bakDst').value));
+    $('bakConfirm').placeholder = $('bakDst').value;
+  };
+  for (const id of ['comEnv', 'strA', 'strB', 'applyEnv', 'drySrc', 'dryDst', 'repSrc', 'repDst',
+                    'proSrc', 'proDst', 'bakSrc', 'bakDst']) {
+    $(id).onchange = () => {
+      if (id === 'repSrc' || id === 'repDst') { measured = null; $('runReplace').disabled = true; $('blast').textContent = 'Not measured yet.'; }
+      // The loaded list belongs to a specific pair; changing either makes the
+      // "already there" markers wrong, so it has to be reloaded.
+      if (id === 'proSrc' || id === 'proDst') $('proPickCard').classList.add('hide');
+      sync();
+    };
+  }
+  sync();
+  show(location.hash.slice(1) || 'commercial');
+}
+
+// ── Compare row counts ───────────────────────────────────────────────────
+$('runCounts').onclick = async () => {
+  const envs = [...$('countPick').querySelectorAll('input:checked')].map((i) => i.value);
+  say($('countsMsg'), '');
+  if (envs.length < 1) return say($('countsMsg'), 'Tick at least one environment.');
+
+  $('runCounts').disabled = true;
+  $('runCounts').textContent = 'Counting…';
+  try {
+    const data = await api('/counts', { envs });
+    renderCounts(data, envs);
+    $('countsResult').classList.remove('hide');
+  } catch (e) {
+    say($('countsMsg'), e.message);
+  } finally {
+    $('runCounts').disabled = false;
+    $('runCounts').textContent = 'Compare row counts';
+  }
+};
+
+function renderCounts(data, envs) {
+  const t = $('countsTable');
+  t.innerHTML = `<thead><tr><th>Table</th>${envs.map((e) => `<th class="n">${e}</th>`).join('')}
+    ${envs.length > 1 ? '<th class="n">Spread</th>' : ''}</tr></thead>`;
+  const tb = document.createElement('tbody');
+  const totals = Object.fromEntries(envs.map((e) => [e, 0]));
+  let differing = 0, missing = 0;
+
+  for (const m of data.order) {
+    const cells = envs.map((f) => {
+      const r = data.result[f];
+      const c = r?.ok ? r.counts[m.name] : null;
+      return { missing: c?.error === 'missing', rows: c && !c.error ? c.rows : null, err: c?.error };
+    });
+    for (let i = 0; i < envs.length; i++) if (typeof cells[i].rows === 'number') totals[envs[i]] += cells[i].rows;
+
+    const anyMissing = cells.some((c) => c.missing);
+    const nums = cells.filter((c) => typeof c.rows === 'number').map((c) => c.rows);
+    const allSame = nums.length === cells.length && nums.every((n) => n === nums[0]);
+
+    const tr = document.createElement('tr');
+    if (anyMissing) { tr.className = 'gone'; missing++; }
+    else if (!allSame && envs.length > 1) { tr.className = 'diff'; differing++; }
+
+    const spread = envs.length > 1
+      ? (anyMissing ? '<span class="tag">missing</span>'
+        : allSame ? '<span class="same">same</span>'
+        : (Math.max(...nums) - Math.min(...nums)).toLocaleString())
+      : '';
+
+    tr.innerHTML = `<td>${m.table}</td>` +
+      cells.map((c) => `<td class="n">${c.missing ? '<span class="tag">missing</span>' : fmt(c.rows)}</td>`).join('') +
+      (envs.length > 1 ? `<td class="n">${spread}</td>` : '');
+    tb.appendChild(tr);
+  }
+  t.appendChild(tb);
+
+  $('totals').innerHTML =
+    envs.map((e) => `<div><b>${totals[e].toLocaleString()}</b><span>${e}</span></div>`).join('') +
+    (envs.length > 1 ? `<div><b>${differing}</b><span>tables differing</span></div>` : '') +
+    `<div><b>${missing}</b><span>tables missing</span></div>`;
+}
+
+// ── Commercial overview ──────────────────────────────────────────────────
+const rupees = (paise) => '₹' + Math.round((paise || 0) / 100).toLocaleString('en-IN');
+
+const tile = (value, label, note, cls) =>
+  `<div class="tile ${cls || ''}"><b>${value}</b><span>${label}</span>${note ? `<em>${note}</em>` : ''}</div>`;
+
+const miniTable = (head, rows) => rows.length
+  ? `<table class="mini"><thead><tr>${head.map((h, i) => `<th${i ? ' class="n"' : ''}>${h}</th>`).join('')}</tr></thead>
+     <tbody>${rows.map((r) => `<tr>${r.map((c, i) => `<td${i ? ' class="n"' : ''}>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`
+  : '<p class="same" style="font-size:.82rem">Nothing yet.</p>';
+
+$('runCom').onclick = async () => {
+  const env = $('comEnv').value;
+  say($('comMsg'), '');
+  $('runCom').disabled = true;
+  $('runCom').textContent = 'Building…';
+  try {
+    renderCommercial(await api('/commercial', { env }), env);
+  } catch (e) {
+    say($('comMsg'), e.message);
+  } finally {
+    $('runCom').disabled = false;
+    $('runCom').textContent = 'Build overview';
+  }
+};
+
+function renderCommercial(d, env) {
+  const n = (x) => (x ?? 0).toLocaleString();
+  const sup = d.supply, u = d.users, c = d.credits, r = d.revenue, mk = d.marketplace, p = d.payouts;
+
+  const supplyRow = (t) =>
+    `${n(t.approved)} approved · ${n(t.pending)} pending · ${n(t.suspended)} suspended`;
+
+  $('comResult').innerHTML = `
+  <div class="card csec">
+    <h3>Demand — who is here</h3>
+    <div class="grid">
+      ${tile(n(u.total), 'Total users', `+${n(u.new30)} in 30 days, +${n(u.new7)} in 7`)}
+      ${tile(n(u.withBirthProfile), 'Cast a birth chart', u.total ? `${Math.round((u.withBirthProfile / u.total) * 100)}% of users` : '')}
+      ${tile(n(u.paying), 'Have ever paid', `${u.conversionPct}% conversion`, 'good')}
+      ${tile(n(u.freeOnly), 'Free only', 'never bought a pack')}
+    </div>
+  </div>
+
+  <div class="card csec">
+    <h3>Supply — who serves them</h3>
+    <div class="grid">
+      ${tile(n(sup.human.total), 'Human astrologers', supplyRow(sup.human))}
+      ${tile(n(sup.human.onDuty), 'Humans on duty now', 'approved and available', sup.human.onDuty ? 'good' : '')}
+      ${tile(n(sup.ai.total), 'AI personas', supplyRow(sup.ai))}
+      ${tile(n(Object.values(sup.applications).reduce((a, b) => a + b, 0)), 'Applications', 'all statuses')}
+    </div>
+    ${miniTable(['Application status', 'Count'],
+      Object.entries(sup.applications).map(([k, v]) => [k, n(v)]))}
+  </div>
+
+  <div class="card csec">
+    <h3>Money in</h3>
+    <div class="grid">
+      ${tile(rupees(r.totalPaise), 'Gross recorded', 'packs plus paid questions', 'money')}
+      ${tile(rupees(r.packsPaise), 'Credit packs', `${n(c.packs)} packs sold or granted`, 'money')}
+      ${tile(rupees(r.paidQuestionsPaise), 'One-off questions', `${n(d.aiProduct.questionsWithMoney)} with money recorded`, 'money')}
+      ${tile(rupees(r.arpuPaise), 'Per paying user', `across ${n(r.payingUsers)} payers`, 'money')}
+    </div>
+    <div class="note"><b>Recorded, not settled.</b> These come from the app's own rows,
+      so a Razorpay payment that never wrote one is invisible here and refunds are
+      not deducted. Reconcile against the provider before quoting it as revenue.
+      Questions count only where an <code>amount</code> was actually written —
+      <code>Question.isPaid</code> means a credit was spent, not that money changed
+      hands, and every question in production carries it.</div>
+  </div>
+
+  <div class="card csec">
+    <h3>Credits — sold, used, still owed</h3>
+    <div class="grid">
+      ${tile(n(c.granted), 'Credits granted', 'purchased and free combined')}
+      ${tile(n(c.consumed), 'Consumed', `${c.consumedPct}% of granted`)}
+      ${tile(n(c.outstanding), 'Unspent', 'a liability, not income', 'owed')}
+    </div>
+    ${miniTable(['Pack type', 'Packs', 'Granted', 'Consumed', 'Revenue'],
+      c.byType.map((t) => [t.packType, n(t.packs), n(t.granted), n(t.consumed), rupees(t.revenuePaise)]))}
+  </div>
+
+  <div class="card csec">
+    <h3>Marketplace — consultations</h3>
+    <div class="grid">
+      ${tile(n(mk.bySupply.human.sessions), 'Human sessions', `${n(mk.bySupply.human.credits)} credits · ${n(mk.bySupply.human.minutes)} min`)}
+      ${tile(n(mk.bySupply.ai.sessions), 'AI sessions', `${n(mk.bySupply.ai.credits)} credits · ${n(mk.bySupply.ai.minutes)} min`)}
+      ${tile(n(d.aiProduct.questionsAsked), 'Chetna AI questions', 'the non-marketplace product')}
+      ${tile(n(mk.appointments.reduce((a, b) => a + b.count, 0)), 'Appointments', 'all statuses')}
+    </div>
+    ${miniTable(['Session status', 'Count', 'Credits', 'Minutes'],
+      mk.consultations.map((s) => [s.status, n(s.count), n(s.credits), n(s.minutes)]))}
+    ${mk.appointments.length ? miniTable(['Appointment status', 'Count', 'Credits'],
+      mk.appointments.map((s) => [s.status, n(s.count), n(s.credits)])) : ''}
+  </div>
+
+  <div class="card csec">
+    <h3>Money out — what astrologers are owed</h3>
+    <div class="grid">
+      ${tile(rupees(p.earnedPaise), 'Earned by astrologers', `${n(p.creditsServed)} credits served`)}
+      ${tile(rupees(p.unpaidPaise), 'Awaiting payout', 'owed right now', 'owed')}
+      ${tile(rupees(p.paidPaise), 'Already paid out', '', 'good')}
+      ${tile(rupees(p.grossAfterShareePaise), 'Gross after their share', 'before costs and fees', 'money')}
+    </div>
+    ${miniTable(['Payout status', 'Count', 'Amount'],
+      p.settlements.map((s) => [s.status, n(s.count), rupees(s.amountPaise)]))}
+    <div class="note"><b>Gross after their share is a proxy.</b> It subtracts only the
+      astrologers' earnings — not inference cost, payment fees, hosting or anything
+      the AI side consumes. Treat it as a ceiling on margin, never as profit.</div>
+  </div>
+
+  <p class="legend">${env} · built ${new Date(d.generatedAt).toLocaleString()}</p>`;
+}
+
+// ── Promote astrologers ──────────────────────────────────────────────────
+$('proLoad').onclick = async () => {
+  const src = $('proSrc').value, dst = $('proDst').value;
+  say($('proMsg'), '');
+  $('proLoad').disabled = true;
+  $('proLoad').textContent = 'Loading…';
+  try {
+    const { astrologers } = await api('/astrologers', { sourceFile: src, destFile: dst });
+    const pick = $('proPick');
+    pick.innerHTML = '';
+    if (astrologers.length === 0) {
+      pick.innerHTML = `<p class="same" style="font-size:.85rem">${src} has no astrologers.</p>`;
+    }
+    for (const a of astrologers) {
+      const l = document.createElement('label');
+      l.className = 'check';
+      const detail = [
+        a.isAI ? 'AI persona' : (a.email || 'human'),
+        a.status,
+        `${a.creditsPerBlock} credit/block`,
+        a.hasPhoto ? 'has photo' : 'no photo',
+        (a.specialities || []).slice(0, 3).join(', '),
+      ].filter(Boolean).join(' · ');
+      // Already-present profiles start unticked: promoting one again is an
+      // update, which is legitimate but should be a deliberate choice. A name
+      // clash starts unticked too, because promoting it makes a duplicate.
+      const risky = a.alreadyThere || a.nameClashId;
+      l.innerHTML = `<input type="checkbox" value="${a.id}" ${risky ? '' : 'checked'}>
+        <span>${a.displayName}
+          ${a.alreadyThere ? `<span class="prot" style="background:var(--mute)">already in ${dst}</span>` : ''}
+          ${a.nameClashId ? `<span class="prot" style="background:var(--warning)">duplicate name</span>` : ''}
+          <code>${detail}</code>
+          ${a.nameClashId ? `<code style="color:var(--warning)">${dst} already has an astrologer called ${a.displayName} under a different id — promoting this makes a second one. Delete or rename the one there first.</code>` : ''}
+        </span>`;
+      pick.appendChild(l);
+    }
+    $('proPickCard').classList.remove('hide');
+  } catch (e) {
+    say($('proMsg'), e.message);
+  } finally {
+    $('proLoad').disabled = false;
+    $('proLoad').textContent = 'Load astrologers';
+  }
+};
+
+$('runPromote').onclick = async () => {
+  const src = $('proSrc').value, dst = $('proDst').value;
+  const ids = [...$('proPick').querySelectorAll('input[type=checkbox]:checked')].map((i) => i.value);
+  say($('proRunMsg'), '');
+  if (ids.length === 0) return say($('proRunMsg'), 'Tick at least one astrologer.');
+  if (!confirm(`Copy ${ids.length} astrologer profile(s) from ${src} into ${dst}?`)) return;
+
+  $('runPromote').disabled = true;
+  $('runPromote').textContent = 'Promoting…';
+  $('proOut').textContent = '';
+  $('proResult').classList.remove('hide');
+  try {
+    const { jobId } = await api('/promote', {
+      sourceFile: src, destFile: dst, ids,
+      includePhotos: $('proPhotos').checked, confirm: $('proConfirm').value,
+    });
+    for (;;) {
+      await new Promise((r) => setTimeout(r, 500));
+      const job = await api('/job?id=' + jobId);
+      $('proOut').textContent = job.log.map((l) => l.message).join('\n');
+      $('proOut').scrollTop = $('proOut').scrollHeight;
+      if (job.done) {
+        if (job.error) say($('proRunMsg'), job.error);
+        else {
+          const r = job.report;
+          const bits = [`${r.promoted.length} promoted into ${dst}`];
+          if (r.photos.length) bits.push(`${r.photos.length} photo file(s) copied`);
+          if (r.skipped.length) bits.push(`${r.skipped.length} skipped`);
+          say($('proRunMsg'), bits.join(' · ') +
+            (r.skipped.length ? ' — ' + r.skipped.map((s) => `${s.name}: ${s.reason}`).join(' | ') : ''),
+            r.skipped.length ? 'err' : 'ok');
+        }
+        break;
+      }
+    }
+  } catch (e) {
+    say($('proRunMsg'), e.message);
+  } finally {
+    $('runPromote').disabled = false;
+    $('runPromote').textContent = 'Promote selected';
+  }
+};
+
+// ── Backup ───────────────────────────────────────────────────────────────
+$('runBackup').onclick = async () => {
+  const src = $('bakSrc').value, dst = $('bakDst').value;
+  say($('bakMsg'), '');
+  if (!confirm(`Build the schema in ${dst}, empty it, and copy all of ${src} into it?\n\nAnything already in ${dst} is lost.`)) return;
+
+  $('runBackup').disabled = true;
+  $('runBackup').textContent = 'Backing up…';
+  $('bakOut').textContent = '';
+  $('bakResult').classList.remove('hide');
+  try {
+    const { jobId } = await api('/backup', { sourceFile: src, destFile: dst, confirm: $('bakConfirm').value });
+    for (;;) {
+      await new Promise((r) => setTimeout(r, 700));
+      const job = await api('/job?id=' + jobId);
+      $('bakOut').textContent = job.log.map((l) => l.message).join('\n');
+      $('bakOut').scrollTop = $('bakOut').scrollHeight;
+      if (job.done) {
+        if (job.error) say($('bakMsg'), job.error);
+        else {
+          const total = job.report.report.reduce((n, r) => n + r.rows, 0);
+          const bad = job.report.mismatches;
+          say($('bakMsg'), bad.length
+            ? `Copied ${total.toLocaleString()} rows, but ${bad.length} table(s) do not match: ` +
+              bad.map((m) => `${m.model} ${m.source}≠${m.dest}`).join(', ') + '. This backup is NOT trustworthy.'
+            : `Backed up and verified — ${total.toLocaleString()} rows, every table matches ${src}.`,
+            bad.length ? 'err' : 'ok');
+        }
+        break;
+      }
+    }
+  } catch (e) {
+    say($('bakMsg'), e.message);
+  } finally {
+    $('runBackup').disabled = false;
+    $('runBackup').textContent = 'Build schema and back up';
+  }
+};
+
+// ── Validate structure ───────────────────────────────────────────────────
+$('runStructure').onclick = async () => {
+  say($('strMsg'), '');
+  $('runStructure').disabled = true;
+  $('runStructure').textContent = 'Comparing…';
+  try {
+    const d = await api('/validate-structure', { a: $('strA').value, b: $('strB').value });
+
+    $('strTotals').innerHTML =
+      `<div><b>${d.tablesA}</b><span>${d.a} tables</span></div>
+       <div><b>${d.tablesB}</b><span>${d.b} tables</span></div>
+       <div><b>${d.expectedTables}</b><span>schema expects</span></div>
+       <div><b>${d.errors}</b><span>errors</span></div>
+       <div><b>${d.warnings}</b><span>warnings</span></div>`;
+
+    const t = $('strTable');
+    t.innerHTML = '<thead><tr><th>Severity</th><th>Table</th><th>Kind</th><th>Detail</th></tr></thead>';
+    const tb = document.createElement('tbody');
+
+    for (const table of d.missingEverywhere) {
+      const tr = document.createElement('tr');
+      tr.className = 'gone';
+      tr.innerHTML = `<td><span class="tag">error</span></td><td>${table}</td><td>missing in both</td>
+        <td style="white-space:normal">The Prisma schema expects this table and neither database has it.
+        Any route that queries it will fail with P2022 — a migration is outstanding everywhere.</td>`;
+      tb.appendChild(tr);
+    }
+
+    for (const i of d.issues) {
+      const tr = document.createElement('tr');
+      tr.className = i.severity === 'error' ? 'gone' : 'diff';
+      tr.innerHTML = `<td>${i.severity === 'error' ? '<span class="tag">error</span>' : 'warning'}</td>
+        <td>${i.table}</td><td>${i.kind}</td><td style="white-space:normal">${i.detail}</td>`;
+      tb.appendChild(tr);
+    }
+
+    if (d.issues.length === 0 && d.missingEverywhere.length === 0) {
+      tb.innerHTML = `<tr><td colspan="4" style="white-space:normal">
+        <b>Identical.</b> Every table and every column matches between ${d.a} and ${d.b},
+        and all ${d.expectedTables} tables the Prisma schema expects are present.</td></tr>`;
+    }
+
+    t.appendChild(tb);
+    $('strResult').classList.remove('hide');
+    say($('strMsg'),
+      d.errors ? `${d.errors} structural difference(s) that will break something.`
+        : d.warnings ? `Structures match. ${d.warnings} nullability difference(s) worth a look.`
+        : 'Structures are identical.',
+      d.errors ? 'err' : 'ok');
+  } catch (e) {
+    say($('strMsg'), e.message);
+  } finally {
+    $('runStructure').disabled = false;
+    $('runStructure').textContent = 'Validate structure';
+  }
+};
+
+// ── Schema status ────────────────────────────────────────────────────────
+$('runSchema').onclick = async () => {
+  say($('schemaMsg'), '');
+  $('runSchema').disabled = true;
+  $('runSchema').textContent = 'Checking…';
+  try {
+    const r = await api('/schema-status', { env: $('schemaEnv').value });
+    $('schemaOut').textContent = r.output;
+    $('schemaResult').classList.remove('hide');
+  } catch (e) {
+    say($('schemaMsg'), e.message);
+  } finally {
+    $('runSchema').disabled = false;
+    $('runSchema').textContent = 'Check status';
+  }
+};
+
+// ── Apply schema ─────────────────────────────────────────────────────────
+$('runApply').onclick = async () => {
+  const env = $('applyEnv').value;
+  say($('applyMsg'), '');
+  $('runApply').disabled = true;
+  $('runApply').textContent = 'Applying…';
+  try {
+    const r = await api('/apply-schema', { env, confirm: $('applyConfirm').value });
+    $('applyOut').textContent = r.output;
+    $('applyResult').classList.remove('hide');
+    say($('applyMsg'), r.ok ? `Schema applied to ${env}.` : 'Prisma reported a failure — see the output.', r.ok ? 'ok' : 'err');
+  } catch (e) {
+    say($('applyMsg'), e.message);
+  } finally {
+    $('runApply').disabled = false;
+    $('runApply').textContent = 'Apply schema';
+  }
+};
+
+// ── Copy (dry run and replace share the job plumbing) ────────────────────
+async function runJob({ src, dst, dryRun, confirm, btn, outEl, resEl, msgEl, label }) {
+  say(msgEl, '');
+  btn.disabled = true;
+  btn.textContent = dryRun ? 'Checking…' : 'Copying…';
+  outEl.textContent = '';
+  resEl.classList.remove('hide');
+  try {
+    const { jobId } = await api('/copy', { sourceFile: src, destFile: dst, dryRun, confirm });
+    for (;;) {
+      await new Promise((r) => setTimeout(r, 500));
+      const job = await api('/job?id=' + jobId);
+      outEl.textContent = job.log.map((l) => l.message).join('\n');
+      outEl.scrollTop = outEl.scrollHeight;
+      if (job.done) {
+        if (job.error) say(msgEl, job.error);
+        else {
+          const total = job.report.reduce((n, r) => n + r.rows, 0);
+          say(msgEl, dryRun
+            ? `Dry run clean. ${total.toLocaleString()} rows across ${job.report.length} tables would be copied into ${dst}. Nothing was written.`
+            : `Copied ${total.toLocaleString()} rows across ${job.report.length} tables into ${dst}.`, 'ok');
+        }
+        break;
+      }
+    }
+  } catch (e) {
+    say(msgEl, e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = label;
+  }
+}
+
+$('runDry').onclick = () => runJob({
+  src: $('drySrc').value, dst: $('dryDst').value, dryRun: true, confirm: '',
+  btn: $('runDry'), outEl: $('dryOut'), resEl: $('dryResult'), msgEl: $('dryMsg'), label: 'Dry run',
+});
+
+$('repCheck').onclick = async () => {
+  const src = $('repSrc').value, dst = $('repDst').value;
+  say($('repMsg'), '');
+  $('repCheck').disabled = true;
+  $('repCheck').textContent = 'Measuring…';
+  try {
+    const data = await api('/counts', { envs: [...new Set([src, dst])] });
+    const sum = (f) => Object.values(data.result[f]?.counts ?? {}).reduce((n, c) => n + (c.rows || 0), 0);
+    const missing = Object.values(data.result[dst]?.counts ?? {}).filter((c) => c.error === 'missing').length;
+    measured = { src, dst };
+    $('blast').innerHTML = missing
+      ? `<b>${dst} is missing ${missing} table(s).</b> Apply the schema there first — the copy refuses to truncate anything while a table is absent.`
+      : `<b>${sum(dst).toLocaleString()} rows in ${dst} will be destroyed</b> and replaced with ${sum(src).toLocaleString()} rows from ${src}.`;
+    $('runReplace').disabled = missing > 0;
+  } catch (e) {
+    say($('repMsg'), e.message);
+  } finally {
+    $('repCheck').disabled = false;
+    $('repCheck').textContent = 'Measure both sides';
+  }
+};
+
+$('runReplace').onclick = () => {
+  const src = $('repSrc').value, dst = $('repDst').value;
+  if (!measured || measured.src !== src || measured.dst !== dst) {
+    return say($('repMsg'), 'Measure both sides first, so you can see what would be destroyed.');
+  }
+  if (!confirm(`Empty every table in ${dst} and replace them from ${src}?\n\nThis cannot be undone.`)) return;
+  runJob({
+    src, dst, dryRun: false, confirm: $('repConfirm').value,
+    btn: $('runReplace'), outEl: $('repOut'), resEl: $('repResult'), msgEl: $('repMsg'),
+    label: 'Replace destination data',
+  });
+};
+
+boot().catch((e) => document.querySelector('main').innerHTML =
+  `<div class="msg err">${e.message}</div>`);
+</script>
+</body>
+</html>

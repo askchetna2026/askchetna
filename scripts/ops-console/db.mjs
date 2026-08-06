@@ -103,8 +103,17 @@ export function describeEnv(file) {
         try { return new URL(env.NEXT_PUBLIC_SUPABASE_URL).hostname.split('.')[0]; } catch { return null; }
     })();
     let serviceKeyRole = null;
-    if (!env.NEXT_PUBLIC_SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) {
-        warnings.push('No Supabase storage credentials, so photos cannot be read or written.');
+    // Named individually. "No storage credentials" when one of the two is
+    // present sends you looking at the variable you already set.
+    const missingStorage = [
+        !env.NEXT_PUBLIC_SUPABASE_URL && 'NEXT_PUBLIC_SUPABASE_URL',
+        !env.SUPABASE_SERVICE_ROLE_KEY && 'SUPABASE_SERVICE_ROLE_KEY',
+    ].filter(Boolean);
+    if (missingStorage.length) {
+        warnings.push(
+            `${missingStorage.join(' and ')} ${missingStorage.length > 1 ? 'are' : 'is'} not set, ` +
+            `so photos cannot be read or written for this environment.`
+        );
     } else {
         if (storageRef && db?.projectRef && storageRef !== db.projectRef) {
             warnings.push(
@@ -771,11 +780,10 @@ export async function backfillPhotoUrls(file, onProgress) {
  * agree. A backup nobody verified is a backup nobody has.
  */
 export async function backupTo({ sourceFile, destFile, onProgress }) {
-    onProgress?.({ message: `Applying schema to ${destFile}…` });
-    const deployed = await migrateDeploy(destFile);
-    onProgress?.({ message: deployed.output || '(no output)' });
-    if (!deployed.ok) {
-        throw new Error(`Schema could not be applied to ${destFile}. Nothing was copied.`);
+    onProgress?.({ message: `Checking the shape of ${destFile}…` });
+    const built = await ensureStructure(destFile, onProgress);
+    if (!built.ok) {
+        throw new Error(`${built.error} Nothing was copied into ${destFile}.`);
     }
 
     onProgress?.({ message: `Copying ${sourceFile} → ${destFile}…` });
@@ -1072,6 +1080,112 @@ async function prismaCli(file, args) {
 
 export const migrateStatus = (file) => prismaCli(file, ['migrate', 'status']);
 export const migrateDeploy = (file) => prismaCli(file, ['migrate', 'deploy']);
+
+/**
+ * Builds the schema directly from `schema.prisma`, ignoring migration history.
+ *
+ * `--skip-generate` because regenerating the client mid-operation fights any
+ * running dev server for the query-engine binary on Windows. No
+ * `--accept-data-loss`, so a push that would DROP something refuses instead of
+ * doing it quietly.
+ */
+export const dbPush = (file, acceptDataLoss = false) =>
+    prismaCli(file, ['db', 'push', '--skip-generate', ...(acceptDataLoss ? ['--accept-data-loss'] : [])]);
+
+/**
+ * Does this database hold any rows at all, in any table it currently has?
+ *
+ * Used to decide whether a destructive schema change is allowed. "Empty" is a
+ * far safer permission to act on than "the file is named like a backup" — a
+ * mistyped environment cannot make a populated database look unpopulated.
+ */
+async function isEmptyDatabase(file) {
+    const { models } = readSchema();
+    const prisma = clientFor(file);
+    try {
+        for (const m of models) {
+            try {
+                if ((await prisma[m.key].count()) > 0) return false;
+            } catch {
+                // Table absent — nothing in it either way.
+            }
+        }
+        return true;
+    } finally {
+        await prisma.$disconnect();
+    }
+}
+
+/**
+ * Gives a destination the right shape, choosing the only tool that can.
+ *
+ * `migrate deploy` CANNOT build this database from nothing, and that is a
+ * property of the project rather than a bug here: history was baselined onto a
+ * database originally created with `db push`, so the `init` migration creates
+ * seven tables while the schema declares thirty-three. Replaying it against an
+ * empty project gets as far as the first migration that ALTERs a table nothing
+ * ever created — `AnalyticsEvent` — and dies with P3018.
+ *
+ * So a destination missing tables is built with `db push`, which reads the
+ * schema as it is now instead of replaying how it got here. A destination that
+ * already matches is left alone. Migration history is not reproduced, which is
+ * correct for a backup: what is wanted there is the shape of the data, not the
+ * story of how the shape came about.
+ */
+export async function ensureStructure(file, onProgress) {
+    const { models } = readSchema();
+    const present = await describeStructure(file);
+    const missing = models.filter((m) => !present.has(m.table)).map((m) => m.table);
+
+    if (missing.length === 0) {
+        onProgress?.({ message: `${file} already has all ${models.length} tables.` });
+        return { ok: true, method: 'none' };
+    }
+
+    onProgress?.({
+        message: `${file} is missing ${missing.length} of ${models.length} tables. ` +
+            `Building from schema.prisma — the migration history cannot replay onto an ` +
+            `empty database, because it was baselined onto one that already existed.`,
+    });
+
+    // A half-built database refuses changes it considers destructive — adding
+    // the unique index on `User.phone`, for instance, because duplicates would
+    // break it. On a database with no rows there is nothing to lose and nothing
+    // to duplicate, so the objection is theoretical and the flag is safe. On one
+    // holding data it is not, and the push is left to fail loudly instead.
+    const empty = await isEmptyDatabase(file);
+    onProgress?.({
+        message: empty
+            ? `${file} holds no rows, so schema changes cannot destroy anything.`
+            : `${file} already holds data — destructive schema changes will be refused.`,
+    });
+
+    const pushed = await dbPush(file, empty);
+    onProgress?.({ message: pushed.output || '(no output)' });
+    if (!pushed.ok) {
+        return {
+            ok: false, method: 'db push',
+            error: empty
+                ? 'Could not build the schema.'
+                : 'Could not build the schema without a change that would lose data. ' +
+                  'Empty the destination first, or point at a fresh project.',
+        };
+    }
+
+    // Trust nothing: confirm the tables are actually there before anything is
+    // copied into them.
+    const after = await describeStructure(file);
+    const stillMissing = models.filter((m) => !after.has(m.table)).map((m) => m.table);
+    if (stillMissing.length) {
+        return {
+            ok: false, method: 'db push',
+            error: `Still missing after the push: ${stillMissing.join(', ')}`,
+        };
+    }
+
+    onProgress?.({ message: `All ${models.length} tables present in ${file}.` });
+    return { ok: true, method: 'db push' };
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Copy

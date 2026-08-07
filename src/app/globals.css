@@ -974,6 +974,34 @@ h3 { font-size: clamp(1.125rem, 3vw, 1.5rem); letter-spacing: 0.05em; }
   display: none;
 }
 
+/* No header on the app's home screens.
+ *
+ * A wordmark bar with a hamburger in the corner is the single loudest signal
+ * that a screen is a website. No app has one on its home screen; they open on a
+ * large title, or on nothing at all. Everything the drawer offers is either a
+ * tab already (Chart, Ask, Timing) or lives behind "Me", and each home screen
+ * carries its own title — "Rohini" on Today, the wordmark on the welcome
+ * screen — so the bar was repeating the brand at the cost of the first 64px.
+ *
+ * Home screens only. Every other screen keeps the header, because the drawer is
+ * still the only route to About, Blog, App Info and sign-out. Those need
+ * re-homing into "Me" before the header can go app-wide.
+ *
+ * The safe-area padding the header used to absorb moves to <body>, or the
+ * status bar would draw straight over the first line of content.
+ *
+ * Matched by class, not by element. `header` alone also selects the <header>
+ * Today uses for its own greeting block, so the first version of this rule hid
+ * the user's name along with the site bar.
+ */
+.app-home-screen.native-app .app-site-header {
+  display: none;
+}
+
+.app-home-screen.native-app body {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
 /* Welcome screen only — see AppScreenChrome's `hideFooter`. The app's footer is
    already reduced to a single 117px line by the .native-app rules in
    Footer.module.css, so this is not hiding a sitemap; it is reclaiming the last

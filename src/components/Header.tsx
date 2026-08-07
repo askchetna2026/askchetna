@@ -39,7 +39,11 @@ export default function Header() {
   }, []);
 
   return (
-    <header className={styles.header}>
+    // The plain class is a stable hook for globals.css, which cannot see a CSS
+    // module's hashed name. Needed because "header" alone is not specific
+    // enough: screens use <header> for their own titles, and hiding the site
+    // bar by element name took Today's greeting with it.
+    <header className={`app-site-header ${styles.header}`}>
       <div className={styles.container}>
         {/* Direct child of the container, and first, so it renders top-LEFT on
             mobile. It used to sit inside .mobileHeaderActions alongside Sign In,
@@ -223,15 +227,6 @@ export default function Header() {
                           </Link>
                         </>
                       )}
-                      {/* App Info reports the running build and update state:
-                          useful in the app, meaningless in a browser where
-                          there is nothing to update. Web gets the download
-                          prompt instead — GetTheApp hides itself in-app. */}
-                      {isAppShell && (
-                        <Link href="/app-info" className={`${styles.mobileNavLink} ${pathname === '/app-info' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                          <Settings size={20} /> App Info
-                        </Link>
-                      )}
                     </>
                   ) : (
                     <>
@@ -249,6 +244,22 @@ export default function Header() {
                         <Sparkles size={20} /> Become an Astrologer
                       </Link>
                     </>
+                  )}
+
+                  {/* App Info reports the running build and update state:
+                      useful in the app, meaningless in a browser where there is
+                      nothing to update. Web gets the download prompt instead —
+                      GetTheApp hides itself in-app.
+
+                      Outside the signed-in branch on purpose. It used to sit
+                      inside it, which meant the one screen that tells you which
+                      deployment the app is talking to was unreachable until you
+                      had signed in — and "the signed-out home looks wrong" is
+                      exactly the report that needs it. */}
+                  {isAppShell && (
+                    <Link href="/app-info" className={`${styles.mobileNavLink} ${pathname === '/app-info' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                      <Settings size={20} /> App Info
+                    </Link>
                   )}
                 </nav>
 

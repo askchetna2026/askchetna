@@ -33,6 +33,7 @@
        phone the slack then spreads across all four gaps instead of collecting
        into one canyon above the button. */
     justify-content: space-between;
+
     /* Measured, not guessed: at the previous minimums the stack came to 707px
        against 669px of usable height on a 375x812 screen, which put the
        fineprint behind the tab bar. Every minimum below is set so the four
@@ -249,6 +250,20 @@
     margin: 0;
     font-size: 0.72rem;
     color: var(--text-muted);
+}
+
+/* In the app there is no header (globals.css hides it on the home screens), so
+   the ~80px this budget reserved for one comes back. Without this the screen
+   stops 84px short of the tab bar and the whole composition floats high.
+   Measured at 375x812: content ran to 670 against a bar at 754.
+
+   Only the layout's own 20px top padding is subtracted now, plus a little slack
+   so a rounding difference can never cost a scrollbar. */
+:global(html.app-home-screen.native-app) .screen {
+    min-height: calc(
+        100svh - 26px - var(--app-tabbar-height)
+        - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)
+    );
 }
 
 /* Landscape phones and tablets: the single column becomes a very tall, very

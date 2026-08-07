@@ -18,16 +18,21 @@
  *     network; a cached balance or a replayed mutation would be a real bug.
  */
 
-const VERSION = 'v1';
+// Bumped when the worker's behaviour changes, not just its caches: the activate
+// handler drops every askchetna-* cache that is not the current pair, so a bump
+// is how a bad worker's leftovers are guaranteed gone. v1 -> v2 retires the
+// precached '/offline' page along with navigation interception.
+const VERSION = 'v2';
 const PRECACHE = `askchetna-precache-${VERSION}`;
 const ASSETS = `askchetna-assets-${VERSION}`;
 
-const OFFLINE_URL = '/offline';
-
-// Small and stable — safe to precache. The offline page must be self-contained
-// enough to render from cache, so it ships its own inline styles.
+// Small and stable — safe to precache.
+//
+// '/offline' used to be here as the fallback this worker served when a
+// navigation failed. The worker no longer touches navigations (see the fetch
+// handler for why), so caching it bought nothing — the app's offline screen is
+// mobile/shell/offline.html, served natively by Capacitor's errorPath.
 const PRECACHE_URLS = [
-    OFFLINE_URL,
     '/chetna_icon.svg',
     '/icons/chetna.png',
 ];
@@ -116,27 +121,40 @@ self.addEventListener('fetch', (event) => {
     // Never intercept API traffic, auth callbacks, or admin.
     if (url.pathname.startsWith('/api/') || url.pathname.startsWith('/admin')) return;
 
-    // ---- Navigations: network-only, with an offline fallback ----
-    if (request.mode === 'navigate') {
-        event.respondWith(
-            (async () => {
-                try {
-                    return await fetch(request);
-                } catch {
-                    const cache = await caches.open(PRECACHE);
-                    const offline = await cache.match(OFFLINE_URL);
-                    return (
-                        offline ||
-                        new Response('You are offline.', {
-                            status: 503,
-                            headers: { 'Content-Type': 'text/plain; charset=utf-8' },
-                        })
-                    );
-                }
-            })()
-        );
-        return;
-    }
+    /* ---- Navigations: not ours. Let the browser make the request. ----
+     *
+     * This used to call event.respondWith(fetch(request)) with an offline
+     * fallback, and it broke the native apps in a way that took a long time to
+     * see.
+     *
+     * Capacitor identifies the app to the server by appending a token to the
+     * User-Agent — `AskChetnaApp/1 (android)` — which src/proxy.ts reads to
+     * decide whether "/" is the website or the app's home screen. On Android
+     * that append happens via WebSettings.setUserAgentString(), which applies to
+     * the WEBVIEW. A service worker runs under a separate ServiceWorkerController
+     * and does not inherit it. So every navigation the worker re-issued went out
+     * with the stock Android User-Agent, the server concluded "browser", and the
+     * app was served the website — on every page, for every user.
+     *
+     * The symptom was maddening because everything client-side still worked:
+     * navigator.userAgent kept the token inside the WebView, so the bottom tab
+     * bar rendered, App Info reported "Native App ✓", and /api/version returned
+     * the right build — that last one only because API paths return above and
+     * were never re-issued. The one thing that was wrong was the only thing that
+     * mattered: the HTML.
+     *
+     * Not intercepting costs the custom offline page on navigations, and that is
+     * a fair trade. The worker never cached HTML anyway, so it was adding a
+     * round trip through a context with the wrong identity in exchange for one
+     * error page. The apps already handle being offline natively, at the layer
+     * that can actually do it: capacitor.config.ts sets errorPath to
+     * mobile/shell/offline.html.
+     *
+     * Navigation preload would keep that fallback and still let the browser
+     * issue the request — but it fails open to plain fetch() wherever it is
+     * unavailable, which silently reinstates this bug. Assets below are
+     * unaffected: they are same-origin subresources, requested by the page.
+     */
 
     // ---- Immutable build assets: cache-first ----
     if (isImmutableAsset(url)) {

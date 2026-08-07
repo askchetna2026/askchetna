@@ -56,7 +56,7 @@ export default function AppWelcome() {
 
     return (
         <div className={styles.screen}>
-            <AppScreenChrome hideFooter />
+            <AppScreenChrome bare />
             <div className={styles.nightSky} aria-hidden="true" />
 
             <section className={styles.hero}>

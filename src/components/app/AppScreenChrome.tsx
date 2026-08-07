@@ -15,19 +15,27 @@ import { useEffect } from 'react';
  * both screens are served at "/" — the same path the website's marketing page
  * uses — so a pathname check would change the website too.
  *
- * `hideFooter` is the welcome screen only. In the app the footer is already one
- * line and 117px tall — `html.native-app` hides every section of it — so it is
- * not the wall of links it is on the web, and Today can carry it. But the
- * welcome screen is budgeted to exactly one viewport, and 117px is precisely
- * the difference between the button sitting above the tab bar and below it.
+ * `bare` strips the site header and footer too, and is the SIGNED-OUT welcome
+ * screen only.
+ *
+ * Today keeps both, deliberately. Hiding the header there looked better and
+ * broke the app: the drawer is the only route to Relationships, Blog, Credits,
+ * Dashboard, App Info and sign-out, and the "Me" tab goes to /account, which
+ * links onward to none of them. Until those move into a real "Me" screen, the
+ * header is Today's only navigation and it stays.
+ *
+ * The welcome screen has no such problem — it offers one action, and it is
+ * budgeted to exactly one viewport, where the header's ~80px and the footer's
+ * 117px are the difference between the button sitting above the tab bar and
+ * below it.
  */
-export default function AppScreenChrome({ hideFooter = false }: { hideFooter?: boolean }) {
+export default function AppScreenChrome({ bare = false }: { bare?: boolean }) {
     useEffect(() => {
         const root = document.documentElement;
-        const classes = ['app-home-screen', ...(hideFooter ? ['app-home-no-footer'] : [])];
+        const classes = ['app-home-screen', ...(bare ? ['app-home-bare'] : [])];
         root.classList.add(...classes);
         return () => root.classList.remove(...classes);
-    }, [hideFooter]);
+    }, [bare]);
 
     return null;
 }

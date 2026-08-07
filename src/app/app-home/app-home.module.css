@@ -259,7 +259,7 @@
 
    Only the layout's own 20px top padding is subtracted now, plus a little slack
    so a rounding difference can never cost a scrollbar. */
-:global(html.app-home-screen.native-app) .screen {
+:global(html.app-home-bare.native-app) .screen {
     min-height: calc(
         100svh - 26px - var(--app-tabbar-height)
         - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)

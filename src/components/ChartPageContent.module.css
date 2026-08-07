@@ -1013,6 +1013,19 @@
     color: var(--secondary);
     text-align: justify;
     text-justify: inter-word;
+    /* Long words break rather than push the column wider. */
+    overflow-wrap: break-word;
+}
+
+/* Justified text needs a wide measure to distribute space into. At ~306px the
+   column fits six or seven words a line, so justification stretches the gaps
+   into visible rivers — "respond    to    challenges,    and    find". Ragged
+   right is the more readable setting at this width, not the lazier one. */
+@media (max-width: 620px) {
+    .tabSection p,
+    .significanceText {
+        text-align: left;
+    }
 }
 
 /* Analysis Drawer */
@@ -1151,10 +1164,62 @@
 .drawerTabs {
     display: flex;
     flex-direction: column;
+
+    /* Lets this shrink below its content's minimum.
+     *
+     * Grid and flex items default to min-width: auto, which refuses to go
+     * narrower than min-content. .tabButtons below holds three nowrap tab
+     * labels — "Overview", "Your Story", "Planet Placement & Expression" —
+     * whose combined min-content is 539px. That forced this column to 571px
+     * inside a 375px drawer, and every descendant inherited the width: the
+     * body copy ran off the right edge mid-word and the whole panel needed a
+     * horizontal scroll.
+     *
+     * .tabButtons already had overflow-x: auto to scroll its own tabs, but an
+     * item that cannot shrink never overflows, so it never engaged. Both need
+     * min-width: 0 — this one to free the grid column, the one below to free
+     * the flex item. */
+    min-width: 0;
+}
+
+/* One label per breakpoint — see the tab markup for why there are two. */
+.tabLabelShort {
+    display: none;
+}
+
+/* Narrow screens: short labels, three equal thirds, and no sideways scroll.
+   620px is where the full labels stop fitting, measured rather than picked. */
+@media (max-width: 620px) {
+    .tabLabelFull {
+        display: none;
+    }
+
+    .tabLabelShort {
+        display: inline;
+    }
+
+    .tabButtons {
+        /* Nothing left to scroll once the labels fit. */
+        overflow-x: visible;
+    }
+
+    .tabButton {
+        /* Equal thirds rather than intrinsic widths, so the row always spans
+           the panel exactly and the underline lands under a predictable box. */
+        flex: 1 1 0;
+        min-width: 0;
+        padding: 12px 4px;
+        font-size: 0.86rem;
+        letter-spacing: 0;
+        text-align: center;
+    }
 }
 
 /* Tab Overrides for Drawer */
 .tabButtons {
+    /* See .drawerTabs — without this the scroller sizes to its content
+       instead of to the space available, and scrolls nothing. */
+    min-width: 0;
     margin-bottom: 0;
     border-bottom: 2px solid rgba(255, 255, 255, 0.1);
 }

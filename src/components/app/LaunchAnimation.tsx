@@ -33,9 +33,20 @@ import styles from './LaunchAnimation.module.css';
  *  not. A chime every time someone comes back from WhatsApp is intolerable. */
 const SEEN_KEY = 'ac_launch_played';
 
-/** Total time the overlay is opaque before it begins dissolving. */
-const HOLD_MS = 1500;
-const FADE_MS = 420;
+/**
+ * Timed to the sound, not to a guess.
+ *
+ * launch.wav is exactly 3.00s: a struck attack decaying from -9.7dB to about
+ * -56dB by 2.4s, then 0.78s of true silence. So the overlay holds for 2.4s —
+ * the point where the bowl has effectively finished ringing — and dissolves
+ * over the 600ms that remain. Total 3.00s, landing on the end of the file.
+ *
+ * The first pass ran the whole thing in 1.9s, which read as hurried and cut the
+ * decay off mid-ring. If the sound is ever replaced, these two numbers and the
+ * delays in the stylesheet are what has to move with it.
+ */
+const HOLD_MS = 2400;
+const FADE_MS = 600;
 
 export default function LaunchAnimation() {
     const [phase, setPhase] = useState<'idle' | 'playing' | 'fading' | 'done'>('idle');
@@ -194,7 +205,7 @@ export default function LaunchAnimation() {
                         cy={d.cy}
                         r={1.1}
                         fill="url(#launchGold)"
-                        style={{ animationDelay: `${560 + i * 70}ms` }}
+                        style={{ animationDelay: `${900 + i * 110}ms` }}
                     />
                 ))}
 

@@ -101,7 +101,11 @@ function isImmutableAsset(url) {
 /** Brand images and the ephemeris payloads: large, rarely change, safe to reuse. */
 function isCacheableAsset(url) {
     return (
-        /\.(?:png|jpe?g|svg|webp|avif|gif|ico|woff2?)$/i.test(url.pathname) ||
+        // Audio joins the list for the launch sound. It is ~280KB and wanted at
+        // the very first moment of a cold start, which is the worst time to be
+        // fetching anything — cache-first means only the first launch ever pays,
+        // and every one after it plays instantly.
+        /\.(?:png|jpe?g|svg|webp|avif|gif|ico|woff2?|wav|mp3|m4a|ogg)$/i.test(url.pathname) ||
         url.pathname === '/swisseph.wasm' ||
         url.pathname === '/swisseph.data'
     );

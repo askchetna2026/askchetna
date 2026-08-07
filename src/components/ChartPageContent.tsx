@@ -852,13 +852,26 @@ export default function ChartPageContent() {
                             {/* Right: Tabbed Info */}
                             <div className={styles.drawerTabs}>
                                 <div className={styles.tabButtons}>
-                                    {['Overview', 'Your Story', 'Planet Placement & Expression'].map((tab, idx) => (
+                                    {/* Two labels each, one shown per breakpoint. "Planet
+                                        Placement & Expression" is 28 characters; three of
+                                        those need 539px, which is wider than a phone, and
+                                        the strip used to scroll sideways to cope. Swapping
+                                        the copy is the honest fix — a scrollbar is what you
+                                        add when the words refuse to shrink. Rendering both
+                                        and hiding one in CSS keeps it free of a media query
+                                        in JS, which would mismatch during hydration. */}
+                                    {[
+                                        { full: 'Overview', short: 'Overview' },
+                                        { full: 'Your Story', short: 'Story' },
+                                        { full: 'Planet Placement & Expression', short: 'Placements' },
+                                    ].map((tab, idx) => (
                                         <button
-                                            key={tab}
+                                            key={tab.full}
                                             className={`${styles.tabButton} ${activeTab === idx ? styles.activeTabButton : ''}`}
                                             onClick={() => setActiveTab(idx)}
                                         >
-                                            {tab}
+                                            <span className={styles.tabLabelFull}>{tab.full}</span>
+                                            <span className={styles.tabLabelShort}>{tab.short}</span>
                                         </button>
                                     ))}
                                 </div>

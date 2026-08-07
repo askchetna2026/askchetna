@@ -53,7 +53,7 @@ export default function AppTabBar() {
             // /dashboard joins this tab now that Today has taken over as home:
             // what is left there is profiles, credits and exports, which is the
             // "Me" half of the app rather than a second landing screen.
-            ? { href: '/account', label: 'Me', icon: User, match: ['/app-info', '/pricing', '/dashboard'] }
+            ? { href: '/dashboard', label: 'Me', icon: User, match: ['/app-info', '/pricing', '/account'] }
             : { href: '/login', label: 'Sign In', icon: LogIn },
     ];
 

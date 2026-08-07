@@ -449,39 +449,47 @@ export default function ChartPageContent() {
             <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
                 <div className="text-left w-full">
                     <span className="cosmic-label mb-2 inline-block">Varga Portfolio · Divisional Insights</span>
-                    <h1 className="mystic-text">Your Evolutionary Blueprint</h1>
-                    <div className="sacred-divider ml-0 justify-start"></div>
-                    <div className={styles.subtitle}>
-                        <p>Cosmic blueprint for <span className="text-[var(--primary)] font-semibold">{profile?.name}</span> • {new Date(profile!.dateOfBirth).toLocaleDateString()}</p>
-                        {profile && profile.chartData && (
-                            <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-y-1 gap-x-4 text-xs text-[var(--text-muted)] font-medium tracking-wide">
-                                <div><span className="text-[var(--primary-dark)]">Birth Time:</span> {(function (t) {
-                                    const [h, m] = t.split(':');
-                                    const H = parseInt(h);
-                                    const ampm = H >= 12 ? 'PM' : 'AM';
-                                    const H12 = H % 12 || 12;
-                                    return `${H12}:${m} ${ampm}`;
-                                })(profile.timeOfBirth)}</div>
-                                <div><span className="text-[var(--primary-dark)]">Birth Place:</span> {profile.placeOfBirth}</div>
-                                <div><span className="text-[var(--primary-dark)]"><Term termKey="ascendant">Ascendant</Term> Sign:</span> {getZodiacSign(profile.chartData.ascendant)}</div>
-                                <div><span className="text-[var(--primary-dark)]"><Term termKey="moonsign">Moon Sign</Term>:</span> {getZodiacSign(profile.chartData.planets.Moon.longitude)}</div>
-                                <div><span className="text-[var(--primary-dark)]">Western Zodiac:</span> {(function (d) {
-                                    const m = d.getMonth() + 1, da = d.getDate();
-                                    if ((m == 3 && da >= 21) || (m == 4 && da <= 19)) return "Aries";
-                                    if ((m == 4 && da >= 20) || (m == 5 && da <= 20)) return "Taurus";
-                                    if ((m == 5 && da >= 21) || (m == 6 && da <= 20)) return "Gemini";
-                                    if ((m == 6 && da >= 21) || (m == 7 && da <= 22)) return "Cancer";
-                                    if ((m == 7 && da >= 23) || (m == 8 && da <= 22)) return "Leo";
-                                    if ((m == 8 && da >= 23) || (m == 9 && da <= 22)) return "Virgo";
-                                    if ((m == 9 && da >= 23) || (m == 10 && da <= 22)) return "Libra";
-                                    if ((m == 10 && da >= 23) || (m == 11 && da <= 21)) return "Scorpio";
-                                    if ((m == 11 && da >= 22) || (m == 12 && da <= 21)) return "Sagittarius";
-                                    if ((m == 12 && da >= 22) || (m == 1 && da <= 19)) return "Capricorn";
-                                    if ((m == 1 && da >= 20) || (m == 2 && da <= 18)) return "Aquarius";
-                                    return "Pisces";
-                                })(new Date(profile.dateOfBirth))}</div>
+                    {profile && (
+                        <div className={`${styles.chartInfoCard} sacred-card`}>
+                            <div className={styles.chartInfoContent}>
+                                <h2 className="mystic-text text-2xl mb-4 text-[var(--accent-gold)]">
+                                    Cosmic blueprint for {profile.name} • {new Date(profile.dateOfBirth).toLocaleDateString()}
+                                </h2>
+                                <div className="sacred-divider ml-0 justify-start mb-4"></div>
+                                {profile.chartData && (
+                                    <div className={styles.chartInfoGrid}>
+                                        <div><span className="text-[var(--primary-dark)]">Birth Time:</span> {(function (t) {
+                                            if (!t) return 'Unknown';
+                                            const [h, m] = t.split(':');
+                                            const H = parseInt(h);
+                                            const ampm = H >= 12 ? 'PM' : 'AM';
+                                            const H12 = H % 12 || 12;
+                                            return `${H12}:${m} ${ampm}`;
+                                        })(profile.timeOfBirth)}</div>
+                                        <div><span className="text-[var(--primary-dark)]">Birth Place:</span> {profile.placeOfBirth}</div>
+                                        <div><span className="text-[var(--primary-dark)]"><Term termKey="ascendant">Ascendant</Term> Sign:</span> {getZodiacSign(profile.chartData.ascendant)}</div>
+                                        <div><span className="text-[var(--primary-dark)]"><Term termKey="moonsign">Moon Sign</Term>:</span> {getZodiacSign(profile.chartData.planets.Moon.longitude)}</div>
+                                        <div><span className="text-[var(--primary-dark)]">Western Zodiac:</span> {(function (d) {
+                                            const m = d.getMonth() + 1, da = d.getDate();
+                                            if ((m == 3 && da >= 21) || (m == 4 && da <= 19)) return "Aries";
+                                            if ((m == 4 && da >= 20) || (m == 5 && da <= 20)) return "Taurus";
+                                            if ((m == 5 && da >= 21) || (m == 6 && da <= 20)) return "Gemini";
+                                            if ((m == 6 && da >= 21) || (m == 7 && da <= 22)) return "Cancer";
+                                            if ((m == 7 && da >= 23) || (m == 8 && da <= 22)) return "Leo";
+                                            if ((m == 8 && da >= 23) || (m == 9 && da <= 22)) return "Virgo";
+                                            if ((m == 9 && da >= 23) || (m == 10 && da <= 22)) return "Libra";
+                                            if ((m == 10 && da >= 23) || (m == 11 && da <= 21)) return "Scorpio";
+                                            if ((m == 11 && da >= 22) || (m == 12 && da <= 21)) return "Sagittarius";
+                                            if ((m == 12 && da >= 22) || (m == 1 && da <= 19)) return "Capricorn";
+                                            if ((m == 1 && da >= 20) || (m == 2 && da <= 18)) return "Aquarius";
+                                            return "Pisces";
+                                        })(new Date(profile.dateOfBirth))}</div>
+                                    </div>
+                                )}
                             </div>
-                        )}
+                        </div>
+                    )}
+                    <div className={styles.subtitle}>
 
                         {hasPurchaseSuccess && purchaseIntent === 'chart_unlock' && (
                             <div className={styles.purchaseNotice}>

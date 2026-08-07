@@ -55,7 +55,7 @@ const FAQ_ITEMS = [
     },
     {
         question: 'Do I need a subscription?',
-        answer: 'No. AskChetna uses one-time credit purchases, so people can explore when they need clarity without recurring charges.',
+        answer: 'No. AskChetna uses one-time credit purchases for AI sessions and premium chart unlocks, so people can explore when they need clarity without recurring charges.',
     },
     {
         question: 'What happens after I pay?',

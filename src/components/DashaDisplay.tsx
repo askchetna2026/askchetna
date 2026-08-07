@@ -80,7 +80,7 @@ export default function DashaDisplay({ dashas }: DashaDisplayProps) {
                                         </div>
                                     ))
                                 ) : (
-                                    <div className="ad-mini">Includes 9 sub-periods</div>
+                                    <div className="ad-mini">Includes 9 sub-periods (Antardashas)</div>
                                 )}
                             </div>
                         )}
@@ -92,21 +92,18 @@ export default function DashaDisplay({ dashas }: DashaDisplayProps) {
                 .dasha-container {
                     margin-top: 40px;
                     padding: clamp(24px, 4vw, 40px);
-                    background: linear-gradient(180deg, rgba(22, 11, 32, 0.85) 0%, rgba(11, 5, 16, 0.95) 100%);
+                    background: var(--card-bg);
                     border-radius: var(--radius-lg);
-                    border: 1px solid rgba(181, 137, 46, 0.3);
-                    box-shadow: inset 0 1px 0 rgba(181, 137, 46, 0.4), 0 20px 50px rgba(0, 0, 0, 0.6);
-                    backdrop-filter: blur(16px);
-                    -webkit-backdrop-filter: blur(16px);
+                    border: 1px solid var(--card-border);
+                    box-shadow: var(--shadow-card);
                 }
 
                 .section-title {
-                    color: var(--accent-gold);
+                    color: var(--primary);
                     font-family: var(--font-heading);
                     font-size: clamp(1.4rem, 5vw, 2.2rem);
                     text-align: center;
                     margin-bottom: 8px;
-                    text-shadow: 0 0 15px rgba(181, 137, 46, 0.2);
                 }
 
                 .subtitle {
@@ -131,27 +128,78 @@ export default function DashaDisplay({ dashas }: DashaDisplayProps) {
                 }
 
                 .dasha-card {
-                    background: rgba(11, 5, 16, 0.6);
-                    border: 1px solid rgba(181, 137, 46, 0.2);
-                    padding: 20px;
+                    background: var(--card-bg);
+                    border: 1px solid var(--card-border);
+                    padding: 16px;
                     border-radius: 12px;
                     transition: all 0.3s ease;
                     position: relative;
-                    overflow: hidden;
-                    box-shadow: inset 0 1px 0 rgba(181, 137, 46, 0.1);
+                    box-shadow: var(--shadow-raise);
                 }
 
                 .dasha-card:hover {
-                    background: linear-gradient(180deg, rgba(30, 15, 45, 0.8) 0%, rgba(15, 8, 22, 0.95) 100%);
-                    border-color: rgba(181, 137, 46, 0.5);
+                    border-color: var(--accent-gold-decor);
                     transform: translateY(-4px);
-                    box-shadow: inset 0 1px 0 rgba(181, 137, 46, 0.6), 0 10px 20px rgba(181, 137, 46, 0.1);
+                    box-shadow: var(--shadow-float);
                 }
 
                 .dasha-card.current {
-                    background: linear-gradient(180deg, rgba(181, 137, 46, 0.1) 0%, rgba(11, 5, 16, 0.8) 100%);
+                    background: rgba(var(--accent-gold-rgb), 0.05);
                     border: 1px solid var(--accent-gold);
-                    box-shadow: inset 0 1px 0 rgba(181, 137, 46, 0.8), 0 4px 15px rgba(181, 137, 46, 0.2);
+                    box-shadow: var(--shadow-card);
+                }
+
+                /* NATIVE APP OVERRIDES (Vertical Timeline & Touch Feel) */
+                :global(.native-app) .timeline {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 16px;
+                    position: relative;
+                    padding-left: 28px;
+                }
+
+                :global(.native-app) .timeline::before {
+                    content: '';
+                    position: absolute;
+                    left: 7px;
+                    top: 24px;
+                    bottom: 24px;
+                    width: 2px;
+                    background: var(--border-soft);
+                    border-radius: 2px;
+                }
+
+                :global(.native-app) .dasha-card {
+                    border-radius: 16px;
+                    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease;
+                    user-select: none;
+                    -webkit-user-select: none;
+                }
+
+                :global(.native-app) .dasha-card:hover {
+                    transform: none; /* Disable web hover lift in app */
+                }
+
+                :global(.native-app) .dasha-card:active {
+                    transform: scale(0.98);
+                }
+
+                :global(.native-app) .dasha-card::before {
+                    content: '';
+                    position: absolute;
+                    left: -25px;
+                    top: 22px;
+                    width: 10px;
+                    height: 10px;
+                    border-radius: 50%;
+                    background: var(--card-bg);
+                    border: 2px solid var(--accent-gold);
+                    z-index: 1;
+                }
+
+                :global(.native-app) .dasha-card.current::before {
+                    background: var(--accent-gold);
+                    box-shadow: 0 0 0 4px rgba(var(--accent-gold-rgb), 0.2);
                 }
 
                 .dasha-header {
@@ -164,14 +212,14 @@ export default function DashaDisplay({ dashas }: DashaDisplayProps) {
                 .planet-name {
                     font-weight: 700;
                     font-size: 1.1rem;
-                    color: var(--accent-gold);
+                    color: var(--primary);
                     text-transform: uppercase;
                     letter-spacing: 0.05em;
                 }
 
                 .current-badge {
                     background: var(--accent-gold);
-                    color: #fff;
+                    color: var(--bg-panel);
                     font-size: 0.7rem;
                     font-weight: 700;
                     padding: 2px 8px;
@@ -189,7 +237,7 @@ export default function DashaDisplay({ dashas }: DashaDisplayProps) {
                 .antardasha-list {
                     margin-top: 12px;
                     padding-top: 12px;
-                    border-top: 1px solid rgba(255,255,255,0.05);
+                    border-top: 1px solid var(--border-soft);
                     display: flex;
                     flex-direction: column;
                     gap: 6px;
@@ -201,12 +249,12 @@ export default function DashaDisplay({ dashas }: DashaDisplayProps) {
                     font-size: 0.8rem;
                     padding: 4px 8px;
                     border-radius: 4px;
-                    background: rgba(255,255,255,0.02);
+                    background: rgba(139, 94, 16, 0.05);
                 }
 
                 .ad-current {
-                    background: rgba(181, 137, 46, 0.2);
-                    border: 1px solid rgba(181, 137, 46, 0.3);
+                    background: rgba(var(--accent-gold-rgb), 0.1);
+                    border: 1px solid var(--accent-gold-decor);
                     color: var(--accent-gold);
                     font-weight: 700;
                 }

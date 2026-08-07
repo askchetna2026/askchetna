@@ -170,16 +170,42 @@
     }
 }
 
+.chartInfoCard {
+    padding: 32px;
+    margin-bottom: 32px;
+}
+
+.chartInfoContent {
+    position: relative;
+    z-index: 1;
+}
+
+.chartInfoGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    font-size: 0.95rem;
+    color: var(--secondary);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+}
+
+.chartInfoGrid > div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 .addProfileBtn {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 10px 24px;
+    padding: 12px 24px;
     font-size: 0.95rem;
-    font-weight: 600;
-    background: var(--btn-bg);
-    color: var(--btn-fg);
-    border: none;
+    font-weight: 700;
+    background: rgba(var(--accent-gold-rgb), 0.1);
+    color: var(--accent-gold);
+    border: 1px solid rgba(var(--accent-gold-rgb), 0.3);
     border-radius: 100px;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -188,8 +214,9 @@
 
 .addProfileBtn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(181, 137, 46, 0.3);
-    filter: brightness(1.1);
+    background: rgba(var(--accent-gold-rgb), 0.15);
+    border-color: rgba(var(--accent-gold-rgb), 0.5);
+    box-shadow: 0 8px 25px rgba(var(--accent-gold-rgb), 0.1);
 }
 
 .addProfileBtn:active {
@@ -1562,5 +1589,9 @@
 
     .insightCard {
         padding: 24px;
+    }
+
+    .chartInfoCard {
+        padding: 20px;
     }
 }

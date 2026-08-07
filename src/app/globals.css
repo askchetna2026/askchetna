@@ -940,9 +940,22 @@ h3 { font-size: clamp(1.125rem, 3vw, 1.5rem); letter-spacing: 0.05em; }
   user-select: none;
 }
 
-/* Remove the grey tap flash that makes a webview feel like a webview. */
+/* Remove the grey tap flash, long-press context menus, and general text selection.
+   This makes the webview feel like a compiled app. Inputs override this automatically. */
 .native-app * {
   -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Re-enable selection on explicit inputs and textareas */
+.native-app input, 
+.native-app textarea, 
+.native-app [contenteditable="true"],
+.native-app .selectable-text {
+  -webkit-user-select: auto;
+  user-select: auto;
 }
 /* Full-viewport drop-shadow filters are a compositing cost on every scroll
    frame. Worth it on a landing page; not worth it for the whole time an app

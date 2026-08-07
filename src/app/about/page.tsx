@@ -57,7 +57,7 @@ export default function AboutPage() {
                 <section>
                     <h2>Why Vedic Astrology?</h2>
                     <p>
-                        Vedic astrology, also known as Jyotish (the "science of light"), is an ancient system of knowledge that originated in India over 5,000 years ago. Unlike Western astrology, which focuses on the Sun sign, Vedic astrology uses:
+                        Vedic astrology, also known as Jyotiṣa (the "science of light"), is an ancient system of knowledge that originated in India over 5,000 years ago. Unlike Western astrology, which focuses on the Sun sign, Vedic astrology uses:
                     </p>
                     <ul>
                         <li><strong>The Sidereal Zodiac</strong> — Based on the actual positions of constellations in the sky</li>
@@ -167,8 +167,8 @@ export default function AboutPage() {
                     <ul>
                         <li>Email: <a href="mailto:hello@askchetna.com">hello@askchetna.com</a></li>
                         <li>Support: <a href="mailto:hello@askchetna.com">hello@askchetna.com</a></li>
-                        <li>Instagram: <a href="#">@chetna.astrology</a></li>
-                        <li>YouTube: <a href="#">AskChetna Insights</a></li>
+                        {/* <li>Instagram: <a href="#">@chetna.astrology</a></li> */}
+                        {/* <li>YouTube: <a href="#">AskChetna Insights</a></li> */}
                     </ul>
                 </section>
 

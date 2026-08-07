@@ -198,7 +198,7 @@ export default function TermsPage() {
 
                     <h3>12.2 Dispute Resolution</h3>
                     <p>
-                        Any disputes arising from these Terms or your use of the Platform shall be resolved through good-faith negotiation. If unresolved, disputes shall be subject to the exclusive jurisdiction of courts in [Your City/State, India].
+                        Any disputes arising from these Terms or your use of the Platform shall be resolved through good-faith negotiation. If unresolved, disputes shall be subject to the exclusive jurisdiction of courts in New Delhi, India.
                     </p>
                 </section>
 

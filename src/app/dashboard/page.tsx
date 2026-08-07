@@ -6,8 +6,9 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import styles from './page.module.css';
-import { CreditCard, UserCircle, ChevronRight, MessageSquare, Trash2, Crown, Download, FileText, PlusCircle, Zap, Sparkles, MapPin, Clock, Trash, CheckSquare, Square, Info } from 'lucide-react';
+import { CreditCard, UserCircle, ChevronRight, MessageSquare, Trash2, Crown, Download, FileText, PlusCircle, Zap, Sparkles, MapPin, Clock, Trash, CheckSquare, Square, Info, Settings } from 'lucide-react';
 import ConfirmDialog from '@/components/ConfirmDialog';
+import AstrologerHome from '@/components/consultations/AstrologerHome';
 import { useProfile } from '@/context/ProfileContext';
 import { buildPricingUrl } from '@/lib/monetization';
 import { PAYMENTS_ENABLED, PAYMENTS_PAUSED_MESSAGE } from '@/lib/paymentConfig';
@@ -82,7 +83,7 @@ export default function DashboardPage() {
     const [isDeleting, setIsDeleting] = useState(false);
     const [profileToDelete, setProfileToDelete] = useState<string | null>(null);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-    const [activeSection, setActiveSection] = useState<'overview' | 'profiles' | 'history' | 'exports' | 'credits'>('overview');
+    const [activeSection, setActiveSection] = useState<'astrologer' | 'overview' | 'profiles' | 'history' | 'exports' | 'credits'>('overview');
     const [selectedProfiles, setSelectedProfiles] = useState<string[]>([]);
     const [selectedExports, setSelectedExports] = useState<string[]>([]);
     const [isBulkDeleting, setIsBulkDeleting] = useState(false);
@@ -112,8 +113,11 @@ export default function DashboardPage() {
 
         if (status === 'authenticated') {
             fetchProfileData();
+            if (session?.user?.astrologerStatus === 'APPROVED') {
+                setActiveSection('astrologer');
+            }
         }
-    }, [status, router]);
+    }, [status, router, session?.user?.astrologerStatus]);
 
     const fetchWelcomeBonusNotice = useCallback(async (attempt = 0) => {
         try {
@@ -456,35 +460,45 @@ export default function DashboardPage() {
 
     return (
         <div className={styles.profileContainer}>
-            <header className={styles.header}>
+            <div className={styles.pageTitleBlock}>
                 <span className="cosmic-label mb-2 block">Dharma Dashboard</span>
                 <h1 className="mystic-text text-4xl mb-4">Your Cosmic Center</h1>
-                <div className="sacred-divider ml-0 justify-start mb-8"></div>
-                <div className={styles.userBasicInfo}>
-                    <div className={styles.avatar}>
-                        {session.user?.image ? (
-                            <Image src={session.user.image} alt={session.user.name || 'User'} width={80} height={80} className={styles.avatarImage} />
-                        ) : (
-                            <UserCircle size={80} />
-                        )}
+                <div className="sacred-divider mb-6 mx-auto"></div>
+            </div>
+
+            <header className={`${styles.header} sacred-card`}>
+                <div className={styles.headerContent}>
+                    <div className={styles.userBasicInfo}>
+                        <div className={styles.avatar}>
+                            {session.user?.image ? (
+                                <Image src={session.user.image} alt={session.user.name || 'User'} width={80} height={80} className={styles.avatarImage} />
+                            ) : (
+                                <UserCircle size={80} />
+                            )}
+                        </div>
+                        <div>
+                            <h1 className={`${styles.userName} mystic-text text-[var(--accent-gold)]`}>Welcome back, {session.user?.name?.split(' ')[0] || 'Friend'}</h1>
+                            <p className={styles.userEmail}>{session.user?.email}</p>
+                        </div>
                     </div>
-                    <div>
-                        <h1 className={styles.userName}>{session.user?.name}</h1>
-                        <p className={styles.userEmail}>{session.user?.email}</p>
-                    </div>
-                </div>
-                <div className={`${styles.statsBar} sacred-card`}>
-                    <div className={styles.statItem}>
-                        <span className={styles.statLabel}>Credits</span>
-                        <span className="text-[var(--accent-gold)] font-bold text-xl">{stats.credits}</span>
-                    </div>
-                    <div className={styles.statItem}>
-                        <span className={styles.statLabel}>Profiles</span>
-                        <span className="text-[var(--accent-gold)] font-bold text-xl">{stats.profilesCount}</span>
-                    </div>
-                    <div className={styles.statItem}>
-                        <span className={styles.statLabel}>Questions</span>
-                        <span className="text-[var(--accent-gold)] font-bold text-xl">{stats.questionsCount}</span>
+
+                    <div className={styles.headerDivider}></div>
+
+                    <div className={styles.statsBar}>
+                        <div className={styles.statItem}>
+                            <span className={styles.statLabel}>Credits</span>
+                            <span className={styles.statValueText}>{stats.credits}</span>
+                        </div>
+                        <div className={styles.statDivider}></div>
+                        <div className={styles.statItem}>
+                            <span className={styles.statLabel}>Profiles</span>
+                            <span className={styles.statValueText}>{stats.profilesCount}</span>
+                        </div>
+                        <div className={styles.statDivider}></div>
+                        <div className={styles.statItem}>
+                            <span className={styles.statLabel}>Questions</span>
+                            <span className={styles.statValueText}>{stats.questionsCount}</span>
+                        </div>
                     </div>
                 </div>
             </header>
@@ -543,6 +557,14 @@ export default function DashboardPage() {
                 {/* Sidebar Navigation */}
                 <aside className={styles.sidebar}>
                     <nav className={styles.nav}>
+                        {session?.user?.astrologerStatus === 'APPROVED' && (
+                            <button
+                                className={`${styles.navItem} ${activeSection === 'astrologer' ? styles.activeNav : ''}`}
+                                onClick={() => setActiveSection('astrologer')}
+                            >
+                                <Sparkles size={18} /> Consultations
+                            </button>
+                        )}
                         <button
                             className={`${styles.navItem} ${activeSection === 'overview' ? styles.activeNav : ''}`}
                             onClick={() => setActiveSection('overview')}
@@ -573,16 +595,26 @@ export default function DashboardPage() {
                         >
                             <Download size={18} /> Chart Exports
                         </button>
+                        <Link href="/account" className={styles.navItem}>
+                            <Settings size={18} /> Settings
+                        </Link>
                     </nav>
                 </aside>
 
                 <main className={styles.mainContent}>
+                    {/* Astrologer Section */}
+                    {activeSection === 'astrologer' && session?.user?.astrologerStatus === 'APPROVED' && (
+                        <div style={{ margin: '-24px' }}>
+                            <AstrologerHome />
+                        </div>
+                    )}
+
                     {/* Overview Section */}
                     {activeSection === 'overview' && (
                         <div className={styles.overviewGrid}>
                             <section className={`${styles.heroSection} sacred-card`}>
-                                <h2 className="mystic-text text-2xl">Welcome back, {session.user?.name?.split(' ')[0] || 'Friend'}</h2>
-                                <p className="text-white/70 italic my-2">The stars have moved since your last visit.</p>
+                                <h3 className="mystic-text text-xl mb-2 text-[var(--accent-gold)]">Ready for clarity?</h3>
+                                <p className="text-[var(--foreground)] opacity-80 my-2 text-sm max-w-[400px]">The stars have moved since your last visit. Ask a new question or create a profile.</p>
                                 {PAYMENTS_ENABLED && (isOutOfCredits || isLowCredit) && (
                                     <div className={styles.infoNote}>
                                         <Info size={14} />
@@ -609,7 +641,7 @@ export default function DashboardPage() {
                             </section>
 
                             <div className={styles.quickStats}>
-                                <div className={styles.quickStatCard}>
+                                <div className={`${styles.quickStatCard} sacred-card`}>
                                     <h3>Profile Usage</h3>
                                     <div className={styles.usageContainer}>
                                         <div className={styles.usageHeader}>
@@ -632,7 +664,7 @@ export default function DashboardPage() {
                                         </Link>
                                     </div>
                                 </div>
-                                <div className={styles.quickStatCard}>
+                                <div className={`${styles.quickStatCard} sacred-card`}>
                                     <h3>Recent Questions</h3>
                                     <div className={styles.miniList}>
                                         {recentQuestions.slice(0, 3).map(q => (
@@ -646,7 +678,7 @@ export default function DashboardPage() {
                                         View All History <ChevronRight size={14} />
                                     </button>
                                 </div>
-                                <div className={styles.quickStatCard}>
+                                <div className={`${styles.quickStatCard} sacred-card`}>
                                     <h3>Community</h3>
                                     <div className={styles.communityCTA}>
                                         <div className={styles.communityIcon}>
@@ -712,7 +744,7 @@ export default function DashboardPage() {
                                     recentProfiles.map((profile) => (
                                         <div
                                             key={profile.id}
-                                            className={`${styles.profileCard} ${!profile.isActive ? styles.disabledCard : ''} ${selectedProfiles.includes(profile.id) ? styles.selectedCard : ''}`}
+                                            className={`${styles.profileCard} sacred-card ${!profile.isActive ? styles.disabledCard : ''} ${selectedProfiles.includes(profile.id) ? styles.selectedCard : ''}`}
                                             onClick={() => router.push(`/chart?profileId=${profile.id}`)}
                                         >
                                             <div className={styles.cardHeader}>

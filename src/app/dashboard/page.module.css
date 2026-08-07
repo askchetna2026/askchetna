@@ -8,13 +8,38 @@
     padding-right: 40px;
 }
 
+.pageTitleBlock {
+    margin-bottom: 32px;
+    text-align: center;
+}
+
+.headerDivider {
+    width: 1px;
+    height: 70px;
+    background: linear-gradient(to bottom, transparent, rgba(var(--accent-gold-rgb), 0.3), transparent);
+}
+
+.statDivider {
+    width: 1px;
+    height: 40px;
+    background: rgba(var(--accent-gold-rgb), 0.2);
+    align-self: center;
+}
+
 .header {
+    margin-bottom: 40px;
+    padding: 32px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, rgba(var(--bg-soft-rgb), 0.8) 0%, rgba(var(--bg-soft-rgb), 0.4) 100%);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--card-border);
+}
+
+.headerContent {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 60px;
-    padding-bottom: 30px;
-    border-bottom: 1px solid var(--border-color);
+    gap: 40px;
 }
 
 .userBasicInfo {
@@ -30,6 +55,7 @@
     overflow: hidden;
     border: 3px solid var(--card-bg);
     box-shadow: 0 0 0 2px var(--accent-gold);
+    flex-shrink: 0;
 }
 
 .avatarImage {
@@ -37,49 +63,50 @@
 }
 
 .userName {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
     font-weight: 700;
     margin-bottom: 4px;
     color: var(--foreground);
     letter-spacing: -0.02em;
+    line-height: 1.2;
 }
 
 .userEmail {
     color: var(--secondary);
     font-size: 1.1rem;
+    opacity: 0.8;
 }
 
 /* Stats Bar */
 .statsBar {
     display: flex;
-    gap: 40px;
-    background: var(--card-bg);
-    padding: 16px 32px;
+    gap: 32px;
+    padding: 16px 24px;
+    background: rgba(var(--background-rgb), 0.5);
     border-radius: 16px;
-    border: 1px solid var(--card-border);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(var(--accent-gold-rgb), 0.15);
 }
 
 .statItem {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    min-width: 100px;
+    align-items: center;
+    min-width: 70px;
 }
 
-.statValue {
-    font-size: 1.75rem;
+.statValueText {
+    font-size: 1.6rem;
     font-weight: 800;
-    color: var(--primary);
+    color: var(--accent-gold);
     line-height: 1.2;
 }
 
 .statLabel {
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 1px;
     color: var(--text-muted);
-    font-weight: 600;
+    font-weight: 650;
     margin-top: 4px;
 }
 
@@ -224,13 +251,9 @@
 
 /* Hero Section */
 .heroSection {
-    background: linear-gradient(135deg, rgba(var(--bg-soft-rgb), 0.8) 0%, rgba(var(--bg-soft-rgb), 0.4) 100%);
-    border: 1px solid var(--card-border);
-    border-radius: 24px;
     padding: 48px;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
 }
 
 .heroSection::before {
@@ -396,9 +419,6 @@
 }
 
 .quickStatCard {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 20px;
     padding: 32px;
     display: flex;
     flex-direction: column;
@@ -670,8 +690,8 @@
     align-items: center;
     position: relative;
     overflow: hidden;
-    color: white;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    color: var(--foreground);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
 }
 
 /* The light-theme twin went with the dark theme: .lifeReportCard is paper in
@@ -713,12 +733,12 @@
     font-size: 2rem;
     font-weight: 800;
     margin-bottom: 12px;
-    color: white;
+    color: var(--foreground);
 }
 
 .lifeReportCard p {
     font-size: 1.1rem;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--secondary);
     margin-bottom: 24px;
     line-height: 1.6;
 }
@@ -767,9 +787,6 @@
 
 
 .profileCard {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 24px;
     padding: 24px;
     display: flex;
     flex-direction: column;
@@ -1333,22 +1350,35 @@
 
     .sidebar {
         width: 100%;
+        max-width: 100%;
         position: static;
+        overflow: hidden;
     }
 
     .nav {
         flex-direction: row;
-        flex-wrap: wrap;
-        gap: 8px;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        justify-content: flex-start;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; /* Firefox */
+        gap: 12px;
+        padding-bottom: 8px; /* Room for active shadow */
+    }
+
+    .nav::-webkit-scrollbar {
+        display: none; /* Chrome/Safari */
     }
 
     .navItem {
-        padding: 10px 16px;
-        font-size: 0.9rem;
-        flex: 1;
-        min-width: 120px;
+        padding: 12px 20px;
+        font-size: 0.95rem;
+        flex: 0 0 auto;
+        width: auto;
+        min-width: 0;
         justify-content: center;
-        text-align: center;
+        scroll-snap-align: start;
     }
 
     .navItem:hover {
@@ -1356,16 +1386,25 @@
     }
 
     .header {
+        padding: 24px;
+    }
+
+    .headerContent {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: stretch;
         gap: 24px;
+    }
+
+    .headerDivider {
+        width: 100%;
+        height: 1px;
+        background: linear-gradient(to right, transparent, rgba(var(--accent-gold-rgb), 0.3), transparent);
     }
 
     .statsBar {
         width: 100%;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
+        display: flex;
+        justify-content: space-around;
         padding: 16px;
     }
 
@@ -1462,11 +1501,13 @@
 
     .userBasicInfo {
         gap: 16px;
+        flex-direction: column;
+        text-align: center;
     }
 
     .avatar {
-        width: 60px;
-        height: 60px;
+        width: 70px;
+        height: 70px;
     }
 
     .userName {
@@ -1478,23 +1519,25 @@
     }
 
     .statsBar {
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
         padding: 12px;
+        gap: 8px;
     }
 
-    .statValue {
+    .statValueText {
         font-size: 1.4rem;
     }
 
     .nav {
-        gap: 6px;
+        gap: 8px;
+        margin-left: -16px;
+        margin-right: -16px;
+        padding-left: 16px;
+        padding-right: 16px;
     }
 
     .navItem {
-        padding: 8px 10px;
-        font-size: 0.8rem;
-        min-width: 0;
+        padding: 10px 16px;
+        font-size: 0.85rem;
     }
 
     .quickStats {
@@ -1503,8 +1546,13 @@
     }
 
     .quickStatCard {
-        padding: 24px;
+        padding: 20px;
         min-height: auto;
+    }
+
+    .profileCard {
+        padding: 20px;
+        gap: 16px;
     }
 
     .heroSection {
@@ -1580,6 +1628,10 @@
     }
 
     .lifeReportCard h3 {
-        font-size: 1.5rem;
+        font-size: 1.25rem;
+    }
+
+    .sectionTitle {
+        font-size: 1.4rem;
     }
 }

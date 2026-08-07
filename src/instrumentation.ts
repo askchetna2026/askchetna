@@ -11,6 +11,14 @@
 export async function register() {
     if (process.env.NEXT_RUNTIME !== 'nodejs') return;
 
-    const { reportEnvironment } = await import('@/lib/envCheck');
-    reportEnvironment();
+    // Swallowed deliberately. This runs on every cold start and produces
+    // nothing but diagnostics, so there is no failure here worth taking the
+    // site down for — a check meant to make problems visible must not become
+    // one. The catch is logged, so a broken checker is not itself invisible.
+    try {
+        const { reportEnvironment } = await import('@/lib/envCheck');
+        reportEnvironment();
+    } catch (error) {
+        console.error('[env] Startup check failed to run:', error);
+    }
 }

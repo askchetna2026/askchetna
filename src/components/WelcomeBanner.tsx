@@ -27,6 +27,9 @@ export default function WelcomeBanner({ bonusAmount }: { bonusAmount: number }) 
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
+                // Hook for globals.css — the app's home screens hide the floating
+                // chrome and this banner. See AppScreenChrome.
+                className="app-floating-chrome"
                 style={{
                     width: '100%',
                     background: 'linear-gradient(to right, var(--bg-primary), var(--bg-secondary))',

@@ -1,0 +1,74 @@
+/* Size is set by the caller; everything below derives from it. */
+.medallion {
+    position: relative;
+    width: var(--medallion-size, 240px);
+    height: var(--medallion-size, 240px);
+    flex: none;
+}
+
+/* Warm bloom behind the crop, so the circle sits in light rather than being
+   pasted onto the sheet. */
+.halo {
+    position: absolute;
+    inset: -22%;
+    border-radius: 50%;
+    background: radial-gradient(
+        circle at 50% 46%,
+        rgba(181, 137, 46, 0.26) 0%,
+        rgba(181, 137, 46, 0.10) 42%,
+        transparent 68%
+    );
+    pointer-events: none;
+}
+
+.plate {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background-image: url('/art/banner/masthead.png');
+    background-repeat: no-repeat;
+    /* The medallion crop. See AppMedallion.tsx for where these ratios come from. */
+    background-size:
+        calc(var(--medallion-size, 240px) * 2.9831)
+        calc(var(--medallion-size, 240px) * 1.6271);
+    background-position:
+        calc(var(--medallion-size, 240px) * -0.9873)
+        calc(var(--medallion-size, 240px) * -0.2733);
+    /* Same treatment as the web masthead: the plate's cream ground dissolves
+       into the parchment instead of sitting in a disc of a slightly wrong beige. */
+    mix-blend-mode: multiply;
+}
+
+.rings {
+    position: absolute;
+    /* Outside the crop, so the nakshatra dots orbit the portrait rather than
+       clipping its edge. */
+    inset: -7%;
+    color: var(--accent-gold-decor);
+    overflow: visible;
+}
+
+@keyframes medallionTurn {
+    to { transform: rotate(360deg); }
+}
+
+.rashiRing,
+.nakshatraRing {
+    transform-box: view-box;
+    transform-origin: 50px 50px;
+    animation: medallionTurn linear infinite;
+}
+
+.rashiRing { animation-duration: 280s; }
+
+.nakshatraRing {
+    animation-duration: 190s;
+    animation-direction: reverse;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .rashiRing,
+    .nakshatraRing {
+        animation: none;
+    }
+}

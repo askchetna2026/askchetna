@@ -20,7 +20,8 @@ export default function FloatingActionButton() {
     return (
         <>
             <button
-                className={styles.fab}
+                // Hook for globals.css — see AppScreenChrome.
+                className={`app-floating-chrome ${styles.fab}`}
                 onClick={handleClick}
                 title={profileData?.canAddMore ? 'Create new profile' : 'Profile limit reached'}
             >

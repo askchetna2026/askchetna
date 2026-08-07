@@ -1,0 +1,263 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Native app welcome — signed out.
+
+   Sized to land inside one viewport on a small phone rather than to a fixed
+   height. Every vertical value is a clamp against svh, so the screen breathes
+   on a 6.7" device and compresses on a 5.4" one instead of pushing the button
+   below the fold, which is the one failure this layout cannot afford.
+
+   svh, not vh: on iOS vh measures the viewport with the browser chrome
+   retracted, so a vh-sized screen is taller than what is actually visible on
+   first paint — exactly when this screen is being judged.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.screen {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+
+    /* What is actually left after the app's chrome: the header and the layout's
+       own 20px top padding (~104px together), the tab bar, and both insets.
+       svh already excludes browser chrome but knows nothing about ours, and
+       leaving the tab bar out of this sum is what pushed the secondary link
+       under the fold on a 5.8" screen. */
+    min-height: calc(
+        100svh - 104px - var(--app-tabbar-height)
+        - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)
+    );
+    padding: 0 22px clamp(6px, 1.6vh, 20px);
+
+    /* space-between rather than a margin-top:auto on the actions: on a tall
+       phone the slack then spreads across all four gaps instead of collecting
+       into one canyon above the button. */
+    justify-content: space-between;
+    /* Measured, not guessed: at the previous minimums the stack came to 707px
+       against 669px of usable height on a 375x812 screen, which put the
+       fineprint behind the tab bar. Every minimum below is set so the four
+       blocks and their gaps clear that budget. */
+    gap: clamp(8px, 2.2vh, 24px);
+}
+
+/* A wash of night behind the medallion. Cheap depth: the plate's own sky is
+   cropped away by the circle, so without this the artwork floats on bare
+   parchment and the screen reads flat. */
+.nightSky {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    right: 0;
+    height: 46svh;
+    background:
+        radial-gradient(120% 80% at 50% 12%, rgba(38, 49, 92, 0.30) 0%, transparent 62%),
+        radial-gradient(90% 60% at 50% 0%, rgba(74, 47, 168, 0.16) 0%, transparent 70%);
+    /* Fades out on all three exposed sides rather than ending. Masking only
+       downward left two hard vertical edges cutting across the parchment, which
+       read as a mis-sized image rather than as light. */
+    -webkit-mask-image:
+        linear-gradient(to bottom, #000 40%, transparent 100%),
+        linear-gradient(to right, transparent 0%, #000 22%, #000 78%, transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+        linear-gradient(to bottom, #000 40%, transparent 100%),
+        linear-gradient(to right, transparent 0%, #000 22%, #000 78%, transparent 100%);
+    mask-composite: intersect;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ── Hero ─────────────────────────────────────────────────────────────────── */
+
+.hero {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(6px, 1.4vh, 16px);
+    padding-top: clamp(0px, 1.2vh, 16px);
+}
+
+.medallion {
+    /* Read by AppMedallion.module.css to derive the crop. Three caps, because
+       the binding constraint changes with the device: width on a small phone,
+       height on a tall narrow one, and neither on a tablet. */
+    --medallion-size: min(37vw, 19svh, 200px);
+}
+
+.wordmark {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-weight: 500;
+    font-size: clamp(1.6rem, 7.4vw, 2.1rem);
+    line-height: 1;
+    letter-spacing: 0.18em;
+    /* Balances the tracking, which otherwise pushes the visual centre left. */
+    text-indent: 0.18em;
+    color: var(--foreground);
+}
+
+.tagline {
+    margin: 0;
+    font-size: 0.66rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--accent-gold);
+}
+
+/* ── The live sky ─────────────────────────────────────────────────────────── */
+
+.skyNow {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 340px;
+    padding: clamp(8px, 1.5vh, 14px) 18px;
+    /* Holds its place while the ephemeris is being asked. */
+    min-height: 78px;
+
+    background: var(--card-bg);
+    background-image: var(--paper-tex);
+    background-blend-mode: var(--paper-tex-blend);
+    background-size: 300px;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+}
+
+.skyLabel {
+    display: block;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.skyTransit {
+    margin: 6px 0 2px;
+    font-family: var(--font-heading);
+    font-size: clamp(1.15rem, 5.2vw, 1.4rem);
+    line-height: 1.15;
+    color: var(--foreground);
+}
+
+.skyTheme {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--accent-gold);
+}
+
+/* No spinner: a first-run screen that shows a loading state before it has shown
+   anything reads as slow. An empty card that quietly fills is calmer, and the
+   card is already carrying a border and a shadow so the space is not blank. */
+.skyWaiting {
+    display: block;
+    min-height: 54px;
+}
+
+/* ── Three lines of substance ─────────────────────────────────────────────── */
+
+.proof {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 340px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    display: flex;
+    flex-direction: column;
+    gap: clamp(8px, 1.5vh, 14px);
+}
+
+.proof li {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    text-align: left;
+    font-size: 0.83rem;
+    line-height: 1.4;
+    color: var(--text-muted);
+}
+
+.proof svg {
+    flex: none;
+    margin-top: 1px;
+    color: var(--accent-gold);
+}
+
+/* ── Actions ──────────────────────────────────────────────────────────────── */
+
+.actions {
+    position: relative;
+    z-index: 1;
+    padding-top: clamp(4px, 1.2vh, 16px);
+    width: 100%;
+    max-width: 340px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.primary {
+    width: 100%;
+    /* 52px: comfortably over the 44pt minimum on both platforms with room for
+       the label to stay optically centred. */
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    background: var(--btn-bg);
+    color: var(--btn-fg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-float);
+
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    text-decoration: none;
+    transition: transform 0.16s var(--ease-out), background 0.16s ease;
+}
+
+/* Press feedback, not hover: there is no pointer here, and :active is the only
+   state a finger produces. */
+.primary:active {
+    transform: scale(0.975);
+    background: var(--btn-bg-hover);
+}
+
+.secondary {
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--accent-gold);
+    text-decoration: none;
+}
+
+.secondary:active {
+    opacity: 0.65;
+}
+
+.fineprint {
+    margin: 0;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+}
+
+/* Landscape phones and tablets: the single column becomes a very tall, very
+   empty screen. Art beside content instead. */
+@media (min-width: 600px) {
+    .screen {
+        max-width: 560px;
+        margin: 0 auto;
+        justify-content: center;
+        gap: 24px;
+    }
+}

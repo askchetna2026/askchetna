@@ -40,17 +40,20 @@ export default function AppTabBar() {
     if (pathname === '/login' || pathname.startsWith('/onboarding')) return null;
 
     const tabs: Tab[] = [
-        // Signed-in users get the dashboard as home — the marketing homepage is a
-        // web surface and has nothing to offer someone already inside the product.
-        // "/" is matched too: the proxy rewrites it to /dashboard for signed-in
-        // native requests, so the URL stays "/" while the dashboard renders and
-        // this tab still needs to light up.
-        { href: authed ? '/dashboard' : '/', label: 'Today', icon: Home, match: authed ? ['/'] : [] },
+        // Signed-in users get /today as home — the marketing homepage is a web
+        // surface and has nothing to offer someone already inside the product.
+        // "/" is matched too: the proxy rewrites it to /today for signed-in
+        // native requests, so the URL stays "/" while Today renders and this tab
+        // still needs to light up.
+        { href: authed ? '/today' : '/', label: 'Today', icon: Home, match: authed ? ['/'] : [] },
         { href: '/chart', label: 'Chart', icon: Orbit, match: ['/report', '/how-we-calculate'] },
         { href: '/clarity', label: 'Ask', icon: MessageSquare, match: ['/ai-astrologer'] },
         { href: '/timing', label: 'Timing', icon: CalendarClock, match: ['/dasha-timeline'] },
         authed
-            ? { href: '/account', label: 'Me', icon: User, match: ['/app-info', '/pricing'] }
+            // /dashboard joins this tab now that Today has taken over as home:
+            // what is left there is profiles, credits and exports, which is the
+            // "Me" half of the app rather than a second landing screen.
+            ? { href: '/account', label: 'Me', icon: User, match: ['/app-info', '/pricing', '/dashboard'] }
             : { href: '/login', label: 'Sign In', icon: LogIn },
     ];
 

@@ -14,7 +14,9 @@ export default function AskChetnaFab() {
     if (pathname === '/clarity' || pathname === '/login') return null;
 
     return (
-        <Link href="/clarity" className={styles.fab} aria-label="Ask Chetna AI">
+        // The plain class is a hook for globals.css, which cannot see a CSS
+        // module's hashed name — see AppScreenChrome.
+        <Link href="/clarity" className={`app-floating-chrome ${styles.fab}`} aria-label="Ask Chetna AI">
             <MessageSquare size={22} />
             <span className={styles.label}>Ask Chetna</span>
         </Link>

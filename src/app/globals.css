@@ -953,3 +953,33 @@ h3 { font-size: clamp(1.125rem, 3vw, 1.5rem); letter-spacing: 0.05em; }
 .native-app .stars-layer-2 {
   filter: none;
 }
+
+/* The app's home screens (src/app/app-home, src/app/today) set this class on
+   <html> while they are mounted — see AppScreenChrome. Three pieces of global
+   chrome stand down under it, all for the same reason: the home screens are
+   sized to one viewport and each of these takes a bite out of it.
+
+   - The "Ask Chetna" pill landed directly over the welcome screen's only button.
+   - The new-profile FAB offers what the screen's own empty state offers.
+   - WelcomeBanner is the expensive one. It only renders when SIGNED OUT, which
+     is exactly the state the welcome screen exists for, and at 150px it pushed
+     the primary call to action entirely below the fold — measured at 375x812,
+     content ran to 893px against a tab bar starting at 754px. The signup offer
+     is not lost: the banner still shows on /login, which is where that button
+     goes.
+
+   Not gated on .native-app: the class is only ever set by those two screens,
+   and they are only ever served to the app. */
+.app-home-screen .app-floating-chrome {
+  display: none;
+}
+
+/* Welcome screen only — see AppScreenChrome's `hideFooter`. The app's footer is
+   already reduced to a single 117px line by the .native-app rules in
+   Footer.module.css, so this is not hiding a sitemap; it is reclaiming the last
+   117px on the one screen that has to fit in a single viewport. Today keeps it. */
+.app-home-no-footer footer {
+  display: none;
+}
+
+

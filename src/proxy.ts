@@ -13,6 +13,10 @@ const protectedPaths = [
     "/clarity",
     "/timing",
     "/synastry",
+    // The app's signed-in home. Normally reached as a rewrite of "/" — already
+    // behind a session check by the time it renders — but it is a real route, so
+    // a direct hit needs the same boundary as any other signed-in screen.
+    "/today",
     // The page itself also redirects when unauthenticated, but gating here means
     // the auth boundary is enforced before any rendering begins rather than
     // relying on a streamed redirect instruction.
@@ -55,9 +59,17 @@ export async function proxy(request: NextRequest) {
      *
      * "/" is a marketing page: a long scroll that explains the product and asks
      * for a signup. That is the right landing for a browser and the wrong one
-     * for someone who already installed the app and signed in — they want the
-     * product, not the pitch. Signed-in native requests get the dashboard, and
-     * an APPROVED astrologer gets their own desk on every platform.
+     * for anyone who reached us through a store listing — they already
+     * converted, and a second pitch is the screen standing between them and the
+     * product. So the app gets its own two home screens and the website keeps
+     * this one, unchanged:
+     *
+     *   native + signed in   -> /today      the product's daily surface
+     *   native + signed out  -> /app-home   one screen, one call to action
+     *   web (either)         -> the marketing page, untouched
+     *
+     * An APPROVED astrologer still gets their own desk on every platform, which
+     * is why that branch is checked first.
      *
      * Rewrite rather than redirect: the URL stays "/", so there is no extra
      * round trip on cold start and no visible bounce. AppTabBar matches "/" for
@@ -71,19 +83,30 @@ export async function proxy(request: NextRequest) {
      * The astrologer status rides on the session token (see the jwt callback),
      * so deciding this costs a cookie decode and no database round trip.
      */
-    if (pathname === "/" && hasSessionCookie(request)) {
-        try {
-            const session = await auth()
-            if (session?.user?.astrologerStatus === "APPROVED") {
-                return NextResponse.rewrite(new URL("/astrologer", request.url))
+    if (pathname === "/") {
+        const platform = parseAppPlatform(request.headers.get("user-agent"))
+
+        if (hasSessionCookie(request)) {
+            try {
+                const session = await auth()
+                if (session?.user?.astrologerStatus === "APPROVED") {
+                    return NextResponse.rewrite(new URL("/astrologer", request.url))
+                }
+                if (session && platform !== "web") {
+                    return NextResponse.rewrite(new URL("/today", request.url))
+                }
+            } catch {
+                // Never let a session failure take out the home page. Falling
+                // through serves the app welcome (or, on the web, the marketing
+                // page) — both are correct for someone we cannot identify.
             }
-            if (session && parseAppPlatform(request.headers.get("user-agent")) !== "web") {
-                return NextResponse.rewrite(new URL("/dashboard", request.url))
-            }
-        } catch {
-            // Never let a session failure take out the home page. Falling
-            // through serves the marketing page, which is the correct
-            // degradation — signed-out app users see it anyway.
+        }
+
+        // Anonymous traffic never reaches auth() above, so this is the only
+        // branch a crawler or a first-launch app user takes. The web keeps its
+        // statically served marketing page; only the app diverts.
+        if (platform !== "web") {
+            return NextResponse.rewrite(new URL("/app-home", request.url))
         }
     }
 

@@ -1,0 +1,5 @@
+# Stamps the shipping version onto the commit subject, e.g. "... [v3.1.7]".
+#
+# Runs after pre-commit, so auto-bump-patch.mjs has already settled the number.
+# See scripts/stamp-commit-version.mjs. Never blocks a commit.
+node scripts/stamp-commit-version.mjs "$1" "$2"

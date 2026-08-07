@@ -21,7 +21,13 @@ Live at https://askchetna.com (Vercel).
 ## Working agreements
 
 - **Commit directly to `preview`.** Do not create feature branches.
-- `preview` auto-deploys to production — confirm before pushing.
+- **Pushing `preview` does NOT reach production.** `preview` and `www` are
+  separate Vercel deployments. Confirmed on 2026-08-07: pushing `11742ef` moved
+  `preview.askchetna.com` to v3.2.0 while `www.askchetna.com` stayed on v3.1.10
+  and build `82e7de7`. This line previously claimed the opposite, which makes
+  every push feel more dangerous than it is — and, worse, invites the assumption
+  that a fix has shipped when it has not. Ask the deployments rather than this
+  file: `curl -s https://<host>/api/version`.
 - Match the surrounding code's style. Comments explain *why*, not *what*.
 - **Commit subjects carry the shipping version**, e.g. `fix(env): … [v3.1.8]`.
   Stamped automatically by the `prepare-commit-msg` hook — do not add it by
@@ -254,9 +260,14 @@ xcodebuild -exportArchive -archivePath App.xcarchive \
 
 ### Preview vs Production
 
-**Web deployment** is automatic (Vercel from `preview` branch).
+**Web deployment** is automatic, but only to the **preview** deployment. Getting
+a change onto `www.askchetna.com` is a separate step — see the working
+agreements above.
 
-**Mobile apps** are locked to a URL at build time. To test preview:
+**Mobile apps** are locked to a URL at build time, and `capacitor.config.ts`
+defaults to `https://www.askchetna.com`. So a default build — including anything
+already installed or in a store — reads **production**, and a push to `preview`
+does not change what those users see. To test preview:
 
 ```bash
 CAP_SERVER_URL=https://preview.askchetna.com npm run cap:sync

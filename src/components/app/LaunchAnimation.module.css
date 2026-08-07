@@ -1,0 +1,130 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Launch overlay.
+
+   Opaque #0B0F2F — the same value as the native splash background and the app
+   icon's ground — so the handoff from the native splash to this is invisible.
+   Any other value and there is a visible colour step at the seam.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    /* Above the tab bar (900) and the header (1000): this covers the app
+       entirely until it is done. */
+    z-index: 4000;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 26px;
+
+    background: #0B0F2F;
+    /* A cold start should never show a text-selection caret or a tap flash. */
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    pointer-events: none;
+
+    opacity: 1;
+    transition: opacity 420ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* The dissolve. The app underneath has already painted by now, so this reads as
+   the brand lifting off the screen rather than as a page appearing. */
+.fading {
+    opacity: 0;
+}
+
+.mark {
+    width: min(38vw, 150px);
+    height: min(38vw, 150px);
+    overflow: visible;
+}
+
+/* ── The ring draws itself ────────────────────────────────────────────────────
+   pathLength=100 on the element normalises the arc, so 100 units is the whole
+   stroke regardless of its real length — no measuring, no layout read. */
+
+@keyframes drawRing {
+    from { stroke-dashoffset: 100; }
+    to   { stroke-dashoffset: 0; }
+}
+
+.ring {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    /* Eases out hard at the end so the stroke arrives rather than stopping. */
+    animation: drawRing 760ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+/* ── House dots settle ─────────────────────────────────────────────────────── */
+
+@keyframes settleDot {
+    from { opacity: 0; transform: scale(0.2); }
+    60%  { opacity: 1; transform: scale(1.35); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+.dot {
+    opacity: 0;
+    /* Scale about the dot's own centre rather than the SVG origin, or each one
+       flies in from the top-left corner. */
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: settleDot 420ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* ── The spark blooms last ─────────────────────────────────────────────────── */
+
+@keyframes bloomSpark {
+    from { opacity: 0; transform: scale(0.3) rotate(-35deg); }
+    to   { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+.spark {
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: bloomSpark 520ms cubic-bezier(0.34, 1.56, 0.64, 1) 820ms forwards;
+}
+
+/* ── Wordmark ──────────────────────────────────────────────────────────────── */
+
+@keyframes riseWordmark {
+    from { opacity: 0; transform: translateY(9px); letter-spacing: 0.42em; }
+    to   { opacity: 1; transform: translateY(0); letter-spacing: 0.26em; }
+}
+
+.wordmark {
+    margin: 0;
+    font-family: var(--font-heading), Georgia, serif;
+    font-size: clamp(0.95rem, 4.4vw, 1.2rem);
+    font-weight: 500;
+    /* The end state of the animation; declared here too so a no-animation
+       environment still gets the settled tracking rather than the opening one. */
+    letter-spacing: 0.26em;
+    text-indent: 0.26em;
+    color: #F0E0BC;
+
+    opacity: 0;
+    animation: riseWordmark 620ms cubic-bezier(0.22, 0.61, 0.36, 1) 900ms forwards;
+}
+
+/* ── Reduced motion ────────────────────────────────────────────────────────────
+   Not "no animation" — the overlay still has to appear and leave, or the screen
+   would cut from splash to content with nothing in between. Everything arrives
+   at its final state immediately and only the opacity of the overlay moves.
+   The component also shortens its own timeline to 400ms in this case. */
+
+@media (prefers-reduced-motion: reduce) {
+    .ring,
+    .dot,
+    .spark,
+    .wordmark {
+        animation: none;
+        opacity: 1;
+        stroke-dashoffset: 0;
+        transform: none;
+    }
+}

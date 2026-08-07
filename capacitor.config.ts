@@ -133,11 +133,19 @@ const config: CapacitorConfig = {
             backgroundColor: '#0B0F2F',
             androidScaleType: 'CENTER_CROP',
 
-            // Something has to move while a slow network is being waited on; a
-            // motionless splash for several seconds reads as a hung app.
-            showSpinner: true,
-            androidSpinnerStyle: 'small',
-            iosSpinnerStyle: 'small',
+            // No spinner. It used to be here because something has to move
+            // while a slow network is waited on — but a stock platform progress
+            // spinner is the single most browser-like thing in the app, and it
+            // sat on the brand screen for the whole cold start.
+            //
+            // What moves now is the brand mark itself: LaunchAnimation paints an
+            // opaque #0B0F2F overlay the moment the webview does, draws the icon,
+            // and only then dismisses this splash. Same colour on both sides of
+            // the handoff, so the seam is invisible.
+            //
+            // This one needs a rebuild to reach a device — it is native config,
+            // unlike the animation, which ships with a deploy.
+            showSpinner: false,
             splashFullScreen: true,
             splashImmersive: false,
         },

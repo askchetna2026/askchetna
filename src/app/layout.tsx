@@ -11,6 +11,7 @@ import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, absoluteUrl } from '@/lib/site';
 import { PLATFORM_BOOTSTRAP_SCRIPT } from '@/lib/platform';
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar';
 import NativeAppShell from '@/components/NativeAppShell';
+import LaunchAnimation from '@/components/app/LaunchAnimation';
 import PullToRefresh from '@/components/PullToRefresh';
 import AppTabBar from '@/components/AppTabBar';
 import PendingDeletionGate from '@/components/PendingDeletionGate';
@@ -142,6 +143,12 @@ export default async function RootLayout({
           including the static SEO landing pages — into dynamic rendering.
         */}
         <script dangerouslySetInnerHTML={{ __html: PLATFORM_BOOTSTRAP_SCRIPT }} />
+        {/*
+          Outside the providers and first in the body: the opening beat must not
+          wait on a session lookup, and it covers the whole app while it plays.
+          Renders nothing in a browser, and nothing on a warm start.
+        */}
+        <LaunchAnimation />
         {/*
           No theme bootstrap. AskChetna has ONE palette — the parchment
           manuscript — so data-theme is a constant on <html> above rather than

@@ -23,6 +23,11 @@ Live at https://askchetna.com (Vercel).
 - **Commit directly to `preview`.** Do not create feature branches.
 - `preview` auto-deploys to production — confirm before pushing.
 - Match the surrounding code's style. Comments explain *why*, not *what*.
+- **Commit subjects carry the shipping version**, e.g. `fix(env): … [v3.1.8]`.
+  Stamped automatically by the `prepare-commit-msg` hook — do not add it by
+  hand. Several commits sharing a version is correct: the patch bump happens
+  once per push cycle, so they ship together under that number. To see what a
+  deployed version contains: `git log --oneline --grep='\[v3\.1\.8\]'`.
 
 ## Brand
 

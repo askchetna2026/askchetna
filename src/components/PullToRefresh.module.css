@@ -1,0 +1,58 @@
+/*
+ * The pull-to-refresh indicator. App only — the component never renders in a
+ * browser, so nothing here needs a desktop story.
+ */
+
+.host {
+    position: fixed;
+    /* Starts above the fold and is pushed down by the drag, so it emerges from
+       under the header rather than appearing on top of it. The safe-area inset
+       matters because viewport-fit=cover puts the status bar over the page. */
+    top: calc(-52px + env(safe-area-inset-top, 0px));
+    left: 0;
+    right: 0;
+    z-index: 1200;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    height: 52px;
+    pointer-events: none;
+
+    color: var(--accent-gold);
+    background: var(--background);
+    border-bottom: 1px solid var(--card-border);
+}
+
+.dial {
+    display: inline-flex;
+    color: var(--accent-gold);
+}
+
+.label {
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--text-muted);
+}
+
+/* Only once the reload is committed. Spinning while the finger is still down
+   would compete with the ring drawing itself, which is the thing actually
+   reporting progress. */
+.spinning {
+    animation: ptr-spin 0.9s linear infinite;
+}
+
+@keyframes ptr-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .spinning {
+        animation: none;
+    }
+}

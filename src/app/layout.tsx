@@ -11,6 +11,7 @@ import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, absoluteUrl } from '@/lib/site';
 import { PLATFORM_BOOTSTRAP_SCRIPT } from '@/lib/platform';
 import ServiceWorkerRegistrar from '@/components/ServiceWorkerRegistrar';
 import NativeAppShell from '@/components/NativeAppShell';
+import PullToRefresh from '@/components/PullToRefresh';
 import AppTabBar from '@/components/AppTabBar';
 import PendingDeletionGate from '@/components/PendingDeletionGate';
 
@@ -180,6 +181,11 @@ export default async function RootLayout({
             {/* Native-only wiring (splash, status bar, back button, offline
                 banner, external links). Renders nothing in a browser. */}
             <NativeAppShell />
+            {/* Pull down at the top of a screen to reload it. App only, and
+                implemented here rather than natively so it ships with a deploy
+                instead of a store submission — the apps point at this site, they
+                do not bundle it. */}
+            <PullToRefresh />
             {/* Update notification for native app users */}
             <UpdateNotification />
             {/* Locks the account to a cancellation screen while deletion is

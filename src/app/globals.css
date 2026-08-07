@@ -243,7 +243,15 @@ body {
 html,
 body {
   width: 100%;
+  /* `hidden` first as the fallback, `clip` second so it wins where supported.
+     They are NOT equivalent: `overflow-x: hidden` makes the element a scroll
+     container, which forces the other axis to compute to `auto` — and a
+     scrolling `html` is what `position: sticky` then resolves against, so the
+     sticky header scrolled away with the page instead of staying put. `clip`
+     does the same clipping without creating that scroll container. Verified:
+     with `hidden`, the header sat at -600px after scrolling to 600. */
   overflow-x: hidden;
+  overflow-x: clip;
   /* Android's WebView inflates text it decides is body copy ("font boosting"),
      which is why the app reads noticeably larger on Android than on iOS from
      identical CSS. Pinning this to 100% turns that off and hands sizing back to

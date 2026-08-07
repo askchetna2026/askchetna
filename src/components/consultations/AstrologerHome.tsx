@@ -285,6 +285,10 @@ export default function AstrologerHome() {
 
     const now = new Date(tick);
 
+    /** Nothing live, nobody waiting, nothing to answer. */
+    const nothingDoing =
+        inSession.length === 0 && waiting.length === 0 && requests.length === 0;
+
     return (
         <div className={styles.page} data-duty={onDuty ? 'on' : 'off'}>
             <div className={styles.strip}>
@@ -344,9 +348,68 @@ export default function AstrologerHome() {
                 </div>
             )}
 
+            {/* ══ The day, in four figures ══
+                Directly under the duty band and across the full width, because
+                these are the numbers glanced at rather than read — and because
+                they are the only part of the page that is never empty. Buried
+                in the narrow rail they were below the fold on a quiet day, and
+                a quiet day is most days. */}
+            <div className={styles.shell}>
+                <div className={styles.figures}>
+                    <div className={styles.figure}>
+                        <b>{today.sessions}</b>
+                        <span>Sessions today</span>
+                    </div>
+                    <div className={styles.figure}>
+                        <b>{today.minutes}</b>
+                        <span>Minutes today</span>
+                    </div>
+                    <div className={styles.figure}>
+                        <b>{today.credits}</b>
+                        <span>Credits today</span>
+                    </div>
+                    <div className={`${styles.figure} ${styles.figureMoney}`}>
+                        <b>{rupees(earnings.unpaidPaise)}</b>
+                        <span>Awaiting payout</span>
+                    </div>
+                </div>
+            </div>
+
             <div className={`${styles.shell} ${styles.spread}`}>
-                {/* ── NOW ─────────────────────────────────────────────── */}
+                {/* ── THE WORK: what is in front of you right now ─────── */}
                 <div className={styles.col}>
+                    {/* Nothing live, nobody waiting, nothing to answer — which is
+                        most of most days. Three separate "nothing here" cards
+                        stacked down the widest column read as a broken page
+                        rather than a quiet one, so the quiet case gets a single
+                        calm statement instead. */}
+                    {nothingDoing ? (
+                        <section>
+                            <div className={styles.head}>
+                                <h2>Your desk</h2>
+                                <span className={styles.rule} />
+                            </div>
+                            <div className={`${styles.card} ${styles.restful}`}>
+                                <b>Nothing needs you right now</b>
+                                <p>
+                                    {onDuty
+                                        ? 'You are listed in the directory. A seeker starting a session, or asking for a time, will appear here.'
+                                        : 'You are off duty, so nobody can start a session with you. Go on duty to appear in the directory.'}
+                                </p>
+                                {hours.length === 0 && (
+                                    <p className={styles.restfulHint}>
+                                        You have published no hours, so nothing can be booked ahead
+                                        either.{' '}
+                                        <Link href="/astrologer/profile" className={styles.inlineLink}>
+                                            Set your hours
+                                        </Link>
+                                        .
+                                    </p>
+                                )}
+                            </div>
+                        </section>
+                    ) : (
+                      <>
                     {inSession.length > 0 && (
                         <section>
                             <div className={styles.head}>
@@ -559,9 +622,11 @@ export default function AstrologerHome() {
                             sellable to anyone else.
                         </p>
                     </section>
+                      </>
+                    )}
                 </div>
 
-                {/* ── LEDGER ──────────────────────────────────────────── */}
+                {/* ── THE LEDGER: your diary, your money, your practice ─ */}
                 <div className={styles.col}>
                     <section>
                         <div className={styles.head}>
@@ -599,6 +664,39 @@ export default function AstrologerHome() {
                         )}
                     </section>
 
+
+                    <section>
+                        <div className={styles.head}>
+                            <h2>Earnings</h2>
+                            <span className={styles.rule} />
+                        </div>
+                        <div className={`${styles.card} ${styles.money}`}>
+                            <div className={styles.moneyRow}>
+                                <span className={styles.moneyKey}>Unpaid balance</span>
+                                <span className={styles.moneyVal}>
+                                    {rupees(earnings.unpaidPaise)}
+                                </span>
+                            </div>
+                            {earnings.lastPayout && (
+                                <div className={styles.moneyRow}>
+                                    <span className={styles.moneyKey}>
+                                        Last payout
+                                        {earnings.lastPayout.paidAt
+                                            ? ` · ${dayFmt.format(new Date(earnings.lastPayout.paidAt))}`
+                                            : ''}
+                                    </span>
+                                    <span className={`${styles.moneyVal} ${styles.moneySmall}`}>
+                                        {rupees(earnings.lastPayout.amountPaise)}
+                                    </span>
+                                </div>
+                            )}
+                            <p className={styles.moneyNote}>
+                                Settled per session at your agreed share. Rates are snapshotted
+                                when a session opens, so a later change never rewrites what you
+                                have earned.
+                            </p>
+                        </div>
+                    </section>
                     <section>
                         <div className={styles.head}>
                             <h2>Your hours</h2>
@@ -635,60 +733,6 @@ export default function AstrologerHome() {
                                 </div>
                             </div>
                         )}
-                    </section>
-
-                    <section>
-                        <div className={styles.head}>
-                            <h2>Today</h2>
-                            <span className={styles.rule} />
-                        </div>
-                        <div className={`${styles.card} ${styles.tally}`}>
-                            <div>
-                                <b>{today.sessions}</b>
-                                <span>Sessions</span>
-                            </div>
-                            <div>
-                                <b>{today.minutes}</b>
-                                <span>Minutes</span>
-                            </div>
-                            <div>
-                                <b>{today.credits}</b>
-                                <span>Credits</span>
-                            </div>
-                        </div>
-                    </section>
-
-                    <section>
-                        <div className={styles.head}>
-                            <h2>Earnings</h2>
-                            <span className={styles.rule} />
-                        </div>
-                        <div className={`${styles.card} ${styles.money}`}>
-                            <div className={styles.moneyRow}>
-                                <span className={styles.moneyKey}>Unpaid balance</span>
-                                <span className={styles.moneyVal}>
-                                    {rupees(earnings.unpaidPaise)}
-                                </span>
-                            </div>
-                            {earnings.lastPayout && (
-                                <div className={styles.moneyRow}>
-                                    <span className={styles.moneyKey}>
-                                        Last payout
-                                        {earnings.lastPayout.paidAt
-                                            ? ` · ${dayFmt.format(new Date(earnings.lastPayout.paidAt))}`
-                                            : ''}
-                                    </span>
-                                    <span className={`${styles.moneyVal} ${styles.moneySmall}`}>
-                                        {rupees(earnings.lastPayout.amountPaise)}
-                                    </span>
-                                </div>
-                            )}
-                            <p className={styles.moneyNote}>
-                                Settled per session at your agreed share. Rates are snapshotted
-                                when a session opens, so a later change never rewrites what you
-                                have earned.
-                            </p>
-                        </div>
                     </section>
 
                     <section>

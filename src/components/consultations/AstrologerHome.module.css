@@ -415,6 +415,35 @@
     margin-top: 15px;
 }
 
+/* The quiet day. Deliberately roomier and calmer than the small empty states —
+   this is a resting page, not a fault to be corrected. */
+.restful {
+    padding: clamp(30px, 5vw, 46px) clamp(20px, 4vw, 34px);
+}
+
+.restful b {
+    display: block;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 1.3rem;
+    color: var(--foreground);
+    margin-bottom: 9px;
+}
+
+.restful p {
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    line-height: 1.65;
+    max-width: 52ch;
+}
+
+.restfulHint {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--card-border);
+    font-size: 0.85rem;
+}
+
 .inlineLink {
     color: var(--btn-bg);
     font-weight: 600;
@@ -586,39 +615,63 @@
     font-size: 0.74rem;
 }
 
-/* ── Today's tally ── */
+/* ── The day, in four figures ──────────────────────────────────────────
+   A rule-separated row rather than four cards. These are read together as one
+   sentence about the day, and boxing each one would make them look like four
+   separate things to act on — which is the opposite of true: nothing here is
+   clickable. */
 
-.tally {
+.figures {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    border-top: 1px solid var(--card-border);
+    border-bottom: 1px solid var(--card-border);
+    margin-top: clamp(20px, 3vw, 30px);
 }
 
-.tally div {
-    padding: 16px 14px;
+.figure {
+    padding: 16px clamp(14px, 2vw, 22px);
     border-right: 1px solid var(--card-border);
-    text-align: center;
 }
 
-.tally div:last-child {
+.figure:last-child {
     border-right: none;
 }
 
-.tally b {
+.figure b {
     display: block;
     font-family: var(--font-heading);
-    font-size: 1.6rem;
+    font-size: clamp(1.5rem, 3.4vw, 1.95rem);
     line-height: 1;
     font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
 }
 
-.tally span {
+.figure span {
     display: block;
     font-size: 0.6rem;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--text-muted);
-    margin-top: 7px;
+    margin-top: 8px;
     font-weight: 700;
+}
+
+/* Money is the one figure read for a different reason, so it is the one that
+   carries colour. */
+.figureMoney b {
+    color: var(--accent-gold);
+}
+
+@media (max-width: 620px) {
+    /* Two-up rather than a four-line stack, and the last cell keeps its rule
+       only when it is not at the end of a row. */
+    .figure:nth-child(2n) {
+        border-right: none;
+    }
+    .figure:nth-child(-n + 2) {
+        border-bottom: 1px solid var(--card-border);
+    }
 }
 
 /* ── Earnings: money is checked on its own rhythm, so it is its own block ── */

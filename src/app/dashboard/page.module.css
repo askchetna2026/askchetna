@@ -56,6 +56,10 @@
     border: 3px solid var(--card-bg);
     box-shadow: 0 0 0 2px var(--accent-gold);
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
 }
 
 .avatarImage {
@@ -63,7 +67,7 @@
 }
 
 .userName {
-    font-size: 2.2rem;
+    font-size: 1.6rem;
     font-weight: 700;
     margin-bottom: 4px;
     color: var(--foreground);
@@ -285,8 +289,30 @@
 
 .heroActions {
     display: flex;
-    gap: 20px;
+    gap: 16px;
     position: relative;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.whatsappCircleBtn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #25D366, #128C7E);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.whatsappCircleBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5);
 }
 
 .primaryBtn {
@@ -1508,10 +1534,43 @@
     .avatar {
         width: 70px;
         height: 70px;
+        margin: 0 auto;
     }
 
+    .historyIcon {
+        font-size: 1.2rem;
+    }
+}
+
+/* Loading State for Dashboard */
+.loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 50vh;
+    gap: 20px;
+    color: var(--accent-gold);
+}
+
+.loader {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(var(--accent-gold-rgb), 0.2);
+    border-top-color: var(--accent-gold);
+    border-radius: 50%;
+    animation: loader-spin 1s linear infinite;
+}
+
+@keyframes loader-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 640px) {
     .userName {
-        font-size: 1.8rem;
+        font-size: 1.15rem;
     }
 
     .userEmail {

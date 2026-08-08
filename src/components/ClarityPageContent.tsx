@@ -172,6 +172,10 @@ export default function ClarityPageContent() {
                 setShareMsg('Could not share');
                 setTimeout(() => setShareMsg(null), 2500);
             }
+        } catch (err) {
+            console.error('Failed to share:', err);
+        }
+    };
     const handleDownloadResponse = async () => {
         if (!result) return;
         setIsDownloading(true);

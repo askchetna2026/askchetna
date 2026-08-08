@@ -651,10 +651,11 @@ export default function DashboardPage() {
                                                 setShowWaModal(true);
                                             }
                                         }}
-                                        className="primary-btn-cosmic text-sm"
-                                        style={{ background: 'linear-gradient(to right, #25D366, #128C7E)', border: 'none' }}
+                                        className={styles.whatsappCircleBtn}
+                                        style={{ color: '#fff' }}
+                                        title="Chat on WhatsApp"
                                     >
-                                        <WhatsAppIcon size={16} /> Chat on WhatsApp
+                                        <WhatsAppIcon size={24} />
                                     </button>
                                     {PAYMENTS_ENABLED && (
                                         <Link href={dashboardTopUpUrl} className="secondary-btn-cosmic text-sm">

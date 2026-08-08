@@ -47,6 +47,20 @@ export default function DashaDisplay({ dashas }: DashaDisplayProps) {
         });
     };
 
+    const PLANET_NAMES: Record<string, string> = {
+        SU: 'Sun',
+        MO: 'Moon',
+        MA: 'Mars',
+        ME: 'Mercury',
+        JU: 'Jupiter',
+        VE: 'Venus',
+        SA: 'Saturn',
+        RA: 'Rahu',
+        KE: 'Ketu'
+    };
+
+    const getPlanetName = (lord: string) => PLANET_NAMES[lord.toUpperCase()] || lord;
+
     return (
         <div className="dasha-container">
             <DashaStory dashas={dashas} />
@@ -63,7 +77,7 @@ export default function DashaDisplay({ dashas }: DashaDisplayProps) {
                         className={`dasha-card ${dasha.isCurrent ? 'current' : ''}`}
                     >
                         <div className="dasha-header">
-                            <span className="planet-name">{dasha.lord}</span>
+                            <span className="planet-name">{getPlanetName(dasha.lord)}</span>
                             {dasha.isCurrent && <span className="current-badge">Running Now</span>}
                         </div>
                         <div className="dasha-dates">
@@ -75,7 +89,7 @@ export default function DashaDisplay({ dashas }: DashaDisplayProps) {
                                 {dasha.isCurrent ? (
                                     dasha.antardashas.map((ad, adIdx) => (
                                         <div key={adIdx} className={`antardasha-item ${ad.isCurrent ? 'ad-current' : ''}`}>
-                                            <span className="ad-lord">{ad.lord}</span>
+                                            <span className="ad-lord">{getPlanetName(ad.lord)}</span>
                                             <span className="ad-dates">{formatDate(ad.start)}</span>
                                         </div>
                                     ))

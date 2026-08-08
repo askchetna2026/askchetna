@@ -20,6 +20,7 @@ import AnalyticsTracker from '@/components/AnalyticsTracker';
 import FloatingActionButton from '@/components/FloatingActionButton';
 import AskChetnaFab from '@/components/AskChetnaFab';
 import { ProfileProvider } from '@/context/ProfileContext';
+import { ComplexityProvider } from '@/context/ComplexityContext';
 import ProfileManager from '@/components/ProfileManager';
 import { CosmicStarfield } from '@/lib/cosmic/Starfield';
 import UpdateNotification from '@/components/UpdateNotification';
@@ -166,8 +167,9 @@ export default async function RootLayout({
         <div className="central-portal-glow"></div>
         <div className="noise-overlay"></div>
         <AuthProvider>
-          <ProfileProvider>
-            <Header />
+          <ComplexityProvider>
+            <ProfileProvider>
+              <Header />
             <WelcomeBanner bonusAmount={welcomeBonusAmount} />
             <main className="app-main" style={{ paddingTop: '20px' }}>
               {children}
@@ -199,7 +201,8 @@ export default async function RootLayout({
                 pending — what makes the grace period read as real deletion to
                 App Review rather than deactivation. Renders nothing otherwise. */}
             <PendingDeletionGate />
-          </ProfileProvider>
+            </ProfileProvider>
+          </ComplexityProvider>
         </AuthProvider>
       </body>
     </html>

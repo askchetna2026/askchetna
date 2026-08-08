@@ -13,13 +13,14 @@ interface Props {
     /** Password accounts must reauthenticate before deletion. */
     hasPassword: boolean;
     isSubscribed: boolean;
+    whatsappOptIn: boolean;
     memberSince: string;
 }
 
 type PushState = 'granted' | 'denied' | 'prompt' | 'unsupported' | 'loading';
 
 export default function AccountSettingsClient({
-    email, name, phone, hasPassword, isSubscribed, memberSince,
+    email, name, phone, hasPassword, isSubscribed, whatsappOptIn, memberSince,
 }: Props) {
     // Same pattern as PhoneLoginPanel: server snapshot is false, so no hydration
     // mismatch and no setState-in-effect.
@@ -36,6 +37,9 @@ export default function AccountSettingsClient({
     const [password, setPassword] = useState('');
     const [deleteError, setDeleteError] = useState('');
     const [deleting, setDeleting] = useState(false);
+
+    const [waOptIn, setWaOptIn] = useState(whatsappOptIn);
+    const [waBusy, setWaBusy] = useState(false);
 
     // ---- Notification permission ----
     useEffect(() => {
@@ -108,6 +112,33 @@ export default function AccountSettingsClient({
         }
     };
 
+    // ---- WhatsApp Opt-in ----
+    const handleToggleWhatsApp = async () => {
+        if (!phone) {
+            alert('Please add a phone number first to enable WhatsApp notifications.');
+            return;
+        }
+
+        setWaBusy(true);
+        const nextState = !waOptIn;
+        try {
+            const res = await fetch('/api/user/whatsapp-optin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ optIn: nextState }),
+            });
+            if (res.ok) {
+                setWaOptIn(nextState);
+            } else {
+                alert('Failed to update WhatsApp preferences.');
+            }
+        } catch (e) {
+            alert('An error occurred.');
+        } finally {
+            setWaBusy(false);
+        }
+    };
+
     const memberSinceLabel = new Date(memberSince).toLocaleDateString(undefined, {
         year: 'numeric', month: 'long',
     });
@@ -149,7 +180,7 @@ export default function AccountSettingsClient({
             {/* Notifications only appear in the apps — there is no web push here. */}
             {isNative && (
                 <section className={styles.section}>
-                    <h2 className={styles.sectionTitle}>Notifications</h2>
+                    <h2 className={styles.sectionTitle}>Push Notifications</h2>
 
                     {pushState === 'granted' && (
                         <>
@@ -196,6 +227,22 @@ export default function AccountSettingsClient({
                     {pushState === 'loading' && <p className={styles.sectionText}>Checking…</p>}
                 </section>
             )}
+
+            <section className={styles.section}>
+                <h2 className={styles.sectionTitle}>WhatsApp Notifications</h2>
+                <p className={styles.sectionText}>
+                    Receive appointment reminders and important daily planetary shifts directly on WhatsApp. 
+                    {phone ? ' We will send messages to your linked phone number.' : ' You must link a phone number first.'}
+                </p>
+                <button
+                    onClick={handleToggleWhatsApp}
+                    className={styles.secondaryBtn}
+                    disabled={waBusy || !phone}
+                    style={{ opacity: (!phone || waBusy) ? 0.5 : 1 }}
+                >
+                    {waBusy ? 'Working…' : waOptIn ? 'Disable WhatsApp Alerts' : 'Enable WhatsApp Alerts'}
+                </button>
+            </section>
 
             {/* Required in-app by App Store 5.1.1(v) and Google Play's data
                 deletion policy. Must be reachable without contacting support. */}

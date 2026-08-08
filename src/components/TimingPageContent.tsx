@@ -10,6 +10,7 @@ import DashaDisplay from '@/components/DashaDisplay';
 import DashaTimeline from '@/components/DashaTimeline';
 import Term from '@/components/Term';
 import DisclaimerNote from '@/components/DisclaimerNote';
+import { useComplexity } from '@/context/ComplexityContext';
 
 interface UserProfile {
     id: string;
@@ -86,6 +87,7 @@ export default function TimingPageContent() {
     const { data: session, status } = useSession();
     const searchParams = useSearchParams();
     const router = useRouter();
+    const { complexity } = useComplexity();
 
     const [loading, setLoading] = useState(true);
     const [profilesLoading, setProfilesLoading] = useState(true);
@@ -288,7 +290,8 @@ export default function TimingPageContent() {
                         This is the energy at play. What you do with it is entirely yours.
                     </p>
                     <p className={styles.phaseSummaryFooter}>
-                        Astrologically, this is your <strong>{currentDasha.lord} Mahadasha</strong> — the technical detail follows below.
+                        Astrologically, this is your <strong>{currentDasha.lord} Mahadasha</strong>
+                        {complexity === 'TECHNICAL' ? ' — the technical detail follows below.' : '.'}
                     </p>
                 </div>
             )}

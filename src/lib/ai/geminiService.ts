@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import OpenAI from 'openai';
-import { ChartData, getNakshatra } from '../astrology/calculator';
+import { ChartData, getNakshatra, getZodiacSign } from '../astrology/calculator';
 import { VedicAnalysisEngine } from '../astrology/engine';
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY!);
@@ -35,7 +35,8 @@ type AIFlow =
     | 'JOURNAL_ANALYSIS'
     | 'SYNASTRY_ANALYSIS'
     | 'REPORT_GENERATION'
-    | 'CONSULTATION_REPLY';
+    | 'CONSULTATION_REPLY'
+    | 'WHATSAPP_CHAT';
 type FlowComplexity = 'HIGH' | 'STANDARD';
 
 const DEFAULT_MODELS: Record<AIProvider, Record<FlowComplexity, string>> = {
@@ -66,7 +67,8 @@ const FLOW_COMPLEXITY: Record<AIFlow, FlowComplexity> = {
     REPORT_GENERATION: 'HIGH',
     // A live chat turn. Latency matters more than depth here — the seeker is
     // watching a paid block count down while it generates.
-    CONSULTATION_REPLY: 'STANDARD'
+    CONSULTATION_REPLY: 'STANDARD',
+    WHATSAPP_CHAT: 'STANDARD'
 };
 
 const HYBRID_DEFAULTS: Record<AIFlow, { provider: AIProvider; modelName: string }> = {
@@ -76,7 +78,8 @@ const HYBRID_DEFAULTS: Record<AIFlow, { provider: AIProvider; modelName: string 
     JOURNAL_ANALYSIS: { provider: 'deepseek', modelName: 'deepseek-chat' },
     SYNASTRY_ANALYSIS: { provider: 'gemini', modelName: 'gemini-2.5-pro' },
     REPORT_GENERATION: { provider: 'gemini', modelName: 'gemini-2.5-pro' },
-    CONSULTATION_REPLY: { provider: 'openai', modelName: 'gpt-4o-mini' }
+    CONSULTATION_REPLY: { provider: 'openai', modelName: 'gpt-4o-mini' },
+    WHATSAPP_CHAT: { provider: 'deepseek', modelName: 'deepseek-chat' }
 };
 
 function normalizeProvider(raw?: string): AIProvider | null {
@@ -423,11 +426,20 @@ Return sections with headers OVERVIEW:, MAGNETIC PULL:, GROWTH EDGES:, COMMUNICA
  */
 export async function generatePlanetInsights(
     chartData: ChartData,
-    chartName: string
+    chartName: string,
+    complexity: string = 'SIMPLE'
 ): Promise<PlanetInsights> {
     const sanitizedChart = sanitizeChartData(chartData);
     const analysis = VedicAnalysisEngine.analyze(chartData);
     const yogas = VedicAnalysisEngine.detectYogas(chartData);
+    const isSimple = complexity === 'SIMPLE';
+    const detailInstructions = isSimple 
+        ? `- MANDATORY: Explain this in simple, clear language for a complete beginner. Strip out ALL astrological jargon like "Nakshatra", "Pada", "trine", "aspect", "Benefic", or "Malefic".
+    - Focus ONLY on the psychological themes, life experiences, and practical advice.`
+        : `- MANDATORY: You MUST explicitly mention the planet's Nakshatra, its Pada, and its precise degree in your narrative.
+    - Analyze the Functional Role (Benefic/Malefic/Mixed) and how it affects the specific house domain.
+    - Use the provided LOAD and SYNTHESIS metrics to ground your explanation.
+    - Keep the tone empathetic, awareness-focused, and deeply technical.`;
 
     const prompt = `You are a Master Vedic Astrologer. Provide ultra-detailed, empathetic insights for EACH planet in the ${chartName} chart.
     "Awareness, not prediction". Focus on psychological patterns, reactive habits, and awareness triggers.
@@ -439,12 +451,10 @@ export async function generatePlanetInsights(
     RETURN A JSON OBJECT where:
     - Keys are planet names (Sun, Moon, Mars, etc.)
     - Values are 150-200 word deep-dives explaining the planet's specific "State of consciousness" in this department (${chartName}).
-    - MANDATORY: You MUST explicitly mention the planet's Nakshatra, its Pada, and its precise degree in your narrative.
-    - Analyze the Functional Role (Benefic/Malefic/Mixed) and how it affects the specific house domain.
-    - Use the provided LOAD and SYNTHESIS metrics to ground your explanation.
+    ${detailInstructions}
     - Format: { "Sun": "...", "Moon": "...", ... }
     
-    Return ONLY valid JSON. Keep the tone empathetic, awareness-focused, and deeply technical yet accessible. Avoid generic filler. Every profile's insight MUST feel unique based on these specific calculations.`;
+    Return ONLY valid JSON. Every profile's insight MUST feel unique based on these specific calculations.`;
 
     try {
         const text = await callAI(prompt, 'PLANET_INSIGHTS');
@@ -691,4 +701,39 @@ export function isQuestionSafe(question: string): { safe: boolean; reason?: stri
         if (pattern.test(lower)) return { safe: false, reason };
     }
     return { safe: true };
+}
+
+/**
+ * Chat directly with AskChetna AI over WhatsApp.
+ * Uses Deepseek by default for conversational speed and efficiency.
+ */
+export async function generateWhatsAppReply(
+    userId: string,
+    message: string,
+    userChart?: ChartData,
+    complexity: 'simple' | 'technical' = 'simple'
+): Promise<string> {
+    const contextLines = [];
+    contextLines.push("You are Chetna AI, an expert Vedic astrologer helping a user over a direct WhatsApp chat.");
+    contextLines.push("Keep your answers warm, extremely conversational, and very concise (WhatsApp users do not want to read essays).");
+
+    if (userChart) {
+        const asc = getZodiacSign(userChart.ascendant) || 'Unknown';
+        const moonPos = userChart.planets['Moon'] || userChart.planets['Mo'];
+        const moon = moonPos ? getZodiacSign(moonPos.longitude) : 'Unknown';
+        contextLines.push(`The user's astrological context: Ascendant is ${asc}, Moon is in ${moon}. Use this to subtly personalize your advice if relevant.`);
+    }
+
+    if (complexity === 'simple') {
+        contextLines.push("CRITICAL: Explain any astrological concepts in very simple, jargon-free English. Do NOT use complex Sanskrit terms unless you immediately explain what they mean in plain language.");
+    } else {
+        contextLines.push("The user has opted for technical language. You may use standard Vedic terminology (Dashas, Nakshatras, Yogas) freely.");
+    }
+    
+    contextLines.push(`\nUser Message: ${message}`);
+
+    const systemPrompt = contextLines.join('\n');
+
+    const result = await callAI(systemPrompt, 'WHATSAPP_CHAT');
+    return result;
 }

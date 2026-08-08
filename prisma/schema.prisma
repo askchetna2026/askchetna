@@ -42,6 +42,7 @@ model User {
   createdAt              DateTime  @default(now())
   updatedAt              DateTime  @updatedAt
   isSubscribed           Boolean   @default(true) // For Newsletter
+  whatsappOptIn          Boolean   @default(false) // Opt-in for WhatsApp notifications
 
   profiles               Profile[]
   questions              Question[]

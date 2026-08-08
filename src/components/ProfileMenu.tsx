@@ -5,9 +5,10 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import {
-    LayoutDashboard, UserCog, Settings, LogOut, ShieldCheck, Sparkles,
+    LayoutDashboard, UserCog, Settings, LogOut, ShieldCheck, Sparkles, Languages
 } from 'lucide-react';
 import { isClientNativeApp } from '@/lib/platform';
+import { useComplexity } from '@/context/ComplexityContext';
 import styles from './ProfileMenu.module.css';
 
 /**
@@ -23,6 +24,7 @@ export default function ProfileMenu() {
     const { data: session } = useSession();
     const pathname = usePathname();
     const [open, setOpen] = useState(false);
+    const { complexity, setComplexity } = useComplexity();
     const ref = useRef<HTMLDivElement>(null);
 
     // App Info is meaningful in the app and meaningless in a browser. Safe to
@@ -90,6 +92,24 @@ export default function ProfileMenu() {
                         <span className={styles.name}>{session.user.name ?? 'Your account'}</span>
                         <span className={styles.email}>{session.user.email}</span>
                     </div>
+
+                    <button
+                        type="button"
+                        className={styles.item}
+                        role="menuitem"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            setComplexity(complexity === 'SIMPLE' ? 'TECHNICAL' : 'SIMPLE');
+                        }}
+                    >
+                        <Languages size={17} />
+                        <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                            Language Mode: {complexity === 'SIMPLE' ? 'Simple' : 'Technical'}
+                            <small className={styles.sub}>
+                                {complexity === 'SIMPLE' ? 'Jargon hidden' : 'Full astrological data'}
+                            </small>
+                        </span>
+                    </button>
 
                     <Link href="/dashboard" className={styles.item} role="menuitem">
                         <LayoutDashboard size={17} /> Dashboard

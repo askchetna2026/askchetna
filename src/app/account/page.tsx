@@ -37,6 +37,7 @@ export default async function AccountPage() {
             phone: true,
             password: true,
             isSubscribed: true,
+            whatsappOptIn: true,
             createdAt: true,
         },
     });
@@ -55,6 +56,7 @@ export default async function AccountPage() {
             // accounts have nothing to confirm against.
             hasPassword={!!user.password}
             isSubscribed={user.isSubscribed}
+            whatsappOptIn={user.whatsappOptIn}
             memberSince={user.createdAt.toISOString()}
         />
     );

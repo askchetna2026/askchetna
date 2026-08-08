@@ -1,5 +1,6 @@
 import React from 'react';
 import DashaStory from './DashaStory';
+import { useComplexity } from '@/context/ComplexityContext';
 
 interface DashaPeriod {
     lord: string;
@@ -37,6 +38,8 @@ interface DashaDisplayProps {
 }
 
 export default function DashaDisplay({ dashas }: DashaDisplayProps) {
+    const { complexity } = useComplexity();
+
     if (!dashas || dashas.length === 0) return null;
 
     const formatDate = (isoString: string) => {
@@ -65,42 +68,46 @@ export default function DashaDisplay({ dashas }: DashaDisplayProps) {
         <div className="dasha-container">
             <DashaStory dashas={dashas} />
 
-            <div style={{ marginTop: '64px', borderTop: '1px dashed var(--card-border)', paddingTop: '64px' }}>
-                <h3 className="section-title">Technical Timeline</h3>
-                <p className="subtitle">Vimsottari Dasha detail view</p>
-            </div>
+            {complexity === 'TECHNICAL' && (
+                <>
+                    <div style={{ marginTop: '64px', borderTop: '1px dashed var(--card-border)', paddingTop: '64px' }}>
+                        <h3 className="section-title">Technical Timeline</h3>
+                        <p className="subtitle">Vimsottari Dasha detail view</p>
+                    </div>
 
-            <div className="timeline">
-                {dashas.map((dasha, idx) => (
-                    <div
-                        key={idx}
-                        className={`dasha-card ${dasha.isCurrent ? 'current' : ''}`}
-                    >
-                        <div className="dasha-header">
-                            <span className="planet-name">{getPlanetName(dasha.lord)}</span>
-                            {dasha.isCurrent && <span className="current-badge">Running Now</span>}
-                        </div>
-                        <div className="dasha-dates">
-                            {formatDate(dasha.start)} — {formatDate(dasha.end)}
-                        </div>
+                    <div className="timeline">
+                        {dashas.map((dasha, idx) => (
+                            <div
+                                key={idx}
+                                className={`dasha-card ${dasha.isCurrent ? 'current' : ''}`}
+                            >
+                                <div className="dasha-header">
+                                    <span className="planet-name">{getPlanetName(dasha.lord)}</span>
+                                    {dasha.isCurrent && <span className="current-badge">Running Now</span>}
+                                </div>
+                                <div className="dasha-dates">
+                                    {formatDate(dasha.start)} — {formatDate(dasha.end)}
+                                </div>
 
-                        {dasha.antardashas && dasha.antardashas.length > 0 && (
-                            <div className="antardasha-list">
-                                {dasha.isCurrent ? (
-                                    dasha.antardashas.map((ad, adIdx) => (
-                                        <div key={adIdx} className={`antardasha-item ${ad.isCurrent ? 'ad-current' : ''}`}>
-                                            <span className="ad-lord">{getPlanetName(ad.lord)}</span>
-                                            <span className="ad-dates">{formatDate(ad.start)}</span>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <div className="ad-mini">Includes 9 sub-periods (Antardashas)</div>
+                                {dasha.antardashas && dasha.antardashas.length > 0 && (
+                                    <div className="antardasha-list">
+                                        {dasha.isCurrent ? (
+                                            dasha.antardashas.map((ad, adIdx) => (
+                                                <div key={adIdx} className={`antardasha-item ${ad.isCurrent ? 'ad-current' : ''}`}>
+                                                    <span className="ad-lord">{getPlanetName(ad.lord)}</span>
+                                                    <span className="ad-dates">{formatDate(ad.start)}</span>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div className="ad-mini">Includes 9 sub-periods (Antardashas)</div>
+                                        )}
+                                    </div>
                                 )}
                             </div>
-                        )}
+                        ))}
                     </div>
-                ))}
-            </div>
+                </>
+            )}
 
             <style jsx>{`
                 .dasha-container {

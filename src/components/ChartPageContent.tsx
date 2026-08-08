@@ -23,6 +23,7 @@ import {
 import styles from './ChartPageContent.module.css';
 import { useSession } from 'next-auth/react';
 import { useProfile } from '@/context/ProfileContext';
+import { useComplexity } from '@/context/ComplexityContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { PlusCircle, ArrowLeft, Lock, Info, CheckCircle, Sparkles, Zap, Loader2, Download, Clock, Compass, Copy, Share2 } from 'lucide-react';
 import html2canvas from 'html2canvas';
@@ -45,6 +46,7 @@ export default function ChartPageContent() {
     const [profileLimit, setProfileLimit] = useState(5);
     const [canAddMore, setCanAddMore] = useState(true);
     const { openNewProfileModal } = useProfile();
+    const { complexity } = useComplexity();
 
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [chartData, setChartData] = useState<ChartData | null>(null);
@@ -143,7 +145,8 @@ export default function ChartPageContent() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     chartData,
-                    chartName: VARGA_DEFINITIONS[chartKey]?.title || chartKey
+                    chartName: VARGA_DEFINITIONS[chartKey]?.title || chartKey,
+                    complexity
                 })
             });
             if (res.ok) {
@@ -1066,12 +1069,16 @@ export default function ChartPageContent() {
                                                                     </span>
                                                                 </h5>
                                                                 <div className={styles.insightContent}>
-                                                                    <p>
-                                                                        <strong>Placement:</strong> {pName} is placed at <strong>{formatDegree(pData.longitude)}</strong> in <strong>{getNakshatra(pData.longitude).name}</strong> Nakshatra in the <strong>{house}{getOrdinal(house)} House</strong> of <strong>{signName}</strong>.
-                                                                    </p>
-                                                                    <p>
-                                                                        <strong>Associations:</strong> {conjunctText} {aspectText}
-                                                                    </p>
+                                                                    {complexity === 'TECHNICAL' && (
+                                                                        <>
+                                                                            <p>
+                                                                                <strong>Placement:</strong> {pName} is placed at <strong>{formatDegree(pData.longitude)}</strong> in <strong>{getNakshatra(pData.longitude).name}</strong> Nakshatra in the <strong>{house}{getOrdinal(house)} House</strong> of <strong>{signName}</strong>.
+                                                                            </p>
+                                                                            <p>
+                                                                                <strong>Associations:</strong> {conjunctText} {aspectText}
+                                                                            </p>
+                                                                        </>
+                                                                    )}
                                                                     <p>
                                                                         <strong>Awareness Insight:</strong> <span className="italic">{getDetailedInsight(pName, signName, house, activeChart!)}</span>
                                                                     </p>

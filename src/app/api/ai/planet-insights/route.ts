@@ -16,13 +16,13 @@ export async function POST(req: NextRequest) {
         const limited = guardAiSpend(session.user.id, 'planet-insights');
         if (limited) return limited;
 
-        const { chartData, chartName } = await req.json();
+        const { chartData, chartName, complexity } = await req.json();
 
         if (!chartData || !chartName) {
             return NextResponse.json({ error: 'Missing chart data or name' }, { status: 400 });
         }
 
-        const insights = await generatePlanetInsights(chartData as ChartData, chartName);
+        const insights = await generatePlanetInsights(chartData as ChartData, chartName, complexity);
 
         return NextResponse.json({ insights });
 

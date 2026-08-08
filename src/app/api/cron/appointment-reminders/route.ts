@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { sendPushToUsers } from '@/lib/push/send';
 import { sendAppointmentReminderEmail } from '@/lib/mail';
+import { whatsappClient } from '@/lib/whatsapp/client';
 
 /**
  * Sends the 24-hour and 1-hour reminders for confirmed appointments, and
@@ -31,7 +32,7 @@ const REQUEST_TTL_HOURS = 48;
 type Due = {
     id: string; ref: string; startAt: Date; blocks: number;
     userId: string;
-    user: { name: string | null; email: string };
+    user: { name: string | null; email: string; phone: string | null; whatsappOptIn: boolean };
     astrologer: { displayName: string; userId: string | null };
 };
 
@@ -64,6 +65,24 @@ async function notify(rows: Due[], lead: '24 hours' | '1 hour') {
             lead,
             ref: a.ref,
         }).catch((e) => console.error('appointment email failed', a.ref, e));
+
+        // Send WhatsApp Reminder if opted-in
+        if (a.user.whatsappOptIn && a.user.phone) {
+            const templateName = 'appointment_reminder_1hr';
+            // WhatsApp templates usually expect parameters like: [AstrologerName, Time, JoinLink/Ref]
+            const components = [
+                {
+                    type: 'body',
+                    parameters: [
+                        { type: 'text', text: a.astrologer.displayName },
+                        { type: 'text', text: when }
+                    ]
+                }
+            ];
+
+            await whatsappClient.sendTemplateMessage(a.user.phone, templateName, 'en_US', components)
+                .catch((e) => console.error('appointment whatsapp failed', a.ref, e));
+        }
     }
 }
 
@@ -80,7 +99,7 @@ export async function GET(request: Request) {
     const now = new Date();
     const select = {
         id: true, ref: true, startAt: true, blocks: true, userId: true,
-        user: { select: { name: true, email: true } },
+        user: { select: { name: true, email: true, phone: true, whatsappOptIn: true } },
         astrologer: { select: { displayName: true, userId: true } },
     };
 

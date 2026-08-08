@@ -274,6 +274,7 @@ export default function ClarityPageContent() {
                 <AnimatePresence mode="wait">
                     {error && (
                         <motion.div 
+                            key="error"
                             className={styles.errorBox}
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
@@ -293,8 +294,15 @@ export default function ClarityPageContent() {
                         </motion.div>
                     )}
 
-                    {!result && !isAnalyzing && (
-                        <>
+                    {!result && !isAnalyzing && !error && (
+                        <motion.div
+                            key="initial"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className={styles.initialStateContainer}
+                            style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}
+                        >
                             <motion.div 
                                 className={styles.rulesBox}
                                 initial={{ opacity: 0, y: 20 }}
@@ -370,11 +378,12 @@ export default function ClarityPageContent() {
                                     </button>
                                 ))}
                             </motion.div>
-                        </>
+                        </motion.div>
                     )}
 
                     {isAnalyzing && (
                         <motion.div 
+                            key="analyzing"
                             className={styles.loadingState}
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
@@ -395,12 +404,14 @@ export default function ClarityPageContent() {
                         </motion.div>
                     )}
 
-                    {result && (
+                    {result && !isAnalyzing && (
                         <motion.div 
+                            key="result"
                             className={styles.resultContainer}
                             variants={containerVariants}
                             initial="hidden"
                             animate="visible"
+                            exit={{ opacity: 0 }}
                         >
                             {/* Section A: Question Context */}
                             <motion.div className={styles.section} variants={itemVariants}>

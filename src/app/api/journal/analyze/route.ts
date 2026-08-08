@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+export const maxDuration = 60;
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
 import { generateJournalAnalysis } from '@/lib/ai/geminiService';

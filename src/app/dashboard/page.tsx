@@ -9,6 +9,7 @@ import styles from './page.module.css';
 import { CreditCard, UserCircle, ChevronRight, MessageSquare, Trash2, Crown, Download, FileText, PlusCircle, Zap, Sparkles, MapPin, Clock, Trash, CheckSquare, Square, Info, Settings } from 'lucide-react';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import AstrologerHome from '@/components/consultations/AstrologerHome';
+import WhatsAppOptInModal from '@/components/WhatsAppOptInModal';
 import { useProfile } from '@/context/ProfileContext';
 import { buildPricingUrl } from '@/lib/monetization';
 import { PAYMENTS_ENABLED, PAYMENTS_PAUSED_MESSAGE } from '@/lib/paymentConfig';
@@ -104,6 +105,11 @@ export default function DashboardPage() {
     const [welcomeBonusNotice, setWelcomeBonusNotice] = useState<string | null>(null);
     const [hasCheckedWelcomeBonusNotice, setHasCheckedWelcomeBonusNotice] = useState(false);
     const welcomeBonusRetryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    
+    // WhatsApp features
+    const [accountData, setAccountData] = useState<{ phone: string | null; whatsappOptIn: boolean }>({ phone: null, whatsappOptIn: false });
+    const [showWaModal, setShowWaModal] = useState(false);
+
     const { openNewProfileModal } = useProfile();
 
     useEffect(() => {
@@ -180,14 +186,15 @@ export default function DashboardPage() {
         try {
             setLoading(true);
             // In a real app, these would be separate or combined API calls
-            const [creditsRes, profilesRes, questionsRes, exportsRes, creditHistoryRes, activeProfileRes, creditRequestsRes] = await Promise.all([
+            const [creditsRes, profilesRes, questionsRes, exportsRes, creditHistoryRes, activeProfileRes, creditRequestsRes, accountRes] = await Promise.all([
                 fetch('/api/credits/check'),
                 fetch('/api/profiles'),
                 fetch('/api/questions'),
                 fetch('/api/user/exports'),
                 fetch('/api/credits/history'),
                 fetch('/api/profiles/active'), // Fetch active profile & limit metadata
-                fetch('/api/credits/requests')
+                fetch('/api/credits/requests'),
+                fetch('/api/user/account')
             ]);
 
             const creditsData = await creditsRes.json();
@@ -197,6 +204,9 @@ export default function DashboardPage() {
             const creditHistoryData = await creditHistoryRes.ok ? await creditHistoryRes.json() : [];
             const activeData = await activeProfileRes.ok ? await activeProfileRes.json() : {};
             const creditRequestsData = await creditRequestsRes.ok ? await creditRequestsRes.json() : null;
+            const accountJson = await accountRes.ok ? await accountRes.json() : { phone: null, whatsappOptIn: false };
+
+            setAccountData({ phone: accountJson.phone, whatsappOptIn: accountJson.whatsappOptIn });
 
             setStats({
                 credits: creditsData.totalCredits || 0,
@@ -632,15 +642,19 @@ export default function DashboardPage() {
                                     <Link href="/clarity" className="primary-btn-cosmic text-sm">
                                         <Sparkles size={16} /> Ask AI Astrologer
                                     </Link>
-                                    <a 
-                                        href={whatsappLink} 
-                                        target="_blank" 
-                                        rel="noopener noreferrer" 
+                                    <button 
+                                        onClick={() => {
+                                            if (accountData.whatsappOptIn) {
+                                                window.open(whatsappLink, '_blank');
+                                            } else {
+                                                setShowWaModal(true);
+                                            }
+                                        }}
                                         className="primary-btn-cosmic text-sm"
                                         style={{ background: 'linear-gradient(to right, #25D366, #128C7E)', border: 'none' }}
                                     >
                                         <MessageSquare size={16} /> Chat on WhatsApp
-                                    </a>
+                                    </button>
                                     {PAYMENTS_ENABLED && (
                                         <Link href={dashboardTopUpUrl} className="secondary-btn-cosmic text-sm">
                                             <CreditCard size={16} /> Top Up Credits
@@ -1127,6 +1141,17 @@ export default function DashboardPage() {
                 onConfirm={handleConfirmDelete}
                 onCancel={() => !isDeleting && setShowDeleteConfirm(false)}
                 variant="danger"
+            />
+
+            <WhatsAppOptInModal 
+                isOpen={showWaModal}
+                currentPhone={accountData.phone}
+                onClose={() => setShowWaModal(false)}
+                onSuccess={() => {
+                    setAccountData({ ...accountData, whatsappOptIn: true });
+                    setShowWaModal(false);
+                    window.open(whatsappLink, '_blank');
+                }}
             />
 
             <ConfirmDialog

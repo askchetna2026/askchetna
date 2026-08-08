@@ -674,19 +674,22 @@ function sanitizeChartData(data: any): any {
     return sanitized;
 }
 
-function extractSection(text: string, startMarker: string, endMarker?: string): string {
-    const startIndex = text.indexOf(startMarker);
-    if (startIndex === -1) return '';
+function extractSection(text: string, startMarker: string, endMarker?: string): string | null {
+    const textUpper = text.toUpperCase();
+    const startIndex = textUpper.indexOf(startMarker.toUpperCase());
+    if (startIndex === -1) return null;
     const contentStart = startIndex + startMarker.length;
-    const endIndex = endMarker ? text.indexOf(endMarker, contentStart) : text.length;
-    return text.substring(contentStart, endIndex !== -1 ? endIndex : text.length).trim();
+    const endIndex = endMarker ? textUpper.indexOf(endMarker.toUpperCase(), contentStart) : text.length;
+    const result = text.substring(contentStart, endIndex !== -1 ? endIndex : text.length).trim();
+    return result || null;
 }
 
-function extractBulletPoints(text: string, startMarker: string, endMarker?: string): string[] {
+function extractBulletPoints(text: string, startMarker: string, endMarker?: string): string[] | null {
     const section = extractSection(text, startMarker, endMarker);
-    if (!section) return [];
+    if (!section) return null;
     const bullets = section.match(/^[\s]*[-*•\d.]+\s+(.+)$/gm);
-    return bullets ? bullets.map(b => b.replace(/^[\s]*[-*•\d.]+\s+/, '').trim()) : [];
+    const parsed = bullets ? bullets.map(b => b.replace(/^[\s]*[-*•\d.]+\s+/, '').trim()).filter(b => b.length > 0) : [];
+    return parsed.length > 0 ? parsed : null;
 }
 
 export function isQuestionSafe(question: string): { safe: boolean; reason?: string } {

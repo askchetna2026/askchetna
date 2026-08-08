@@ -33,6 +33,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
+        console.log("Raw Webhook Payload received:", JSON.stringify(body, null, 2));
 
         if (body.object !== 'whatsapp_business_account') {
             return new NextResponse('Not Found', { status: 404 });

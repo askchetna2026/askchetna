@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
-import { Send, Sparkles, MessageSquare, History, ArrowLeft, Bookmark, Share2, ShieldCheck, Check } from 'lucide-react';
+import { Send, Sparkles, MessageSquare, History, ArrowLeft, Bookmark, Share2, ShieldCheck, Check, Download } from 'lucide-react';
 import styles from '../app/clarity/page.module.css';
 
 import ProfileGuard from '@/components/ProfileGuard';
@@ -33,6 +33,7 @@ export default function ClarityPageContent() {
     const [loadingStep, setLoadingStep] = useState(0);
     const [saved, setSaved] = useState(false);
     const [shareMsg, setShareMsg] = useState<string | null>(null);
+    const [isDownloading, setIsDownloading] = useState(false);
 
     const STARTER_QUESTIONS = [
         "Why do I keep self-sabotaging when things go well?",
@@ -91,6 +92,7 @@ export default function ClarityPageContent() {
 
             setResult(data.response);
             setCredits(data.remainingCredits);
+            setQuestion(''); // Clear the question box for the next question
             // The reading can take a while; a success buzz means the user doesn't
             // have to watch the screen waiting for it.
             void haptics.successFeedback();
@@ -170,8 +172,34 @@ export default function ClarityPageContent() {
                 setShareMsg('Could not share');
                 setTimeout(() => setShareMsg(null), 2500);
             }
-        } catch {
-            // Share sheet dismissed — no action needed
+    const handleDownloadResponse = async () => {
+        if (!result) return;
+        setIsDownloading(true);
+        try {
+            const res = await fetch('/api/clarity/export', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ result })
+            });
+
+            if (res.ok) {
+                const blob = await res.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Chetna_Clarity_Report.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            } else {
+                alert('Failed to generate PDF');
+            }
+        } catch (e) {
+            console.error('Error exporting PDF:', e);
+            alert('Error exporting PDF');
+        } finally {
+            setIsDownloading(false);
         }
     };
 
@@ -492,6 +520,9 @@ export default function ClarityPageContent() {
                                 <button onClick={handleShareResponse} className={styles.responseActionBtn}>
                                     {shareMsg ? <><Check size={16} /> {shareMsg}</> : <><Share2 size={16} /> Share this insight</>}
                                 </button>
+                                <button onClick={handleDownloadResponse} className={styles.responseActionBtn} disabled={isDownloading}>
+                                    {isDownloading ? 'Generating...' : <><Download size={16} /> Download PDF</>}
+                                </button>
                             </motion.div>
 
                             <motion.button
@@ -514,7 +545,7 @@ export default function ClarityPageContent() {
                 >
                     <textarea
                         className={styles.questionInput}
-                        placeholder="What do you seek to understand?"
+                        placeholder={result ? "Ask another question..." : "What do you seek to understand?"}
                         value={question}
                         onChange={(e) => setQuestion(e.target.value)}
                         disabled={isAnalyzing}

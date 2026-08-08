@@ -92,7 +92,9 @@
 }
 
 .page[data-duty='on'] .duty {
-    background: var(--accent-neelam);
+    background: rgba(38, 49, 92, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-bottom-color: var(--accent-gold-decor);
 }
 
@@ -253,14 +255,7 @@
 }
 
 .card {
-    background-color: var(--card-bg);
-    background-image: var(--paper-tex);
-    background-size: 380px 380px;
-    background-position: center;
-    background-blend-mode: var(--paper-tex-blend);
-    border: 1px solid var(--card-border);
-    border-radius: var(--radius-xs);
-    box-shadow: var(--shadow-card);
+    /* Styles handled by .sacred-card */
 }
 
 .card + .card {
@@ -624,8 +619,6 @@
 .figures {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    border-top: 1px solid var(--card-border);
-    border-bottom: 1px solid var(--card-border);
     margin-top: clamp(20px, 3vw, 30px);
 }
 

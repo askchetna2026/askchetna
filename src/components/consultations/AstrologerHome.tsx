@@ -355,7 +355,7 @@ export default function AstrologerHome() {
                 in the narrow rail they were below the fold on a quiet day, and
                 a quiet day is most days. */}
             <div className={styles.shell}>
-                <div className={styles.figures}>
+                <div className={`${styles.figures} sacred-card`}>
                     <div className={styles.figure}>
                         <b>{today.sessions}</b>
                         <span>Sessions today</span>
@@ -386,10 +386,10 @@ export default function AstrologerHome() {
                     {nothingDoing ? (
                         <section>
                             <div className={styles.head}>
-                                <h2>Your desk</h2>
+                                <h2 className="mystic-text">Your desk</h2>
                                 <span className={styles.rule} />
                             </div>
-                            <div className={`${styles.card} ${styles.restful}`}>
+                            <div className={`${styles.card} ${styles.restful} sacred-card`}>
                                 <b>Nothing needs you right now</b>
                                 <p>
                                     {onDuty
@@ -413,11 +413,11 @@ export default function AstrologerHome() {
                     {inSession.length > 0 && (
                         <section>
                             <div className={styles.head}>
-                                <h2>In session</h2>
+                                <h2 className="mystic-text">In session</h2>
                                 <span className={styles.rule} />
                             </div>
                             {inSession.map((c) => (
-                                <article key={c.id} className={`${styles.card} ${styles.live}`}>
+                                <article key={c.id} className={`${styles.card} ${styles.live} sacred-card`}>
                                     <div className={styles.liveTop}>
                                         <div>
                                             <p className={styles.liveWho}>{c.seeker}</p>
@@ -455,7 +455,7 @@ export default function AstrologerHome() {
 
                     <section>
                         <div className={styles.head}>
-                            <h2>Waiting</h2>
+                            <h2 className="mystic-text">Waiting</h2>
                             <span className={styles.count}>
                                 {waiting.length === 0
                                     ? 'none'
@@ -464,14 +464,14 @@ export default function AstrologerHome() {
                             <span className={styles.rule} />
                         </div>
                         {waiting.length === 0 ? (
-                            <div className={`${styles.card} ${styles.empty}`}>
+                            <div className={`${styles.card} ${styles.empty} sacred-card`}>
                                 <b>Nobody is waiting</b>
                                 {onDuty
                                     ? 'You are listed. Seekers can start a session with you now.'
                                     : 'Go on duty to appear in the directory.'}
                             </div>
                         ) : (
-                            <div className={`${styles.card} ${styles.queue}`}>
+                            <div className={`${styles.card} ${styles.queue} sacred-card`}>
                                 {waiting.map((c) => (
                                     <Link key={c.id} href={`/consult/${c.id}`} className={styles.q}>
                                         <AstrologerAvatar
@@ -496,7 +496,7 @@ export default function AstrologerHome() {
 
                     <section>
                         <div className={styles.head}>
-                            <h2>Appointment requests</h2>
+                            <h2 className="mystic-text">Appointment requests</h2>
                             {requests.length > 0 && (
                                 <span className={styles.count}>
                                     {requests.length} awaiting your answer
@@ -505,7 +505,7 @@ export default function AstrologerHome() {
                             <span className={styles.rule} />
                         </div>
                         {requests.length === 0 ? (
-                            <div className={`${styles.card} ${styles.empty}`}>
+                            <div className={`${styles.card} ${styles.empty} sacred-card`}>
                                 <b>Nothing to answer</b>
                                 {hours.length === 0 ? (
                                     <>
@@ -520,7 +520,7 @@ export default function AstrologerHome() {
                                 )}
                             </div>
                         ) : (
-                            <div className={styles.card}>
+                            <div className={`${styles.card} sacred-card`}>
                                 {requests.map((r) => {
                                     const at = new Date(r.startAt);
                                     return (

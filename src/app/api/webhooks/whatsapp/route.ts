@@ -86,25 +86,37 @@ async function processAIWhatsAppMessage(phone: string, text: string) {
     // Normalize phone by ensuring it has a + if Meta sends it without one
     const normalizedPhone = phone.startsWith('+') ? phone : `+${phone}`;
     
-    const user = await prisma.user.findUnique({
-        where: { phone: normalizedPhone },
-        include: {
-            profiles: {
-                where: { isActive: true },
-                take: 1
-            }
-        }
-    });
+    let isTestUser = (normalizedPhone === '+16315551181' || phone === '16315551181');
+    let user = null;
+    let activeProfile = null;
 
-    if (!user || !user.whatsappOptIn) {
-        console.log(`WhatsApp message received from ${phone} but they are not a registered/opted-in user. Ignoring.`);
-        return;
+    if (!isTestUser) {
+        user = await prisma.user.findUnique({
+            where: { phone: normalizedPhone },
+            include: {
+                profiles: {
+                    where: { isActive: true },
+                    take: 1
+                }
+            }
+        });
+
+        if (!user || !user.whatsappOptIn) {
+            console.log(`WhatsApp message received from ${phone} but they are not a registered/opted-in user. Ignoring.`);
+            return;
+        }
+        activeProfile = user.profiles[0];
+    } else {
+        console.log("Mocking Database lookup for Meta Dashboard Test Button...");
     }
 
-    // 2. Fetch Chart Context if they have an active profile
+    // 2. Fetch Chart Context
     let chartContext = undefined;
-    const activeProfile = user.profiles[0];
-    if (activeProfile) {
+    
+    if (isTestUser) {
+        console.log("Generating Mock Chart Context for Test Button...");
+        chartContext = await calculateChart(1990, 1, 1, 12.0, 0, 0);
+    } else if (activeProfile) {
         const utcDate = new Date(activeProfile.dateOfBirth);
         // Extremely simple chart load just for AI context
         chartContext = await calculateChart(
@@ -113,13 +125,23 @@ async function processAIWhatsAppMessage(phone: string, text: string) {
             utcDate.getUTCDate(),
             activeProfile.timeOfBirth ? parseFloat(activeProfile.timeOfBirth) : 12.0,
             activeProfile.latitude || 0,
-            activeProfile.longitude || 0,
-            0 // timezone
+            activeProfile.longitude || 0
         );
     }
 
-    // 3. Generate Reply via Deepseek (or Env Fallback)
-    const replyText = await generateWhatsAppReply(user.id, text, chartContext, 'simple');
+    // 3. Generate AI Reply
+    console.log("Generating AI Reply...");
+    const replyUserId = isTestUser ? 'test-user-id' : user!.id;
+    const replyText = await generateWhatsAppReply(replyUserId, text, chartContext);
+    console.log("-----------------------------------------");
+    console.log(`AI RESPONSE GENERATED FOR ${phone}:`);
+    console.log(replyText);
+    console.log("-----------------------------------------");
+
+    if (isTestUser) {
+        console.log("Test Button flow complete! AI response printed above.");
+        return; // Don't actually try to send a WhatsApp message to the fake test number
+    }
 
     // 4. Send it back!
     await whatsappClient.sendTextMessage(normalizedPhone, replyText);

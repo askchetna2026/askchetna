@@ -52,9 +52,8 @@ export async function POST(req: NextRequest) {
                                 if (msg.type === 'text' && msg.text?.body) {
                                     console.log(`Received incoming WhatsApp message from ${msg.from}:`, msg.text.body);
 
-                                    // We don't await this inside the loop to avoid blocking Meta's strict 200 OK timeout.
-                                    // Process AI request asynchronously.
-                                    processAIWhatsAppMessage(msg.from, msg.text.body).catch(e => {
+                                    // In Vercel serverless, we MUST await this, otherwise the lambda freezes immediately after returning 200 OK!
+                                    await processAIWhatsAppMessage(msg.from, msg.text.body).catch(e => {
                                         console.error('Failed to process WhatsApp AI message:', e);
                                     });
                                 }

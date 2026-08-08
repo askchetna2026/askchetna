@@ -458,6 +458,9 @@ export default function DashboardPage() {
         returnTo: '/dashboard',
     });
 
+    const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '12514876747';
+    const whatsappLink = `https://wa.me/${whatsappNumber}?text=Hi%20Chetna!`;
+
     return (
         <div className={styles.profileContainer}>
             <div className={styles.pageTitleBlock}>
@@ -629,6 +632,15 @@ export default function DashboardPage() {
                                     <Link href="/clarity" className="primary-btn-cosmic text-sm">
                                         <Sparkles size={16} /> Ask AI Astrologer
                                     </Link>
+                                    <a 
+                                        href={whatsappLink} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer" 
+                                        className="primary-btn-cosmic text-sm"
+                                        style={{ background: 'linear-gradient(to right, #25D366, #128C7E)', border: 'none' }}
+                                    >
+                                        <MessageSquare size={16} /> Chat on WhatsApp
+                                    </a>
                                     {PAYMENTS_ENABLED && (
                                         <Link href={dashboardTopUpUrl} className="secondary-btn-cosmic text-sm">
                                             <CreditCard size={16} /> Top Up Credits

@@ -822,11 +822,30 @@ export default function ChartPageContent() {
 
                                             if (res.ok) {
                                                 const blob = await res.blob();
-                                                const url = window.URL.createObjectURL(blob);
-                                                const a = document.createElement('a');
-                                                a.href = url;
-                                                a.download = `Chetna_Report_${activeChart}_${profile.name.replace(/\s+/g, '_')}.pdf`;
-                                                a.click();
+                                                const filename = `Chetna_Report_${activeChart}_${profile.name.replace(/\s+/g, '_')}.pdf`;
+                                                
+                                                const { isClientNativeApp } = await import('@/lib/platform');
+                                                if (isClientNativeApp()) {
+                                                    const { shareContent } = await import('@/lib/native/share');
+                                                    const outcome = await shareContent({
+                                                        title: 'Chetna Chart Report',
+                                                        text: 'Here is your Chetna Chart Report.',
+                                                        file: { blob, name: filename }
+                                                    });
+                                                    
+                                                    if (outcome === 'failed') {
+                                                        alert('Failed to save or share PDF');
+                                                    }
+                                                } else {
+                                                    const url = window.URL.createObjectURL(blob);
+                                                    const a = document.createElement('a');
+                                                    a.href = url;
+                                                    a.download = filename;
+                                                    document.body.appendChild(a);
+                                                    a.click();
+                                                    document.body.removeChild(a);
+                                                    window.URL.revokeObjectURL(url);
+                                                }
                                             } else {
                                                 alert('Failed to generate PDF');
                                             }

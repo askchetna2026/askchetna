@@ -188,14 +188,29 @@ export default function ClarityPageContent() {
 
             if (res.ok) {
                 const blob = await res.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `Chetna_Clarity_Report.pdf`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                window.URL.revokeObjectURL(url);
+                
+                const { isClientNativeApp } = await import('@/lib/platform');
+                if (isClientNativeApp()) {
+                    const { shareContent } = await import('@/lib/native/share');
+                    const outcome = await shareContent({
+                        title: 'Chetna Clarity Report',
+                        text: 'Here is your Chetna Clarity Report.',
+                        file: { blob, name: 'Chetna_Clarity_Report.pdf' }
+                    });
+                    
+                    if (outcome === 'failed') {
+                        alert('Failed to save or share PDF');
+                    }
+                } else {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `Chetna_Clarity_Report.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                }
             } else {
                 alert('Failed to generate PDF');
             }

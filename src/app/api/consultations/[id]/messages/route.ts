@@ -172,6 +172,17 @@ export async function POST(
     try {
         const { generateConsultationReply } = await import('@/lib/ai/geminiService');
 
+        // Fetch user's active profile to provide context to AI
+        const profile = await prisma.profile.findFirst({
+            where: { userId: session.user.id, isActive: true },
+            orderBy: { createdAt: 'desc' }
+        });
+        
+        let profileContext = '';
+        if (profile) {
+            profileContext = `\n\nUser Profile Context:\nName: ${profile.name}\nDate of Birth: ${profile.dateOfBirth ? profile.dateOfBirth.toISOString().split('T')[0] : 'Unknown'}\nTime of Birth: ${profile.timeOfBirth || 'Unknown'}\nPlace of Birth: ${profile.placeOfBirth || 'Unknown'}\nPlease use this information implicitly when giving readings, do not ask the user for these details if they are provided here.`;
+        }
+
         const history = await prisma.consultationMessage.findMany({
             where: { consultationId: id, id: { not: message.id } },
             orderBy: { sentAt: 'desc' },
@@ -181,8 +192,8 @@ export async function POST(
 
         const generated = await generateConsultationReply({
             persona:
-                astrologer.aiSystemPrompt?.trim() ||
-                `You are ${astrologer.displayName}, an astrologer on AskChetna.`,
+                (astrologer.aiSystemPrompt?.trim() ||
+                `You are ${astrologer.displayName}, an astrologer on AskChetna.`) + profileContext,
             history: history
                 .reverse()
                 .map((m) => ({

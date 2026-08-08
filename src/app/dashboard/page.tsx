@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import styles from './page.module.css';
-import { CreditCard, UserCircle, ChevronRight, Trash2, Crown, Download, FileText, PlusCircle, Zap, Sparkles, MapPin, Clock, Trash, CheckSquare, Square, Info, Settings } from 'lucide-react';
+import { CreditCard, UserCircle, ChevronRight, MessageSquare, Trash2, Crown, Download, FileText, PlusCircle, Zap, Sparkles, MapPin, Clock, Trash, CheckSquare, Square, Info, Settings } from 'lucide-react';
 import WhatsAppIcon from '@/components/WhatsAppIcon';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import AstrologerHome from '@/components/consultations/AstrologerHome';

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import BirthDataForm, { UserProfile } from '@/components/BirthDataForm';
 import ChartDisplay from '@/components/ChartDisplay';
@@ -64,13 +64,25 @@ export default function ChartPageContent() {
     const [isExporting, setIsExporting] = useState(false);
     const [aiInsights, setAiInsights] = useState<Record<string, Record<string, string>>>({});
     const [isFetchingAi, setIsFetchingAi] = useState(false);
+    /** Profiles the varga backfill has already run for, once per page load. */
+    const backfilledProfileIds = useRef<Set<string>>(new Set());
 
-    // Fetch all active profiles on mount
+    // The single profile load for this page.
+    //
+    // There used to be a second one — GET /api/user/profile — running in
+    // parallel, and both wrote `profile`. They resolve to the same row in the
+    // ordinary case (both take the newest active profile), so the duplicate
+    // request was mostly invisible; it stopped being invisible when the two
+    // disagreed, because whichever landed second won, and a profile without
+    // vargas landing second re-armed the backfill below.
     useEffect(() => {
-        if (session?.user) {
-            fetchActiveProfiles();
+        if (status === 'loading') return;
+        if (status === 'unauthenticated') {
+            setLoading(false);
+            return;
         }
-    }, [session]);
+        fetchActiveProfiles();
+    }, [status]);
 
     const fetchActiveProfiles = async () => {
         try {
@@ -160,11 +172,20 @@ export default function ChartPageContent() {
         }
     };
 
-    // Auto-sync for legacy profiles
+    // Auto-sync for legacy profiles.
+    //
+    // Guarded by profile id: this effect depends on `profile`, which the
+    // backfill itself replaces, so an attempt that does not produce vargas
+    // would otherwise re-trigger it forever — recalculating on every render
+    // pass for as long as the page is open.
     useEffect(() => {
-        if (profile && !profile.chartData?.vargas && !initializing && !loading) {
-            handleInitializeVargas();
-        }
+        // No id means nothing to PATCH against, so there is no backfill to do.
+        if (!profile?.id || loading || initializing) return;
+        if (profile.chartData?.vargas) return;
+        if (backfilledProfileIds.current.has(profile.id)) return;
+
+        backfilledProfileIds.current.add(profile.id);
+        handleInitializeVargas();
     }, [profile, initializing, loading]);
 
     // Reset AI insights when switching profiles to prevent data leakage
@@ -174,34 +195,6 @@ export default function ChartPageContent() {
             setActiveChart(null);
         }
     }, [profile?.id]);
-
-    // Initial Profile Fetch
-    useEffect(() => {
-        async function fetchProfile() {
-            if (status === 'loading') return;
-            if (status === 'unauthenticated') {
-                setLoading(false);
-                return;
-            }
-
-            try {
-                const res = await fetch('/api/user/profile');
-                if (res.ok) {
-                    const data = await res.json();
-                    setProfile({
-                        ...data,
-                        dateOfBirth: new Date(data.dateOfBirth),
-                        chartData: data.chartData as ChartData
-                    });
-                }
-            } catch (error) {
-                console.error('Failed to load profile:', error);
-            } finally {
-                setLoading(false);
-            }
-        }
-        fetchProfile();
-    }, [status]);
 
 
     const handleUnlockChart = (chartKey: string) => {
@@ -271,20 +264,19 @@ export default function ChartPageContent() {
             if (!calcRes.ok) throw new Error('Calculation failed');
             const fullData = await calcRes.json();
 
-            const saveRes = await fetch('/api/profiles', {
-                method: 'POST',
+            // PATCH, not POST. This backfills a chart onto an existing profile;
+            // POST /api/profiles creates, so every run used to leave behind a
+            // duplicate profile and, at the limit, deactivate the oldest one.
+            // Only the chart is sent — the birth details it was derived from
+            // are the ones already on the row.
+            const saveRes = await fetch(`/api/profiles/${profile.id}`, {
+                method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    ...profile,
-                    dateOfBirth: profile.dateOfBirth,
-                    chartData: fullData,
-                    isActive: true
-                })
+                body: JSON.stringify({ chartData: fullData })
             });
 
-            if (saveRes.ok) {
-                setProfile({ ...profile, chartData: fullData });
-            }
+            if (!saveRes.ok) throw new Error('Failed to save the recalculated chart');
+            setProfile({ ...profile, chartData: fullData });
         } catch (error) {
             console.error('Initialization failed:', error);
             alert('Could not synchronize your advanced charts. Please try updating your birth details manually.');

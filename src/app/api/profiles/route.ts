@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
+import { prepareChartForStorage } from '@/lib/astrology/chartStorage';
 
 type CreateProfileRequestBody = {
     name?: string;
@@ -112,7 +113,7 @@ export async function POST(req: NextRequest) {
                 longitude,
                 timezone: timezone || 'UTC',
                 gender,
-                chartData: chartData ?? {},
+                chartData: prepareChartForStorage(chartData),
                 isActive: true,
             },
         });

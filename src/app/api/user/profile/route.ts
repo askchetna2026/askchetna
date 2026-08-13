@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
+import { prepareChartForStorage } from '@/lib/astrology/chartStorage';
 
 export async function GET(req: NextRequest) {
     try {
@@ -73,7 +74,10 @@ export async function POST(req: NextRequest) {
                     longitude,
                     gender,
                     timezone: 'IST', // Assuming IST for now given Indian Cities focus, or calculate later
-                    chartData: chartData || existingProfile.chartData
+                    // Runs over the retained chart too, not just an incoming
+                    // one, so a profile saved through here sheds any legacy
+                    // `transits`/deep-dasha bloat it was still carrying.
+                    chartData: prepareChartForStorage(chartData || existingProfile.chartData)
                 } as any
             });
         } else {
@@ -89,7 +93,7 @@ export async function POST(req: NextRequest) {
                     longitude,
                     gender,
                     timezone: 'IST',
-                    chartData: chartData || {}
+                    chartData: prepareChartForStorage(chartData)
                 } as any
             });
         }

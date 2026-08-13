@@ -543,9 +543,16 @@ export async function calculateChart(
             houses: moonHouses
         };
 
-        // Calculate Vimsottari Dashas
+        // Calculate Vimsottari Dashas.
+        //
+        // Antardasha depth only (see DASHA_DEPTH_STORED). A full chart is what
+        // gets written to Profile.chartData, and the deeper levels are a
+        // 9^4 tree — measured at 7.5MB of JSON per profile, ~95% of the row,
+        // for data nothing reads from storage. The timing page needs the deeper
+        // levels, and gets them live from /api/astrology/dashas, which calls
+        // calculateVimsottariDashas directly at full depth.
         const birthDateObj = new Date(year, month - 1, day, Math.floor(hour), Math.floor((hour % 1) * 60));
-        const dashas = calculateVimsottariDashas(moonLong, birthDateObj);
+        const dashas = calculateVimsottariDashas(moonLong, birthDateObj, DASHA_DEPTH_STORED);
 
         return {
             planets,
@@ -594,7 +601,24 @@ export function getNakshatra(longitude: number): { name: string, index: number, 
     };
 }
 
-export function calculateVimsottariDashas(moonLong: number, birthDate: Date) {
+/**
+ * How deep a dasha tree to build when the result is going to be *stored*.
+ *
+ * 1 = mahadasha -> antardasha. Every consumer that reads dashas out of
+ * Profile.chartData (ShareChartCard, /api/journal/analyze) stops at antardasha;
+ * each level below multiplies the JSON by 9 and is written once, read never.
+ */
+export const DASHA_DEPTH_STORED = 1;
+
+/** Mahadasha -> antardasha -> pratyantar -> sookshma, for live responses. */
+export const DASHA_DEPTH_FULL = 3;
+
+/**
+ * @param maxLevel How many levels below mahadasha to build. Defaults to the
+ *   full tree, so live callers keep the depth the timing page renders; storage
+ *   paths pass DASHA_DEPTH_STORED.
+ */
+export function calculateVimsottariDashas(moonLong: number, birthDate: Date, maxLevel: number = DASHA_DEPTH_FULL) {
     const nak = getNakshatra(moonLong);
     const nakSize = 360 / 27;
     const lordYears = DASHA_YEARS[nak.lord];
@@ -616,7 +640,7 @@ export function calculateVimsottariDashas(moonLong: number, birthDate: Date) {
     // Find index of starting lord in sequence
     let lordIdx = NAKSHATRA_LORDS.indexOf(nak.lord);
 
-    const calculateSubPeriods = (mLord: string, mStart: Date, mEnd: Date, level: number = 1, maxLevel: number = 3): any[] => {
+    const calculateSubPeriods = (mLord: string, mStart: Date, mEnd: Date, level: number = 1): any[] => {
         const subPeriods = [];
         let subStart = new Date(mStart);
         let subLordIdx = NAKSHATRA_LORDS.indexOf(mLord);
@@ -639,7 +663,8 @@ export function calculateVimsottariDashas(moonLong: number, birthDate: Date) {
                 isCurrent: false
             };
 
-            // Recursive call for next levels up to maxLevel (Default 3: Pratyantar)
+            // Recursive call for next levels up to maxLevel (closed over from
+            // the caller): 1 stops at antardasha, 3 reaches sookshma.
             if (level < maxLevel) {
                 const subKey = level === 1 ? 'pratyantarDashas' :
                     level === 2 ? 'sookshmaDashas' :

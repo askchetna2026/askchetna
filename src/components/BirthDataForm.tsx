@@ -194,20 +194,13 @@ export default function BirthDataForm({ onChartGenerated, initialData }: BirthDa
 
             // 4. Save User Profile (Mandatory)
             if (session?.user) {
-                // Optimize payload: Remove deep Dashas for storage (keep only 2 levels)
-                // This prevents "Unterminated string in JSON" errors and DB size bloat
-                const sanitizedChart = { ...chartResult };
-                if (sanitizedChart.dashas) {
-                    sanitizedChart.dashas = sanitizedChart.dashas.map((mahadasha: any) => ({
-                        ...mahadasha,
-                        antardashas: mahadasha.antardashas?.map((antardasha: any) => ({
-                            ...antardasha,
-                            // Strip anything deeper than Antardasha (Pratyantar, Sookshma, Prana)
-                            pratyantarDashas: undefined
-                        }))
-                    }));
-                }
-
+                // The chart is stored as it arrives. This used to trim the deep
+                // dasha levels here, which fixed the size of the one key this
+                // form knew about and missed the `transits` subtree that was
+                // most of the payload. Depth is now decided where the chart is
+                // built (DASHA_DEPTH_STORED), and the profile API strips
+                // anything unstorable, so there is nothing left to patch up
+                // client-side.
                 const saveRes = await fetch('/api/profiles', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -219,7 +212,7 @@ export default function BirthDataForm({ onChartGenerated, initialData }: BirthDa
                         gender: formData.gender,
                         latitude: lat,
                         longitude: lng,
-                        chartData: sanitizedChart
+                        chartData: chartResult
                     }),
                 });
 

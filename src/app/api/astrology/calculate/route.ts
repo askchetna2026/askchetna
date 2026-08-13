@@ -39,7 +39,18 @@ export async function POST(req: NextRequest) {
         // For simplicity, let's assume body includes 'timezone' and handles UTC conversion
         const decimalHour = hour + (minute / 60);
 
-        // 1. Calculate Birth Chart
+        // Birth chart only.
+        //
+        // This used to also compute a transit chart for "now" and return it as
+        // `transits`. Both callers (BirthDataForm, ChartPageContent) write the
+        // whole response straight into Profile.chartData, so that snapshot was
+        // persisted — stale the moment it was written, never read by anything,
+        // and 95% of the stored row: a full transit chart carries its own 17
+        // vargas and its own dasha tree. Transits are time-dependent by
+        // definition and are served live from /api/astrology/transit(s).
+        //
+        // Dropping it also halves the work this endpoint does, which is on the
+        // critical path of creating a profile.
         const chartData = await calculateChart(
             parseInt(year),
             parseInt(month),
@@ -50,24 +61,7 @@ export async function POST(req: NextRequest) {
             timezone ? parseFloat(timezone) : 5.5
         );
 
-        // 2. Calculate Transit Chart (Current Moments)
-        const now = new Date();
-        const tYear = now.getFullYear();
-        const tMonth = now.getMonth() + 1;
-        const tDay = now.getDate();
-        const tHour = now.getHours() + (now.getMinutes() / 60);
-
-        const transitData = await calculateChart(
-            tYear,
-            tMonth,
-            tDay,
-            tHour,
-            parseFloat(lat),
-            parseFloat(lng),
-            timezone ? parseFloat(timezone) : 5.5 // Use same timezone
-        );
-
-        return NextResponse.json({ ...chartData, transits: transitData });
+        return NextResponse.json(chartData);
     } catch (error) {
         console.error('Calculation error:', error);
         // Standard error logging

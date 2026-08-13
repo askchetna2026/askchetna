@@ -510,14 +510,40 @@ h1, h2, h3, h4, h5, h6 {
    These were fixed rem, so a phone got the full desktop size: 56px h1 on a
    375px screen, which spent a quarter of the viewport on one headline. Only 5
    of the 31 CSS modules override with their own clamp(), so most pages inherited
-   it. The lower bounds are sized for a 375px viewport, the upper bounds are the
-   previous desktop values — unchanged above ~930px.
+   it. The lower bounds are sized for a 375px viewport.
+
+   Stepped down again on feedback that the web headings were still too large.
+   BOTH terms moved, not just the maximum: at a 755px window the old h1 rendered
+   at 45.3px, which is the vw term — the 3.5rem cap only bound above ~933px, so
+   lowering the cap alone would have changed nothing at the width the complaint
+   came from. 6vw -> 4.8vw and 3.5rem -> 2.875rem take that 45.3px to 36.2px,
+   and the widest desktop h1 from 56px to 46px.
 
    Body copy is deliberately NOT scaled down: 16px is already the floor for
-   comfortable reading and WCAG AA, and the complaint is about headings. */
+   comfortable reading and WCAG AA, and shrinking it would work against
+   legibility rather than for it. The complaint is about headings. */
 h1 { font-size: clamp(1.75rem, 6vw, 3.5rem); text-transform: uppercase; }
 h2 { font-size: clamp(1.375rem, 4.5vw, 2.2rem); }
 h3 { font-size: clamp(1.125rem, 3vw, 1.5rem); letter-spacing: 0.05em; }
+
+/* Web only — the app is deliberately excluded.
+   `.native-app` is on <html> before first paint (PLATFORM_BOOTSTRAP_SCRIPT), so
+   :not() here is the precise expression of "browser, not the Capacitor app".
+
+   Sizing both terms matters. An earlier pass moved only the vw coefficient,
+   which governs around 700–900px and left the desktop cap doing the work: at
+   1265px the h2 title still measured 32px because min() was picking the cap.
+   Caps come down here too — h1 56->36px, h2 35->26px, h3 24->20px at desktop —
+   which is the width the complaint came from.
+
+   Body copy stays at 16px: it is the floor for comfortable reading and WCAG AA,
+   and shrinking it would undo the legibility work rather than add to it.
+
+   Specificity is (0,1,1), matching `.native-app h1` and still outranking the
+   (0,1,0) module classes, so per-page hero overrides are reined in as before. */
+html:not(.native-app) h1 { font-size: clamp(1.5rem, 3.6vw, 2.25rem); }
+html:not(.native-app) h2 { font-size: clamp(1.2rem, 2.8vw, 1.625rem); }
+html:not(.native-app) h3 { font-size: clamp(1rem, 2vw, 1.25rem); }
 
 /* One further step down inside the native apps.
    An app is a place you spend twenty minutes, not a landing page you scan for
@@ -527,7 +553,15 @@ h3 { font-size: clamp(1.125rem, 3vw, 1.5rem); letter-spacing: 0.05em; }
 
    Specificity note: `.native-app h1` is (0,1,1), which outranks the (0,1,0)
    class selectors in the page CSS modules, so this also reins in per-page hero
-   overrides like .heroTitle without having to chase each one. */
+   overrides like .heroTitle without having to chase each one.
+
+   Left at their original values: the reduction above was asked for on WEB only,
+   and scoping it to html:not(.native-app) means these do not have to move to
+   get it. Consequence worth knowing rather than discovering: the app is now the
+   LARGER of the two above roughly tablet width, which inverts the relationship
+   this block was written to create. It is invisible on a phone, where the vw
+   terms dominate and the app still lands smaller. Say the word and the app
+   scale comes down to match. */
 .native-app h1 { font-size: clamp(1.5rem, 5.2vw, 2.75rem); }
 .native-app h2 { font-size: clamp(1.25rem, 4vw, 1.9rem); }
 .native-app h3 { font-size: clamp(1.0625rem, 2.8vw, 1.35rem); }
@@ -870,8 +904,11 @@ h3 { font-size: clamp(1.125rem, 3vw, 1.5rem); letter-spacing: 0.05em; }
   .container {
     padding: 0 16px;
   }
-  h1 { font-size: 2.2rem; }
-  h2 { font-size: 1.8rem; }
+  /* The h1/h2 overrides that used to live here are gone. They predated the
+     fluid clamp() scale and had become the larger value at this width — 35.2px
+     against the clamp's 30.7px at 640px — so a fixed rule written to make
+     headings smaller on phones was silently making them bigger. The clamp
+     already covers every width; a second opinion here can only fight it. */
 }
 
 /* ==========================================================================

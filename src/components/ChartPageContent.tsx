@@ -3,7 +3,7 @@
 import Link from 'next/link';
 
 import { useState, useEffect, useRef, Suspense } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import BirthDataForm, { UserProfile } from '@/components/BirthDataForm';
 import ChartDisplay from '@/components/ChartDisplay';
 import DashaDisplay from '@/components/DashaDisplay';
@@ -68,6 +68,8 @@ export default function ChartPageContent() {
     const [isFetchingAi, setIsFetchingAi] = useState(false);
     /** Profiles the varga backfill has already run for, once per page load. */
     const backfilledProfileIds = useRef<Set<string>>(new Set());
+    /** Honours the OS "reduce motion" setting for the header entrance. */
+    const reduceMotion = useReducedMotion();
 
     // The single profile load for this page.
     //
@@ -443,7 +445,16 @@ export default function ChartPageContent() {
 
     return (
         <div className={`container ${styles.pageContainer}`}>
-            <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
+            {/* The varga cards below animate in, but the header did not, so
+                opening /chart the page's whole top half simply appeared. The
+                cards' own entrance is easy to miss because it happens while the
+                eye is still on the header. */}
+            <motion.div
+                className="flex flex-col md:flex-row justify-between items-end mb-8 gap-4"
+                initial={reduceMotion ? false : { opacity: 0, y: -12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.45, ease: [0.23, 1, 0.32, 1] }}
+            >
                 <div className="text-left w-full">
                     <span className="cosmic-label mb-2 inline-block">Varga Portfolio · Divisional Insights</span>
                     {profile && (
@@ -553,7 +564,7 @@ export default function ChartPageContent() {
                 </Link>
 
                 {profile?.chartData && <ShareChartCard profile={profile} />}
-            </div>
+            </motion.div>
 
             {!hasVargas && (
                 <div className={`${styles.initializeSection} sacred-card`}>

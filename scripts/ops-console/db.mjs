@@ -780,12 +780,9 @@ export async function backfillPhotoUrls(file, onProgress) {
  * agree. A backup nobody verified is a backup nobody has.
  */
 export async function backupTo({ sourceFile, destFile, onProgress }) {
-    onProgress?.({ message: `Checking the shape of ${destFile}…` });
-    const built = await ensureStructure(destFile, onProgress);
-    if (!built.ok) {
-        throw new Error(`${built.error} Nothing was copied into ${destFile}.`);
-    }
-
+    // The structure check lives in copyAll now, so both this and the plain
+    // "Replace data" path get it — and get the same one, rather than this being
+    // the only route that looked.
     onProgress?.({ message: `Copying ${sourceFile} → ${destFile}…` });
     const report = await copyAll({ sourceFile, destFile, onProgress });
 
@@ -1132,21 +1129,57 @@ async function isEmptyDatabase(file) {
  * correct for a backup: what is wanted there is the shape of the data, not the
  * story of how the shape came about.
  */
-export async function ensureStructure(file, onProgress) {
+export async function ensureStructure(file, onProgress, referenceFile = null) {
     const { models } = readSchema();
     const present = await describeStructure(file);
-    const missing = models.filter((m) => !present.has(m.table)).map((m) => m.table);
+    const missingTables = models.filter((m) => !present.has(m.table)).map((m) => m.table);
 
-    if (missing.length === 0) {
-        onProgress?.({ message: `${file} already has all ${models.length} tables.` });
+    // Columns drift too, and a table-level check cannot see it.
+    //
+    // This is the failure that sent someone here: `.env.backup1` held all 33
+    // tables but an older User, so the check passed, no push ran, and the copy
+    // then tried to insert `whatsappOptIn` into a table without that column.
+    // "All tables present" is not the same as "will accept the source's rows".
+    //
+    // The reference is the SOURCE database — the rows about to be copied are
+    // the thing the destination has to be able to hold. The repair is still
+    // schema.prisma (via db push), which is a superset of both in practice.
+    const missingColumns = [];
+    if (referenceFile) {
+        const reference = await describeStructure(referenceFile);
+        for (const m of models) {
+            const here = present.get(m.table);
+            const there = reference.get(m.table);
+            if (!here || !there) continue; // a missing table is already covered above
+            for (const col of there.keys()) {
+                if (!here.has(col)) missingColumns.push(`${m.table}.${col}`);
+            }
+        }
+    }
+
+    if (missingTables.length === 0 && missingColumns.length === 0) {
+        onProgress?.({
+            message: `${file} already has all ${models.length} tables` +
+                (referenceFile ? `, and every column ${referenceFile} has.` : '.'),
+        });
         return { ok: true, method: 'none' };
     }
 
-    onProgress?.({
-        message: `${file} is missing ${missing.length} of ${models.length} tables. ` +
-            `Building from schema.prisma — the migration history cannot replay onto an ` +
-            `empty database, because it was baselined onto one that already existed.`,
-    });
+    if (missingTables.length) {
+        onProgress?.({
+            message: `${file} is missing ${missingTables.length} of ${models.length} tables. ` +
+                `Building from schema.prisma — the migration history cannot replay onto an ` +
+                `empty database, because it was baselined onto one that already existed.`,
+        });
+    }
+    if (missingColumns.length) {
+        onProgress?.({
+            message: `${file} has every table but is missing ${missingColumns.length} column(s) ` +
+                `that ${referenceFile} has: ${missingColumns.slice(0, 8).join(', ')}` +
+                `${missingColumns.length > 8 ? `, and ${missingColumns.length - 8} more` : ''}. ` +
+                `Bringing it up to schema.prisma before any row is copied.`,
+        });
+    }
 
     // A half-built database refuses changes it considers destructive — adding
     // the unique index on `User.phone`, for instance, because duplicates would
@@ -1172,18 +1205,30 @@ export async function ensureStructure(file, onProgress) {
         };
     }
 
-    // Trust nothing: confirm the tables are actually there before anything is
-    // copied into them.
+    // Trust nothing: confirm the structure is actually there before anything is
+    // copied into it. Re-checks COLUMNS as well as tables — verifying only what
+    // the old check looked at would report success for exactly the drift this
+    // function was just extended to repair.
     const after = await describeStructure(file);
-    const stillMissing = models.filter((m) => !after.has(m.table)).map((m) => m.table);
-    if (stillMissing.length) {
+    const stillMissingTables = models.filter((m) => !after.has(m.table)).map((m) => m.table);
+    const stillMissingColumns = missingColumns.filter((qualified) => {
+        const [table, col] = qualified.split(/\.(.*)/s);
+        return !after.get(table)?.has(col);
+    });
+
+    if (stillMissingTables.length || stillMissingColumns.length) {
         return {
-            ok: false, method: 'db push',
-            error: `Still missing after the push: ${stillMissing.join(', ')}`,
+            ok: false,
+            method: 'db push',
+            error: 'Still missing after the push: ' +
+                [...stillMissingTables, ...stillMissingColumns].join(', '),
         };
     }
 
-    onProgress?.({ message: `All ${models.length} tables present in ${file}.` });
+    onProgress?.({
+        message: `All ${models.length} tables present in ${file}` +
+            (missingColumns.length ? `, and the ${missingColumns.length} missing column(s) were added.` : '.'),
+    });
     return { ok: true, method: 'db push' };
 }
 
@@ -1209,6 +1254,23 @@ export async function ensureStructure(file, onProgress) {
  */
 export async function copyAll({ sourceFile, destFile, onProgress, dryRun = false }) {
     const { models } = readSchema();
+
+    // Repair the destination's shape BEFORE touching its data.
+    //
+    // "Replace data" reached this function directly and never checked structure
+    // at all, so a destination one migration behind the source failed partway
+    // through the copy — after the truncate had already emptied it. Only the
+    // backup path checked, and only for whole missing tables.
+    //
+    // A dry run is exempt: it writes nothing, and pushing schema changes to
+    // answer a question nobody committed to would be a surprise.
+    if (!dryRun) {
+        const built = await ensureStructure(destFile, onProgress, sourceFile);
+        if (!built.ok) {
+            throw new Error(`${built.error} Nothing was copied into ${destFile}.`);
+        }
+    }
+
     const source = clientFor(sourceFile);
     const dest = clientFor(destFile);
     const report = [];

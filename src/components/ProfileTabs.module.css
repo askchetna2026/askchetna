@@ -55,12 +55,14 @@
     background: var(--btn-bg);
     border-color: var(--accent-gold);
     color: var(--btn-fg);
-    /* Dark text for better contrast on gold */
     font-weight: 600;
 }
 
+/* Was rgba(26,26,26,.8) — near-black, left over from when the active tab was a
+   gold fill and dark text was right. The fill is kumkum red now, so the date
+   sat at 1.68:1 directly under a label that was already light. 6.87:1. */
 .tab.active .tabDate {
-    color: rgba(26, 26, 26, 0.8);
+    color: rgba(251, 246, 232, 0.85);
 }
 
 .tabName {
@@ -98,10 +100,12 @@
     align-items: center;
     gap: 6px;
     padding: 10px 16px;
-    border: 1px solid rgba(255, 193, 7, 0.4);
+    border: 1px solid rgba(181, 137, 46, 0.55);
     border-radius: var(--radius-md);
-    background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 152, 0, 0.1));
-    color: #ff9800;
+    background: linear-gradient(135deg, rgba(181, 137, 46, 0.14), rgba(122, 44, 18, 0.10));
+    /* Was #ff9800 on its own pale amber wash — 1.27:1, the least readable
+       control on the page. Gold ink on the same wash is 5.84:1. */
+    color: var(--accent-gold);
     cursor: pointer;
     transition: all 0.2s ease;
     font-weight: 600;
@@ -109,8 +113,8 @@
 }
 
 .upgradeTab:hover {
-    background: linear-gradient(135deg, rgba(255, 193, 7, 0.2), rgba(255, 152, 0, 0.2));
-    border-color: #ff9800;
+    background: linear-gradient(135deg, rgba(181, 137, 46, 0.24), rgba(122, 44, 18, 0.18));
+    border-color: var(--accent-gold);
     transform: translateY(-2px);
 }
 

@@ -366,8 +366,8 @@ export default function ChartDisplay({ data, isMoonChart, width = '100%', height
                         fontSize: '10px',
                         padding: '5px 12px',
                         borderRadius: '100px',
-                        background: language === 'en' ? 'var(--accent-gold)' : 'rgba(255,255,255,0.05)',
-                        color: language === 'en' ? '#000' : 'var(--secondary)',
+                        background: language === 'en' ? 'var(--accent-gold)' : 'var(--bg-soft)',
+                        color: language === 'en' ? 'var(--btn-fg)' : 'var(--secondary)',
                         border: '1px solid ' + (language === 'en' ? 'var(--accent-gold)' : 'var(--card-border)'),
                         cursor: 'pointer',
                         fontWeight: '800',
@@ -381,8 +381,8 @@ export default function ChartDisplay({ data, isMoonChart, width = '100%', height
                         fontSize: '10px',
                         padding: '5px 12px',
                         borderRadius: '100px',
-                        background: language === 'hi' ? 'var(--accent-gold)' : 'rgba(255,255,255,0.05)',
-                        color: language === 'hi' ? '#000' : 'var(--secondary)',
+                        background: language === 'hi' ? 'var(--accent-gold)' : 'var(--bg-soft)',
+                        color: language === 'hi' ? 'var(--btn-fg)' : 'var(--secondary)',
                         border: '1px solid ' + (language === 'hi' ? 'var(--accent-gold)' : 'var(--card-border)'),
                         cursor: 'pointer',
                         fontWeight: '800',
@@ -401,13 +401,21 @@ export default function ChartDisplay({ data, isMoonChart, width = '100%', height
             }}>
                 <svg viewBox="-10 -10 420 420" style={{ width: '100%', height: typeof height === 'number' ? `${height}px` : height, background: 'transparent', overflow: 'visible' }}>
                     <defs>
+                        {/* --nebula-purple and --nebula-gold were never defined
+                            anywhere in the codebase. An invalid var() in
+                            stop-color falls back to black, so selecting a house
+                            filled it with a black gradient. */}
                         <linearGradient id="activeHouseGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stopColor="var(--nebula-purple)" />
-                            <stop offset="100%" stopColor="var(--nebula-gold)" />
+                            <stop offset="0%" stopColor="rgba(181, 137, 46, 0.30)" />
+                            <stop offset="100%" stopColor="rgba(181, 137, 46, 0.12)" />
                         </linearGradient>
+                        {/* Was iris-over-navy — a dark-theme wash that read as
+                            correct depth on the old indigo page and as a grey
+                            smear over parchment. The sheet shows through now;
+                            the house is a tint of the paper, not a panel on it. */}
                         <radialGradient id="houseGlow" cx="50%" cy="50%" r="50%">
-                            <stop offset="0%" stopColor="rgba(74, 47, 168, 0.2)" />
-                            <stop offset="100%" stopColor="rgba(18, 22, 64, 0.3)" />
+                            <stop offset="0%" stopColor="rgba(181, 137, 46, 0.07)" />
+                            <stop offset="100%" stopColor="rgba(122, 44, 18, 0.06)" />
                         </radialGradient>
                         <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
                             <feGaussianBlur stdDeviation="3" result="blur" />
@@ -430,7 +438,15 @@ export default function ChartDisplay({ data, isMoonChart, width = '100%', height
                                 key={`bg-${house.num}`}
                                 d={house.path}
                                 fill={isActive ? 'url(#activeHouseGradient)' : 'url(#houseGlow)'}
-                                stroke={isActive ? 'var(--accent-gold)' : 'var(--brand-secondary)'}
+                                /* Iris (--brand-secondary) was the cosmic
+                                   theme's line colour — legible at 5.26:1, but
+                                   from the retired palette. Gold ink at 5.60:1
+                                   reads as ruling on a manuscript; coral marks
+                                   the selected house. --accent-gold-decor was
+                                   the obvious choice and is wrong: 1.81:1 is
+                                   ornament contrast, and these rulings carry
+                                   the chart's structure. */
+                                stroke={isActive ? 'var(--accent-coral)' : 'var(--accent-gold)'}
                                 strokeWidth={isActive ? "2" : "1"}
 
                                 onClick={() => setActiveHouse(house.num)}
@@ -488,9 +504,11 @@ export default function ChartDisplay({ data, isMoonChart, width = '100%', height
                                     x={house.textX + (house.num === 1 ? 0 : [2, 12, 11, 10, 9, 8].includes(house.num) ? 40 : -40)}
                                     y={house.textY + ([1, 2, 12, 11, 3, 10].includes(house.num) ? -40 : 40)}
                                     textAnchor="middle"
-                                    fontSize="8"
-                                    fill="rgba(244, 232, 209, 0.5)"
-                                    opacity="0.8"
+                                    fontSize="10"
+                                    /* Was cream at 50% alpha — a dark-theme
+                                       value that measured near 1:1 on paper. */
+                                    fill="var(--text-muted)"
+                                    opacity="0.9"
                                     fontWeight="600"
                                     fontFamily="var(--font-main)"
                                     letterSpacing="1"

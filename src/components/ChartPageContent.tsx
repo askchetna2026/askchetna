@@ -10,7 +10,9 @@ import DashaDisplay from '@/components/DashaDisplay';
 import ProfileTabs from '@/components/ProfileTabs';
 // import ProfileDrawer from '@/components/ProfileDrawer'; // Moved to global context
 // import ProfileLimitModal from '@/components/ProfileLimitModal'; // Moved to global context
-import { ChartData, getZodiacSign, getNakshatra } from '@/lib/astrology/calculator';
+// From './zodiac', never './calculator' — the latter carries the 16.8 MB
+// ephemeris into the browser bundle. See the header of zodiac.ts.
+import { ChartData, getZodiacSign, getNakshatra } from '@/lib/astrology/zodiac';
 import {
     PLANET_SORT_ORDER,
     SIGN_LORDS,

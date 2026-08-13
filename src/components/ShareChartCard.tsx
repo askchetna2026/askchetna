@@ -3,7 +3,7 @@
 import { useRef, useState } from 'react';
 import { Share2, Loader2 } from 'lucide-react';
 import html2canvas from 'html2canvas';
-import { getZodiacSign } from '@/lib/astrology/calculator';
+import { getZodiacSign } from '@/lib/astrology/zodiac';
 import type { UserProfile } from '@/components/BirthDataForm';
 import styles from './ShareChartCard.module.css';
 

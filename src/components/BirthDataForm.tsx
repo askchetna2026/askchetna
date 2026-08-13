@@ -2,7 +2,7 @@
 
 import { useState, useEffect, FormEvent, useRef } from 'react';
 import { useSession } from 'next-auth/react';
-import { ChartData } from '@/lib/astrology/calculator';
+import type { ChartData } from '@/lib/astrology/zodiac';
 import { INDIAN_CITIES } from '@/lib/indianCities';
 import ConfirmDialog from './ConfirmDialog';
 import { useProfile } from '@/context/ProfileContext';

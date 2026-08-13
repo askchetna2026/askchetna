@@ -1,4 +1,30 @@
 import SwissEph from 'swisseph-wasm';
+import {
+    getZodiacSign,
+    getNakshatra,
+    ZODIAC_SIGNS,
+    NAKSHATRAS,
+    NAKSHATRA_LORDS,
+    DASHA_YEARS,
+    type ChartData,
+    type PlanetPosition,
+} from './zodiac';
+
+/**
+ * Re-exported so the eleven server-side callers that already import these from
+ * here keep working. Client components must import from './zodiac' directly —
+ * reaching them through this module drags in the 16.8 MB ephemeris. See the
+ * header of zodiac.ts.
+ */
+export {
+    getZodiacSign,
+    getNakshatra,
+    ZODIAC_SIGNS,
+    NAKSHATRAS,
+    NAKSHATRA_LORDS,
+    DASHA_YEARS,
+};
+export type { ChartData, PlanetPosition };
 
 // Dev-only diagnostics for the (finicky) WASM loader — silent in production.
 const seLog = (...args: unknown[]) => {
@@ -130,61 +156,6 @@ async function getSwe() {
     }
 
     return swePromise;
-}
-
-export interface PlanetPosition {
-    name: string;
-    longitude: number;
-    latitude: number;
-    distance: number;
-    speed: number;
-    isRetrograde: boolean;
-    house?: number;
-    navamsaSign?: string; // D9 Sign
-    dignity?: string;     // Exalted, Debilitated, Own Sign, Great Friend, etc.
-}
-
-export interface ChartData {
-    planets: Record<string, PlanetPosition>;
-    houses: number[];
-    ascendant: number;
-    mc: number;
-    navamsaAscendant?: string; // D9 Sign
-    vargas?: Record<string, {
-        planets: Record<string, PlanetPosition>;
-        ascendant: number;
-        houses: number[];
-    }>;
-    dashas?: Array<{
-        lord: string;
-        start: string;
-        end: string;
-        isCurrent: boolean;
-        antardashas: Array<{
-            lord: string;
-            start: string;
-            end: string;
-            isCurrent: boolean;
-            pratyantarDashas?: Array<{
-                lord: string;
-                start: string;
-                end: string;
-                isCurrent: boolean;
-                sookshmaDashas?: Array<{
-                    lord: string;
-                    start: string;
-                    end: string;
-                    isCurrent: boolean;
-                    pranaDashas?: Array<{
-                        lord: string;
-                        start: string;
-                        end: string;
-                        isCurrent: boolean;
-                    }>;
-                }>;
-            }>;
-        }>;
-    }>;
 }
 
 // Dignity Configuration
@@ -566,41 +537,6 @@ export async function calculateChart(
     });
 }
 
-export const NAKSHATRAS = [
-    'Ashwini', 'Bharani', 'Krittika', 'Rohini', 'Mrigashira', 'Ardra', 'Punarvasu', 'Pushya', 'Ashlesha',
-    'Magha', 'Purva Phalguni', 'Uttara Phalguni', 'Hasta', 'Chitra', 'Swati', 'Vishakha', 'Anuradha', 'Jyeshtha',
-    'Mula', 'Purva Ashadha', 'Uttara Ashadha', 'Shravana', 'Dhanishta', 'Shatabhisha', 'Purva Bhadrapada', 'Uttara Bhadrapada', 'Revati'
-];
-
-export const NAKSHATRA_LORDS = [
-    'Ketu', 'Venus', 'Sun', 'Moon', 'Mars', 'Rahu', 'Jupiter', 'Saturn', 'Mercury'
-];
-
-export const DASHA_YEARS: Record<string, number> = {
-    'Ketu': 7,
-    'Venus': 20,
-    'Sun': 6,
-    'Moon': 10,
-    'Mars': 7,
-    'Rahu': 18,
-    'Jupiter': 16,
-    'Saturn': 19,
-    'Mercury': 17
-};
-
-export function getNakshatra(longitude: number): { name: string, index: number, lord: string, degreeInNakshatra: number } {
-    const nakshatraSize = 360 / 27;
-    const index = Math.floor(longitude / nakshatraSize);
-    const lordIndex = index % 9;
-    const degreeInNakshatra = longitude % nakshatraSize;
-    return {
-        name: NAKSHATRAS[index],
-        index,
-        lord: NAKSHATRA_LORDS[lordIndex],
-        degreeInNakshatra
-    };
-}
-
 /**
  * How deep a dasha tree to build when the result is going to be *stored*.
  *
@@ -744,15 +680,6 @@ export function calculateVimsottariDashas(moonLong: number, birthDate: Date, max
     }
 
     return dashas.map(mapPeriod);
-}
-
-export function getZodiacSign(longitude: number): string {
-    const signs = [
-        'Aries', 'Taurus', 'Gemini', 'Cancer',
-        'Leo', 'Virgo', 'Libra', 'Scorpio',
-        'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'
-    ];
-    return signs[Math.floor(longitude / 30)];
 }
 
 export const TITHIS = [

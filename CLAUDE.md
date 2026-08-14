@@ -29,11 +29,19 @@ Live at https://askchetna.com (Vercel).
   that a fix has shipped when it has not. Ask the deployments rather than this
   file: `curl -s https://<host>/api/version`.
 - Match the surrounding code's style. Comments explain *why*, not *what*.
-- **Commit subjects carry the shipping version**, e.g. `fix(env): … [v3.1.8]`.
-  Stamped automatically by the `prepare-commit-msg` hook — do not add it by
-  hand. Several commits sharing a version is correct: the patch bump happens
-  once per push cycle, so they ship together under that number. To see what a
-  deployed version contains: `git log --oneline --grep='\[v3\.1\.8\]'`.
+- **Commit subjects carry the version**, e.g. `fix(env): … [v3.1.8]`. Stamped
+  automatically by the `prepare-commit-msg` hook — do not add it by hand. The
+  patch bumps on **every commit** (`scripts/auto-bump-patch.mjs`), so each
+  commit has its own number.
+
+  This changed on 2026-08-14. It used to bump once per PUSH, so several commits
+  shared a number and that number identified a *deployment*. It no longer does:
+  numbers between two deploys were never live, and the deployed one is whichever
+  commit was at the head of the push. **To ask what is actually running, use the
+  buildId — it is the commit SHA:** `curl -s https://<host>/api/version`.
+  `git log --oneline --grep='\[v3\.1\.8\]'` now finds one commit, not a release.
+
+  `npm run release:minor` / `:major` still override, for that one commit.
 
 ## Brand
 

@@ -25,6 +25,7 @@ import {
 import styles from './ChartPageContent.module.css';
 import { useSession } from 'next-auth/react';
 import { useProfile } from '@/context/ProfileContext';
+import { getProfiles, refreshProfiles } from '@/lib/profileStore';
 import { useComplexity } from '@/context/ComplexityContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { PlusCircle, ArrowLeft, Lock, Info, CheckCircle, Sparkles, Zap, Loader2, Download, Clock, Compass, Copy, Share2 } from 'lucide-react';
@@ -90,36 +91,46 @@ export default function ChartPageContent() {
 
     const fetchActiveProfiles = async () => {
         try {
-            const res = await fetch('/api/profiles/active');
-            const data = await res.json();
-
-            setActiveProfiles(data.profiles || []);
-            setProfileLimit(data.limit || 5);
-            setCanAddMore(data.canAddMore || false);
-
-            // Select profile from URL or default to first
-            const profileIdFromUrl = searchParams.get('profileId');
-            let targetProfile = null;
-
-            if (profileIdFromUrl) {
-                targetProfile = (data.profiles || []).find((p: UserProfile) => p.id === profileIdFromUrl);
-            }
-
-            if (!targetProfile && (data.profiles || []).length > 0) {
-                targetProfile = data.profiles[0];
-            }
-
-            if (targetProfile) {
-                setSelectedProfile(targetProfile);
-                setProfile(targetProfile);
-                if (targetProfile.chartData) {
-                    setChartData(targetProfile.chartData as ChartData);
-                }
-            }
+            // Through the shared store: paints from localStorage on any visit
+            // after the first, and shares one request with the other components
+            // on this page instead of issuing a second identical one. The chart
+            // is immutable for a profile, so a cached read cannot be wrong
+            // about what it says — only about which profiles exist, which the
+            // background revalidation then corrects.
+            const data = await getProfiles((fresh) => applyProfiles(fresh));
+            applyProfiles(data);
         } catch (error) {
             console.error('Failed to fetch active profiles:', error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    /** Shared by the cached first paint and the background revalidation. */
+    const applyProfiles = (data: Awaited<ReturnType<typeof getProfiles>>) => {
+        if (!data) return;
+
+        setActiveProfiles((data.profiles || []) as UserProfile[]);
+        setProfileLimit(data.limit || 5);
+        setCanAddMore(data.canAddMore || false);
+
+        const profileIdFromUrl = searchParams.get('profileId');
+        let targetProfile: UserProfile | null = null;
+
+        if (profileIdFromUrl) {
+            targetProfile = ((data.profiles || []) as UserProfile[])
+                .find((p) => p.id === profileIdFromUrl) ?? null;
+        }
+        if (!targetProfile && (data.profiles || []).length > 0) {
+            targetProfile = (data.profiles as UserProfile[])[0];
+        }
+
+        if (targetProfile) {
+            setSelectedProfile(targetProfile);
+            setProfile(targetProfile);
+            if (targetProfile.chartData) {
+                setChartData(targetProfile.chartData as ChartData);
+            }
         }
     };
 
@@ -281,6 +292,8 @@ export default function ChartPageContent() {
 
             if (!saveRes.ok) throw new Error('Failed to save the recalculated chart');
             setProfile({ ...profile, chartData: fullData });
+            // The stored copy just changed, so the cached one is now wrong.
+            void refreshProfiles();
         } catch (error) {
             console.error('Initialization failed:', error);
             alert('Could not synchronize your advanced charts. Please try updating your birth details manually.');
@@ -314,8 +327,8 @@ export default function ChartPageContent() {
 
     if (loading || status === 'loading') {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--primary)]"></div>
+            <div className="spinner-centre">
+                <div className="spinner" role="status" aria-label="Loading" />
             </div>
         );
     }

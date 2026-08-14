@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { buildPricingUrl } from '@/lib/monetization';
+import { refreshProfiles } from '@/lib/profileStore';
 
 interface ProfileContextType {
     isDrawerOpen: boolean;
@@ -23,11 +24,17 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     const [profileData, setProfileData] = useState<any>(null);
     const [loading, setLoading] = useState(false);
 
+    /**
+     * Through the shared store, so this no longer races the rashi badge, the
+     * profile gate and the chart page with three more identical requests for
+     * the same payload. `refreshProfiles` rather than `getProfiles`: the only
+     * caller opens the new-profile drawer, which needs to know whether there is
+     * room right now, not what was true when the page loaded.
+     */
     const fetchProfileData = async () => {
         try {
-            const res = await fetch('/api/profiles/active', { cache: 'no-store' });
-            const data = await res.json();
-            if (!data.error) {
+            const data = await refreshProfiles();
+            if (data) {
                 setProfileData(data);
                 return data;
             }

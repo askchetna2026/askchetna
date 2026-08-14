@@ -765,8 +765,41 @@ html:not(.native-app) h3 { font-size: clamp(1rem, 2vw, 1.25rem); }
   animation: twinkle 3s ease-in-out infinite;
 }
 
+/* Loading indicators, not ornament.
+   This was `rotate-slow 8s` — the decorative mandala speed — and every one of
+   its six call sites is a spinner next to the word "Generating" or a Suspense
+   fallback. One turn every eight seconds reads as a stuck page, which is the
+   opposite of what a spinner is for. Nothing decorative uses this class; the
+   mandalas have .cosmic-mandala-spin. */
 .animate-spin {
-  animation: rotate-slow 8s linear infinite;
+  animation: rotate-slow 0.8s linear infinite;
+}
+
+/* A visible spinner.
+   The Suspense fallbacks paired .animate-spin with `h-8 w-8 rounded-full
+   border-b-2`, which are Tailwind classes and Tailwind is not installed here —
+   so the element had no size and no border and there was nothing to see
+   rotating. Clicking through to /chart looked like nothing happened at all
+   until the content appeared. */
+.spinner {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--border-soft);
+  border-bottom-color: var(--accent-gold);
+  animation: rotate-slow 0.8s linear infinite;
+}
+
+.spinner-centre {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40vh;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-spin,
+  .spinner { animation-duration: 2.4s; }
 }
 
 /* ═══════════════════════════════════════════════

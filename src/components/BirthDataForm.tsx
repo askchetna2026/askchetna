@@ -3,6 +3,7 @@
 import { useState, useEffect, FormEvent, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import type { ChartData } from '@/lib/astrology/zodiac';
+import { refreshProfiles } from '@/lib/profileStore';
 import { INDIAN_CITIES } from '@/lib/indianCities';
 import ConfirmDialog from './ConfirmDialog';
 import { useProfile } from '@/context/ProfileContext';
@@ -218,6 +219,9 @@ export default function BirthDataForm({ onChartGenerated, initialData }: BirthDa
 
                 if (!saveRes.ok) throw new Error("Failed to save profile.");
                 const savedProfile = await saveRes.json();
+                // A new profile exists, so every cached copy is stale — including
+                // the one the rashi badge and the profile gate read.
+                await refreshProfiles();
                 setStatusMsg({ type: 'success', text: 'Profile saved successfully! Check your details in the Dashboard.' });
 
                 if (onChartGenerated) {

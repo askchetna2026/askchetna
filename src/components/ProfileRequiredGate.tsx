@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useProfile } from '@/context/ProfileContext';
+import { getProfiles } from '@/lib/profileStore';
 
 /**
  * Everything below the "Me" tab, plus the routes a seeker must always be able
@@ -63,10 +64,8 @@ export default function ProfileRequiredGate() {
         let cancelled = false;
         (async () => {
             try {
-                const res = await fetch('/api/profiles/active', { cache: 'no-store' });
-                if (!res.ok) return;
-                const data = await res.json();
-                if (!cancelled) setHasProfile((data?.profiles?.length ?? 0) > 0);
+                const data = await getProfiles();
+                if (!cancelled && data) setHasProfile((data.profiles?.length ?? 0) > 0);
             } catch {
                 // Offline or a blip: say nothing rather than gate someone out of
                 // the app because one request failed.

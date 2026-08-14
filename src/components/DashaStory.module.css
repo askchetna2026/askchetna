@@ -109,16 +109,16 @@
 }
 
 .pratya {
-    border-left: 4px solid var(--accent-cyan);
+    border-left: 4px solid var(--accent-sage);
 }
 
 .pratya .levelBadge {
-    background: rgba(var(--accent-cyan-rgb), 0.1);
-    color: var(--accent-cyan);
+    background: rgba(var(--accent-sage-rgb), 0.1);
+    color: var(--accent-sage);
 }
 
 .pratya .icon {
-    color: var(--accent-cyan);
+    color: var(--accent-sage);
 }
 
 .sookshma {

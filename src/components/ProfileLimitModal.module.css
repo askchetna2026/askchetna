@@ -61,7 +61,7 @@
     font-weight: 700;
     text-align: center;
     margin-bottom: 8px;
-    color: var(--text-primary);
+    color: var(--foreground);
 }
 
 .subtitle {
@@ -135,7 +135,7 @@
     font-size: 1rem;
     font-weight: 600;
     margin-bottom: 4px;
-    color: var(--text-primary);
+    color: var(--foreground);
 }
 
 .optionText p {
@@ -183,7 +183,7 @@
 
 .confirmationText {
     font-size: 1.1rem;
-    color: var(--text-secondary);
+    color: var(--text-muted);
     line-height: 1.6;
     margin-bottom: 32px;
     max-width: 400px;
@@ -205,16 +205,16 @@
     padding: 12px 24px;
     border-radius: var(--radius-md);
     background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text-secondary);
+    border: 1px solid var(--card-border);
+    color: var(--text-muted);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .btnCancel:hover {
-    border-color: var(--text-primary);
-    color: var(--text-primary);
+    border-color: var(--foreground);
+    color: var(--foreground);
     background: rgba(var(--foreground-rgb), 0.05);
 }
 

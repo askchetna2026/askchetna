@@ -462,7 +462,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    color: var(--foreground-secondary);
+    color: var(--text-muted);
     text-decoration: none;
     font-size: 0.9rem;
     transition: color 0.2s ease;
@@ -486,7 +486,7 @@
 
 .historyDate {
     font-size: 0.85rem;
-    color: var(--foreground-secondary);
+    color: var(--text-muted);
 }
 
 .sectionIconHeader {

@@ -78,7 +78,22 @@ export default function EnergyWidget() {
                         {data.luckyColor && (
                             <div className={styles.element}>
                                 <span className={styles.elementLabel}>Lucky Color</span>
-                                <span className={styles.elementValue} style={{ color: data.luckyColor.toLowerCase() }}>
+                                {/* The colour is SHOWN, not painted onto the word.
+                                    This used to set `color` to the colour itself, which
+                                    is unreadable for most of the values the API returns:
+                                    against the card, Yellow measured 1.06:1, White 1.14,
+                                    Silver 1.08, Gold 1.20, Red 2.38, Green 3.06 — only
+                                    Purple (5.60) cleared 4.5:1, so six days in seven the
+                                    word was invisible. A swatch carries the hue and the
+                                    label keeps a legible ink. The swatch has its own
+                                    border so a white or yellow chip still has an edge
+                                    on parchment. */}
+                                <span className={styles.elementValue}>
+                                    <span
+                                        className={styles.swatch}
+                                        style={{ background: data.luckyColor.toLowerCase() }}
+                                        aria-hidden="true"
+                                    />
                                     {data.luckyColor}
                                 </span>
                             </div>

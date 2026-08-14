@@ -38,7 +38,7 @@
     background: transparent;
     border: none;
     color: var(--foreground);
-    font-family: var(--font-body);
+    font-family: var(--font-main);
     font-size: 1.1rem;
     padding: 0.8rem 0.5rem;
     outline: none;

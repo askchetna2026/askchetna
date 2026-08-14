@@ -5,7 +5,7 @@
     align-items: center;
     justify-content: center;
     gap: 20px;
-    color: var(--foreground-secondary);
+    color: var(--text-muted);
 }
 
 .loader {
@@ -81,7 +81,7 @@
 .message {
     font-size: 1rem;
     line-height: 1.6;
-    color: var(--foreground-secondary);
+    color: var(--text-muted);
     margin-bottom: 32px;
 }
 
@@ -104,7 +104,7 @@
 
 .homeLink {
     display: block;
-    color: var(--foreground-secondary);
+    color: var(--text-muted);
     font-size: 0.9rem;
     margin-top: 16px;
     transition: color 0.2s ease;

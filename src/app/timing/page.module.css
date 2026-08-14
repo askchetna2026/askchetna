@@ -388,7 +388,7 @@
 .aiContent {
     font-size: 1.15rem;
     line-height: 1.8;
-    color: var(--text-main);
+    color: var(--foreground);
     opacity: 0.95;
     font-weight: 400;
 }

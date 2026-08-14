@@ -32,7 +32,7 @@ export default function WelcomeBanner({ bonusAmount }: { bonusAmount: number }) 
                 className="app-floating-chrome"
                 style={{
                     width: '100%',
-                    background: 'linear-gradient(to right, var(--bg-primary), var(--bg-secondary))',
+                    background: 'linear-gradient(to right, var(--bg-primary), var(--bg-panel))',
                     borderBottom: '1px solid var(--accent-gold)',
                     position: 'relative',
                     zIndex: 50

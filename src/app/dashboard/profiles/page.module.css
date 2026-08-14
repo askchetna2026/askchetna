@@ -12,7 +12,7 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    color: var(--foreground-secondary);
+    color: var(--text-muted);
     font-size: 0.9rem;
     margin-bottom: 20px;
     transition: color 0.2s ease;
@@ -30,7 +30,7 @@
 }
 
 .subtitle {
-    color: var(--foreground-secondary);
+    color: var(--text-muted);
     font-size: 1rem;
 }
 
@@ -63,7 +63,7 @@
 .selectAllBtn {
     background: none;
     border: 1px solid var(--card-border);
-    color: var(--foreground-secondary);
+    color: var(--text-muted);
     padding: 6px 12px;
     border-radius: 6px;
     font-size: 0.85rem;
@@ -152,7 +152,7 @@
 
 .details {
     font-size: 0.9rem;
-    color: var(--foreground-secondary);
+    color: var(--text-muted);
     line-height: 1.6;
 }
 
@@ -214,7 +214,7 @@
 .deleteBtn {
     background: none;
     border: none;
-    color: var(--foreground-secondary);
+    color: var(--text-muted);
     cursor: pointer;
     padding: 8px;
     border-radius: 6px;
@@ -237,7 +237,7 @@
 .emptyState {
     text-align: center;
     padding: 60px 20px;
-    color: var(--foreground-secondary);
+    color: var(--text-muted);
 }
 
 .emptyState p {
@@ -267,7 +267,7 @@
     align-items: center;
     justify-content: center;
     gap: 20px;
-    color: var(--foreground-secondary);
+    color: var(--text-muted);
 }
 
 .loader {
@@ -331,7 +331,7 @@
 .cancelBulkBtn {
     background: none;
     border: 1px solid var(--card-border);
-    color: var(--foreground-secondary);
+    color: var(--text-muted);
     padding: 8px 16px;
     border-radius: 8px;
     font-weight: 500;

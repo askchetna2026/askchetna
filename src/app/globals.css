@@ -72,6 +72,13 @@
   --accent-sage: #7E8F6B;
   --accent-sage-deep: #5E6B50;
   --accent-rose: #C48E8E;
+  /* Channel triples, for the rgba(...) tint pattern already used by
+     --background-rgb and --foreground-rgb. These were referenced before they
+     existed: an invalid var() inside rgba() makes the whole declaration
+     invalid, so the tinted backgrounds on the dasha level badges and the
+     dashboard's secondary action simply did not paint. */
+  --accent-sage-rgb: 126, 143, 107;
+  --accent-rose-rgb: 196, 142, 142;
   --accent-neelam: #26315C;
   /* The night surface has its own text ramp. Reusing the parchment ramp on
      indigo is how the previous version ended up hardcoding cream hexes inline
@@ -123,6 +130,7 @@
   --warning-bg: rgba(178, 106, 0, 0.12);
   --error: #B3261E;
   --error-bg: rgba(179, 38, 30, 0.10);
+  --error-rgb: 179, 38, 30;
   --accent-iris: #4A2FA8;
   --brand-secondary: #4A2FA8;
 
@@ -135,6 +143,13 @@
 
   --font-main: var(--font-main), sans-serif;
   --font-heading: var(--font-heading), serif;
+  /* Degrees, longitudes and timestamps want figures that line up in a column.
+     Referenced by .degreeLabel long before it was defined, so those readouts
+     were falling back to the body face. No next/font needed — this is the
+     platform stack, and a webfont for a handful of numerals is not worth the
+     request. */
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
 
   /* ═══ SCALES ══════════════════════════════════════════════════════════════
      There were 129 distinct box-shadows, 32 border-radius values and no spacing

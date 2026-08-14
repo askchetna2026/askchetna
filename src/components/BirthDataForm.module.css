@@ -180,7 +180,7 @@
 }
 
 .suggestions::-webkit-scrollbar-thumb {
-    background-color: var(--border);
+    background-color: var(--card-border);
     border-radius: 20px;
 }
 

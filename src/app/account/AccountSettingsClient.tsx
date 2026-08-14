@@ -214,7 +214,7 @@ export default function AccountSettingsClient({
                                     value={editName} 
                                     onChange={(e) => setEditName(e.target.value)} 
                                     className={styles.inputField} 
-                                    style={{ padding: '8px', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-secondary)', color: 'var(--foreground)' }}
+                                    style={{ padding: '8px', borderRadius: '4px', border: '1px solid var(--card-border)', background: 'var(--bg-panel)', color: 'var(--foreground)' }}
                                 />
                             ) : (
                                 currentName || <span className={styles.muted}>Not set</span>
@@ -235,7 +235,7 @@ export default function AccountSettingsClient({
                                     onChange={(e) => setEditPhone(e.target.value)} 
                                     placeholder="+1234567890"
                                     className={styles.inputField} 
-                                    style={{ padding: '8px', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'var(--bg-secondary)', color: 'var(--foreground)' }}
+                                    style={{ padding: '8px', borderRadius: '4px', border: '1px solid var(--card-border)', background: 'var(--bg-panel)', color: 'var(--foreground)' }}
                                 />
                             ) : (
                                 currentPhone || <span className={styles.muted}>Not linked</span>

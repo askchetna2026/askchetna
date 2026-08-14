@@ -66,7 +66,7 @@ export default function WhatsAppOptInModal({ isOpen, onClose, onSuccess, current
             zIndex: 9999, padding: '20px'
         }}>
             <div style={{
-                background: 'var(--bg-secondary)',
+                background: 'var(--bg-panel)',
                 border: '1px solid var(--accent-gold)',
                 borderRadius: '16px',
                 padding: '32px',
@@ -80,7 +80,7 @@ export default function WhatsAppOptInModal({ isOpen, onClose, onSuccess, current
                     style={{
                         position: 'absolute', top: '16px', right: '16px',
                         background: 'transparent', border: 'none',
-                        color: 'var(--muted)', cursor: 'pointer'
+                        color: 'var(--text-muted)', cursor: 'pointer'
                     }}
                 >
                     <X size={20} />
@@ -107,7 +107,7 @@ export default function WhatsAppOptInModal({ isOpen, onClose, onSuccess, current
                             Your Phone Number
                         </label>
                         <div style={{ position: 'relative' }}>
-                            <Phone size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--muted)' }} />
+                            <Phone size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
                             <input
                                 type="tel"
                                 placeholder="+1 234 567 8900"
@@ -117,14 +117,14 @@ export default function WhatsAppOptInModal({ isOpen, onClose, onSuccess, current
                                     width: '100%',
                                     padding: '12px 12px 12px 40px',
                                     borderRadius: '8px',
-                                    border: '1px solid var(--border-color)',
-                                    background: 'var(--bg-main)',
+                                    border: '1px solid var(--card-border)',
+                                    background: 'var(--background)',
                                     color: 'var(--foreground)',
                                     fontSize: '16px'
                                 }}
                             />
                         </div>
-                        <p style={{ fontSize: '11px', color: 'var(--muted)', marginTop: '6px' }}>Include your country code (e.g., +1 for US, +91 for India)</p>
+                        <p style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '6px' }}>Include your country code (e.g., +1 for US, +91 for India)</p>
                     </div>
 
                     {error && (

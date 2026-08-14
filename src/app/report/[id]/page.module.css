@@ -3,7 +3,7 @@
     background: var(--background);
     color: var(--foreground);
     padding: 40px 20px;
-    font-family: var(--font-playfair), serif;
+    font-family: var(--font-heading), serif;
 }
 
 .header {
@@ -22,7 +22,7 @@
     color: rgba(255, 255, 255, 0.6);
     text-decoration: none;
     font-size: 0.9rem;
-    font-family: var(--font-inter), sans-serif;
+    font-family: var(--font-main), sans-serif;
     transition: color 0.3s ease;
 }
 
@@ -89,7 +89,7 @@
 .subtitle {
     font-size: 1.2rem;
     color: rgba(255, 255, 255, 0.7);
-    font-family: var(--font-inter), sans-serif;
+    font-family: var(--font-main), sans-serif;
 }
 
 .divider {
@@ -108,7 +108,7 @@
     background: rgba(181, 137, 46, 0.08);
     color: #fff;
     text-align: center;
-    font-family: var(--font-inter), sans-serif;
+    font-family: var(--font-main), sans-serif;
     line-height: 1.6;
 }
 
@@ -153,7 +153,7 @@
     font-size: 0.9rem;
     color: rgba(255, 255, 255, 0.6);
     line-height: 1.5;
-    font-family: var(--font-inter), sans-serif;
+    font-family: var(--font-main), sans-serif;
 }
 
 /* Paywall Styles */
@@ -183,7 +183,7 @@
     margin-left: auto;
     margin-right: auto;
     line-height: 1.6;
-    font-family: var(--font-inter), sans-serif;
+    font-family: var(--font-main), sans-serif;
 }
 
 .featureList {
@@ -200,7 +200,7 @@
     gap: 10px;
     font-size: 0.9rem;
     color: #ffd700;
-    font-family: var(--font-inter), sans-serif;
+    font-family: var(--font-main), sans-serif;
     font-weight: 500;
 }
 
@@ -238,7 +238,7 @@
 
 .purchaseHelpBox p,
 .topUpHint {
-    font-family: var(--font-inter), sans-serif;
+    font-family: var(--font-main), sans-serif;
     margin: 0 auto 14px;
     color: rgba(255, 255, 255, 0.82);
 }
@@ -260,7 +260,7 @@
     padding: 12px 18px;
     border-radius: 999px;
     transition: all 0.2s ease;
-    font-family: var(--font-inter), sans-serif;
+    font-family: var(--font-main), sans-serif;
 }
 
 .purchaseSecondaryLink:hover,
@@ -376,7 +376,7 @@
     display: block;
     font-size: 0.8rem;
     color: rgba(255, 255, 255, 0.5);
-    font-family: var(--font-inter), sans-serif;
+    font-family: var(--font-main), sans-serif;
 }
 
 .statusActions {
@@ -434,7 +434,7 @@
     border-radius: 50px;
     text-decoration: none;
     font-size: 0.9rem;
-    font-family: var(--font-inter), sans-serif;
+    font-family: var(--font-main), sans-serif;
     border: 1px solid rgba(181, 137, 46, 0.3);
     transition: all 0.3s ease;
 }

@@ -1,0 +1,45 @@
+/* Sits directly under the welcome line, so it has to read as a caption rather
+   than compete with it. Colours measured against the darkest parchment grain
+   (#D1C29B), which is the ground the landing header actually sits on. */
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 6px;
+    padding: 5px 12px 5px 10px;
+    border: 1px solid var(--card-border);
+    border-radius: 100px;
+    background: rgba(var(--foreground-rgb), 0.035);
+    color: var(--accent-gold); /* 5.84:1 — carries the icon too */
+    font-size: 0.78rem;
+    line-height: 1;
+    /* Wraps as a unit on narrow screens rather than splitting the label from
+       the value, which reads as two unrelated fragments. */
+    white-space: nowrap;
+}
+
+.label {
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    color: var(--text-muted); /* 4.80:1 */
+    font-size: 0.7rem;
+}
+
+.value {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--foreground); /* 9.61:1 */
+    letter-spacing: 0.01em;
+}
+
+.western {
+    color: var(--text-muted);
+    font-size: 0.72rem;
+}
+
+@media (max-width: 480px) {
+    .western { display: none; } /* The Sanskrit name is the one that matters. */
+}

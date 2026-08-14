@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react';
 import styles from './page.module.css';
 import { ArrowRight, TrendingUp, Clock, MessageSquare } from 'lucide-react';
 import DailyInsightCard from '@/components/DailyInsightCard';
+import RashiBadge from '@/components/RashiBadge';
 import EnergyWidget from '@/components/EnergyWidget';
 import JournalWidget from '@/components/JournalWidget';
 import PanchangWidget from '@/components/PanchangWidget';
@@ -60,6 +61,10 @@ export default function Home() {
                 <p className={styles.dashboardSubtitle}>
                   Observe your patterns and act with awareness today.
                 </p>
+                {/* Identifies WHOSE day the note below is about, before the
+                    note itself. Renders nothing until the chart is available,
+                    so it never shows a placeholder rashi. */}
+                <RashiBadge />
               </div>
               <Link href="/dashboard" className={styles.primaryBtnSmall}>
                 Dashboard <ArrowRight size={16} />

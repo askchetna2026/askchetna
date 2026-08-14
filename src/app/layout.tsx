@@ -22,6 +22,7 @@ import AskChetnaFab from '@/components/AskChetnaFab';
 import { ProfileProvider } from '@/context/ProfileContext';
 import { ComplexityProvider } from '@/context/ComplexityContext';
 import ProfileManager from '@/components/ProfileManager';
+import ProfileRequiredGate from '@/components/ProfileRequiredGate';
 import { CosmicStarfield } from '@/lib/cosmic/Starfield';
 import UpdateNotification from '@/components/UpdateNotification';
 
@@ -181,6 +182,8 @@ export default async function RootLayout({
             <AppTabBar />
 
             <ProfileManager />
+            {/* Behaviour only: decides when the drawer above must open. */}
+            <ProfileRequiredGate />
             <FloatingActionButton />
             <AskChetnaFab />
             <Suspense fallback={null}>

@@ -36,7 +36,8 @@ type AIFlow =
     | 'SYNASTRY_ANALYSIS'
     | 'REPORT_GENERATION'
     | 'CONSULTATION_REPLY'
-    | 'WHATSAPP_CHAT';
+    | 'WHATSAPP_CHAT'
+    | 'DAILY_INSIGHT';
 type FlowComplexity = 'HIGH' | 'STANDARD';
 
 const DEFAULT_MODELS: Record<AIProvider, Record<FlowComplexity, string>> = {
@@ -68,7 +69,10 @@ const FLOW_COMPLEXITY: Record<AIFlow, FlowComplexity> = {
     // A live chat turn. Latency matters more than depth here — the seeker is
     // watching a paid block count down while it generates.
     CONSULTATION_REPLY: 'STANDARD',
-    WHATSAPP_CHAT: 'STANDARD'
+    WHATSAPP_CHAT: 'STANDARD',
+    // One short note per seeker per day. Volume scales with the size of the
+    // user base rather than with engagement, so it takes the cheap tier.
+    DAILY_INSIGHT: 'STANDARD'
 };
 
 const HYBRID_DEFAULTS: Record<AIFlow, { provider: AIProvider; modelName: string }> = {
@@ -79,7 +83,8 @@ const HYBRID_DEFAULTS: Record<AIFlow, { provider: AIProvider; modelName: string 
     SYNASTRY_ANALYSIS: { provider: 'gemini', modelName: 'gemini-2.5-pro' },
     REPORT_GENERATION: { provider: 'gemini', modelName: 'gemini-2.5-pro' },
     CONSULTATION_REPLY: { provider: 'openai', modelName: 'gpt-4o-mini' },
-    WHATSAPP_CHAT: { provider: 'deepseek', modelName: 'deepseek-chat' }
+    WHATSAPP_CHAT: { provider: 'deepseek', modelName: 'deepseek-chat' },
+    DAILY_INSIGHT: { provider: 'deepseek', modelName: 'deepseek-chat' }
 };
 
 function normalizeProvider(raw?: string): AIProvider | null {
@@ -292,6 +297,64 @@ export interface TimingInsight {
     phaseFlavor: string;
     opportunityArea: string;
     awarenessPractice: string;
+}
+
+export interface DailyInsightContent {
+    headline: string;
+    body: string;
+    focus: string;
+    caution: string;
+}
+
+/**
+ * The "how today reads for you" note on the logged-in home.
+ *
+ * Written against the seeker's own chart and the transiting Moon, not a generic
+ * sun-sign horoscope. Kept deliberately short: it is glanced at once a day, and
+ * a paragraph nobody finishes is worse than three sentences they do.
+ *
+ * Called at most once per seeker per calendar day — see the DailyInsight table.
+ * The caller owns that guarantee; this function just writes the note.
+ */
+export async function generateDailyInsight(
+    chartData: ChartData,
+    context: { name: string; dashaLord: string | null; moonSign: string | null; weekday: string }
+): Promise<DailyInsightContent> {
+    const sanitizedChart = sanitizeChartData(chartData);
+    const analysis = VedicAnalysisEngine.analyze(chartData);
+
+    const prompt = `You are a Jyotisha guide writing one seeker's note for TODAY.
+House style: awareness, not prediction. Never promise an outcome, never forecast
+an event. Describe a pattern that is active and what paying attention to it
+might look like.
+
+SEEKER: ${context.name}
+TODAY: ${context.weekday}
+CURRENT MAHADASHA: ${context.dashaLord ?? 'unknown'}
+MOON TRANSITING: ${context.moonSign ?? 'unknown'}
+THEIR CHART: ${JSON.stringify(sanitizedChart, null, 2)}
+THEIR PATTERNS: ${JSON.stringify(analysis, null, 2)}
+
+Write four parts, each on its own line with the exact marker:
+
+HEADLINE: six words or fewer, no punctuation at the end. The day's texture.
+BODY: two or three sentences, max 55 words. What is active in THEIR chart today
+and how it may show up. Second person. Concrete, not mystical filler.
+FOCUS: one short sentence — where attention is best spent today.
+CAUTION: one short sentence — a tendency to watch in themselves. Never a warning
+about the external world, never fear-based.
+
+No preamble, no markdown, no extra sections.`;
+
+    const text = await callAI(prompt, 'DAILY_INSIGHT');
+
+    return {
+        headline: extractSection(text, 'HEADLINE:', 'BODY') || 'A day for steady attention',
+        body: extractSection(text, 'BODY:', 'FOCUS')
+            || 'Today asks for observation more than action. Notice what repeats.',
+        focus: extractSection(text, 'FOCUS:', 'CAUTION') || 'Give your full attention to one thing.',
+        caution: extractSection(text, 'CAUTION:') || 'Watch the urge to rush a decision.',
+    };
 }
 
 /**

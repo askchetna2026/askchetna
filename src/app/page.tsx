@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import styles from './page.module.css';
 import { ArrowRight, TrendingUp, Clock, MessageSquare } from 'lucide-react';
+import DailyInsightCard from '@/components/DailyInsightCard';
 import EnergyWidget from '@/components/EnergyWidget';
 import JournalWidget from '@/components/JournalWidget';
 import PanchangWidget from '@/components/PanchangWidget';
@@ -67,6 +68,11 @@ export default function Home() {
 
             <div className={styles.widgetGrid}>
               <div className={styles.mainColumn}>
+                {/* First in the column deliberately: it is the one thing here
+                    written about this seeker specifically, and the reason to
+                    open the app on a given morning. EnergyWidget and
+                    PanchangWidget below it are the same for everyone. */}
+                <DailyInsightCard />
                 <EnergyWidget />
                 <PanchangWidget />
                 <JournalWidget />

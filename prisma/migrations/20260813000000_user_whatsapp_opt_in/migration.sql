@@ -1,0 +1,19 @@
+-- Repairs a hole in the migration history.
+--
+-- `User.whatsappOptIn` is declared in schema.prisma and written by the app, but
+-- NO migration ever created it: it reached the live databases by `db push` and
+-- was never captured. `prisma migrate diff --from-migrations --to-schema-datamodel`
+-- reported exactly this one ALTER, which means a database rebuilt from this
+-- repo comes up without the column and every User read 500s with P2022.
+--
+-- That matters more than one column. The baseline squash of 2026-08-07 existed
+-- to make production rebuildable from the repo; an untracked column silently
+-- takes that guarantee away again. It is also the drift that broke the ops
+-- console's backup1 copy, and the likely reason a rebuilt local database is
+-- missing it today.
+--
+-- IF NOT EXISTS because the live databases already have the column — preview
+-- and prod both report it present. This has to be a no-op there and a real
+-- change on anything built from scratch, which is precisely what that clause
+-- buys. Without it, `migrate deploy` would fail on every existing environment.
+ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "whatsappOptIn" BOOLEAN NOT NULL DEFAULT false;

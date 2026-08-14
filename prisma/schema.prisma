@@ -48,6 +48,7 @@ model User {
   questions              Question[]
   creditPacks            CreditPack[]
   journalEntries         JournalEntry[]
+  dailyInsights          DailyInsight[]
   accounts               Account[]
   sessions               Session[]
   exports                ExportRecord[]
@@ -226,6 +227,37 @@ model JournalEntry {
 
   @@unique([userId, date])
   @@index([userId])
+}
+
+/// The AI-written "how today reads for you" note on the logged-in home.
+///
+/// Exists so the model is called ONCE per user per calendar day. The browser
+/// caches the text in localStorage for instant display, but localStorage cannot
+/// be the authority: a second device, another browser, a private window or a
+/// cleared cache would each buy another generation. The unique key below is
+/// what actually holds the spend to one call.
+///
+/// `date` is the SEEKER'S local calendar day as "YYYY-MM-DD", sent by the
+/// client — matching JournalEntry, and for the same reason. Deriving it from
+/// server time would roll the day over mid-evening for users east of UTC, which
+/// is most of this audience.
+model DailyInsight {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  date    String /// "YYYY-MM-DD" in the seeker's own timezone
+  content Json /// { headline, body, focus, caution }
+
+  /// What it was generated from, so a stale note is recognisable rather than
+  /// merely wrong: the profile it used and the dasha lord current at the time.
+  profileId String?
+  dashaLord String?
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, date])
+  @@index([userId, date])
 }
 
 // Dynamic Pricing Configuration

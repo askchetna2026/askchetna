@@ -1,0 +1,94 @@
+/* Colours are tokens throughout — every value here was measured against the
+   darkest grain of a papered card (#D4C7A2), not the flat --card-bg, because
+   that is the ground the type can actually land on. */
+
+.card {
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-card);
+    padding: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-gold); /* 5.84:1 */
+}
+
+.headline {
+    font-family: var(--font-heading);
+    /* Its own size rather than the global h3 scale: this sits inside a card in
+       a widget column, where the page-level heading rhythm reads as shouting. */
+    font-size: clamp(1.05rem, 2.4vw, 1.3rem);
+    line-height: 1.25;
+    color: var(--foreground); /* 9.61:1 */
+    margin: 0;
+    letter-spacing: 0.01em;
+}
+
+.body {
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: var(--foreground);
+    margin: 0;
+}
+
+.notes {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--border-soft);
+}
+
+.note {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.55;
+    color: var(--text-muted); /* 4.80:1 */
+}
+
+.note strong {
+    color: var(--accent-gold);
+    font-weight: 700;
+}
+
+.noteIcon {
+    flex: 0 0 auto;
+    margin-top: 2px;
+    color: var(--accent-gold-decor);
+}
+
+/* Loading state. A tint of the ink rather than a white sweep — a white shimmer
+   on parchment reads as a rendering fault. */
+.shimmerLine {
+    height: 12px;
+    border-radius: var(--radius-xs);
+    background: linear-gradient(
+        90deg,
+        rgba(var(--foreground-rgb), 0.06) 0%,
+        rgba(var(--foreground-rgb), 0.13) 50%,
+        rgba(var(--foreground-rgb), 0.06) 100%
+    );
+    background-size: 200% 100%;
+    animation: insightShimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes insightShimmer {
+    to { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .shimmerLine { animation: none; }
+}

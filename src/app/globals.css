@@ -123,12 +123,23 @@
      glow against navy. */
   /* #2E7D32 still only measured 4.03:1 against its own tint over the parchment,
      so it is a shade darker again to clear the 4.5:1 floor for the small
-     uppercase status pills that use it. */
-  --success: #256B29;
+     uppercase status pills that use it.
+
+     Darker again: #256B29 was measured against the FLAT token, where it passes,
+     but these are text colours and text lands on the textured sheet. Against
+     the darkest grain of a card it was 3.89:1 — the Panchang widget's
+     auspicious/inauspicious readouts are 15.2px, so 4.5:1 applies. #1B4F1F is
+     5.72:1 on card and 5.45:1 on paper. Used as text in 30 places, so this is
+     fixed once here rather than per component. */
+  --success: #1B4F1F;
   --success-bg: rgba(46, 125, 50, 0.12);
   --warning: #B26A00;
   --warning-bg: rgba(178, 106, 0, 0.12);
-  --error: #B3261E;
+  /* Same correction as --success: 3.89:1 against the darkest grain of a card,
+     where it is used as text in 48 places. #8E1D17 is 5.34:1 there. The _bg and
+     _rgb tints below stay on the original hue — they are fills behind other
+     text, not text themselves, so darkening them would only muddy the tint. */
+  --error: #8E1D17;
   --error-bg: rgba(179, 38, 30, 0.10);
   --error-rgb: 179, 38, 30;
   --accent-iris: #4A2FA8;

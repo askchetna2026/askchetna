@@ -6,6 +6,7 @@ import { useState, useEffect, useRef, Suspense } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import BirthDataForm, { UserProfile } from '@/components/BirthDataForm';
 import ChartDisplay from '@/components/ChartDisplay';
+import ChartZoom from '@/components/ChartZoom';
 import DashaDisplay from '@/components/DashaDisplay';
 import ProfileTabs from '@/components/ProfileTabs';
 // import ProfileDrawer from '@/components/ProfileDrawer'; // Moved to global context
@@ -430,7 +431,10 @@ export default function ChartPageContent() {
                     {isUnlocked && vargaData && (
                         <>
                             <div className="flex justify-center mb-4">
-                                <ChartDisplay data={vargaData} width={220} height={220} />
+                                {/* 220px inside a 321px grid column wasted a third of
+                                    every cell and made each thumbnail harder to read
+                                    than it needed to be. The grid owns the size. */}
+                                <ChartDisplay data={vargaData} width="100%" height="auto" />
                             </div>
 
                             <button
@@ -893,7 +897,13 @@ export default function ChartPageContent() {
                             {/* Left: Chart Visualization */}
                             <div className={styles.drawerChart}>
                                 <div className={styles.chartWrapper}>
-                                    <ChartDisplay data={profile.chartData.vargas[activeChart]} width={280} height={280} />
+                                    {/* Was pinned to 280px on every screen, so a
+                                        1372px desktop showed the chart at the size a
+                                        phone did. It now fills the column, and the
+                                        column is capped in CSS. */}
+                                    <ChartZoom>
+                                        <ChartDisplay data={profile.chartData.vargas[activeChart]} width="100%" height="auto" />
+                                    </ChartZoom>
                                 </div>
                             </div>
 

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@/auth';
+import { requireUser } from '@/lib/apiAuth';
 import prisma from '@/lib/prisma';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { recordAnalyticsEvent } from '@/lib/analytics/server';
@@ -7,14 +7,19 @@ import { maybeSendLowCreditLifecycleEmail } from '@/lib/lifecycleEmails';
 
 export async function POST() {
     try {
-        const session = await auth();
-
-        if (!session?.user) {
-            return NextResponse.json(
-                { error: 'Unauthorized' },
-                { status: 401 }
-            );
-        }
+        // requireUser, not auth(): this handler inserts a CreditTransaction
+        // carrying a userId foreign key, and a JWT can outlive the user it
+        // names. Without the existence check that surfaces as "Foreign key
+        // constraint violated" — a 500 whose message says nothing about the
+        // one fix, signing in again. See src/lib/apiAuth.ts.
+        //
+        // The old check was `!session?.user`, which passes for a session whose
+        // user object exists but carries no id — the queries below then read
+        // `userId: undefined` and match the wrong rows. This is a credit-spend
+        // path, so that mattered more here than most.
+        const authed = await requireUser();
+        if (!authed.ok) return authed.response;
+        const session = { user: { id: authed.userId } };
 
         // Find oldest pack with available credits
         const creditPack = await prisma.creditPack.findFirst({

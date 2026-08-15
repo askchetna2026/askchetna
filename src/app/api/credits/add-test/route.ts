@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@/auth';
+import { requireUser } from '@/lib/apiAuth';
 import prisma from '@/lib/prisma';
 import { isAdmin } from '@/lib/admin';
 
@@ -12,14 +12,14 @@ export async function POST() {
             );
         }
 
-        const session = await auth();
-
-        if (!session?.user?.id) {
-            return NextResponse.json(
-                { error: 'Unauthorized. User ID not found.' },
-                { status: 401 }
-            );
-        }
+        // requireUser, not auth(): this grants a CreditPack and writes a
+        // CreditTransaction, both carrying a userId foreign key. Dev-only and
+        // admin-gated, so the stale-session case is remote here — but a credit
+        // grant is the last place to leave the check out on the grounds that it
+        // probably will not happen. See src/lib/apiAuth.ts.
+        const authed = await requireUser();
+        if (!authed.ok) return authed.response;
+        const session = { user: { id: authed.userId, email: authed.email } };
 
         if (!await isAdmin(session.user.email)) {
             return NextResponse.json(

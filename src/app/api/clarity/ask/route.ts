@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 export const maxDuration = 60;
 import { auth } from '@/auth';
+import { requireUser } from '@/lib/apiAuth';
 import prisma from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
 import { generateClarityResponse, isQuestionSafe } from '@/lib/ai/geminiService';
@@ -16,14 +17,14 @@ import {
 
 export async function POST(req: NextRequest) {
     try {
-        const session = await auth();
-
-        if (!session?.user?.id) {
-            return NextResponse.json(
-                { error: 'Unauthorized. Please log in to ask questions.' },
-                { status: 401 }
-            );
-        }
+        // requireUser, not auth(): this handler inserts a row with a userId
+        // foreign key, and a JWT can outlive the user it names. Without the
+        // existence check that surfaces as "Foreign key constraint violated"
+        // — a 500 whose message says nothing about the one fix, signing in
+        // again. See src/lib/apiAuth.ts.
+        const authed = await requireUser();
+        if (!authed.ok) return authed.response;
+        const session = { user: { id: authed.userId } };
 
         // Burst protection (credits already cap overall usage)
         const burst = rateLimit(`ask:${session.user.id}`, { limit: 10, windowMs: 60 * 1000 });

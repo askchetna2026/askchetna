@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PDFDocument, StandardFonts, rgb, PDFFont } from 'pdf-lib';
 import { prisma } from "@/lib/prisma";
-import { auth } from "@/auth";
+import { requireUser } from "@/lib/apiAuth";
 import fs from 'fs';
 import path from 'path';
 import { LOGO_DARK_FILE } from '@/lib/logoConfig';
@@ -76,15 +76,29 @@ const drawJustifiedBlock = (page: any, text: string, x: number, y: number, font:
 
 export async function POST(req: NextRequest) {
     try {
-        const session = await auth();
+        // This route called auth() and then never looked at the result, and
+        // fetched the profile by id ALONE. So an unauthenticated request
+        // carrying any valid profileId was served that person's chart as a
+        // PDF — name, date, time and place of birth — and the export was
+        // recorded against the profile's owner rather than whoever asked.
+        //
+        // proxy.ts guards page routes, not /api, so an API route that does not
+        // check for itself is not checked at all.
+        const authed = await requireUser();
+        if (!authed.ok) return authed.response;
+
         const { chartKey, chartTitle, profileId, chartData, userDetails, texts, chartImage } = await req.json();
 
         if (!profileId || !chartData) {
             return NextResponse.json({ error: "Missing data" }, { status: 400 });
         }
 
-        const profile = await prisma.profile.findUnique({
-            where: { id: profileId },
+        // Scoped to the caller. findFirst with the userId in the WHERE, rather
+        // than a findUnique and a comparison afterwards, so a profile
+        // belonging to someone else is indistinguishable from one that does
+        // not exist — a 403 here would confirm the id is real.
+        const profile = await prisma.profile.findFirst({
+            where: { id: profileId, userId: authed.userId },
         });
 
         if (!profile) {
@@ -509,7 +523,7 @@ export async function POST(req: NextRequest) {
         // Save Record
         await (prisma as any).exportRecord.create({
             data: {
-                userId: session?.user?.id || profile.userId,
+                userId: authed.userId,
                 chartType: chartKey,
                 url: `/api/charts/export?profileId=${profile.id}&chartKey=${chartKey}`
             }

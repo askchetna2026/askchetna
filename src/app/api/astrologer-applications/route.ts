@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
+import { requireUser } from '@/lib/apiAuth';
 import prisma from '@/lib/prisma';
 import { storageConfigured } from '@/lib/photoUpload';
 import {
@@ -21,10 +22,14 @@ import {
  * convenience for the person filling it in; this decides what is accepted.
  */
 export async function POST(request: Request) {
-    const session = await auth();
-    if (!session?.user?.id) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    // requireUser, not auth(): this handler inserts a row with a userId
+    // foreign key, and a JWT can outlive the user it names. Without the
+    // existence check that surfaces as "Foreign key constraint violated"
+    // — a 500 whose message says nothing about the one fix, signing in
+    // again. See src/lib/apiAuth.ts.
+    const authed = await requireUser();
+    if (!authed.ok) return authed.response;
+    const session = { user: { id: authed.userId } };
 
     let body: ApplicationInput;
     try {

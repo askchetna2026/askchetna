@@ -24,7 +24,7 @@ import prisma from '@/lib/prisma';
  * merely return nothing for a missing user do not need it.
  */
 export type RequireUserResult =
-    | { ok: true; userId: string }
+    | { ok: true; userId: string; email: string | null }
     | { ok: false; response: NextResponse };
 
 export async function requireUser(): Promise<RequireUserResult> {
@@ -39,7 +39,10 @@ export async function requireUser(): Promise<RequireUserResult> {
 
     const exists = await prisma.user.findUnique({
         where: { id: session.user.id },
-        select: { id: true },
+        // email comes back too: callers doing an admin check were reading it
+        // off the JWT, which is a copy that can be months old. The row is the
+        // authoritative one, and this lookup is already being paid for.
+        select: { id: true, email: true },
     });
 
     if (!exists) {
@@ -55,5 +58,5 @@ export async function requireUser(): Promise<RequireUserResult> {
         };
     }
 
-    return { ok: true, userId: exists.id };
+    return { ok: true, userId: exists.id, email: exists.email };
 }

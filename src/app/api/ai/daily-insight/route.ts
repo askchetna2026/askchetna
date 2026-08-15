@@ -23,6 +23,21 @@ import { getZodiacSign } from '@/lib/astrology/zodiac';
  * JournalEntry already keys on a client-supplied YYYY-MM-DD for the same reason.
  */
 
+/**
+ * Generations currently running, keyed by seeker and day.
+ *
+ * The unique key on (userId, date) guarantees one *row*, but it only fires on
+ * insert — by which time both callers have already paid for a model call. The
+ * dev log shows exactly that: two requests 3s apart, 19.4s and 22.6s of model
+ * time, one row, two bills.
+ *
+ * This collapses concurrent callers that land on the same instance onto one
+ * call. Cross-instance races remain possible and are still caught by the unique
+ * key below; they are rare, and the alternative — an advisory lock held across
+ * a twenty-second model call — costs more than the duplicate it prevents.
+ */
+const generating = new Map<string, Promise<unknown>>();
+
 /** Guards against a client asking for an arbitrary or far-future day. */
 function isPlausibleLocalDate(value: unknown): value is string {
     if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
@@ -75,6 +90,14 @@ export async function POST(req: NextRequest) {
         const limited = guardAiSpend(session.user.id, 'daily-insight');
         if (limited) return limited;
 
+        // A generation already running for this seeker and day: wait for it
+        // rather than starting a second one.
+        const lockKey = `${session.user.id}:${date}`;
+        const running = generating.get(lockKey);
+        if (running) {
+            return NextResponse.json({ insight: await running, cached: true });
+        }
+
         const chart = profile.chartData as unknown as ChartData;
         const dashaLord = Array.isArray(chart.dashas)
             ? (chart.dashas.find((d) => {
@@ -84,12 +107,22 @@ export async function POST(req: NextRequest) {
             : null;
 
         const moonLongitude = chart.planets?.Moon?.longitude;
-        const insight = await generateDailyInsight(chart, {
+        const generation = generateDailyInsight(chart, {
             name: profile.name,
             dashaLord,
             moonSign: typeof moonLongitude === 'number' ? getZodiacSign(moonLongitude) : null,
             weekday: new Date(date + 'T12:00:00Z').toLocaleDateString('en-US', { weekday: 'long', timeZone: 'UTC' }),
         });
+        generating.set(lockKey, generation);
+
+        let insight;
+        try {
+            insight = await generation;
+        } finally {
+            // Released on failure too, so one bad call does not make every later
+            // request for the day await a rejected promise.
+            generating.delete(lockKey);
+        }
 
         // create, not upsert: two tabs opening at once both miss the read above,
         // and the unique key is what stops the second one paying for a call that

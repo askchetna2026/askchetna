@@ -36,6 +36,21 @@ const cacheKey = (day: string) => `askchetna:daily-insight:${day}`;
  * Old days are swept on mount rather than on a timer: the list is tiny, and a
  * seeker who returns after a month should not be carrying thirty dead keys.
  */
+/**
+ * The request for today's note, while it is in the air.
+ *
+ * localStorage is only written once the answer comes back, so it cannot stop a
+ * second mount that starts before the first one finishes — and both then miss
+ * the server's cache too, and both pay the model. That is not theoretical: the
+ * dev log shows two POSTs generating the same note in parallel at 19s and 22s,
+ * the second losing on the unique key *after* the spend. StrictMode's double
+ * effect does it every time in development, two mounts of this card do it in
+ * production.
+ *
+ * Module scope, not a ref: the point is to be shared across component instances.
+ */
+let inFlight: Promise<DailyInsight | null> | null = null;
+
 export default function DailyInsightCard() {
     const [insight, setInsight] = useState<DailyInsight | null>(null);
     const [state, setState] = useState<'loading' | 'ready' | 'unavailable'>('loading');
@@ -78,21 +93,33 @@ export default function DailyInsightCard() {
                 return; // Already have today's. No request at all.
             }
             try {
-                const res = await fetch('/api/ai/daily-insight', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ date: day }),
-                });
-                if (!res.ok) {
-                    if (!cancelled) setState('unavailable');
+                inFlight ??= (async () => {
+                    try {
+                        const res = await fetch('/api/ai/daily-insight', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ date: day }),
+                        });
+                        if (!res.ok) return null;
+                        const data = await res.json();
+                        return (data?.insight as DailyInsight) ?? null;
+                    } finally {
+                        // Cleared so a later mount can retry a failure, rather
+                        // than being handed this same settled promise forever.
+                        inFlight = null;
+                    }
+                })();
+
+                const fresh = await inFlight;
+                if (cancelled) return;
+                if (!fresh) {
+                    setState('unavailable');
                     return;
                 }
-                const data = await res.json();
-                if (cancelled || !data?.insight) return;
-                setInsight(data.insight);
+                setInsight(fresh);
                 setState('ready');
                 try {
-                    localStorage.setItem(cacheKey(day), JSON.stringify(data.insight));
+                    localStorage.setItem(cacheKey(day), JSON.stringify(fresh));
                 } catch {
                     /* Not being able to cache is not a reason to hide the note. */
                 }

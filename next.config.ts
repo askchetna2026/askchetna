@@ -25,6 +25,24 @@ const nextConfig: NextConfig = {
     "/*": ["prompts/**/*.md"],
   },
 
+  // /how-it-works told the same four ideas as the HowItWorks section on
+  // /explore — calculation, pattern over verdict, dashas as seasons, your
+  // choice — in a plainer form, at a second URL, with nothing in the app
+  // linking to it. Two tellings of one explanation is how they drift apart.
+  //
+  // A permanent redirect rather than a delete: the path is in sitemap.ts and
+  // may be indexed, and a 301 carries that across instead of serving 404s to
+  // whatever already knows the URL.
+  async redirects() {
+    return [
+      {
+        source: "/how-it-works",
+        destination: "/explore",
+        permanent: true,
+      },
+    ];
+  },
+
   images: {
     remotePatterns: [
       {

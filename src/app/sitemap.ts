@@ -18,7 +18,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         { path: '/career-astrology', priority: 0.8, changeFrequency: 'monthly' },
         { path: '/dasha-timeline', priority: 0.8, changeFrequency: 'monthly' },
         { path: '/glossary', priority: 0.7, changeFrequency: 'monthly' },
-        { path: '/how-it-works', priority: 0.6, changeFrequency: 'monthly' },
         { path: '/how-we-calculate', priority: 0.6, changeFrequency: 'monthly' },
         { path: '/clarity', priority: 0.8, changeFrequency: 'monthly' },
         { path: '/chart', priority: 0.8, changeFrequency: 'monthly' },

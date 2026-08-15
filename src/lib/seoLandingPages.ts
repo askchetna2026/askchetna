@@ -207,7 +207,9 @@ export const SEO_LANDING_PAGES: Record<string, SeoLandingPage> = {
             {
                 title: 'How AskChetna Works',
                 description: 'Read the awareness-first framework behind the product.',
-                href: '/how-it-works',
+                // /how-it-works now 301s here; linking straight to the
+                // destination saves the hop.
+                href: '/explore',
             },
         ],
         newsletterSource: 'landing_relationship_astrology',

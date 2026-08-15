@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import styles from './UpdateNotification.module.css';
 import {
     useUpdateCheck,
     checkForUpdates,
@@ -142,52 +143,41 @@ export default function UpdateNotification() {
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                className="fixed top-0 left-0 right-0 z-50 p-4"
+                className={styles.wrap}
             >
-                <div
-                    className={`rounded-lg shadow-lg p-4 backdrop-blur-md ${critical
-                        ? 'bg-gradient-to-r from-amber-900/80 to-amber-800/80 border border-amber-500/50'
-                        : 'bg-gradient-to-r from-blue-900/80 to-blue-800/80 border border-blue-600/50'
-                        }`}
-                >
-                    <div className="flex items-center justify-between gap-4">
-                        <div className="flex-1">
-                            <h3 className="font-semibold text-white mb-1">
-                                {applying
-                                    ? 'Updating…'
-                                    : critical
-                                        ? '⚠️ Required update'
-                                        : '✨ Update ready'}
-                            </h3>
-                            <p className="text-xs text-gray-300 leading-relaxed">
-                                {applying
-                                    ? `Loading version ${update.version}.`
-                                    : critical
-                                        ? `Version ${update.version} is needed to keep the app working correctly. It will apply in a moment.`
-                                        : `Version ${update.version} installs automatically next time you switch back to the app.`}
-                            </p>
-                        </div>
-
-                        {!applying && (
-                            <div className="flex gap-2 flex-shrink-0">
-                                {!critical && (
-                                    <button
-                                        onClick={() => setDismissed(true)}
-                                        className="px-3 py-2 text-xs font-medium text-gray-300 hover:text-white transition-colors"
-                                    >
-                                        Later
-                                    </button>
-                                )}
-                                <button
-                                    onClick={() => apply(update)}
-                                    className={`px-4 py-2 text-xs font-semibold rounded text-white transition-all ${critical ? 'bg-amber-600 hover:bg-amber-500' : 'bg-blue-600 hover:bg-blue-500'
-                                        }`}
-                                >
-                                    Update now
-                                </button>
-                            </div>
-                        )}
+                <div className={`${styles.panel} ${critical ? styles.critical : ''}`}>
+                    <div className={styles.body}>
+                        <h3 className={styles.title}>
+                            {applying
+                                ? 'Updating…'
+                                : critical
+                                    ? '⚠️ Required update'
+                                    : '✨ Update ready'}
+                        </h3>
+                        <p className={styles.detail}>
+                            {applying
+                                ? `Loading version ${update.version}.`
+                                : critical
+                                    ? `Version ${update.version} is needed to keep the app working correctly. It will apply in a moment.`
+                                    : `Version ${update.version} installs automatically next time you switch back to the app.`}
+                        </p>
                     </div>
+
+                    {!applying && (
+                        <div className={styles.actions}>
+                            {!critical && (
+                                <button
+                                    onClick={() => setDismissed(true)}
+                                    className={styles.later}
+                                >
+                                    Later
+                                </button>
+                            )}
+                            <button onClick={() => apply(update)} className={styles.apply}>
+                                Update now
+                            </button>
+                        </div>
+                    )}
                 </div>
             </motion.div>
         </AnimatePresence>

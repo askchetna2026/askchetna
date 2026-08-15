@@ -1,0 +1,103 @@
+/* Replaces inert Tailwind utilities. Tailwind is not installed, so the classes
+   this component used to carry ("fixed top-0 left-0 right-0 z-50 p-4", the
+   blue/amber gradients, the flex row) matched no rules at all and the banner
+   rendered as unstyled stacked text across the full width.
+
+   The colours are the brand tokens rather than a translation of the old
+   blue-600/amber-600, which were never part of this palette. */
+
+.wrap {
+    position: fixed;
+    /* Native-only surface pinned to the top edge, and viewport-fit=cover is set
+       globally — without the inset it sits under the status bar / notch. */
+    top: calc(env(safe-area-inset-top, 0px) + 12px);
+    left: calc(env(safe-area-inset-left, 0px) + 12px);
+    right: calc(env(safe-area-inset-right, 0px) + 12px);
+    z-index: 50;
+}
+
+.panel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    background: var(--bg-panel);
+    border: 1px solid var(--accent-gold-decor);
+    box-shadow: 0 8px 24px rgba(var(--foreground-rgb), 0.16);
+}
+
+/* A required update is the one the user cannot wave away, so it gets the
+   attention colour the CTA uses everywhere else. */
+.critical {
+    border-color: var(--accent-coral-decor);
+}
+
+.body {
+    flex: 1;
+    min-width: 0;
+}
+
+.title {
+    font-weight: 600;
+    color: var(--foreground);
+    margin: 0 0 4px;
+    font-size: 0.95rem;
+}
+
+.detail {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.later,
+.apply {
+    padding: 8px 14px;
+    font-size: 0.78rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.later {
+    font-weight: 500;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+}
+
+.apply {
+    font-weight: 600;
+    color: var(--bg-primary);
+    background: var(--accent-gold);
+    border: 1px solid transparent;
+}
+
+.critical .apply {
+    background: var(--accent-coral);
+}
+
+/* Gated: on a touch device an ungated :hover fires on tap and stays applied,
+   leaving the button looking pressed after the banner is gone. */
+@media (hover: hover) and (pointer: fine) {
+    .later:hover {
+        color: var(--foreground);
+    }
+
+    .apply:hover {
+        background: var(--accent-gold-decor);
+    }
+
+    .critical .apply:hover {
+        background: var(--accent-coral-decor);
+    }
+}

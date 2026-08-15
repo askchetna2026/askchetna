@@ -10,13 +10,13 @@
 }
 
 .title {
-    font-size: 3rem;
+    font-size: var(--text-48);
     color: var(--primary);
     margin-bottom: 16px;
 }
 
 .subtitle {
-    font-size: 1.25rem;
+    font-size: var(--text-20);
     color: var(--secondary);
     max-width: 600px;
     margin: 0 auto;
@@ -40,13 +40,13 @@
     text-transform: uppercase;
     letter-spacing: 0.12em;
     color: var(--accent-gold);
-    font-size: 0.78rem;
+    font-size: var(--text-12);
     font-weight: 700;
     margin-bottom: 12px;
 }
 
 .contextTitle {
-    font-size: 1.7rem;
+    font-size: var(--text-28);
     color: var(--primary);
     margin-bottom: 12px;
 }
@@ -125,27 +125,27 @@
     text-transform: uppercase;
     letter-spacing: 0.15em;
     color: var(--accent-gold);
-    font-size: 0.85rem;
+    font-size: var(--text-14);
     font-weight: 600;
     margin-bottom: 16px;
 }
 
 .price {
     font-family: var(--font-heading);
-    font-size: 3rem;
+    font-size: var(--text-48);
     color: var(--primary);
     margin-bottom: 8px;
 }
 
 .priceUnit {
     color: var(--secondary);
-    font-size: 1rem;
+    font-size: var(--text-16);
     margin-bottom: 24px;
 }
 
 .recommendedNote {
     color: var(--accent-gold);
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     margin: -8px 0 20px;
 }
 
@@ -159,7 +159,7 @@
     padding: 8px 0;
     padding-left: 24px;
     position: relative;
-    font-size: 1rem;
+    font-size: var(--text-16);
 }
 
 .features li::before {
@@ -206,7 +206,7 @@
 }
 
 .infoSection h2 {
-    font-size: 1.5rem;
+    font-size: var(--text-24);
     color: var(--primary);
     margin-bottom: 20px;
 }
@@ -240,7 +240,7 @@
 
 .noteBox p {
     color: var(--secondary);
-    font-size: 1.05rem;
+    font-size: var(--text-16);
     line-height: 1.7;
     margin: 0;
     font-style: italic;
@@ -252,7 +252,7 @@
     }
 
     .title {
-        font-size: 2.2rem;
+        font-size: var(--text-36);
     }
 
     .pricingGrid {
@@ -271,6 +271,6 @@
     }
 
     .price {
-        font-size: 2.5rem;
+        font-size: var(--text-40);
     }
 }

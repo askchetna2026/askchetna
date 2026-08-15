@@ -101,7 +101,7 @@
 
 .tagline {
     margin: 0;
-    font-size: 0.66rem;
+    font-size: var(--text-11);
     letter-spacing: 0.24em;
     text-transform: uppercase;
     color: var(--accent-gold);
@@ -129,7 +129,7 @@
 
 .skyLabel {
     display: block;
-    font-size: 0.6rem;
+    font-size: var(--text-10);
     letter-spacing: 0.2em;
     text-transform: uppercase;
     color: var(--text-muted);
@@ -145,7 +145,7 @@
 
 .skyTheme {
     margin: 0;
-    font-size: 0.82rem;
+    font-size: var(--text-13);
     color: var(--accent-gold);
 }
 
@@ -178,7 +178,7 @@
     align-items: flex-start;
     gap: 11px;
     text-align: left;
-    font-size: 0.83rem;
+    font-size: var(--text-13);
     line-height: 1.4;
     color: var(--text-muted);
 }
@@ -218,7 +218,7 @@
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-float);
 
-    font-size: 1rem;
+    font-size: var(--text-16);
     font-weight: 600;
     letter-spacing: 0.01em;
     text-decoration: none;
@@ -236,7 +236,7 @@
     min-height: 36px;
     display: flex;
     align-items: center;
-    font-size: 0.88rem;
+    font-size: var(--text-14);
     font-weight: 500;
     color: var(--accent-gold);
     text-decoration: none;
@@ -248,7 +248,7 @@
 
 .fineprint {
     margin: 0;
-    font-size: 0.72rem;
+    font-size: var(--text-12);
     color: var(--text-muted);
 }
 

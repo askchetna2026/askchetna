@@ -11,14 +11,14 @@
 
 .title {
     font-family: var(--font-heading);
-    font-size: 3.5rem;
+    font-size: var(--text-56);
     color: var(--accent-gold);
     margin-bottom: 12px;
     letter-spacing: -0.02em;
 }
 
 .subtitle {
-    font-size: 1.1rem;
+    font-size: var(--text-18);
     color: var(--secondary);
     max-width: 600px;
     margin: 0 auto;
@@ -46,7 +46,7 @@
     border: 1px solid var(--card-border);
     border-radius: 100px;
     color: var(--foreground);
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     transition: all 0.3s ease;
 }
 
@@ -63,7 +63,7 @@
     border-radius: 100px;
     font-weight: 700;
     text-decoration: none;
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
@@ -112,7 +112,7 @@
 
 .topicTitle {
     font-family: var(--font-heading);
-    font-size: 1.6rem;
+    font-size: var(--text-24);
     color: var(--foreground);
     margin: 0;
     line-height: 1.2;
@@ -124,7 +124,7 @@
     gap: 12px;
     flex-wrap: wrap;
     color: var(--secondary);
-    font-size: 0.85rem;
+    font-size: var(--text-14);
 }
 
 .author {
@@ -144,7 +144,7 @@
 
 .topicSnippet {
     color: var(--secondary);
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     line-height: 1.5;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -164,7 +164,7 @@
     align-items: center;
     gap: 6px;
     color: var(--secondary);
-    font-size: 0.8rem;
+    font-size: var(--text-13);
     font-weight: 500;
 }
 
@@ -205,7 +205,7 @@
     }
 
     .title {
-        font-size: 2.5rem;
+        font-size: var(--text-40);
     }
 
     .actions {
@@ -224,7 +224,7 @@
 }
 
     .topicTitle {
-        font-size: 1.3rem;
+        font-size: var(--text-20);
     }
 
     .topicMeta {
@@ -232,6 +232,6 @@
     }
 
     .statItem {
-        font-size: 0.75rem;
+        font-size: var(--text-12);
     }
 }

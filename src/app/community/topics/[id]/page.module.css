@@ -7,7 +7,7 @@
 .backLink {
     color: var(--secondary);
     text-decoration: none;
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     display: flex;
     align-items: center;
     gap: 8px;
@@ -24,7 +24,7 @@
 
 .topicTitle {
     font-family: var(--font-heading);
-    font-size: 2.8rem;
+    font-size: var(--text-48);
     color: var(--accent-gold);
     margin-bottom: 24px;
     line-height: 1.1;
@@ -60,12 +60,12 @@
 }
 
 .date {
-    font-size: 0.85rem;
+    font-size: var(--text-14);
     color: var(--secondary);
 }
 
 .content {
-    font-size: 1.15rem;
+    font-size: var(--text-18);
     line-height: 1.8;
     color: var(--foreground);
     white-space: pre-wrap;
@@ -74,7 +74,7 @@
 
 .repliesHeader {
     font-family: var(--font-heading);
-    font-size: 2rem;
+    font-size: var(--text-32);
     color: var(--foreground);
     margin-bottom: 24px;
 }
@@ -102,7 +102,7 @@
 }
 
 .replyContent {
-    font-size: 1rem;
+    font-size: var(--text-16);
     line-height: 1.6;
     color: var(--secondary);
     white-space: pre-wrap;
@@ -125,7 +125,7 @@
     padding: 16px;
     color: var(--foreground);
     font-family: inherit;
-    font-size: 1rem;
+    font-size: var(--text-16);
     margin-bottom: 16px;
 }
 
@@ -176,7 +176,7 @@
     }
 
     .topicTitle {
-        font-size: 2rem;
+        font-size: var(--text-32);
     }
 
     .mainPost {
@@ -184,7 +184,7 @@
     }
 
     .content {
-        font-size: 1rem;
+        font-size: var(--text-16);
     }
 
     .replyForm {
@@ -194,10 +194,10 @@
 
 @media (max-width: 480px) {
     .topicTitle {
-        font-size: 1.75rem;
+        font-size: var(--text-28);
     }
 
     .repliesHeader {
-        font-size: 1.55rem;
+        font-size: var(--text-24);
     }
 }

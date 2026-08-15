@@ -15,7 +15,7 @@
 }
 
 .eyebrow {
-    font-size: 0.62rem;
+    font-size: var(--text-10);
     letter-spacing: 0.2em;
     text-transform: uppercase;
     font-weight: 700;
@@ -35,7 +35,7 @@
 }
 
 .asSeeker {
-    font-size: 0.7rem;
+    font-size: var(--text-11);
     letter-spacing: 0.11em;
     text-transform: uppercase;
     font-weight: 700;
@@ -87,7 +87,7 @@
 }
 
 .dutyDesc {
-    font-size: 0.86rem;
+    font-size: var(--text-14);
     margin-top: 2px;
 }
 
@@ -141,7 +141,7 @@
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    font-size: 0.76rem;
+    font-size: var(--text-12);
     padding: 11px 22px;
     border-radius: var(--radius-xs);
     border: 1px solid transparent;
@@ -205,7 +205,7 @@
 
 .btnSm {
     padding: 8px 15px;
-    font-size: 0.7rem;
+    font-size: var(--text-11);
 }
 
 /* ══ Working spread ══════════════════════════════════════════════════════ */
@@ -241,14 +241,14 @@
 .head h2 {
     font-family: var(--font-heading);
     font-weight: 600;
-    font-size: 1rem;
+    font-size: var(--text-16);
     letter-spacing: 0.16em;
     text-transform: uppercase;
     margin: 0;
 }
 
 .count {
-    font-size: 0.72rem;
+    font-size: var(--text-12);
     color: var(--text-muted);
     font-variant-numeric: tabular-nums;
 }
@@ -285,11 +285,11 @@
 
 .liveWho {
     font-family: var(--font-heading);
-    font-size: 1.14rem;
+    font-size: var(--text-18);
 }
 
 .liveQ {
-    font-size: 0.88rem;
+    font-size: var(--text-14);
     color: var(--text-muted);
     margin-top: 5px;
     max-width: 52ch;
@@ -297,7 +297,7 @@
 
 .clock {
     font-family: var(--font-heading);
-    font-size: 1.72rem;
+    font-size: var(--text-28);
     font-variant-numeric: tabular-nums;
     color: var(--foreground);
     line-height: 1;
@@ -307,7 +307,7 @@
 .clock small {
     display: block;
     font-family: var(--font-main);
-    font-size: 0.58rem;
+    font-size: var(--text-10);
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--text-muted);
@@ -372,18 +372,18 @@
 .qName {
     display: block;
     font-weight: 600;
-    font-size: 0.94rem;
+    font-size: var(--text-15);
 }
 
 .qMeta {
     display: block;
-    font-size: 0.76rem;
+    font-size: var(--text-12);
     color: var(--text-muted);
     margin-top: 1px;
 }
 
 .qWait {
-    font-size: 0.72rem;
+    font-size: var(--text-12);
     color: var(--text-muted);
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
@@ -392,7 +392,7 @@
 
 .qWait b {
     display: block;
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     color: var(--foreground);
     font-weight: 600;
 }
@@ -401,13 +401,13 @@
     padding: 34px 20px;
     text-align: center;
     color: var(--text-muted);
-    font-size: 0.88rem;
+    font-size: var(--text-14);
 }
 
 .empty b {
     display: block;
     font-family: var(--font-heading);
-    font-size: 1.05rem;
+    font-size: var(--text-16);
     color: var(--foreground);
     margin-bottom: 5px;
     font-weight: 600;
@@ -428,14 +428,14 @@
     display: block;
     font-family: var(--font-heading);
     font-weight: 600;
-    font-size: 1.3rem;
+    font-size: var(--text-20);
     color: var(--foreground);
     margin-bottom: 9px;
 }
 
 .restful p {
     color: var(--text-muted);
-    font-size: 0.92rem;
+    font-size: var(--text-15);
     line-height: 1.65;
     max-width: 52ch;
 }
@@ -444,7 +444,7 @@
     margin-top: 12px;
     padding-top: 12px;
     border-top: 1px solid var(--card-border);
-    font-size: 0.85rem;
+    font-size: var(--text-14);
 }
 
 .inlineLink {
@@ -483,11 +483,11 @@
 
 .reqName {
     font-weight: 600;
-    font-size: 0.94rem;
+    font-size: var(--text-15);
 }
 
 .reqMeta {
-    font-size: 0.76rem;
+    font-size: var(--text-12);
     color: var(--text-muted);
     margin-top: 2px;
 }
@@ -506,12 +506,12 @@
 
 .slot b {
     font-family: var(--font-heading);
-    font-size: 1.02rem;
+    font-size: var(--text-16);
     font-variant-numeric: tabular-nums;
 }
 
 .slot span {
-    font-size: 0.72rem;
+    font-size: var(--text-12);
     color: var(--text-muted);
 }
 
@@ -528,7 +528,7 @@
 
 .counterLabel {
     display: block;
-    font-size: 0.72rem;
+    font-size: var(--text-12);
     letter-spacing: 0.06em;
     text-transform: uppercase;
     font-weight: 700;
@@ -549,7 +549,7 @@
 }
 
 .counterHint {
-    font-size: 0.72rem;
+    font-size: var(--text-12);
     color: var(--text-muted);
     margin-top: 7px;
     line-height: 1.5;
@@ -560,7 +560,7 @@
     padding: 14px 16px;
     border: 1px dashed var(--card-border);
     border-radius: var(--radius-xs);
-    font-size: 0.76rem;
+    font-size: var(--text-12);
     color: var(--text-muted);
     line-height: 1.6;
 }
@@ -590,7 +590,7 @@
 
 .upDate {
     font-family: var(--font-heading);
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
 }
@@ -598,7 +598,7 @@
 .upDate small {
     display: block;
     font-family: var(--font-main);
-    font-size: 0.63rem;
+    font-size: var(--text-10);
     color: var(--text-muted);
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -609,13 +609,13 @@
 .upName {
     flex: 1;
     min-width: 0;
-    font-size: 0.88rem;
+    font-size: var(--text-14);
 }
 
 .upName small {
     display: block;
     color: var(--text-muted);
-    font-size: 0.74rem;
+    font-size: var(--text-12);
 }
 
 /* ── The day, in four figures ──────────────────────────────────────────
@@ -650,7 +650,7 @@
 
 .figure span {
     display: block;
-    font-size: 0.6rem;
+    font-size: var(--text-10);
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--text-muted);
@@ -695,23 +695,23 @@
 }
 
 .moneyKey {
-    font-size: 0.78rem;
+    font-size: var(--text-12);
     color: var(--text-muted);
 }
 
 .moneyVal {
     font-family: var(--font-heading);
-    font-size: 1.28rem;
+    font-size: var(--text-20);
     font-variant-numeric: tabular-nums;
 }
 
 .moneySmall {
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     color: var(--text-muted);
 }
 
 .moneyNote {
-    font-size: 0.72rem;
+    font-size: var(--text-12);
     color: var(--text-muted);
     margin-top: 14px;
     line-height: 1.5;
@@ -731,11 +731,11 @@
 
 .profName {
     font-family: var(--font-heading);
-    font-size: 1.1rem;
+    font-size: var(--text-18);
 }
 
 .profSub {
-    font-size: 0.74rem;
+    font-size: var(--text-12);
     color: var(--text-muted);
     margin-top: 2px;
 }
@@ -748,7 +748,7 @@
 }
 
 .tag {
-    font-size: 0.66rem;
+    font-size: var(--text-11);
     letter-spacing: 0.06em;
     padding: 4px 9px;
     border: 1px solid var(--card-border);
@@ -769,7 +769,7 @@
 }
 
 .profHint {
-    font-size: 0.7rem;
+    font-size: var(--text-11);
     color: var(--text-muted);
 }
 
@@ -806,7 +806,7 @@
 
 .gateTitle {
     font-family: var(--font-heading);
-    font-size: 1.3rem;
+    font-size: var(--text-20);
     margin-bottom: 8px;
 }
 
@@ -820,7 +820,7 @@
     margin-top: 16px;
     padding: 11px 14px;
     border-radius: var(--radius-xs);
-    font-size: 0.85rem;
+    font-size: var(--text-14);
 }
 
 .error {

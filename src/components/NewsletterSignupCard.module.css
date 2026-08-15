@@ -26,7 +26,7 @@
     border-radius: 999px;
     background: rgba(181, 137, 46, 0.12);
     color: var(--accent-gold);
-    font-size: 0.78rem;
+    font-size: var(--text-12);
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -44,14 +44,14 @@
     margin: 0;
     color: var(--foreground);
     opacity: 0.9;
-    font-size: 1rem;
+    font-size: var(--text-16);
     line-height: 1.7;
 }
 
 .helper {
     margin: 0;
     color: var(--text-muted);
-    font-size: 0.92rem;
+    font-size: var(--text-15);
     line-height: 1.6;
 }
 
@@ -74,7 +74,7 @@
 
 .inputLabel {
     color: var(--text-muted);
-    font-size: 0.82rem;
+    font-size: var(--text-13);
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -141,7 +141,7 @@
        app: navy on the dark theme's bright gold, parchment on the light theme's
        deep gold. Both clear AA; the hardcode did not. */
     color: var(--btn-fg);
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     font-weight: 800;
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
@@ -167,7 +167,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 0.92rem;
+    font-size: var(--text-15);
     line-height: 1.5;
 }
 
@@ -189,12 +189,12 @@
 
 .secondaryText {
     color: var(--text-muted);
-    font-size: 0.88rem;
+    font-size: var(--text-14);
 }
 
 .secondaryLink {
     color: var(--accent-gold);
-    font-size: 0.92rem;
+    font-size: var(--text-15);
     font-weight: 700;
     text-decoration: none;
 }

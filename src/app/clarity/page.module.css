@@ -17,14 +17,14 @@ html.native-app .pageContainer {
 
 .title {
     font-family: var(--font-heading);
-    font-size: 3.5rem;
+    font-size: var(--text-56);
     color: var(--primary);
     margin-bottom: 24px;
     text-shadow: 0 0 40px rgba(74, 47, 168, 0.4);
 }
 
 .subtitle {
-    font-size: 1.25rem;
+    font-size: var(--text-20);
     color: var(--secondary);
     margin-bottom: 48px;
     font-weight: 300;
@@ -46,7 +46,7 @@ html.native-app .pageContainer {
 
 .rulesBox h3 {
     font-family: var(--font-heading);
-    font-size: 1.5rem;
+    font-size: var(--text-24);
     color: var(--accent-gold);
     margin-bottom: 16px;
     font-weight: 400;
@@ -69,7 +69,7 @@ html.native-app .pageContainer {
     position: absolute;
     left: 0;
     color: var(--accent-gold);
-    font-size: 1.5rem;
+    font-size: var(--text-24);
 }
 
 /* Was `position: sticky; bottom: 24px` on the LAST element in the flow, which
@@ -118,7 +118,7 @@ html.native-app .inputContainer {
     border: none;
     background: var(--card-bg);
     font-family: var(--font-main);
-    font-size: 1.05rem;
+    font-size: var(--text-16);
     resize: none;
     transition: all 0.3s ease;
     color: var(--foreground);
@@ -256,7 +256,7 @@ html.native-app .inputContainer {
 }
 
 .sectionTitle {
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     text-transform: uppercase;
     color: var(--accent-gold);
     letter-spacing: 0.15em;
@@ -266,7 +266,7 @@ html.native-app .inputContainer {
 
 .questionContext {
     font-family: var(--font-heading);
-    font-size: 1.3rem;
+    font-size: var(--text-20);
     color: var(--primary);
     font-style: italic;
     line-height: 1.6;
@@ -277,7 +277,7 @@ html.native-app .inputContainer {
 }
 
 .section p {
-    font-size: 1.1rem;
+    font-size: var(--text-18);
     line-height: 1.8;
     color: var(--secondary);
 }
@@ -306,7 +306,7 @@ html.native-app .inputContainer {
     padding: 8px 24px;
     border-radius: 50px;
     font-weight: 800;
-    font-size: 1.1rem;
+    font-size: var(--text-18);
     letter-spacing: 0.05em;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
@@ -330,7 +330,7 @@ html.native-app .inputContainer {
 }
 
 .verdictSubtitle {
-    font-size: 0.9rem !important;
+    font-size: var(--text-14) !important;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: var(--secondary);
@@ -346,7 +346,7 @@ html.native-app .inputContainer {
 }
 
 .treeStep {
-    font-size: 1rem !important;
+    font-size: var(--text-16) !important;
     color: var(--primary) !important;
     padding: 12px 16px;
     background: var(--card-bg);
@@ -367,7 +367,7 @@ html.native-app .inputContainer {
 .reflectionList li {
     padding: 12px 0 12px 28px;
     position: relative;
-    font-size: 1.05rem;
+    font-size: var(--text-16);
     line-height: 1.7;
     color: var(--secondary);
 }
@@ -410,7 +410,7 @@ html.native-app .inputContainer {
 }
 
 .ethicalClosing {
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     color: var(--secondary);
     font-style: italic;
 }
@@ -436,7 +436,7 @@ html.native-app .inputContainer {
 }
 
 .creditsInfo {
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     color: var(--accent-gold);
     margin-bottom: 2rem;
     font-weight: 500;
@@ -477,11 +477,11 @@ html.native-app .inputContainer {
     }
 
     .title {
-        font-size: 2rem;
+        font-size: var(--text-32);
     }
 
     .subtitle {
-        font-size: 1rem;
+        font-size: var(--text-16);
     }
 
     .inputContainer {
@@ -527,7 +527,7 @@ html.native-app .inputContainer {
     gap: 8px;
     color: var(--text-muted);
     text-decoration: none;
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     transition: color 0.2s ease;
 }
 
@@ -542,7 +542,7 @@ html.native-app .inputContainer {
 }
 
 .historyLabel {
-    font-size: 0.7rem;
+    font-size: var(--text-11);
     letter-spacing: 0.2em;
     color: var(--accent-gold);
     margin-bottom: 4px;
@@ -550,7 +550,7 @@ html.native-app .inputContainer {
 }
 
 .historyDate {
-    font-size: 0.85rem;
+    font-size: var(--text-14);
     color: var(--text-muted);
 }
 
@@ -577,7 +577,7 @@ html.native-app .inputContainer {
 }
 
 .historyFooter p {
-    font-size: 0.85rem;
+    font-size: var(--text-14);
     color: var(--text-muted);
     font-style: italic;
 }
@@ -609,7 +609,7 @@ html.native-app .inputContainer {
     border: 1px solid rgba(181, 137, 46, 0.25);
     border-radius: 20px;
     color: var(--foreground);
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     cursor: pointer;
     transition: all 0.3s ease;
 }
@@ -642,7 +642,7 @@ html.native-app .inputContainer {
     align-items: center;
     cursor: pointer;
     font-family: var(--font-heading);
-    font-size: 1rem;
+    font-size: var(--text-16);
     font-weight: 500;
     color: var(--accent-gold);
     transition: background 0.3s;
@@ -662,7 +662,7 @@ html.native-app .inputContainer {
 
 /* Character Input Guide */
 .characterGuide {
-    font-size: 0.85rem;
+    font-size: var(--text-14);
     color: var(--text-muted);
     line-height: 1.5;
     text-align: center;
@@ -680,7 +680,7 @@ html.native-app .inputContainer {
     text-align: center;
     font-style: italic;
     color: var(--accent-gold);
-    font-size: 1.05rem;
+    font-size: var(--text-16);
     line-height: 1.6;
     max-width: 600px;
     margin: 32px auto 0;
@@ -706,7 +706,7 @@ html.native-app .inputContainer {
     color: var(--accent-gold);
     padding: 10px 22px;
     border-radius: 50px;
-    font-size: 0.85rem;
+    font-size: var(--text-14);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -727,7 +727,7 @@ html.native-app .inputContainer {
     gap: 8px;
     margin: 28px auto 8px;
     max-width: 640px;
-    font-size: 0.78rem;
+    font-size: var(--text-12);
     color: var(--text-muted);
     opacity: 0.7;
     text-align: center;

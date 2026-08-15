@@ -5,7 +5,7 @@
 }
 
 .title {
-    font-size: 3rem;
+    font-size: var(--text-48);
     color: var(--primary);
     margin-bottom: 40px;
     text-align: center;
@@ -24,7 +24,7 @@
 }
 
 .section h2 {
-    font-size: 1.5rem;
+    font-size: var(--text-24);
     color: var(--primary);
     margin-bottom: 16px;
     border-bottom: 1px solid var(--card-border);
@@ -34,7 +34,7 @@
 .section p,
 .section ul {
     color: var(--secondary);
-    font-size: 1.05rem;
+    font-size: var(--text-16);
     line-height: 1.8;
 }
 

@@ -17,7 +17,7 @@
   vertical-align: top;
   margin: 6px 0 6px 10px;
   font-weight: 700;
-  font-size: 20px;
+  font-size: var(--text-20);
   line-height: 1;
 }
 
@@ -28,5 +28,5 @@
 .storybook-header .welcome {
   margin-right: 10px;
   color: #333;
-  font-size: 14px;
+  font-size: var(--text-14);
 }

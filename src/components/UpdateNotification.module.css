@@ -43,12 +43,12 @@
     font-weight: 600;
     color: var(--foreground);
     margin: 0 0 4px;
-    font-size: 0.95rem;
+    font-size: var(--text-15);
 }
 
 .detail {
     color: var(--text-muted);
-    font-size: 0.8rem;
+    font-size: var(--text-13);
     line-height: 1.5;
     margin: 0;
 }
@@ -62,7 +62,7 @@
 .later,
 .apply {
     padding: 8px 14px;
-    font-size: 0.78rem;
+    font-size: var(--text-12);
     border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.2s ease, color 0.2s ease;

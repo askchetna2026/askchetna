@@ -17,7 +17,7 @@
 }
 
 .eyebrow {
-    font-size: 0.62rem;
+    font-size: var(--text-10);
     letter-spacing: 0.2em;
     text-transform: uppercase;
     font-weight: 700;
@@ -34,7 +34,7 @@
 }
 
 .back {
-    font-size: 0.75rem;
+    font-size: var(--text-12);
     letter-spacing: 0.08em;
     text-transform: uppercase;
     font-weight: 700;
@@ -70,7 +70,7 @@
 .head h2 {
     font-family: var(--font-heading);
     font-weight: 600;
-    font-size: 1rem;
+    font-size: var(--text-16);
     letter-spacing: 0.16em;
     text-transform: uppercase;
     margin: 0;
@@ -84,7 +84,7 @@
 }
 
 .explain {
-    font-size: 0.82rem;
+    font-size: var(--text-13);
     color: var(--text-muted);
     line-height: 1.65;
     margin-bottom: 18px;
@@ -109,7 +109,7 @@
 
 .label {
     display: block;
-    font-size: 0.68rem;
+    font-size: var(--text-11);
     letter-spacing: 0.14em;
     text-transform: uppercase;
     font-weight: 700;
@@ -146,7 +146,7 @@
 
 .counter {
     display: block;
-    font-size: 0.7rem;
+    font-size: var(--text-11);
     color: var(--text-muted);
     margin-top: 5px;
 }
@@ -161,7 +161,7 @@
 
 .chip {
     font: inherit;
-    font-size: 0.74rem;
+    font-size: var(--text-12);
     padding: 6px 12px;
     color: var(--text-muted);
     background: transparent;
@@ -221,7 +221,7 @@
 }
 
 .dash {
-    font-size: 0.78rem;
+    font-size: var(--text-12);
     color: var(--text-muted);
 }
 
@@ -247,7 +247,7 @@
 }
 
 .emptyRow {
-    font-size: 0.84rem;
+    font-size: var(--text-13);
     color: var(--text-muted);
     padding: 18px 0;
 }
@@ -257,7 +257,7 @@
     align-items: center;
     gap: 7px;
     font: inherit;
-    font-size: 0.74rem;
+    font-size: var(--text-12);
     letter-spacing: 0.06em;
     text-transform: uppercase;
     font-weight: 700;
@@ -292,7 +292,7 @@
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    font-size: 0.76rem;
+    font-size: var(--text-12);
     padding: 11px 22px;
     border-radius: var(--radius-xs);
     border: 1px solid var(--btn-bg);
@@ -316,7 +316,7 @@
 
 .ok,
 .bad {
-    font-size: 0.82rem;
+    font-size: var(--text-13);
     line-height: 1.5;
     flex: 1 1 240px;
 }

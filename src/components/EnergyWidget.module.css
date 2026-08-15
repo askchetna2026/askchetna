@@ -12,7 +12,7 @@
 }
 
 .badge {
-    font-size: 0.75rem;
+    font-size: var(--text-12);
     text-transform: uppercase;
     letter-spacing: 0.15em;
     color: var(--accent-gold);
@@ -81,14 +81,14 @@
 
 .transit {
     font-family: var(--font-heading);
-    font-size: 1.5rem;
+    font-size: var(--text-24);
     color: var(--primary);
     line-height: 1.1;
     margin-bottom: 4px;
 }
 
 .theme {
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     color: var(--secondary);
 }
 
@@ -104,7 +104,7 @@
 }
 
 .description p {
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     line-height: 1.7;
     color: var(--foreground);
     text-align: justify;
@@ -114,7 +114,7 @@
     font-family: var(--font-heading);
     font-style: italic;
     font-weight: 500;
-    font-size: 1.1rem;
+    font-size: var(--text-18);
     color: var(--foreground);
     line-height: 1.5;
 }
@@ -132,7 +132,7 @@
 }
 
 .elementLabel {
-    font-size: 0.75rem;
+    font-size: var(--text-12);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: var(--text-muted);
@@ -140,7 +140,7 @@
 }
 
 .elementValue {
-    font-size: 1rem;
+    font-size: var(--text-16);
     font-weight: 600;
     color: var(--accent-gold);
     display: inline-flex;

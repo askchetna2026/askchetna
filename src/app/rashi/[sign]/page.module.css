@@ -8,7 +8,7 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    font-size: 0.85rem;
+    font-size: var(--text-14);
     color: var(--text-muted);
     text-decoration: none;
     margin-bottom: 24px;
@@ -60,7 +60,7 @@
 }
 
 .english {
-    font-size: 0.8rem;
+    font-size: var(--text-13);
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--accent-gold);
@@ -68,7 +68,7 @@
 
 .trait {
     margin-top: 12px;
-    font-size: 1.05rem;
+    font-size: var(--text-16);
     line-height: 1.6;
     color: var(--foreground);
 }
@@ -93,7 +93,7 @@
 }
 
 .attributes dt {
-    font-size: 0.7rem;
+    font-size: var(--text-11);
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--text-muted);
@@ -101,7 +101,7 @@
 }
 
 .attributes dd {
-    font-size: 0.92rem;
+    font-size: var(--text-15);
     color: var(--foreground);
 }
 
@@ -127,7 +127,7 @@
     margin-top: 18px;
     padding-top: 18px;
     border-top: 1px solid var(--border-soft);
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     font-style: italic;
     color: var(--text-muted) !important;
 }
@@ -167,7 +167,7 @@
 .pagerLink small {
     display: block;
     font-family: var(--font-main);
-    font-size: 0.68rem;
+    font-size: var(--text-11);
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--text-muted);

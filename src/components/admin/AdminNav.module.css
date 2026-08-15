@@ -14,7 +14,7 @@
     cursor: pointer;
     border-radius: var(--radius-sm);
     transition: all 0.2s;
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     font-weight: 500;
     white-space: nowrap;
 }
@@ -41,7 +41,7 @@
 .groupLabel {
     margin: 1rem 0 0.25rem;
     padding: 0 1rem;
-    font-size: 0.7rem;
+    font-size: var(--text-11);
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -65,7 +65,7 @@
 
     .navItem {
         padding: 0.55rem 0.85rem;
-        font-size: 0.85rem;
+        font-size: var(--text-14);
         border: 1px solid var(--border-soft);
         border-radius: 999px;
     }

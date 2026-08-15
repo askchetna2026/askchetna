@@ -16,7 +16,7 @@
 }
 
 .subtitle {
-    font-size: 1.25rem;
+    font-size: var(--text-20);
     color: var(--secondary);
     max-width: 600px;
     margin: 0 auto;
@@ -35,14 +35,14 @@
     text-transform: uppercase;
     letter-spacing: 0.15em;
     color: var(--accent-gold);
-    font-size: 0.8rem;
+    font-size: var(--text-13);
     margin-bottom: 12px;
     font-weight: 600;
 }
 
 .phaseSummaryTheme {
     font-family: var(--font-heading);
-    font-size: 1.7rem;
+    font-size: var(--text-28);
     line-height: 1.3;
     color: var(--foreground);
     margin-bottom: 16px;
@@ -51,14 +51,14 @@
 .phaseSummaryText {
     /* Capped: measured at 93-98 characters a line on desktop. */
     max-width: var(--measure);
-    font-size: 1.05rem;
+    font-size: var(--text-16);
     line-height: 1.7;
     color: var(--secondary);
     margin-bottom: 16px;
 }
 
 .phaseSummaryClosing {
-    font-size: 1rem;
+    font-size: var(--text-16);
     color: var(--accent-gold);
     font-style: italic;
     margin-bottom: 14px;
@@ -67,7 +67,7 @@
 }
 
 .phaseSummaryFooter {
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     color: var(--text-muted);
     opacity: 0.85;
     font-style: italic;
@@ -93,7 +93,7 @@
     text-transform: uppercase;
     letter-spacing: 0.15em;
     color: var(--accent-gold);
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     margin-bottom: 16px;
     font-weight: 600;
 }
@@ -108,7 +108,7 @@
 .periodDates {
     color: var(--secondary);
     font-family: var(--font-main);
-    font-size: 1.1rem;
+    font-size: var(--text-18);
 }
 
 .grid {
@@ -140,7 +140,7 @@
     margin-top: 10px;
     padding-top: 10px;
     border-top: 1px solid var(--card-border);
-    font-size: 0.78rem;
+    font-size: var(--text-12);
     letter-spacing: 0.02em;
     color: var(--text-muted);
 }
@@ -155,7 +155,7 @@
 
 .card h3 {
     margin: 0;
-    font-size: 1.3rem;
+    font-size: var(--text-20);
     color: var(--primary);
 }
 
@@ -180,7 +180,7 @@
 
 .sectionTitle {
     font-family: var(--font-heading);
-    font-size: 1.8rem;
+    font-size: var(--text-28);
     margin-bottom: 32px;
     color: var(--primary);
     text-align: center;
@@ -191,7 +191,7 @@
    in body colour and read as a first paragraph rather than a subtitle. */
 .sectionLede {
     margin-top: 4px;
-    font-size: 0.875rem;
+    font-size: var(--text-14);
     line-height: 1.6;
     letter-spacing: 0.02em;
     color: var(--text-muted);
@@ -240,13 +240,13 @@
 
 .timelineLord {
     font-family: var(--font-heading);
-    font-size: 1.25rem;
+    font-size: var(--text-20);
     color: var(--primary);
     margin-bottom: 4px;
 }
 
 .timelineDate {
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     color: var(--secondary);
 }
 
@@ -257,7 +257,7 @@
     transform: translateX(-50%);
     background: var(--accent-gold-decor);
     color: var(--bg-primary);
-    font-size: 0.65rem;
+    font-size: var(--text-10);
     font-weight: 700;
     text-transform: uppercase;
     padding: 4px 10px;
@@ -325,7 +325,7 @@
     border: 1px solid var(--card-border);
     border-radius: 20px;
     color: var(--secondary);
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -355,7 +355,7 @@
 .selectedInfo {
     text-align: center;
     margin-bottom: 24px;
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     color: var(--secondary);
     opacity: 0.8;
 }
@@ -443,12 +443,12 @@
 .aiCardHeader h3 {
     margin: 0;
     font-family: var(--font-heading);
-    font-size: 1.8rem;
+    font-size: var(--text-28);
     letter-spacing: 0.02em;
 }
 
 .aiContent {
-    font-size: 1.15rem;
+    font-size: var(--text-18);
     line-height: 1.8;
     color: var(--foreground);
     opacity: 0.95;
@@ -476,7 +476,7 @@
     margin-bottom: 12px;
     font-weight: 700;
     text-transform: uppercase;
-    font-size: 0.8rem;
+    font-size: var(--text-13);
     letter-spacing: 0.1em;
 }
 
@@ -485,7 +485,7 @@
 }
 
 .aiCardMini p {
-    font-size: 1rem;
+    font-size: var(--text-16);
     line-height: 1.6;
     color: var(--secondary);
     margin: 0;
@@ -497,7 +497,7 @@
     }
 
     .title {
-        font-size: 2rem;
+        font-size: var(--text-32);
     }
 
     .currentPeriod {
@@ -509,7 +509,7 @@
    in body colour and read as a first paragraph rather than a subtitle. */
 .sectionLede {
     margin-top: 4px;
-    font-size: 0.875rem;
+    font-size: var(--text-14);
     line-height: 1.6;
     letter-spacing: 0.02em;
     color: var(--text-muted);
@@ -546,7 +546,7 @@
     }
 
     .aiCardHeader h3 {
-        font-size: 1.4rem;
+        font-size: var(--text-24);
     }
 }
 
@@ -560,7 +560,7 @@
    in body colour and read as a first paragraph rather than a subtitle. */
 .sectionLede {
     margin-top: 4px;
-    font-size: 0.875rem;
+    font-size: var(--text-14);
     line-height: 1.6;
     letter-spacing: 0.02em;
     color: var(--text-muted);
@@ -633,7 +633,7 @@
 
 .transitTitle {
     margin: 0 0 6px;
-    font-size: 0.78rem;
+    font-size: var(--text-12);
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -642,7 +642,7 @@
 
 .transitText {
     margin: 0;
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     line-height: 1.65;
     color: var(--foreground);
     max-width: var(--measure);
@@ -652,7 +652,7 @@
 
 .avHeading {
     margin: 0 0 6px;
-    font-size: 0.82rem;
+    font-size: var(--text-13);
     font-weight: 700;
     letter-spacing: 0.14em;
     text-transform: uppercase;
@@ -664,7 +664,7 @@
    title attribute that no touch device will ever show. */
 .avExplainer {
     margin: 0 0 16px;
-    font-size: 0.88rem;
+    font-size: var(--text-14);
     line-height: 1.6;
     color: var(--text-muted);
     max-width: var(--measure);
@@ -691,25 +691,25 @@
 }
 
 .avPlanet {
-    font-size: 0.82rem;
+    font-size: var(--text-13);
     font-weight: 600;
     color: var(--foreground);
 }
 
 .avScore {
     font-family: var(--font-heading);
-    font-size: 1.5rem;
+    font-size: var(--text-24);
     line-height: 1.1;
     font-variant-numeric: tabular-nums;
 }
 
 .avScore small {
-    font-size: 0.72rem;
+    font-size: var(--text-12);
     color: var(--text-muted);
 }
 
 .avQuality {
-    font-size: 0.66rem;
+    font-size: var(--text-11);
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -742,7 +742,7 @@
 }
 
 .card.cardPrimary h3 {
-    font-size: 1.45rem;
+    font-size: var(--text-24);
     /* Sentence-case display type reads too loose at the +0.05em the global h3
        carries for small caps. Tightened as it grows, per the size-specific
        tracking rule. */
@@ -750,7 +750,7 @@
 }
 
 .card.cardPrimary p {
-    font-size: 1.08rem;
+    font-size: var(--text-18);
     line-height: 1.65;
     color: var(--foreground);
     max-width: var(--measure);

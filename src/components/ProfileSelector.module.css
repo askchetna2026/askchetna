@@ -16,7 +16,7 @@
 
 .loading {
     color: var(--text-muted);
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     text-align: center;
     padding: 10px;
 }
@@ -49,7 +49,7 @@
     border: 1px solid rgba(var(--foreground-rgb), 0.08);
     border-radius: 8px;
     color: var(--foreground);
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     text-align: left;
     cursor: pointer;
 
@@ -97,7 +97,7 @@
     border: 1px dashed var(--accent-gold);
     color: var(--accent-gold);
     border-radius: 8px;
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     font-weight: 500;
     cursor: pointer;
     margin-top: 4px;
@@ -125,7 +125,7 @@
 /* Shown when the other synastry slot has taken every remaining profile. */
 .emptyHint {
     margin: 0 0 10px;
-    font-size: 0.85rem;
+    font-size: var(--text-14);
     line-height: 1.5;
     color: var(--text-muted);
 }

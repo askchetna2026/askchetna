@@ -13,7 +13,7 @@
     align-items: center;
     gap: 8px;
     color: var(--text-muted);
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     margin-bottom: 20px;
     transition: color 0.2s ease;
 }
@@ -25,7 +25,7 @@
 }
 
 .title {
-    font-size: 2rem;
+    font-size: var(--text-32);
     font-weight: 700;
     margin-bottom: 8px;
     color: var(--foreground);
@@ -33,7 +33,7 @@
 
 .subtitle {
     color: var(--text-muted);
-    font-size: 1rem;
+    font-size: var(--text-16);
 }
 
 .section {
@@ -48,7 +48,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    font-size: 1.2rem;
+    font-size: var(--text-20);
     font-weight: 600;
     color: var(--foreground);
     margin-bottom: 0;
@@ -68,7 +68,7 @@
     color: var(--text-muted);
     padding: 6px 12px;
     border-radius: 6px;
-    font-size: 0.85rem;
+    font-size: var(--text-14);
     cursor: pointer;
     transition: all 0.2s ease;
 }
@@ -153,13 +153,13 @@
 }
 
 .name {
-    font-size: 1.1rem;
+    font-size: var(--text-18);
     font-weight: 600;
     color: var(--foreground);
 }
 
 .details {
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     color: var(--text-muted);
     line-height: 1.6;
 }
@@ -172,7 +172,7 @@
 .activeBadge {
     display: inline-block;
     padding: 3px 10px;
-    font-size: 0.7rem;
+    font-size: var(--text-11);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -185,7 +185,7 @@
 .disabledBadge {
     display: inline-block;
     padding: 3px 10px;
-    font-size: 0.7rem;
+    font-size: var(--text-11);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -204,7 +204,7 @@
     color: var(--btn-fg);
     border-radius: 8px;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     transition: all 0.2s ease;
 }
 
@@ -254,7 +254,7 @@
 
 .emptyState p {
     margin-bottom: 24px;
-    font-size: 1.1rem;
+    font-size: var(--text-18);
 }
 
 .createLink {
@@ -400,7 +400,7 @@
     }
 
     .title {
-        font-size: 1.5rem;
+        font-size: var(--text-24);
     }
 
     .bulkActionBar {
@@ -418,6 +418,6 @@
     .cancelBulkBtn,
     .bulkDeleteBtn {
         flex: 1;
-        font-size: 0.85rem;
+        font-size: var(--text-14);
     }
 }

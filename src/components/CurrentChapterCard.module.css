@@ -17,7 +17,7 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    font-size: 0.7rem;
+    font-size: var(--text-11);
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
@@ -40,7 +40,7 @@
    voice — the same order /timing uses, so a reader who does not know what a
    Mahadasha is still gets the meaning first. */
 .years {
-    font-size: 0.75rem;
+    font-size: var(--text-12);
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--text-muted);
@@ -48,7 +48,7 @@
 }
 
 .asking {
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     line-height: 1.65;
     color: var(--foreground);
     margin: 0;
@@ -56,7 +56,7 @@
 }
 
 .sub {
-    font-size: 0.875rem;
+    font-size: var(--text-14);
     line-height: 1.55;
     color: var(--text-muted);
     margin: 0;
@@ -68,7 +68,7 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    font-size: 0.85rem;
+    font-size: var(--text-14);
     color: var(--accent-gold);
     text-decoration: none;
     align-self: flex-start;

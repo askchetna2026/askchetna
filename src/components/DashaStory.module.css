@@ -14,14 +14,14 @@
 
 .title {
     font-family: var(--font-heading);
-    font-size: 2rem;
+    font-size: var(--text-32);
     color: var(--primary);
     margin-bottom: 8px;
 }
 
 .subtitle {
     color: var(--secondary);
-    font-size: 1rem;
+    font-size: var(--text-16);
 }
 
 .storyGrid {
@@ -53,7 +53,7 @@
     background: rgba(var(--accent-gold-rgb), 0.1);
     color: var(--accent-gold);
     border-radius: 50px;
-    font-size: 0.75rem;
+    font-size: var(--text-12);
     font-weight: 700;
     text-transform: uppercase;
     margin-bottom: 20px;
@@ -73,7 +73,7 @@
 }
 
 .cardContent h4 {
-    font-size: 1.25rem;
+    font-size: var(--text-20);
     color: var(--primary);
     margin-bottom: 4px;
 }
@@ -81,13 +81,13 @@
 .question {
     font-style: italic;
     color: var(--secondary);
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     margin-bottom: 8px;
 }
 
 .dates {
     font-family: monospace;
-    font-size: 0.85rem;
+    font-size: var(--text-14);
     color: var(--foreground);
     opacity: 0.8;
 }
@@ -163,7 +163,7 @@
     align-items: center;
     gap: 10px;
     color: var(--secondary);
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     font-weight: 600;
     margin-bottom: 20px;
 }
@@ -184,13 +184,13 @@
 }
 
 .planet {
-    font-size: 0.8rem;
+    font-size: var(--text-13);
     font-weight: 700;
     color: var(--accent-gold);
 }
 
 .duration {
-    font-size: 0.85rem;
+    font-size: var(--text-14);
     color: var(--foreground);
     opacity: 0.9;
 }

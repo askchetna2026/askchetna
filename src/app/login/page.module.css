@@ -28,7 +28,7 @@
 
 .subtitle {
     color: var(--secondary);
-    font-size: 1rem;
+    font-size: var(--text-16);
     margin-bottom: 40px;
     text-align: center;
     line-height: 1.6;
@@ -43,7 +43,7 @@
     border: 1px solid rgba(230, 57, 70, 0.3);
     border-radius: 8px;
     color: #E63946;
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     margin-bottom: 24px;
 }
 
@@ -59,7 +59,7 @@
 .formGroup label {
     display: block;
     color: var(--primary);
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     font-weight: 500;
     margin-bottom: 8px;
 }
@@ -71,7 +71,7 @@
     border: 1px solid var(--card-border);
     border-radius: 8px;
     color: var(--foreground);
-    font-size: 1rem;
+    font-size: var(--text-16);
     font-family: var(--font-main);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -92,7 +92,7 @@
     align-items: center;
     gap: 12px;
     cursor: pointer;
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     color: var(--secondary);
     transition: color 0.2s ease;
 }
@@ -121,7 +121,7 @@
     color: var(--btn-fg);
     border: none;
     border-radius: 8px;
-    font-size: 1rem;
+    font-size: var(--text-16);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -155,7 +155,7 @@
     background: var(--card-bg);
     padding: 0 16px;
     color: var(--secondary);
-    font-size: 0.9rem;
+    font-size: var(--text-14);
 }
 
 .googleBtn {
@@ -169,7 +169,7 @@
     color: var(--foreground);
     border: 1px solid var(--card-border);
     border-radius: 8px;
-    font-size: 1rem;
+    font-size: var(--text-16);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -186,7 +186,7 @@
     text-align: center;
     margin-top: 32px;
     color: var(--secondary);
-    font-size: 0.95rem;
+    font-size: var(--text-15);
 }
 
 .toggleBtn {
@@ -208,7 +208,7 @@
 .disclaimer {
     margin-top: 24px;
     text-align: center;
-    font-size: 0.85rem;
+    font-size: var(--text-14);
     color: var(--secondary);
     line-height: 1.6;
 }

@@ -28,7 +28,7 @@
 }
 
 .intro {
-  font-size: 0.95rem;
+  font-size: var(--text-15);
   color: var(--text-muted);
   max-width: 52ch;
   margin: 0 auto;
@@ -107,7 +107,7 @@
 }
 
 .cardKey {
-  font-size: 0.55rem;
+  font-size: var(--text-10);
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--accent-gold-text);
@@ -117,11 +117,11 @@
 .cardValue {
   font-family: var(--font-heading), serif;
   color: var(--foreground);
-  font-size: 0.98rem;
+  font-size: var(--text-16);
 }
 
 .cardNote {
-  font-size: 0.71rem;
+  font-size: var(--text-11);
   color: var(--text-muted);
   line-height: 1.45;
 }
@@ -145,7 +145,7 @@
 
 .number {
   font-family: var(--font-heading), serif;
-  font-size: 1.3rem;
+  font-size: var(--text-20);
   color: var(--accent-coral-text);
 }
 
@@ -160,12 +160,12 @@
   font-family: var(--font-heading), serif;
   font-style: italic;
   color: var(--accent-coral-text);
-  font-size: 0.98rem;
+  font-size: var(--text-16);
   margin-top: 3px;
 }
 
 .text {
-  font-size: 0.89rem;
+  font-size: var(--text-14);
   line-height: 1.6;
   max-width: 42ch;
   margin-top: 11px;
@@ -190,7 +190,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.78rem;
+  font-size: var(--text-12);
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;

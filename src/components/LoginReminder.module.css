@@ -58,13 +58,13 @@
 }
 
 .title {
-    font-size: 1.1rem;
+    font-size: var(--text-18);
     color: var(--primary);
     margin: 0;
 }
 
 .text {
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     color: var(--secondary);
     line-height: 1.5;
     margin: 0;
@@ -82,7 +82,7 @@
 .unlockList li {
     position: relative;
     padding-left: 22px;
-    font-size: 0.88rem;
+    font-size: var(--text-14);
     color: var(--secondary);
     line-height: 1.4;
 }

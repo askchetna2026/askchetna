@@ -13,7 +13,7 @@
 
 .container h1 {
     font-family: var(--font-heading);
-    font-size: 3rem;
+    font-size: var(--text-48);
     color: var(--accent-gold);
     margin-bottom: 8px;
     font-weight: 500;
@@ -21,7 +21,7 @@
 
 .lastUpdated {
     color: var(--text-muted);
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     margin-bottom: 40px;
     font-style: italic;
 }
@@ -32,7 +32,7 @@
 
 .container h2 {
     font-family: var(--font-heading);
-    font-size: 1.8rem;
+    font-size: var(--text-28);
     color: var(--foreground);
     margin-top: 48px;
     margin-bottom: 16px;
@@ -41,7 +41,7 @@
 }
 
 .container h3 {
-    font-size: 1.3rem;
+    font-size: var(--text-20);
     color: var(--foreground);
     margin-top: 24px;
     margin-bottom: 12px;
@@ -118,7 +118,7 @@
 .importantNotice h2 {
     margin-top: 0;
     border-bottom: none;
-    font-size: 1.5rem;
+    font-size: var(--text-24);
 }
 
 .importantNotice p:last-child {
@@ -146,7 +146,7 @@
 
 .backLink a {
     color: var(--accent-gold);
-    font-size: 1.1rem;
+    font-size: var(--text-18);
     font-weight: 600;
     text-decoration: none;
     transition: opacity 0.2s;
@@ -164,15 +164,15 @@
     }
 
     .container h1 {
-        font-size: 2.2rem;
+        font-size: var(--text-36);
     }
 
     .container h2 {
-        font-size: 1.5rem;
+        font-size: var(--text-24);
     }
 
     .container h3 {
-        font-size: 1.2rem;
+        font-size: var(--text-20);
     }
 
     .container ul,

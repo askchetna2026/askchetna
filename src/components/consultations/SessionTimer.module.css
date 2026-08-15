@@ -11,7 +11,7 @@
 }
 
 .value {
-    font-size: 1.05rem;
+    font-size: var(--text-16);
     font-weight: 700;
     /* Tabular figures stop the pill twitching as digits change width. */
     font-variant-numeric: tabular-nums;
@@ -19,7 +19,7 @@
 }
 
 .label {
-    font-size: 0.7rem;
+    font-size: var(--text-11);
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--text-muted);

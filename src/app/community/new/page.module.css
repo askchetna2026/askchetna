@@ -11,7 +11,7 @@
 .backLink {
     color: var(--secondary);
     text-decoration: none;
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     display: flex;
     align-items: center;
     gap: 8px;
@@ -27,7 +27,7 @@
 
 .title {
     font-family: var(--font-heading);
-    font-size: 2.8rem;
+    font-size: var(--text-48);
     color: var(--foreground);
     margin: 0;
 }
@@ -49,7 +49,7 @@
 }
 
 .label {
-    font-size: 0.8rem;
+    font-size: var(--text-13);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1.5px;
@@ -62,7 +62,7 @@
     border-radius: 12px;
     padding: 16px;
     color: var(--foreground);
-    font-size: 1.1rem;
+    font-size: var(--text-18);
     font-family: inherit;
     transition: all 0.3s ease;
 }
@@ -86,7 +86,7 @@
     border-radius: 100px;
     border: none;
     font-weight: 800;
-    font-size: 1rem;
+    font-size: var(--text-16);
     cursor: pointer;
     transition: all 0.3s ease;
     align-self: flex-start;
@@ -109,12 +109,12 @@
     background: rgba(255, 71, 71, 0.1);
     padding: 12px 20px;
     border-radius: 10px;
-    font-size: 0.9rem;
+    font-size: var(--text-14);
 }
 
 @media (max-width: 600px) {
     .title {
-        font-size: 2rem;
+        font-size: var(--text-32);
     }
 
     .form {

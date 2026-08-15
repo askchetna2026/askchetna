@@ -11,7 +11,7 @@
     border-radius: var(--radius-sm);
     border: 1px solid rgba(var(--accent-gold-rgb), 0.35);
     background: rgba(var(--accent-gold-rgb), 0.08);
-    font-size: 0.88rem;
+    font-size: var(--text-14);
     line-height: 1.65;
     color: var(--foreground);
 }
@@ -30,7 +30,7 @@
     align-items: center;
     gap: 11px;
     font-family: var(--font-heading);
-    font-size: 1.15rem;
+    font-size: var(--text-18);
     color: var(--foreground);
     margin-bottom: 18px;
 }
@@ -45,7 +45,7 @@
     border-radius: 50%;
     background: rgba(var(--accent-gold-rgb), 0.15);
     color: var(--accent-gold);
-    font-size: 0.8rem;
+    font-size: var(--text-13);
     font-weight: 700;
     font-family: var(--font-main);
 }
@@ -63,7 +63,7 @@
 }
 
 .label {
-    font-size: 0.85rem;
+    font-size: var(--text-14);
     font-weight: 600;
     color: var(--foreground);
 }
@@ -73,7 +73,7 @@
 }
 
 .hint {
-    font-size: 0.78rem;
+    font-size: var(--text-12);
     line-height: 1.5;
     color: var(--text-muted);
 }
@@ -87,12 +87,12 @@
 }
 
 .error {
-    font-size: 0.78rem;
+    font-size: var(--text-12);
     color: var(--error);
 }
 
 .counter {
-    font-size: 0.72rem;
+    font-size: var(--text-12);
     color: var(--text-muted);
     font-variant-numeric: tabular-nums;
     margin-left: auto;
@@ -110,7 +110,7 @@
     font-family: inherit;
     /* 16px floor: iOS Safari zooms the viewport when focusing smaller text,
        which throws a long form out of alignment mid-entry. */
-    font-size: 16px;
+    font-size: var(--text-16);
     line-height: 1.55;
 }
 
@@ -143,7 +143,7 @@
     border: 1px solid var(--card-border);
     background: transparent;
     color: var(--text-muted);
-    font-size: 0.83rem;
+    font-size: var(--text-13);
     font-family: inherit;
     cursor: pointer;
     transition: border-color 0.2s ease, color 0.2s ease;
@@ -172,7 +172,7 @@
     display: flex;
     align-items: flex-start;
     gap: 10px;
-    font-size: 0.88rem;
+    font-size: var(--text-14);
     line-height: 1.55;
     color: var(--foreground);
     cursor: pointer;
@@ -209,7 +209,7 @@
     border-radius: var(--radius-sm);
     background: var(--error-bg);
     color: var(--error);
-    font-size: 0.88rem;
+    font-size: var(--text-14);
 }
 
 .submit {
@@ -223,7 +223,7 @@
     background: var(--btn-bg);
     color: var(--btn-fg);
     font-weight: 700;
-    font-size: 1rem;
+    font-size: var(--text-16);
     font-family: inherit;
     cursor: pointer;
 }
@@ -262,13 +262,13 @@
 
 .statusTitle {
     font-family: var(--font-heading);
-    font-size: 1.35rem;
+    font-size: var(--text-20);
     color: var(--foreground);
     margin-bottom: 10px;
 }
 
 .statusRef {
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     color: var(--text-muted);
     margin-bottom: 14px;
 }
@@ -361,7 +361,7 @@
     border: 1px solid var(--card-border);
     background: transparent;
     color: var(--foreground);
-    font-size: 0.85rem;
+    font-size: var(--text-14);
     font-family: inherit;
     cursor: pointer;
 }
@@ -382,7 +382,7 @@
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    font-size: 0.8rem;
+    font-size: var(--text-13);
     color: var(--success);
 }
 

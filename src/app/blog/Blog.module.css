@@ -23,7 +23,7 @@
 }
 
 .heroTitle {
-    font-size: 3.5rem;
+    font-size: var(--text-56);
     font-family: var(--font-heading);
     color: var(--foreground);
     position: relative;
@@ -33,7 +33,7 @@
 }
 
 .heroSubtitle {
-    font-size: 1.25rem;
+    font-size: var(--text-20);
     color: var(--foreground);
     position: relative;
     z-index: 1;
@@ -84,7 +84,7 @@
 }
 
 .blogTitle {
-    font-size: 1.4rem;
+    font-size: var(--text-24);
     font-family: var(--font-heading);
     color: var(--foreground);
     margin-bottom: 8px;
@@ -102,7 +102,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 0.85rem;
+    font-size: var(--text-14);
     color: var(--accent-gold);
 }
 
@@ -131,7 +131,7 @@
     background: none;
     border: none;
     color: var(--accent-gold);
-    font-size: 1rem;
+    font-size: var(--text-16);
     font-weight: 600;
     cursor: pointer;
     margin-bottom: 40px;
@@ -160,7 +160,7 @@
 }
 
 .detailTitle {
-    font-size: 3rem;
+    font-size: var(--text-48);
     font-family: var(--font-heading);
     color: var(--foreground);
     margin-bottom: 32px;
@@ -168,7 +168,7 @@
 }
 
 .fullContent {
-    font-size: 1.15rem;
+    font-size: var(--text-18);
     line-height: 1.8;
     color: var(--foreground);
     text-align: justify;
@@ -194,7 +194,7 @@
     text-align: center;
     padding: 100px 0;
     color: var(--secondary);
-    font-size: 1.2rem;
+    font-size: var(--text-20);
     font-style: italic;
 }
 
@@ -209,7 +209,7 @@
     }
 
     .heroTitle {
-        font-size: 2.5rem;
+        font-size: var(--text-40);
     }
 
     .blogItem {
@@ -221,7 +221,7 @@
     }
 
     .blogTitle {
-        font-size: 1.2rem;
+        font-size: var(--text-20);
     }
 
     .fullPost {
@@ -233,7 +233,7 @@
     }
 
     .detailTitle {
-        font-size: 2.2rem;
+        font-size: var(--text-36);
     }
 }
 
@@ -247,7 +247,7 @@
     border: 1px solid rgba(37, 211, 102, 0.5);
     color: #25d366;
     border-radius: 50px;
-    font-size: 0.85rem;
+    font-size: var(--text-14);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.25s ease;

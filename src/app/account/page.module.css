@@ -19,7 +19,7 @@
 
 .sectionTitle {
     font-family: var(--font-heading, serif);
-    font-size: 1.35rem;
+    font-size: var(--text-20);
     color: var(--accent-gold);
     margin: 0 0 16px;
 }
@@ -49,7 +49,7 @@
 
 .detailRow dt {
     color: var(--secondary);
-    font-size: 0.92rem;
+    font-size: var(--text-15);
 }
 
 .detailRow dd {
@@ -148,7 +148,7 @@
 .formGroup label {
     display: block;
     margin-bottom: 7px;
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     color: var(--secondary);
 }
 
@@ -169,7 +169,7 @@
 
 .errorText {
     color: var(--error, #ffb4ab);
-    font-size: 0.92rem;
+    font-size: var(--text-15);
     margin: 12px 0 0;
 }
 

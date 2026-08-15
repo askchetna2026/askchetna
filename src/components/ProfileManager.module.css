@@ -10,7 +10,7 @@
     padding: 8px 16px;
     border-radius: var(--radius-md);
     cursor: pointer;
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     transition: all 0.2s ease;
 }
 
@@ -37,7 +37,7 @@
 }
 
 .title {
-    font-size: 0.85rem;
+    font-size: var(--text-14);
     text-transform: uppercase;
     color: var(--secondary);
     margin-bottom: 12px;
@@ -76,7 +76,7 @@
 }
 
 .date {
-    font-size: 0.8rem;
+    font-size: var(--text-13);
     color: var(--secondary);
 }
 
@@ -84,7 +84,7 @@
     background: transparent;
     border: none;
     color: var(--accent-rose);
-    font-size: 1.2rem;
+    font-size: var(--text-20);
     cursor: pointer;
     opacity: 0.6;
     padding: 4px;

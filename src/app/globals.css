@@ -182,6 +182,43 @@
   --measure: 68ch;
   --measure-tight: 56ch;
 
+  /* ═══ TYPE SCALE ═══════════════════════════════════════════════════════════
+     There were 76 distinct literal font-sizes across 850 declarations before
+     this existed. Not 76 deliberate sizes — 76 values that happened: the dense
+     band alone held 0.85, 0.86, 0.87, 0.875, 0.88, 0.89 and 0.9rem, seven
+     sizes inside 0.8px of each other. Nobody can see the difference between
+     any adjacent pair, and yet nothing shares a size with anything else, so
+     no two components can line up except by accident.
+
+     Named for the px they resolve to, deliberately. A semantic ramp
+     (sm/md/lg) invites argument about which rung a thing belongs on; a number
+     makes "snap to the nearest step" the obvious move and makes a wrong value
+     visible on sight.
+
+     1px steps through the UI band because dense interface text genuinely needs
+     that granularity, then geometric above 16px where the jumps must read as
+     jumps. 16px stays the body floor — it is the minimum for comfortable
+     reading and WCAG AA, and shrinking it would work against legibility. The
+     complaint that started this was about everything ELSE being slightly
+     larger than it needed to be. */
+  --text-10: 0.625rem;
+  --text-11: 0.6875rem;
+  --text-12: 0.75rem;
+  --text-13: 0.8125rem;
+  --text-14: 0.875rem;
+  --text-15: 0.9375rem;
+  --text-16: 1rem;
+  --text-18: 1.125rem;
+  --text-20: 1.25rem;
+  --text-24: 1.5rem;
+  --text-28: 1.75rem;
+  --text-32: 2rem;
+  --text-36: 2.25rem;
+  --text-40: 2.5rem;
+  --text-48: 3rem;
+  --text-56: 3.5rem;
+  --text-64: 4rem;
+
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 16px;
@@ -639,7 +676,7 @@ html:not(.native-app) h3 { font-size: clamp(1rem, 2vw, 1.25rem); }
    presentation doing structure's job.) */
 .cosmic-label {
   display: inline-block;
-  font-size: 0.72rem;
+  font-size: var(--text-12);
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -741,7 +778,7 @@ html:not(.native-app) h3 { font-size: clamp(1rem, 2vw, 1.25rem); }
 /* Mystic Badge */
 .mystic-badge {
   font-family: var(--font-heading);
-  font-size: 0.75rem;
+  font-size: var(--text-12);
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--accent-gold);
@@ -910,7 +947,7 @@ html:not(.native-app) h3 { font-size: clamp(1rem, 2vw, 1.25rem); }
     0 4px 20px rgba(181, 137, 46, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
   text-transform: uppercase;
-  font-size: 0.9rem;
+  font-size: var(--text-14);
   overflow: hidden;
 }
 
@@ -962,7 +999,7 @@ html:not(.native-app) h3 { font-size: clamp(1rem, 2vw, 1.25rem); }
   gap: 10px;
   transition: all 0.3s ease;
   text-transform: uppercase;
-  font-size: 0.9rem;
+  font-size: var(--text-14);
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -990,7 +1027,7 @@ html:not(.native-app) h3 { font-size: clamp(1rem, 2vw, 1.25rem); }
 
 /* Planet Glyph Utility */
 .planet-glyph {
-  font-size: 1.5rem;
+  font-size: var(--text-24);
   color: var(--accent-gold);
   filter: drop-shadow(0 0 8px rgba(181, 137, 46, 0.6));
 }

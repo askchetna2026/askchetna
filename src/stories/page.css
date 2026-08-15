@@ -3,7 +3,7 @@
   padding: 48px 20px;
   max-width: 600px;
   color: #333;
-  font-size: 14px;
+  font-size: var(--text-14);
   line-height: 24px;
   font-family: 'Nunito Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
@@ -13,7 +13,7 @@
   vertical-align: top;
   margin: 0 0 4px;
   font-weight: 700;
-  font-size: 32px;
+  font-size: var(--text-32);
   line-height: 1;
 }
 
@@ -43,14 +43,14 @@
   padding: 4px 12px;
   color: #357a14;
   font-weight: 700;
-  font-size: 11px;
+  font-size: var(--text-11);
   line-height: 12px;
 }
 
 .storybook-page .tip-wrapper {
   margin-top: 40px;
   margin-bottom: 40px;
-  font-size: 13px;
+  font-size: var(--text-13);
   line-height: 20px;
 }
 

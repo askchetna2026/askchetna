@@ -29,7 +29,7 @@
 }
 
 .title {
-    font-size: 1.4rem;
+    font-size: var(--text-24);
     font-family: var(--font-heading);
     color: var(--accent-gold);
     margin: 0;
@@ -60,7 +60,7 @@
 }
 
 .label {
-    font-size: 0.75rem;
+    font-size: var(--text-12);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: var(--secondary);
@@ -68,13 +68,13 @@
 }
 
 .value {
-    font-size: 1.1rem;
+    font-size: var(--text-18);
     font-weight: 600;
     color: var(--primary);
 }
 
 .subText {
-    font-size: 0.8rem;
+    font-size: var(--text-13);
     color: var(--secondary);
     font-weight: 500;
 }
@@ -85,7 +85,7 @@
 }
 
 .awareness p {
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     color: var(--foreground);
     line-height: 1.6;
     margin: 0;
@@ -143,11 +143,11 @@
 .setupTitle {
     color: var(--secondary);
     margin-bottom: 8px;
-    font-size: 0.95rem;
+    font-size: var(--text-15);
 }
 
 .setupLink {
-    font-size: 0.875rem;
+    font-size: var(--text-14);
     text-decoration: underline;
     color: var(--primary);
     font-weight: 500;
@@ -160,7 +160,7 @@
 }
 
 .muhurtaTitle {
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     font-weight: 600;
     color: var(--primary);
     margin: 0 0 16px 0;
@@ -194,13 +194,13 @@
 }
 
 .muhurtaLabel {
-    font-size: 0.8rem;
+    font-size: var(--text-13);
     color: var(--secondary);
     font-weight: 500;
 }
 
 .muhurtaValue {
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     font-weight: 600;
 }
 

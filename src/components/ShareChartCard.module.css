@@ -8,7 +8,7 @@
     border: 1px solid rgba(181, 137, 46, 0.4);
     color: var(--accent-gold);
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     cursor: pointer;
     transition: all 0.25s ease;
 }
@@ -49,7 +49,7 @@
 }
 
 .brand {
-    font-size: 1.4rem;
+    font-size: var(--text-24);
     letter-spacing: 0.1em;
     color: #F0E0BC;
     font-weight: 700;
@@ -57,7 +57,7 @@
 
 .name {
     margin-top: 28px;
-    font-size: 2.6rem;
+    font-size: var(--text-40);
     font-weight: 700;
     line-height: 1.1;
 }
@@ -80,14 +80,14 @@
 }
 
 .row span {
-    font-size: 1rem;
+    font-size: var(--text-16);
     letter-spacing: 0.08em;
     text-transform: uppercase;
     opacity: 0.7;
 }
 
 .row strong {
-    font-size: 1.5rem;
+    font-size: var(--text-24);
     color: #F0E0BC;
 }
 
@@ -95,12 +95,12 @@
     margin-top: 24px;
     font-style: italic;
     opacity: 0.8;
-    font-size: 1.05rem;
+    font-size: var(--text-16);
 }
 
 .url {
     margin-top: 6px;
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     letter-spacing: 0.1em;
     color: #F0E0BC;
     font-family: Arial, sans-serif;

@@ -28,7 +28,7 @@
     background: var(--btn-bg);
         color: var(--btn-fg);
         font-weight: 700;
-        font-size: 0.9rem;
+        font-size: var(--text-14);
         letter-spacing: 0.02em;
         box-shadow: 0 4px 16px rgba(122, 44, 18, 0.38);
         z-index: 600;

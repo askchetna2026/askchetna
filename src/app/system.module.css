@@ -10,14 +10,14 @@
 }
 
 .glyph {
-    font-size: 3rem;
+    font-size: var(--text-48);
     color: var(--accent-gold);
     opacity: 0.9;
 }
 
 .code {
     font-family: var(--font-heading, serif);
-    font-size: 4rem;
+    font-size: var(--text-64);
     line-height: 1;
     color: var(--accent-gold);
     margin: 0;
@@ -25,14 +25,14 @@
 
 .title {
     font-family: var(--font-heading, serif);
-    font-size: 1.9rem;
+    font-size: var(--text-32);
     color: var(--foreground);
     margin: 0;
 }
 
 .text {
     color: var(--secondary);
-    font-size: 1.05rem;
+    font-size: var(--text-16);
     line-height: 1.6;
     max-width: 480px;
 }

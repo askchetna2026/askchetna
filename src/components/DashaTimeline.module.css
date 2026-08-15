@@ -9,7 +9,7 @@
 
 .title {
     font-family: var(--font-heading);
-    font-size: 1.8rem;
+    font-size: var(--text-28);
     color: var(--foreground);
 }
 
@@ -17,7 +17,7 @@
     /* Capped: measured at 93-98 characters a line on desktop. */
     max-width: var(--measure);
     color: var(--text-muted);
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     margin-top: 6px;
 }
 
@@ -54,11 +54,11 @@
 
 .segLord {
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: var(--text-14);
 }
 
 .segYears {
-    font-size: 0.72rem;
+    font-size: var(--text-12);
     opacity: 0.7;
 }
 
@@ -91,13 +91,13 @@
 .detailRange {
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    font-size: 0.78rem;
+    font-size: var(--text-12);
     color: var(--accent-gold);
     font-weight: 600;
 }
 
 .nowBadge {
-    font-size: 0.7rem;
+    font-size: var(--text-11);
     text-transform: uppercase;
     letter-spacing: 0.08em;
     background: var(--accent-gold-decor);
@@ -109,14 +109,14 @@
 
 .detailTheme {
     font-family: var(--font-heading);
-    font-size: 1.4rem;
+    font-size: var(--text-24);
     color: var(--foreground);
     margin-bottom: 8px;
 }
 
 .detailNote {
     color: var(--secondary);
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     line-height: 1.6;
 }
 

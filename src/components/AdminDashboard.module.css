@@ -17,7 +17,7 @@
 .logo {
     font-family: var(--font-heading);
     color: var(--accent-gold);
-    font-size: 1.5rem;
+    font-size: var(--text-24);
     margin-bottom: 2rem;
     padding-bottom: 1px;
     border-bottom: 1px solid var(--accent-gold);
@@ -39,7 +39,7 @@
     cursor: pointer;
     border-radius: var(--radius-sm);
     transition: all 0.2s;
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     font-weight: 500;
 }
 
@@ -80,7 +80,7 @@
 
 .compactBtn {
     padding: 6px 12px;
-    font-size: 0.8rem;
+    font-size: var(--text-13);
 }
 
 .tableScroll {
@@ -124,7 +124,7 @@
 
 .mutedText {
     color: var(--text-muted);
-    font-size: 0.85rem;
+    font-size: var(--text-14);
 }
 
 .reasonCell {
@@ -158,7 +158,7 @@
     height: 100vh;
     font-family: var(--font-heading);
     color: var(--accent-gold);
-    font-size: 1.2rem;
+    font-size: var(--text-20);
     background-color: var(--background);
 }
 
@@ -178,7 +178,7 @@
 }
 
 .statCard h3 {
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     color: var(--text-muted);
     margin-bottom: 0.5rem;
     text-transform: uppercase;
@@ -186,7 +186,7 @@
 }
 
 .statValue {
-    font-size: 2rem;
+    font-size: var(--text-32);
     font-weight: 700;
     color: var(--foreground);
     font-family: var(--font-heading);
@@ -200,7 +200,7 @@
 .section h3 {
     font-family: var(--font-heading);
     color: var(--accent-gold);
-    font-size: 1.5rem;
+    font-size: var(--text-24);
     margin-bottom: 1rem;
 }
 
@@ -224,7 +224,7 @@
     background: rgba(var(--bg-soft-rgb), 0.8);
     color: var(--text-muted);
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: var(--text-14);
 }
 
 .table tr:last-child td {
@@ -256,13 +256,13 @@
 }
 
 .planHeader h4 {
-    font-size: 1.1rem;
+    font-size: var(--text-18);
     color: var(--foreground);
     margin-bottom: 0.25rem;
 }
 
 .planKey {
-    font-size: 0.8rem;
+    font-size: var(--text-13);
     color: var(--text-muted);
     background: rgba(var(--foreground-rgb), 0.05);
     padding: 2px 6px;
@@ -278,7 +278,7 @@
 }
 
 .planBody label {
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     color: var(--text-muted);
 }
 
@@ -295,7 +295,7 @@
     border: 1px solid var(--border-soft);
     border-radius: 4px;
     font-family: inherit;
-    font-size: 1rem;
+    font-size: var(--text-16);
     width: 100px;
     background: var(--background);
     color: var(--foreground);
@@ -336,7 +336,7 @@
 .deleteBtn {
     padding: 6px 12px;
     border-radius: 4px;
-    font-size: 0.85rem;
+    font-size: var(--text-14);
     font-weight: 600;
     cursor: pointer;
     border: 1px solid transparent;
@@ -385,7 +385,7 @@
     min-width: 90px;
     padding: 4px 10px;
     border-radius: 999px;
-    font-size: 0.75rem;
+    font-size: var(--text-12);
     font-weight: 700;
     letter-spacing: 0.4px;
 }
@@ -412,7 +412,7 @@
 .rejectBtn {
     padding: 6px 10px;
     border-radius: 6px;
-    font-size: 0.8rem;
+    font-size: var(--text-13);
     font-weight: 600;
     border: 1px solid transparent;
     cursor: pointer;
@@ -489,7 +489,7 @@
 
 .monoText {
     font-family: "Courier New", monospace;
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     word-break: break-all;
 }
 
@@ -550,11 +550,11 @@
 
 .geoItem span {
     color: var(--text-muted);
-    font-size: 0.9rem;
+    font-size: var(--text-14);
 }
 
 .geoItem strong {
-    font-size: 1.1rem;
+    font-size: var(--text-18);
     color: var(--foreground);
 }
 
@@ -577,11 +577,11 @@
 
 .funnelLabel {
     color: var(--text-muted);
-    font-size: 0.85rem;
+    font-size: var(--text-14);
 }
 
 .funnelValue {
-    font-size: 1.5rem;
+    font-size: var(--text-24);
     font-family: var(--font-heading);
     color: var(--foreground);
 }
@@ -633,7 +633,7 @@
 }
 
 .filterGroup label {
-    font-size: 0.75rem;
+    font-size: var(--text-12);
     font-weight: 600;
     color: var(--text-muted);
     text-transform: uppercase;

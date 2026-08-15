@@ -12,7 +12,7 @@
     border-radius: 100px;
     background: rgba(var(--foreground-rgb), 0.035);
     color: var(--accent-gold); /* 5.84:1 — carries the icon too */
-    font-size: 0.78rem;
+    font-size: var(--text-12);
     line-height: 1;
     /* Wraps as a unit on narrow screens rather than splitting the label from
        the value, which reads as two unrelated fragments. */
@@ -24,20 +24,20 @@
     letter-spacing: 0.1em;
     font-weight: 600;
     color: var(--text-muted); /* 4.80:1 */
-    font-size: 0.7rem;
+    font-size: var(--text-11);
 }
 
 .value {
     font-family: var(--font-heading);
     font-weight: 700;
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     color: var(--foreground); /* 9.61:1 */
     letter-spacing: 0.01em;
 }
 
 .western {
     color: var(--text-muted);
-    font-size: 0.72rem;
+    font-size: var(--text-12);
 }
 
 @media (max-width: 480px) {

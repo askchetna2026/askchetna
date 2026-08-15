@@ -28,20 +28,20 @@
 
 .title {
     font-family: var(--font-heading);
-    font-size: 1.25rem;
+    font-size: var(--text-20);
     color: var(--primary);
     font-weight: 500;
 }
 
 .date {
-    font-size: 0.75rem;
+    font-size: var(--text-12);
     color: var(--secondary);
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
 
 .description {
-    font-size: 0.85rem;
+    font-size: var(--text-14);
     color: var(--text-muted);
     line-height: 1.4;
     margin-top: 4px;
@@ -59,7 +59,7 @@
     border: 1px solid var(--card-border);
     border-radius: var(--radius-sm);
     font-family: var(--font-main);
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     color: var(--foreground);
     resize: none;
     outline: none;
@@ -87,7 +87,7 @@
 }
 
 .status {
-    font-size: 0.75rem;
+    font-size: var(--text-12);
     color: var(--secondary);
     font-style: italic;
     flex-grow: 1;
@@ -105,7 +105,7 @@
     border: none;
     padding: 8px 20px;
     border-radius: 50px;
-    font-size: 0.85rem;
+    font-size: var(--text-14);
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -154,7 +154,7 @@
 }
 
 .analysisBox h4 {
-    font-size: 0.75rem;
+    font-size: var(--text-12);
     color: var(--accent-gold);
     text-transform: uppercase;
     letter-spacing: 0.1em;
@@ -167,14 +167,14 @@
 
 .insightLabel {
     display: block;
-    font-size: 0.7rem;
+    font-size: var(--text-11);
     color: var(--secondary);
     font-weight: 600;
     margin-bottom: 4px;
 }
 
 .insightText {
-    font-size: 0.85rem;
+    font-size: var(--text-14);
     line-height: 1.5;
     color: var(--primary);
 }
@@ -216,7 +216,7 @@
     background: none;
     border: none;
     color: var(--accent-gold);
-    font-size: 0.8rem;
+    font-size: var(--text-13);
     cursor: pointer;
     text-decoration: underline;
     padding: 0;
@@ -263,7 +263,7 @@
     right: 16px;
     background: none;
     border: none;
-    font-size: 1.5rem;
+    font-size: var(--text-24);
     color: var(--secondary);
     cursor: pointer;
     line-height: 1;
@@ -279,7 +279,7 @@
 
 .modalContent h4 {
     font-family: var(--font-heading);
-    font-size: 1.4rem;
+    font-size: var(--text-24);
     color: var(--primary);
     margin-bottom: 16px;
     margin-top: 0;
@@ -287,7 +287,7 @@
 
 .modalContent p {
     font-family: var(--font-main);
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     line-height: 1.6;
     color: var(--foreground);
     margin-bottom: 16px;
@@ -332,7 +332,7 @@
 }
 
 .recentLabel {
-    font-size: 0.7rem;
+    font-size: var(--text-11);
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--text-muted);
@@ -353,7 +353,7 @@
 
 .recentDate {
     flex-shrink: 0;
-    font-size: 0.72rem;
+    font-size: var(--text-12);
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--accent-gold);
@@ -362,7 +362,7 @@
 
 /* One line each: this is a way back into an entry, not the entry itself. */
 .recentText {
-    font-size: 0.85rem;
+    font-size: var(--text-14);
     line-height: 1.5;
     color: var(--text-muted);
     overflow: hidden;
@@ -374,7 +374,7 @@
 .recentAll {
     align-self: flex-start;
     margin-top: 8px;
-    font-size: 0.78rem;
+    font-size: var(--text-12);
     color: var(--accent-gold);
     text-decoration: none;
 }

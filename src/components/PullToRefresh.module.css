@@ -31,7 +31,7 @@
 }
 
 .label {
-    font-size: 0.72rem;
+    font-size: var(--text-12);
     letter-spacing: 0.12em;
     text-transform: uppercase;
     font-weight: 700;

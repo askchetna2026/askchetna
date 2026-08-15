@@ -13,7 +13,7 @@
     max-width: 620px;
     margin: 16px auto 0;
     color: var(--text-muted);
-    font-size: 1rem;
+    font-size: var(--text-16);
     line-height: 1.7;
 }
 
@@ -95,7 +95,7 @@
 
 .name {
     font-family: var(--font-heading);
-    font-size: 1.05rem;
+    font-size: var(--text-16);
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--foreground);
@@ -110,19 +110,19 @@
 }
 
 .english {
-    font-size: 0.72rem;
+    font-size: var(--text-12);
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--accent-gold);
 }
 
 .dotSeparator {
-    font-size: 0.65rem;
+    font-size: var(--text-10);
     color: var(--text-muted);
 }
 
 .dateRange {
-    font-size: 0.68rem;
+    font-size: var(--text-11);
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--text-muted);
@@ -130,7 +130,7 @@
 
 .dailyQuote {
     margin-top: 12px;
-    font-size: 0.82rem;
+    font-size: var(--text-13);
     line-height: 1.55;
     font-style: italic;
     color: var(--foreground);
@@ -139,7 +139,7 @@
 
 .actionBtn {
     margin-top: 14px;
-    font-size: 0.75rem;
+    font-size: var(--text-12);
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--accent-gold);

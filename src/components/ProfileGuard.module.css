@@ -54,7 +54,7 @@
 }
 
 .icon {
-    font-size: 4rem;
+    font-size: var(--text-64);
     margin-bottom: 24px;
     animation: pulse 2s ease-in-out infinite;
 }
@@ -72,14 +72,14 @@
 }
 
 .title {
-    font-size: 2rem;
+    font-size: var(--text-32);
     font-weight: 700;
     margin-bottom: 16px;
     color: var(--foreground);
 }
 
 .message {
-    font-size: 1rem;
+    font-size: var(--text-16);
     line-height: 1.6;
     color: var(--text-muted);
     margin-bottom: 32px;
@@ -92,7 +92,7 @@
     color: var(--btn-fg);
     border-radius: 8px;
     font-weight: 600;
-    font-size: 1rem;
+    font-size: var(--text-16);
     transition: all 0.2s ease;
     margin-bottom: 12px;
 }
@@ -107,7 +107,7 @@
 .homeLink {
     display: block;
     color: var(--text-muted);
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     margin-top: 16px;
     transition: color 0.2s ease;
 }
@@ -125,6 +125,6 @@
     }
 
     .title {
-        font-size: 1.5rem;
+        font-size: var(--text-24);
     }
 }

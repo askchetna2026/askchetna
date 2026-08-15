@@ -5,7 +5,7 @@
 }
 
 .title {
-    font-size: 3rem;
+    font-size: var(--text-48);
     color: var(--primary);
     margin-bottom: 16px;
     text-align: center;
@@ -14,7 +14,7 @@
 .subtitle {
     text-align: center;
     color: var(--secondary);
-    font-size: 1.15rem;
+    font-size: var(--text-18);
     margin-bottom: 60px;
     max-width: 600px;
     margin-left: auto;
@@ -36,7 +36,7 @@
 }
 
 .infoSection h2 {
-    font-size: 1.5rem;
+    font-size: var(--text-24);
     color: var(--primary);
     margin-bottom: 32px;
 }
@@ -54,7 +54,7 @@
 }
 
 .infoItem h3 {
-    font-size: 1rem;
+    font-size: var(--text-16);
     color: var(--primary);
     margin-bottom: 4px;
 }
@@ -84,7 +84,7 @@
 .formGroup label {
     display: block;
     color: var(--primary);
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     margin-bottom: 8px;
     font-weight: 500;
 }
@@ -98,7 +98,7 @@
     border-radius: var(--radius-md);
     color: var(--foreground);
     font-family: var(--font-main);
-    font-size: 1rem;
+    font-size: var(--text-16);
     transition: all 0.2s ease;
 }
 
@@ -122,7 +122,7 @@
     color: var(--btn-fg);
     border: none;
     border-radius: 50px;
-    font-size: 1rem;
+    font-size: var(--text-16);
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -142,7 +142,7 @@
 
 .formError {
     color: #ef4444;
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     margin: 0;
 }
 
@@ -156,6 +156,6 @@
     }
 
     .title {
-        font-size: 2.2rem;
+        font-size: var(--text-36);
     }
 }

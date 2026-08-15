@@ -15,7 +15,7 @@
 
 .subtitle {
     color: var(--secondary);
-    font-size: 1.15rem;
+    font-size: var(--text-18);
     font-weight: 300;
     max-width: 640px;
     margin: 20px auto 0;
@@ -45,21 +45,21 @@
 
 .term {
     font-family: var(--font-heading);
-    font-size: 1.4rem;
+    font-size: var(--text-24);
     color: var(--accent-gold);
     margin-bottom: 12px;
 }
 
 .plain {
     color: var(--foreground);
-    font-size: 1rem;
+    font-size: var(--text-16);
     line-height: 1.6;
     margin-bottom: 14px;
 }
 
 .example {
     color: var(--secondary);
-    font-size: 0.92rem;
+    font-size: var(--text-15);
     line-height: 1.6;
     font-style: italic;
 }
@@ -69,7 +69,7 @@
     font-style: normal;
     font-weight: 600;
     text-transform: uppercase;
-    font-size: 0.75rem;
+    font-size: var(--text-12);
     letter-spacing: 0.05em;
 }
 
@@ -84,6 +84,6 @@
 
 .cta p {
     color: var(--secondary);
-    font-size: 1.2rem;
+    font-size: var(--text-20);
     font-family: var(--font-heading);
 }

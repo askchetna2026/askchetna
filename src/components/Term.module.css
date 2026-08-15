@@ -34,7 +34,7 @@
     flex-direction: column;
     gap: 6px;
     text-align: left;
-    font-size: 0.82rem;
+    font-size: var(--text-13);
     line-height: 1.5;
     white-space: normal;
     pointer-events: none;
@@ -42,7 +42,7 @@
 
 .tooltip strong {
     color: var(--accent-gold);
-    font-size: 0.85rem;
+    font-size: var(--text-14);
 }
 
 .plain {

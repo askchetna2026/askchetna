@@ -64,7 +64,7 @@
 }
 
 .title {
-    font-size: 2.5rem;
+    font-size: var(--text-40);
     font-family: var(--font-heading);
     color: var(--primary);
     margin-bottom: 32px;
@@ -72,7 +72,7 @@
 }
 
 .content {
-    font-size: 1.15rem;
+    font-size: var(--text-18);
     color: var(--secondary);
     line-height: 1.8;
 }
@@ -91,7 +91,7 @@
     gap: 16px;
     padding: 16px;
     color: var(--secondary);
-    font-size: 1.1rem;
+    font-size: var(--text-18);
 }
 
 .featureList svg {
@@ -110,7 +110,7 @@
 .noList li {
     padding: 12px 0 12px 32px;
     color: var(--secondary);
-    font-size: 1.1rem;
+    font-size: var(--text-18);
     position: relative;
 }
 
@@ -120,7 +120,7 @@
     left: 0;
     color: var(--accent-rose);
     font-weight: bold;
-    font-size: 1.2rem;
+    font-size: var(--text-20);
 }
 
 .guidanceBox {
@@ -134,7 +134,7 @@
 
 .guidanceBox p {
     color: var(--secondary);
-    font-size: 1.05rem;
+    font-size: var(--text-16);
     line-height: 1.8;
     margin-bottom: 16px;
 }
@@ -145,7 +145,7 @@
 
 .note {
     color: var(--secondary);
-    font-size: 1rem;
+    font-size: var(--text-16);
     font-style: italic;
     margin-top: 24px;
 }
@@ -159,7 +159,7 @@
     color: var(--btn-fg);
     border: none;
     border-radius: 50px;
-    font-size: 1.1rem;
+    font-size: var(--text-18);
     font-weight: 500;
     cursor: pointer;
     margin-top: 60px;
@@ -175,7 +175,7 @@
 
 @media (max-width: 768px) {
     .title {
-        font-size: 2rem;
+        font-size: var(--text-32);
     }
 
     .nextBtn {

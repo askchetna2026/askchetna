@@ -8,7 +8,7 @@
 }
 
 .title {
-    font-size: 3rem;
+    font-size: var(--text-48);
     color: var(--primary);
     margin-bottom: 16px;
     text-shadow: 0 0 40px rgba(181, 137, 46, 0.2);
@@ -16,7 +16,7 @@
 
 .subtitle {
     color: var(--secondary);
-    font-size: 1.15rem;
+    font-size: var(--text-18);
     margin-bottom: 48px;
     max-width: 600px;
     margin-left: auto;
@@ -38,7 +38,7 @@
 
 .purchaseNoticeText {
     color: var(--foreground);
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     line-height: 1.6;
 }
 
@@ -52,7 +52,7 @@
     border: none;
     border-radius: 999px;
     padding: 10px 18px;
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -93,7 +93,7 @@
     text-align: center;
     margin-bottom: 32px;
     color: var(--primary);
-    font-size: 2rem;
+    font-size: var(--text-32);
     font-family: var(--font-heading);
 }
 
@@ -104,7 +104,7 @@
 }
 
 .sectionTitle {
-    font-size: 2.5rem;
+    font-size: var(--text-40);
     color: var(--primary);
     margin-bottom: 16px;
     font-family: var(--font-heading);
@@ -112,7 +112,7 @@
 
 .sectionSubtitle {
     color: var(--secondary);
-    font-size: 1.1rem;
+    font-size: var(--text-18);
     margin-bottom: 48px;
     max-width: 700px;
     margin-left: auto;
@@ -137,7 +137,7 @@
     color: var(--secondary);
     cursor: pointer;
     transition: all 0.3s ease;
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     white-space: nowrap;
 }
 
@@ -195,7 +195,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 16px;
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     color: var(--foreground);
     font-weight: 600;
     letter-spacing: 0.02em;
@@ -247,7 +247,7 @@
 
 .lockedHint {
     margin-top: 16px;
-    font-size: 0.75rem;
+    font-size: var(--text-12);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.15em;
@@ -271,7 +271,7 @@
     align-items: center;
     gap: 10px;
     padding: 12px 24px;
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     font-weight: 700;
     background: rgba(var(--accent-gold-rgb), 0.1);
     color: var(--accent-gold);
@@ -304,7 +304,7 @@
     color: var(--text-muted);
     padding: 8px 16px;
     border-radius: 50px;
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     cursor: pointer;
     transition: all 0.2s ease;
 }
@@ -326,7 +326,7 @@
 }
 
 .contentBlock h3 {
-    font-size: 1rem;
+    font-size: var(--text-16);
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: var(--accent-gold);
@@ -336,7 +336,7 @@
 
 .contentBlock p {
     color: var(--secondary);
-    font-size: 1.1rem;
+    font-size: var(--text-18);
     line-height: 1.8;
 }
 
@@ -349,7 +349,7 @@
     color: var(--secondary);
     padding: 10px 0 10px 28px;
     position: relative;
-    font-size: 1.05rem;
+    font-size: var(--text-16);
     line-height: 1.7;
 }
 
@@ -358,7 +358,7 @@
     position: absolute;
     left: 0;
     color: var(--accent-gold);
-    font-size: 1.5rem;
+    font-size: var(--text-24);
 }
 
 .helpsBlock {
@@ -377,7 +377,7 @@
 
 .freeWillBlock p {
     font-style: italic;
-    font-size: 1.05rem;
+    font-size: var(--text-16);
 }
 
 .vargaHeader {
@@ -389,13 +389,13 @@
 }
 
 .vargaTitle {
-    font-size: 1.1rem;
+    font-size: var(--text-18);
     color: var(--primary);
     margin: 0;
 }
 
 .vargaTag {
-    font-size: 0.65rem;
+    font-size: var(--text-10);
     text-transform: uppercase;
     letter-spacing: 1px;
     background: rgba(181, 137, 46, 0.1);
@@ -428,7 +428,7 @@
     }
 
     .title {
-        font-size: 2rem;
+        font-size: var(--text-32);
     }
 
     .formWrapper {
@@ -483,7 +483,7 @@
     }
 
     .drawerHeaderLeft h3 {
-        font-size: 1.2rem;
+        font-size: var(--text-20);
     }
 
     .drawerControls {
@@ -492,7 +492,7 @@
     }
 
     .exportBtn {
-        font-size: 0.8rem;
+        font-size: var(--text-13);
         padding: 6px 12px;
     }
 
@@ -519,7 +519,7 @@
 
     .tabButton {
         padding: 10px 16px;
-        font-size: 0.85rem;
+        font-size: var(--text-14);
     }
 
     .tabSection {
@@ -527,11 +527,11 @@
     }
 
     .tabSection h4 {
-        font-size: 1.1rem;
+        font-size: var(--text-18);
     }
 
     .tabSection p {
-        font-size: 1rem;
+        font-size: var(--text-16);
     }
 
     /* Table responsive */
@@ -547,17 +547,17 @@
     .modernTable th,
     .modernTable td {
         padding: 10px 8px;
-        font-size: 0.85rem;
+        font-size: var(--text-14);
     }
 }
 
 @media (max-width: 480px) {
     .title {
-        font-size: 1.75rem;
+        font-size: var(--text-28);
     }
 
     .subtitle {
-        font-size: 1rem;
+        font-size: var(--text-16);
     }
 
     .formWrapper {
@@ -570,11 +570,11 @@
 
     .categoryBtn {
         padding: 8px 16px;
-        font-size: 0.85rem;
+        font-size: var(--text-14);
     }
 
     .drawerHeaderLeft h3 {
-        font-size: 1.1rem;
+        font-size: var(--text-18);
     }
 
     .exportBtn span {
@@ -583,13 +583,13 @@
 
     .tabButton {
         padding: 8px 12px;
-        font-size: 0.8rem;
+        font-size: var(--text-13);
     }
 
     .modernTable th,
     .modernTable td {
         padding: 8px 6px;
-        font-size: 0.75rem;
+        font-size: var(--text-12);
     }
 }
 
@@ -651,7 +651,7 @@
     padding: 10px 20px;
     border-radius: 100px;
     cursor: pointer;
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     font-weight: 600;
     display: flex;
     align-items: center;
@@ -707,7 +707,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    font-size: 1.1rem;
+    font-size: var(--text-18);
     letter-spacing: 2px;
     color: var(--accent-gold);
     text-transform: uppercase;
@@ -717,7 +717,7 @@
 }
 
 .interpretationBox p {
-    font-size: 1.15rem;
+    font-size: var(--text-18);
     line-height: 2.2;
     color: var(--secondary);
     font-weight: 400;
@@ -737,7 +737,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    font-size: 1.05rem;
+    font-size: var(--text-16);
     letter-spacing: 1.8px;
     color: var(--accent-gold);
     text-transform: uppercase;
@@ -747,7 +747,7 @@
 }
 
 .infoItem p {
-    font-size: 1.12rem;
+    font-size: var(--text-18);
     line-height: 2.1;
     color: var(--secondary);
     font-weight: 400;
@@ -764,7 +764,7 @@
 
 .placementDashboard h4 {
     margin-bottom: 16px;
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     letter-spacing: 2px;
     color: var(--accent-gold);
     text-transform: uppercase;
@@ -780,7 +780,7 @@
     text-align: center;
     padding: 12px;
     color: var(--secondary);
-    font-size: 0.75rem;
+    font-size: var(--text-12);
     text-transform: uppercase;
     border-bottom: 2px solid var(--card-border);
 }
@@ -797,7 +797,7 @@
     padding: 14px 12px;
     background: transparent;
     color: var(--secondary);
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     vertical-align: middle;
     text-align: center;
 }
@@ -819,7 +819,7 @@
 .dignityBadge {
     padding: 6px 12px;
     border-radius: 100px;
-    font-size: 0.75rem;
+    font-size: var(--text-12);
     font-weight: 700;
     text-transform: uppercase;
     background: var(--bg-soft);
@@ -892,14 +892,14 @@
 
 .unlockTitle {
     color: var(--primary);
-    font-size: 1.2rem;
+    font-size: var(--text-20);
     margin-bottom: 8px;
     font-family: var(--font-heading);
 }
 
 .unlockDescription {
     color: var(--secondary);
-    font-size: 0.85rem;
+    font-size: var(--text-14);
     margin-bottom: 24px;
     max-width: 200px;
     line-height: 1.5;
@@ -912,7 +912,7 @@
     padding: 10px 24px;
     border-radius: 100px;
     font-weight: 700;
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(181, 137, 46, 0.2);
@@ -978,7 +978,7 @@
     color: var(--secondary);
     padding: 10px 24px;
     border-radius: 50px;
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -1078,7 +1078,7 @@
     border: none;
     border-bottom: 3px solid transparent;
     color: var(--secondary);
-    font-size: 1rem;
+    font-size: var(--text-16);
     font-weight: 600;
     letter-spacing: 0.5px;
     cursor: pointer;
@@ -1120,14 +1120,14 @@
     align-items: center;
     gap: 12px;
     color: var(--accent-gold);
-    font-size: 1.25rem;
+    font-size: var(--text-20);
     font-weight: 700;
     margin-bottom: 20px;
     letter-spacing: 0.5px;
 }
 
 .tabSection p {
-    font-size: 1.08rem;
+    font-size: var(--text-18);
     line-height: 2;
     color: var(--secondary);
     text-align: justify;
@@ -1200,7 +1200,7 @@
 
 .drawerHeaderLeft h3 {
     margin: 0;
-    font-size: 1.5rem;
+    font-size: var(--text-24);
     color: var(--accent-gold);
     font-weight: 700;
     letter-spacing: 0.5px;
@@ -1208,7 +1208,7 @@
 
 .drawerSubtitle {
     color: var(--secondary);
-    font-size: 0.85rem;
+    font-size: var(--text-14);
     text-transform: uppercase;
     letter-spacing: 2px;
 }
@@ -1228,7 +1228,7 @@
     border: 1px solid rgba(181, 137, 46, 0.3);
     border-radius: 8px;
     color: var(--accent-gold);
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     cursor: pointer;
     transition: all 0.2s;
 }
@@ -1243,7 +1243,7 @@
     background: none;
     border: none;
     color: var(--secondary);
-    font-size: 1.5rem;
+    font-size: var(--text-24);
     cursor: pointer;
     padding: 8px;
     transition: color 0.2s;
@@ -1347,7 +1347,7 @@
         flex: 1 1 0;
         min-width: 0;
         padding: 12px 4px;
-        font-size: 0.86rem;
+        font-size: var(--text-14);
         letter-spacing: 0;
         text-align: center;
     }
@@ -1364,7 +1364,7 @@
 
 .tabButton {
     padding: 16px 32px;
-    font-size: 1.05rem;
+    font-size: var(--text-16);
     color: var(--secondary);
 }
 
@@ -1387,11 +1387,11 @@
 .tabSection h4 {
     color: var(--accent-gold);
     margin-bottom: 16px;
-    font-size: 1.2rem;
+    font-size: var(--text-20);
 }
 
 .tabSection p {
-    font-size: 1.15rem;
+    font-size: var(--text-18);
     line-height: 2;
     color: var(--secondary);
 }
@@ -1412,7 +1412,7 @@
 
 .storySection h5 {
     color: var(--accent-gold);
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     text-transform: uppercase;
     letter-spacing: 2px;
     margin-bottom: 12px;
@@ -1420,7 +1420,7 @@
 }
 
 .storySection p.storyQuestion {
-    font-size: 1.1rem;
+    font-size: var(--text-18);
     font-style: italic;
     color: var(--accent-gold);
     margin: 12px 0 8px 0;
@@ -1429,7 +1429,7 @@
 }
 
 .storySection p.storyText {
-    font-size: 1.15rem;
+    font-size: var(--text-18);
     line-height: 1.8;
     color: var(--foreground);
 }
@@ -1444,14 +1444,14 @@
 .significanceTitle {
     color: var(--accent-gold);
     font-weight: 700;
-    font-size: 0.85rem;
+    font-size: var(--text-14);
     text-transform: uppercase;
     letter-spacing: 0.1em;
     margin-bottom: 8px;
 }
 
 .significanceText {
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     opacity: 0.8;
     color: var(--foreground);
 }
@@ -1505,11 +1505,11 @@
 
     .tabButton {
         padding: 12px 20px;
-        font-size: 0.95rem;
+        font-size: var(--text-15);
     }
 
     .tabSection p {
-        font-size: 1.05rem;
+        font-size: var(--text-16);
     }
 }
 
@@ -1527,7 +1527,7 @@
 
 .dialogTitle {
     color: var(--accent-gold);
-    font-size: 1.5rem;
+    font-size: var(--text-24);
     margin-bottom: 16px;
 }
 
@@ -1606,7 +1606,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 1rem;
+    font-size: var(--text-16);
     color: var(--accent-gold);
     margin-bottom: 12px;
     font-weight: 700;
@@ -1625,7 +1625,7 @@
 }
 
 .detailedAnalysisTitle {
-    font-size: 1.75rem;
+    font-size: var(--text-28);
     font-family: var(--font-heading);
     color: var(--accent-gold);
     margin: 0;
@@ -1635,7 +1635,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 0.8rem;
+    font-size: var(--text-13);
     color: var(--accent-gold);
     animation: pulse 2s infinite ease-in-out;
 }
@@ -1672,7 +1672,7 @@
 }
 
 .insightTitle {
-    font-size: 2.25rem;
+    font-size: var(--text-36);
     font-weight: 700;
     color: var(--primary);
     margin: 0;
@@ -1681,17 +1681,17 @@
 .insightSeparator {
     color: var(--foreground);
     opacity: 0.5;
-    font-size: 1.5rem;
+    font-size: var(--text-24);
 }
 
 .insightSubtitle {
-    font-size: 2.25rem;
+    font-size: var(--text-36);
     font-weight: 700;
     color: var(--primary);
 }
 
 .insightContent {
-    font-size: 1.15rem;
+    font-size: var(--text-18);
     line-height: 1.8;
     color: var(--foreground);
     opacity: 0.9;
@@ -1707,7 +1707,7 @@
 
 .degreeLabel {
     font-family: var(--font-mono);
-    font-size: 0.75rem;
+    font-size: var(--text-12);
     opacity: 0.7;
 }
 
@@ -1715,7 +1715,7 @@
 
     .insightTitle,
     .insightSubtitle {
-        font-size: 1.5rem;
+        font-size: var(--text-24);
     }
 
     .insightCard {
@@ -1826,7 +1826,7 @@
 
 .pageLede {
     margin: 0 0 24px;
-    font-size: 1rem;
+    font-size: var(--text-16);
     line-height: 1.6;
     color: var(--text-muted);
     max-width: var(--measure);
@@ -1837,7 +1837,7 @@
    gives and in the inherited colour. */
 .chartInfoTitle {
     font-family: var(--font-heading);
-    font-size: 1.25rem;
+    font-size: var(--text-20);
     line-height: 1.3;
     color: var(--accent-gold);
     margin: 0 0 16px;
@@ -1955,7 +1955,7 @@
 .chartInfoGrid {
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 10px 20px;
-    font-size: 0.88rem;
+    font-size: var(--text-14);
 }
 
 @media (max-width: 700px) {
@@ -1964,7 +1964,7 @@
     .chartInfoGrid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 12px 14px;
-        font-size: 0.84rem;
+        font-size: var(--text-13);
     }
 
     /* Label ABOVE value, not beside it.
@@ -1984,7 +1984,7 @@
     /* At this size the label is doing the job of a column header, so it takes
        the quieter treatment that implies — the value below is the content. */
     .factLabel {
-        font-size: 0.68rem;
+        font-size: var(--text-11);
         letter-spacing: 0.08em;
         text-transform: uppercase;
         color: var(--text-muted);
@@ -2010,7 +2010,7 @@
 }
 
 .chartInfoTitle {
-    font-size: 17px;
+    font-size: var(--text-16);
     line-height: 1.35;
     margin-bottom: 12px;
 }
@@ -2018,7 +2018,7 @@
 @media (max-width: 700px) {
     .chartInfoDate {
         display: block;
-        font-size: 0.8rem;
+        font-size: var(--text-13);
         font-weight: 400;
         color: var(--text-muted);
         letter-spacing: 0.04em;
@@ -2030,7 +2030,7 @@
     }
 
     .chartInfoTitle {
-        font-size: 15px;
+        font-size: var(--text-15);
     }
 }
 
@@ -2067,7 +2067,7 @@
 .headerRowEnd .headerButtons .addProfileBtn {
     min-height: 40px;
     padding: 8px 14px;
-    font-size: 0.85rem;
+    font-size: var(--text-14);
 }
 
 @media (max-width: 700px) {

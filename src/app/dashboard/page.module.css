@@ -67,7 +67,7 @@
 }
 
 .userName {
-    font-size: 1.6rem;
+    font-size: var(--text-24);
     font-weight: 700;
     margin-bottom: 4px;
     color: var(--accent-gold);
@@ -77,7 +77,7 @@
 
 .userEmail {
     color: var(--secondary);
-    font-size: 1.1rem;
+    font-size: var(--text-18);
     opacity: 0.8;
 }
 
@@ -99,14 +99,14 @@
 }
 
 .statValueText {
-    font-size: 1.6rem;
+    font-size: var(--text-24);
     font-weight: 800;
     color: var(--accent-gold);
     line-height: 1.2;
 }
 
 .statLabel {
-    font-size: 0.75rem;
+    font-size: var(--text-12);
     text-transform: uppercase;
     letter-spacing: 1px;
     color: var(--text-muted);
@@ -131,7 +131,7 @@
     align-items: center;
     gap: 10px;
     color: var(--foreground);
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     line-height: 1.4;
 }
 
@@ -177,7 +177,7 @@
     border: none;
     background: var(--btn-bg);
     color: var(--btn-fg);
-    font-size: 0.88rem;
+    font-size: var(--text-14);
     font-weight: 700;
     text-decoration: none;
     cursor: pointer;
@@ -221,7 +221,7 @@
     border: 1px solid transparent;
     border-radius: 14px;
     color: var(--secondary);
-    font-size: 1rem;
+    font-size: var(--text-16);
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -278,14 +278,14 @@
 }
 
 .heroSection h2 {
-    font-size: 2.25rem;
+    font-size: var(--text-36);
     margin-bottom: 16px;
     color: var(--foreground);
     position: relative;
 }
 
 .heroSection h3 {
-    font-size: 1.35rem;
+    font-size: var(--text-20);
     margin-bottom: 8px;
     color: var(--accent-gold);
     position: relative;
@@ -294,7 +294,7 @@
 .heroSection p {
     color: var(--secondary);
     margin-bottom: 32px;
-    font-size: 1.15rem;
+    font-size: var(--text-18);
     max-width: 600px;
     position: relative;
     line-height: 1.6;
@@ -358,7 +358,7 @@
     color: var(--btn-fg);
     padding: 12px 24px;
     border-radius: var(--radius-md);
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     font-weight: 750;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     border: none;
@@ -402,7 +402,7 @@
     /* Using var for error color */
     padding: 8px 16px;
     border-radius: 8px;
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     font-weight: 500;
     transition: all 0.2s;
     display: flex;
@@ -438,7 +438,7 @@
     border: 1px solid rgba(var(--accent-gold-rgb), 0.25);
     padding: 8px 14px;
     border-radius: 999px;
-    font-size: 0.85rem;
+    font-size: var(--text-14);
     font-weight: 650;
 }
 
@@ -489,7 +489,7 @@
 }
 
 .quickStatCard h3 {
-    font-size: 1rem;
+    font-size: var(--text-16);
     margin-bottom: 24px;
     color: var(--accent-gold);
     text-transform: uppercase;
@@ -511,7 +511,7 @@
     justify-content: space-between;
     flex-wrap: wrap;
     align-items: center;
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     margin-bottom: 8px;
     /* Added spacing from bar */
 }
@@ -541,13 +541,13 @@
 }
 
 .usageNote {
-    font-size: 0.8rem;
+    font-size: var(--text-13);
     color: var(--text-muted);
     font-style: italic;
 }
 
 .manageLink {
-    font-size: 0.85rem;
+    font-size: var(--text-14);
     color: var(--primary);
     font-weight: 600;
     text-decoration: none;
@@ -579,7 +579,7 @@
 }
 
 .communityText {
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     color: var(--secondary);
     margin-bottom: 12px;
     line-height: 1.5;
@@ -610,7 +610,7 @@
     background: rgba(var(--foreground-rgb), 0.03);
     border-radius: 12px;
     color: var(--foreground);
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     transition: all 0.2s ease;
 }
 
@@ -627,7 +627,7 @@
     align-items: center;
     gap: 6px;
     color: var(--primary);
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     font-weight: 600;
     margin-top: auto;
     text-decoration: none !important;
@@ -673,7 +673,7 @@
 }
 
 .sectionTitle {
-    font-size: 1.8rem;
+    font-size: var(--text-28);
     font-weight: 750;
     display: flex;
     align-items: center;
@@ -694,7 +694,7 @@
     border: 1px solid var(--error-bg);
     padding: 12px 24px;
     border-radius: var(--radius-md);
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     font-weight: 700;
     display: flex;
     align-items: center;
@@ -738,7 +738,7 @@
 }
 
 .profileCount {
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     color: var(--text-muted);
     font-weight: 500;
 }
@@ -785,7 +785,7 @@
     color: var(--accent-gold);
     padding: 6px 14px;
     border-radius: 20px;
-    font-size: 0.8rem;
+    font-size: var(--text-13);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -793,14 +793,14 @@
 }
 
 .lifeReportCard h3 {
-    font-size: 2rem;
+    font-size: var(--text-32);
     font-weight: 800;
     margin-bottom: 12px;
     color: var(--foreground);
 }
 
 .lifeReportCard p {
-    font-size: 1.1rem;
+    font-size: var(--text-18);
     color: var(--secondary);
     margin-bottom: 24px;
     line-height: 1.6;
@@ -838,7 +838,7 @@
     border: none;
     color: var(--accent-gold);
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     cursor: pointer;
     padding: 0;
     transition: all 0.2s;
@@ -910,7 +910,7 @@
 
 .activeBadge,
 .disabledBadge {
-    font-size: 0.75rem;
+    font-size: var(--text-12);
     padding: 6px 12px;
     border-radius: 20px;
     font-weight: 700;
@@ -933,7 +933,7 @@
 }
 
 .profileName {
-    font-size: 1.5rem;
+    font-size: var(--text-24);
     font-weight: 700;
     margin-bottom: 12px;
     color: var(--foreground);
@@ -950,12 +950,12 @@
     align-items: center;
     gap: 10px;
     color: var(--secondary);
-    font-size: 0.95rem;
+    font-size: var(--text-15);
 }
 
 .timeLabel {
     color: var(--text-muted);
-    font-size: 0.85rem;
+    font-size: var(--text-14);
     margin-left: 6px;
 }
 
@@ -975,7 +975,7 @@
     gap: 6px;
     color: var(--primary);
     font-weight: 700;
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     text-decoration: none;
     transition: all 0.2s;
 }
@@ -1029,7 +1029,7 @@
 }
 
 .creditValueLarge span {
-    font-size: 2rem;
+    font-size: var(--text-32);
     font-weight: 750;
     color: var(--foreground);
 }
@@ -1037,7 +1037,7 @@
 .creditValueLarge label {
     margin-left: auto;
     color: var(--text-muted);
-    font-size: 0.95rem;
+    font-size: var(--text-15);
 }
 
 .creditRequestPanel {
@@ -1060,7 +1060,7 @@
 
 .creditRequestHeader h3 {
     margin: 0;
-    font-size: 1.1rem;
+    font-size: var(--text-18);
     font-weight: 700;
     color: var(--foreground);
 }
@@ -1078,7 +1078,7 @@
 }
 
 .creditRequestField label {
-    font-size: 0.86rem;
+    font-size: var(--text-14);
     color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.8px;
@@ -1107,7 +1107,7 @@
     border: none;
     border-radius: 10px;
     padding: 10px 18px;
-    font-size: 0.92rem;
+    font-size: var(--text-15);
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -1129,7 +1129,7 @@
     margin: 0;
     color: var(--text-muted);
     line-height: 1.5;
-    font-size: 0.95rem;
+    font-size: var(--text-15);
 }
 
 .creditRequestHistory {
@@ -1140,7 +1140,7 @@
 
 .creditRequestHistoryTitle {
     margin: 0;
-    font-size: 1rem;
+    font-size: var(--text-16);
     color: var(--foreground);
 }
 
@@ -1153,7 +1153,7 @@
     min-width: 92px;
     padding: 5px 10px;
     border-radius: 999px;
-    font-size: 0.75rem;
+    font-size: var(--text-12);
     font-weight: 700;
     letter-spacing: 0.5px;
 }
@@ -1194,7 +1194,7 @@
     background: rgba(var(--foreground-rgb), 0.03);
     padding: 16px 24px;
     text-align: left;
-    font-size: 0.85rem;
+    font-size: var(--text-14);
     text-transform: uppercase;
     letter-spacing: 1px;
     color: var(--text-muted);
@@ -1238,13 +1238,13 @@
     display: flex;
     flex-direction: column;
     gap: 2px;
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     color: var(--primary);
 }
 
 .dateCell small {
     color: var(--text-muted);
-    font-size: 0.8rem;
+    font-size: var(--text-13);
 }
 
 /* Status/Amount Indicators */
@@ -1290,7 +1290,7 @@
     padding: 8px 16px;
     border-radius: 8px;
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: var(--text-14);
     cursor: pointer;
     transition: all 0.2s;
 }
@@ -1333,7 +1333,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     border: 1px solid rgba(var(--accent-gold-rgb), 0.2);
 }
 
@@ -1381,11 +1381,11 @@
     font-weight: 600;
     color: var(--foreground);
     margin-bottom: 4px;
-    font-size: 1.05rem;
+    font-size: var(--text-16);
 }
 
 .historyDate {
-    font-size: 0.85rem;
+    font-size: var(--text-14);
     color: var(--text-muted);
 }
 
@@ -1396,7 +1396,7 @@
     border: 1px solid var(--card-border);
     color: var(--primary);
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     text-decoration: none;
     transition: all 0.2s;
 }
@@ -1460,7 +1460,7 @@
 
     .navItem {
         padding: 12px 20px;
-        font-size: 0.95rem;
+        font-size: var(--text-15);
         flex: 0 0 auto;
         width: auto;
         min-width: 0;
@@ -1522,7 +1522,7 @@
     }
 
     .heroSection h2 {
-        font-size: 1.75rem;
+        font-size: var(--text-28);
     }
 
     .heroActions {
@@ -1601,7 +1601,7 @@
     }
 
     .historyIcon {
-        font-size: 1.2rem;
+        font-size: var(--text-20);
     }
 }
 
@@ -1633,11 +1633,11 @@
 
 @media (max-width: 640px) {
     .userName {
-        font-size: 1.15rem;
+        font-size: var(--text-18);
     }
 
     .userEmail {
-        font-size: 0.95rem;
+        font-size: var(--text-15);
     }
 
     .statsBar {
@@ -1646,7 +1646,7 @@
     }
 
     .statValueText {
-        font-size: 1.4rem;
+        font-size: var(--text-24);
     }
 
     .nav {
@@ -1659,7 +1659,7 @@
 
     .navItem {
         padding: 10px 16px;
-        font-size: 0.85rem;
+        font-size: var(--text-14);
     }
 
     .quickStats {
@@ -1682,23 +1682,23 @@
     }
 
     .heroSection h2 {
-        font-size: 1.5rem;
+        font-size: var(--text-24);
     }
 
     .heroSection h3 {
-    font-size: 1.35rem;
+    font-size: var(--text-20);
     margin-bottom: 8px;
     color: var(--accent-gold);
     position: relative;
 }
 
 .heroSection p {
-        font-size: 1rem;
+        font-size: var(--text-16);
     }
 
     /* Direction is already column from the 1024px block above. */
     .welcomeBonusNoticeText {
-        font-size: 0.9rem;
+        font-size: var(--text-14);
     }
 
     .noticeActions {
@@ -1716,7 +1716,7 @@
     .exportTable th,
     .exportTable td {
         padding: 12px 16px;
-        font-size: 0.85rem;
+        font-size: var(--text-14);
     }
 
     .historyItem {
@@ -1730,7 +1730,7 @@
     }
 
     .creditValueLarge span {
-        font-size: 1.6rem;
+        font-size: var(--text-24);
     }
 
     .creditRequestPanel {
@@ -1749,7 +1749,7 @@
 
     .bulkDeleteBtn, .actionBtn {
         padding: 10px 16px;
-        font-size: 0.85rem;
+        font-size: var(--text-14);
     }
 
     .lifeReportCard {
@@ -1757,10 +1757,10 @@
     }
 
     .lifeReportCard h3 {
-        font-size: 1.25rem;
+        font-size: var(--text-20);
     }
 
     .sectionTitle {
-        font-size: 1.4rem;
+        font-size: var(--text-24);
     }
 }

@@ -34,7 +34,7 @@
 
 .name {
     font-family: var(--font-heading);
-    font-size: 1.05rem;
+    font-size: var(--text-16);
     color: var(--foreground);
     white-space: nowrap;
     overflow: hidden;
@@ -42,7 +42,7 @@
 }
 
 .meta {
-    font-size: 0.75rem;
+    font-size: var(--text-12);
     color: var(--text-muted);
 }
 
@@ -75,7 +75,7 @@
     margin: auto;
     text-align: center;
     color: var(--text-muted);
-    font-size: 0.9rem;
+    font-size: var(--text-14);
     max-width: 34ch;
     line-height: 1.6;
 }
@@ -85,7 +85,7 @@
     padding: 10px 14px;
     border-radius: 16px;
     line-height: 1.55;
-    font-size: 0.95rem;
+    font-size: var(--text-15);
     /* Long unbroken strings (a URL, a pasted id) must wrap rather than force the
        whole transcript to scroll sideways. */
     overflow-wrap: anywhere;
@@ -123,7 +123,7 @@
 }
 
 .endedDetail {
-    font-size: 0.88rem;
+    font-size: var(--text-14);
     color: var(--text-muted);
     margin-bottom: 14px;
 }
@@ -144,7 +144,7 @@
     border-radius: var(--radius-sm);
     background: var(--error-bg);
     color: var(--error);
-    font-size: 0.88rem;
+    font-size: var(--text-14);
 }
 
 .composer {
@@ -170,7 +170,7 @@
     color: var(--foreground);
     /* 16px minimum: iOS Safari zooms the viewport when focusing an input with
        smaller text, which throws the whole layout out mid-conversation. */
-    font-size: 16px;
+    font-size: var(--text-16);
     font-family: inherit;
 }
 

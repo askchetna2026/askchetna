@@ -93,7 +93,7 @@
     border-radius: 8px;
     font-weight: 600;
     font-size: var(--text-16);
-    transition: all 0.2s ease;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
     margin-bottom: 12px;
 }
 

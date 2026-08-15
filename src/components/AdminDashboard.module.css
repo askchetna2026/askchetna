@@ -38,7 +38,7 @@
     color: var(--text-muted);
     cursor: pointer;
     border-radius: var(--radius-sm);
-    transition: all 0.2s;
+    transition: background-color 0.2s, color 0.2s;
     font-size: var(--text-15);
     font-weight: 500;
 }
@@ -316,7 +316,7 @@
     border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -340,7 +340,7 @@
     font-weight: 600;
     cursor: pointer;
     border: 1px solid transparent;
-    transition: all 0.2s;
+    transition: background-color 0.2s, color 0.2s;
 }
 
 .editBtn {
@@ -416,7 +416,7 @@
     font-weight: 600;
     border: 1px solid transparent;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .approveBtn {

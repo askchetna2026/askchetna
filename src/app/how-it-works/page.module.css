@@ -88,7 +88,7 @@
     border: 1px solid var(--card-border);
     box-shadow: var(--glass-shadow);
     flex: 1;
-    transition: all 0.3s ease;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
 @media (hover: hover) and (pointer: fine) {

@@ -942,7 +942,7 @@ html:not(.native-app) h3 { font-size: clamp(1rem, 2vw, 1.25rem); }
   align-items: center;
   justify-content: center;
   gap: 10px;
-  transition: all 0.3s ease;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
   box-shadow:
     0 4px 20px rgba(181, 137, 46, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
@@ -997,7 +997,7 @@ html:not(.native-app) h3 { font-size: clamp(1rem, 2vw, 1.25rem); }
   align-items: center;
   justify-content: center;
   gap: 10px;
-  transition: all 0.3s ease;
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
   text-transform: uppercase;
   font-size: var(--text-14);
 }

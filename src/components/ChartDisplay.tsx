@@ -401,7 +401,7 @@ export default function ChartDisplay({ data, isMoonChart, width = '100%', height
                         cursor: 'pointer',
                         fontWeight: '800',
                         lineHeight: 1,
-                        transition: 'all 0.2s ease'
+                        transition: 'background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease'
                     }}
                 >EN</button>
                 <button
@@ -416,7 +416,7 @@ export default function ChartDisplay({ data, isMoonChart, width = '100%', height
                         cursor: 'pointer',
                         fontWeight: '800',
                         lineHeight: 1,
-                        transition: 'all 0.2s ease'
+                        transition: 'background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease'
                     }}
                 >हिंदी</button>
             </div>
@@ -479,7 +479,7 @@ export default function ChartDisplay({ data, isMoonChart, width = '100%', height
                                 strokeWidth={isActive ? "2" : "1"}
 
                                 onClick={() => setActiveHouse(house.num)}
-                                style={{ cursor: 'pointer', transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)' }}
+                                style={{ cursor: 'pointer', transition: 'stroke 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), stroke-width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), fill 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)' }}
                                 className="chart-house-path"
                             />
                         );
@@ -617,7 +617,7 @@ export default function ChartDisplay({ data, isMoonChart, width = '100%', height
                                             fill={isActive ? "var(--background)" : "var(--primary)"}
                                             fontWeight={planetObj.name === 'Ascendant' ? "700" : "500"}
                                             fontFamily="var(--font-main)"
-                                            style={{ pointerEvents: 'none', transition: 'all 0.3s ease', textShadow: isActive ? 'none' : '0px 2px 4px rgba(0,0,0,0.5)' }}
+                                            style={{ pointerEvents: 'none', transition: 'opacity 0.3s ease, fill 0.3s ease, text-shadow 0.3s ease', textShadow: isActive ? 'none' : '0px 2px 4px rgba(0,0,0,0.5)' }}
                                         >
                                             {getPlanetLabel(planetObj.name === 'Asc' ? 'Ascendant' : planetObj.name)}
                                         </text>

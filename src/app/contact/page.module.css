@@ -99,7 +99,7 @@
     color: var(--foreground);
     font-family: var(--font-main);
     font-size: var(--text-16);
-    transition: all 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .formGroup input:focus,
@@ -125,7 +125,7 @@
     font-size: var(--text-16);
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: box-shadow 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
 }
 
 @media (hover: hover) and (pointer: fine) {

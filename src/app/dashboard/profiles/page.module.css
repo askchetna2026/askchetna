@@ -70,7 +70,7 @@
     border-radius: 6px;
     font-size: var(--text-14);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: border-color 0.2s ease, color 0.2s ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -94,7 +94,7 @@
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--card-border);
     border-radius: 12px;
-    transition: all 0.2s ease;
+    transition: border-color 0.2s ease, transform 0.2s ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -205,7 +205,7 @@
     border-radius: 8px;
     font-weight: 600;
     font-size: var(--text-14);
-    transition: all 0.2s ease;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -228,7 +228,7 @@
     cursor: pointer;
     padding: 8px;
     border-radius: 6px;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -264,7 +264,7 @@
     color: var(--btn-fg);
     border-radius: 8px;
     font-weight: 600;
-    transition: all 0.2s ease;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -350,7 +350,7 @@
     border-radius: 8px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -367,7 +367,7 @@
     border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 @media (hover: hover) and (pointer: fine) {

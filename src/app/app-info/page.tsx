@@ -277,7 +277,7 @@ export default function AppInfoPage() {
               fontSize: '14px',
               fontWeight: 500,
               cursor: loading ? 'not-allowed' : 'pointer',
-              transition: 'all 0.2s',
+              transition: 'background-color 0.2s, color 0.2s, border-color 0.2s',
               opacity: loading ? 0.7 : 1
             }}
             onMouseOver={(e) => !loading && (e.currentTarget.style.background = 'rgba(74, 47, 168, 0.3)')}

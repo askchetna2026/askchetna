@@ -55,7 +55,7 @@
     background: transparent;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.25s ease;
+    transition: background-color 0.25s ease;
 }
 
 @media (hover: hover) and (pointer: fine) {

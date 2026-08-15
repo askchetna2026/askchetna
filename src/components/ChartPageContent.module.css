@@ -55,7 +55,7 @@
     font-size: var(--text-14);
     font-weight: 700;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -136,7 +136,7 @@
     border-radius: 50px;
     color: var(--secondary);
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: border-color 0.3s ease, color 0.3s ease;
     font-size: var(--text-15);
     white-space: nowrap;
 }
@@ -278,7 +278,7 @@
     border: 1px solid rgba(var(--accent-gold-rgb), 0.3);
     border-radius: 100px;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 4px 15px rgba(181, 137, 46, 0.2);
 }
 
@@ -306,7 +306,7 @@
     border-radius: 50px;
     font-size: var(--text-14);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -602,7 +602,7 @@
     position: relative;
     overflow: hidden;
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7), 0 0 20px rgba(74, 47, 168, 0.15);
-    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    transition: box-shadow 0.5s cubic-bezier(0.23, 1, 0.32, 1), transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -622,7 +622,7 @@
     flex-direction: column;
     gap: 16px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(74, 47, 168, 0.1);
-    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    transition: background-color 0.4s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.4s cubic-bezier(0.23, 1, 0.32, 1), transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
     overflow: hidden;
     min-height: 400px;
 }
@@ -657,7 +657,7 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -914,7 +914,7 @@
     font-weight: 700;
     font-size: var(--text-14);
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
     box-shadow: 0 4px 15px rgba(181, 137, 46, 0.2);
 }
 
@@ -981,7 +981,7 @@
     font-size: var(--text-14);
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
     white-space: nowrap;
 }
 
@@ -1016,7 +1016,7 @@
     font-weight: 700;
     cursor: pointer;
     border: none;
-    transition: all 0.3s ease;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -1082,7 +1082,7 @@
     font-weight: 600;
     letter-spacing: 0.5px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
     white-space: nowrap;
     position: relative;
     bottom: -2px;
@@ -1230,7 +1230,7 @@
     color: var(--accent-gold);
     font-size: var(--text-14);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: background-color 0.2s;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -1551,7 +1551,7 @@
     border-radius: 8px;
     cursor: pointer;
     font-weight: 500;
-    transition: all 0.2s;
+    transition: border-color 0.2s, color 0.2s;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -1569,7 +1569,7 @@
     border-radius: 8px;
     cursor: pointer;
     font-weight: 700;
-    transition: all 0.2s;
+    transition: box-shadow 0.2s, transform 0.2s;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -1587,7 +1587,7 @@
     border-radius: 8px;
     cursor: pointer;
     font-weight: 700;
-    transition: all 0.2s;
+    transition: box-shadow 0.2s;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -1653,7 +1653,7 @@
     border: 1px solid var(--card-border);
     position: relative;
     overflow: hidden;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 @media (hover: hover) and (pointer: fine) {

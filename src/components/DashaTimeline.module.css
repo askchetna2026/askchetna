@@ -42,7 +42,7 @@
     background: rgba(255, 255, 255, 0.02);
     color: var(--secondary);
     cursor: pointer;
-    transition: all 0.25s ease;
+    transition: border-color 0.25s ease, color 0.25s ease;
 }
 
 @media (hover: hover) and (pointer: fine) {

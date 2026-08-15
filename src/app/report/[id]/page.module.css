@@ -265,7 +265,7 @@
     border: 1px solid rgba(181, 137, 46, 0.28);
     padding: 12px 18px;
     border-radius: 999px;
-    transition: all 0.2s ease;
+    transition: border-color 0.2s ease, color 0.2s ease;
     font-family: var(--font-main), sans-serif;
 }
 
@@ -404,7 +404,7 @@
     border-radius: 50px;
     font-size: var(--text-14);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -446,7 +446,7 @@
     font-size: var(--text-14);
     font-family: var(--font-main), sans-serif;
     border: 1px solid rgba(181, 137, 46, 0.3);
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 @media (hover: hover) and (pointer: fine) {

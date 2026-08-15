@@ -75,7 +75,7 @@ export default function WelcomeBanner({ bonusAmount }: { bonusAmount: number }) 
                             fontSize: '0.85rem',
                             fontWeight: 'bold',
                             textDecoration: 'none',
-                            transition: 'all 0.2s ease',
+                            transition: 'background-color 0.2s ease, color 0.2s ease, opacity 0.2s ease',
                             whiteSpace: 'nowrap'
                         }}
                         onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}

@@ -13,7 +13,7 @@
     text-decoration: none;
     cursor: pointer;
     border-radius: var(--radius-sm);
-    transition: all 0.2s;
+    transition: background-color 0.2s, color 0.2s;
     font-size: var(--text-15);
     font-weight: 500;
     white-space: nowrap;

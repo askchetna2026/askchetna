@@ -458,7 +458,7 @@
   border-radius: 50px;
   font-weight: 700;
   font-size: var(--text-16);
-  transition: all 0.3s ease;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
   border: none;
   cursor: pointer;
   box-shadow: 0 4px 20px rgba(181, 137, 46, 0.3);
@@ -476,7 +476,7 @@
   border-radius: 50px;
   font-weight: 500;
   font-size: var(--text-18);
-  transition: all 0.3s ease;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
   cursor: pointer;
 }
 
@@ -658,7 +658,7 @@
   border-radius: 20px;
   text-align: center;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(74, 47, 168, 0.08); /* Indigo glow */
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1121,7 +1121,7 @@
   background: var(--card-bg);
   border-radius: 16px;
   text-align: left;
-  transition: all 0.3s ease;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
@@ -1173,7 +1173,7 @@
   background: var(--card-bg);
   border-radius: 20px;
   text-align: center;
-  transition: all 0.3s ease;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
 }
 
@@ -1355,7 +1355,7 @@
   font-size: var(--text-16);
   outline: none;
   font-family: var(--font-main);
-  transition: all 0.3s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
   min-width: 200px;
 }
 
@@ -1373,7 +1373,7 @@
   border-radius: 50px;
   border: 1px solid var(--accent-gold);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
   font-size: var(--text-15);
   white-space: nowrap;
 }

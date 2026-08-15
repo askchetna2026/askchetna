@@ -57,7 +57,7 @@
     cursor: pointer;
     padding: 4px;
     border-radius: 4px;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -118,7 +118,7 @@
     border-radius: 8px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -134,7 +134,7 @@
     border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .confirmButton.warning {

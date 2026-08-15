@@ -42,7 +42,7 @@
     border-radius: 0;
     color: var(--foreground);
     font-size: var(--text-18);
-    transition: all 0.4s ease;
+    transition: background-color 0.4s ease, box-shadow 0.4s ease;
     outline: none;
     font-family: var(--font-main);
 }
@@ -138,7 +138,7 @@
     border: none;
     cursor: pointer;
     box-shadow: 0 4px 15px rgba(181, 137, 46, 0.3);
-    transition: all 0.3s ease;
+    transition: box-shadow 0.3s ease, filter 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
 }
 
 @media (hover: hover) and (pointer: fine) {

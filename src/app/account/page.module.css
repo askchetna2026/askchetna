@@ -77,7 +77,7 @@
     font: inherit;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.25s ease;
+    transition: background-color 0.25s ease, opacity 0.25s ease;
 }
 
 .secondaryBtn {

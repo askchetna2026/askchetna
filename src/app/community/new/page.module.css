@@ -64,7 +64,7 @@
     color: var(--foreground);
     font-size: var(--text-18);
     font-family: inherit;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .textarea {
@@ -88,7 +88,7 @@
     font-weight: 800;
     font-size: var(--text-16);
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: box-shadow 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
     align-self: flex-start;
 }
 

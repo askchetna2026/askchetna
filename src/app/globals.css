@@ -56,6 +56,8 @@
   --accent-coral-text: #7A2C12;
   --accent-coral-decor: #C4603A;
   --accent-coral-deep: #63220E;
+  /* For rgba() tints of the coral, e.g. the debilitated dignity badge. */
+  --accent-coral-rgb: 122, 44, 18;
   /* ═══ THE BUTTON ═══════════════════════════════════════════════════════
      One colour for every call to action on the site: kumkum red, cream label.
      Buttons were split between gold fills and coral fills, which read as two

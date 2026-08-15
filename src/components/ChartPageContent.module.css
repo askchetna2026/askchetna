@@ -757,16 +757,20 @@
     border: 1px solid var(--accent-gold) !important;
 }
 
+/* #ff4747 and #00b894 are dark-theme colours — bright, saturated, and tuned
+   to sit on navy. On parchment the red measured 2.13:1 against its own tint,
+   where 4.5:1 is the floor for text this size. Both are tokens now, and both
+   were the last hardcoded hexes in these badges. */
 .debilitated {
-    background: rgba(255, 71, 71, 0.1) !important;
-    color: #ff4747 !important;
-    border: 1px solid rgba(255, 71, 71, 0.2) !important;
+    background: rgba(var(--accent-coral-rgb, 122, 44, 18), 0.10) !important;
+    color: var(--accent-coral-deep) !important;
+    border: 1px solid rgba(var(--accent-coral-rgb, 122, 44, 18), 0.35) !important;
 }
 
 .moolatrikona {
-    background: rgba(0, 184, 148, 0.1) !important;
-    color: #00b894 !important;
-    border: 1px solid rgba(0, 184, 148, 0.2) !important;
+    background: rgba(var(--accent-gold-rgb), 0.10) !important;
+    color: var(--accent-gold) !important;
+    border: 1px solid rgba(var(--accent-gold-rgb), 0.35) !important;
 }
 
 .lockOverlay {

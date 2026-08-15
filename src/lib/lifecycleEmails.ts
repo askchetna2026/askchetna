@@ -795,6 +795,18 @@ async function claimTrafficAutomationRun(config: TrafficAutomationCampaignConfig
         });
     }, {
         isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+        // Two round trips under Serializable, on a pooled connection, from a
+        // route that runs during ordinary page traffic. Prisma's 5s default was
+        // being exceeded routinely — observed at 7.0s, 11.9s and 12.0s in one
+        // session — and every one of those throws P2028 and silently drops the
+        // campaign for that window. That is the "campaign mail goes quiet"
+        // failure, and it fails closed with nothing user-visible.
+        //
+        // A timeout is the mitigation, not the fix: this claim wants a unique
+        // constraint on (campaignKey, batchKey, triggerType) so it can be a
+        // plain create that catches P2002, with no transaction at all.
+        timeout: 20_000,
+        maxWait: 10_000,
     });
 
     return {

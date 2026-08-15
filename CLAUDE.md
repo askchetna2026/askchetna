@@ -28,7 +28,17 @@ Live at https://askchetna.com (Vercel).
   every push feel more dangerous than it is — and, worse, invites the assumption
   that a fix has shipped when it has not. Ask the deployments rather than this
   file: `curl -s https://<host>/api/version`.
+- **Production ships by PROMOTING a build in the Vercel dashboard**
+  (Deployments → Promote to Production). There is no branch to push and no
+  `main` to merge into — which is why nothing in this repo describes it, and
+  why it previously had to be re-derived by inspecting which commit `www` was
+  serving. `buildId` from `/api/version` IS the commit SHA, so comparing the
+  two hosts tells you exactly what is waiting.
 - Match the surrounding code's style. Comments explain *why*, not *what*.
+- **Every AI prompt lives in `prompts/ai-prompts.md`**, not in the code —
+  `promptStore.ts` reads that file at runtime and `npm run prompts:check`
+  (which `prebuild` runs) verifies all 15 still resolve. Editing a prompt is a
+  markdown edit; `geminiService.ts` only parses the response.
 - **Commit subjects carry the version**, e.g. `fix(env): … [v3.1.8]`. Stamped
   automatically by the `prepare-commit-msg` hook — do not add it by hand. The
   patch bumps on **every commit** (`scripts/auto-bump-patch.mjs`), so each
@@ -45,16 +55,35 @@ Live at https://askchetna.com (Vercel).
 
 ## Brand
 
-Dark is the default theme (`<html data-theme="dark">`); light theme also exists.
+**There is ONE palette — the parchment manuscript — and it is not dark.**
+`layout.tsx` hardcodes `<html data-theme="light">`; there is no theme bootstrap
+and any leftover `chetna-theme` in a returning visitor's localStorage is
+ignored. This file claimed the opposite until 2026-08-16, which is worth
+knowing because it sends you looking for a dark/light switch that does not
+exist, and invites "restoring" a dark value that was deliberately retired.
 
 ```
-Dark   bg #0B0F2F   fg #DFE0FF   gold #D4AF37   iris #5D3FD3
-Light  bg #FDF4E3   fg #2C1B18   gold #B8860B   rose #C48E8E
+bg #F2EAD5   panel #F6F0DF   fg #251A11   muted #5C4A32
+gold #5C3D0A (safe as TEXT)  gold-decor #B5892E (ornament/fills ONLY)
+coral #7A2C12 (carries every CTA)
 ```
+
+The gold and coral each split in two on purpose: the plain token is the value
+that is legible as text, the `-decor` variant is the brighter one for ornament.
+Collapsing them is what made `--accent-gold` unreadable once already. Every
+value was measured against the DARKEST grain of the paper texture, not the flat
+token — see the long comment at the top of `globals.css` before changing any.
+
+`.mystic-text` and `.cosmic-label` are the display-heading and eyebrow classes.
+Both were used across 15 files for months while being defined nowhere; they are
+real now. **Tailwind is NOT installed** — a utility class in a `className` does
+nothing at all, silently.
 
 Fonts: **Inter** (`--font-main`), **Playfair Display** (`--font-heading`), both via
-`next/font`. App icon and splash use `#0B0F2F` with the gold mark from
-`public/chetna_icon.svg`.
+`next/font`. Neither covers Devanagari, and `ChartDisplay` has an EN/हिंदी
+toggle, so Hindi labels fall back to whatever the OS supplies. App icon and
+splash still use `#0B0F2F` — a leftover from the retired dark theme, and one of
+the few places it survives.
 
 ## Landmines (each of these has already cost time)
 

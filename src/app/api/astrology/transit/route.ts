@@ -11,9 +11,17 @@ import { cached, utcHourKey } from '@/lib/astrology/skyCache';
  * every request, from every visitor, on both the home page and /today — twice
  * per visit, since EnergyWidget and TodayScreen each fetch it independently.
  *
- * So it is computed once per UTC hour and served to everyone, in-process and at
- * the CDN. Nothing personal passes through here, which is what makes the shared
- * public cache safe.
+ * So it is computed once per UTC hour and shared by every caller. Nothing
+ * personal passes through here, which is what makes one shared answer safe.
+ *
+ * The `public, s-maxage` below is currently INERT on Vercel: `src/proxy.ts`
+ * matches everything except `api/auth`, and a path that runs Edge middleware is
+ * never served from the CDN — measured, `X-Vercel-Cache: MISS` on every request
+ * and the s-maxage directives stripped from the response. The header is left in
+ * place because it costs nothing and becomes real the day this path is excluded
+ * from the matcher. Until then the in-process memo is what does the work, which
+ * is the part that matters: it is what keeps the 12 MB ephemeris off the
+ * request.
  */
 
 // Helper to calculate Rahu Kaal (inauspicious period)

@@ -859,10 +859,15 @@
   color: var(--accent-gold);
 }
 
+/* 1.8fr/1fr was sized for a side column holding only three links. Now that
+   today's sky lives there too, the columns carry comparable weight and the
+   split narrows to match — the reading column stays wider, but not by so much
+   that the right side reads as a leftover margin. */
 .widgetGrid {
   display: grid;
-  grid-template-columns: 1.8fr 1fr;
+  grid-template-columns: 1.4fr 1fr;
   gap: 32px;
+  align-items: start;
 }
 
 .mainColumn {
@@ -877,39 +882,81 @@
   gap: 32px;
 }
 
+/* Three items in a two-column grid always left the third stranded on a row of
+   its own, which read as a mistake rather than a set. One column in a side
+   column this width also gives each label room to sit beside its icon instead
+   of under it. */
 .quickLinks {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  grid-template-columns: 1fr;
+  gap: 12px;
 }
 
+/* A row rather than a stacked block. Three of these are navigation, not
+   content, and 24px of padding around a vertical icon-over-label made each one
+   the size of a card competing with the widgets above it. */
 .quickLinkItem {
-  padding: 24px;
+  padding: 14px 16px;
   background: var(--card-bg);
   border: 1px solid var(--card-border);
   border-radius: 12px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
   gap: 12px;
-  transition: all 0.3s ease;
+  min-height: 44px;
   color: var(--foreground);
   text-decoration: none;
+
+  /* Named properties: `all` also transitions border-color and box-shadow
+     together with anything added later, and 300ms is slow for a hover. */
+  transition:
+    border-color 180ms var(--ease-out),
+    background-color 180ms var(--ease-out),
+    transform 180ms var(--ease-out);
 }
 
 .quickLinkItem span {
   font-weight: 500;
-  transition: color 0.3s ease;
+  /* Takes the space between icon and arrow so the chevron sits at the far
+     edge of every row, giving the three a shared right margin to read down. */
+  flex: 1;
+  transition: color 180ms var(--ease-out);
 }
 
-.quickLinkItem:hover {
-  border-color: var(--accent-gold);
-  background: rgba(var(--accent-gold-rgb), 0.05);
-  transform: translateY(-4px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(181, 137, 46, 0.15);
+/* Gated: on a touch screen the hover state sticks after a tap, leaving a link
+   looking selected on a page the seeker has already navigated away from. */
+@media (hover: hover) and (pointer: fine) {
+  .quickLinkItem:hover {
+    border-color: var(--accent-gold);
+    background: rgba(var(--accent-gold-rgb), 0.05);
+    transform: translateY(-2px);
+  }
+
+  .quickLinkItem:hover span {
+    color: var(--accent-gold);
+  }
 }
 
-.quickLinkItem:hover span {
-  color: var(--accent-gold);
+/* The press feedback these never had. */
+.quickLinkItem:active {
+  transform: scale(0.985);
+}
+
+.quickLinkItem:focus-visible {
+  outline: 2px solid var(--accent-gold);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quickLinkItem {
+    transition: border-color 180ms var(--ease-out), background-color 180ms var(--ease-out);
+  }
+
+  .quickLinkItem:hover,
+  .quickLinkItem:active {
+    transform: none;
+  }
 }
 
 @media (max-width: 968px) {

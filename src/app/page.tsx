@@ -71,19 +71,27 @@ export default function Home() {
               </Link>
             </div>
 
+            {/* Two columns split by WHOSE information it is, not by importance.
+                All four widgets used to stack in the main column while the side
+                column held three links — 751px of content beside 417px that was
+                two-thirds empty, and a page that scrolled further than it
+                needed to.
+
+                Left is about this seeker: the note written for them, and the
+                journal they write back into. Right is today's sky, which is
+                identical for everyone, plus the ways on. */}
             <div className={styles.widgetGrid}>
               <div className={styles.mainColumn}>
-                {/* First in the column deliberately: it is the one thing here
-                    written about this seeker specifically, and the reason to
-                    open the app on a given morning. EnergyWidget and
-                    PanchangWidget below it are the same for everyone. */}
+                {/* First deliberately: the one thing here written about this
+                    seeker specifically, and the reason to open the app on a
+                    given morning. */}
                 <DailyInsightCard />
-                <EnergyWidget />
-                <PanchangWidget />
                 <JournalWidget />
               </div>
 
               <div className={styles.sideColumn}>
+                <EnergyWidget />
+                <PanchangWidget />
                 <div className={styles.quickLinks}>
                   <Link href="/chart" className={styles.quickLinkItem}>
                     <TrendingUp size={24} color="var(--accent-gold)" />

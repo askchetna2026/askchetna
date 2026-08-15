@@ -1,3 +1,7 @@
+/* No opacity on an already-quiet token. The palette's muted values are
+   tuned to be the dimmest thing it will say out loud; fading them further
+   drops them under the 4.5:1 floor. Wanting quieter than --text-muted is a
+   sign the token should change, not that it should be faded. */
 .disclaimerNote {
     display: flex;
     align-items: center;
@@ -7,7 +11,6 @@
     max-width: 640px;
     font-size: var(--text-12);
     color: var(--text-muted);
-    opacity: 0.7;
     text-align: center;
 }
 

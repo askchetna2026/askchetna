@@ -66,10 +66,13 @@
     border-left: 2px solid var(--accent-gold);
 }
 
+/* No opacity on an already-quiet token. The palette's muted values are
+   tuned to be the dimmest thing it will say out loud; fading them further
+   drops them under the 4.5:1 floor. Wanting quieter than --text-muted is a
+   sign the token should change, not that it should be faded. */
 .phaseSummaryFooter {
     font-size: var(--text-14);
     color: var(--text-muted);
-    opacity: 0.85;
     font-style: italic;
 }
 

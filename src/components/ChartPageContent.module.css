@@ -1678,9 +1678,12 @@
     margin: 0;
 }
 
+/* No opacity on an already-quiet token. The palette's muted values are
+   tuned to be the dimmest thing it will say out loud; fading them further
+   drops them under the 4.5:1 floor. Wanting quieter than --text-muted is a
+   sign the token should change, not that it should be faded. */
 .insightSeparator {
     color: var(--foreground);
-    opacity: 0.5;
     font-size: var(--text-24);
 }
 

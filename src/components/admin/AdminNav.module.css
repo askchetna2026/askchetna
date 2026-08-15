@@ -38,6 +38,10 @@
 
 /* Separates the consultations queues from the rest of the console. Without it
    "Applications" and "Astrologers" read as two names for one thing. */
+/* No opacity on an already-quiet token. The palette's muted values are
+   tuned to be the dimmest thing it will say out loud; fading them further
+   drops them under the 4.5:1 floor. Wanting quieter than --text-muted is a
+   sign the token should change, not that it should be faded. */
 .groupLabel {
     margin: 1rem 0 0.25rem;
     padding: 0 1rem;
@@ -46,7 +50,6 @@
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--text-muted);
-    opacity: 0.75;
 }
 
 @media (max-width: 768px) {

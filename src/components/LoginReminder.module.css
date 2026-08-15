@@ -15,6 +15,11 @@
     gap: 20px;
 }
 
+/* No opacity on an already-quiet token. --secondary is tuned as a text colour
+   in its own right; at 0.6 over a transparent background — so the card behind
+   it, not a ground of its own — this dismiss control measured 3.09:1 against
+   the 4.5:1 floor. It is the button that closes the thing, which is a poor
+   candidate for being the hardest text on screen to see. */
 .closeBtn {
     position: absolute;
     top: 12px;
@@ -23,13 +28,12 @@
     border: none;
     color: var(--secondary);
     cursor: pointer;
-    opacity: 0.6;
-    transition: opacity 0.2s;
+    transition: color 0.2s ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
     .closeBtn:hover {
-        opacity: 1;
+        color: var(--foreground);
     }
 }
 

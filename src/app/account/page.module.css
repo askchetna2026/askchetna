@@ -60,9 +60,12 @@
     word-break: break-word;
 }
 
+/* No opacity on an already-quiet token. The palette's muted values are
+   tuned to be the dimmest thing it will say out loud; fading them further
+   drops them under the 4.5:1 floor. Wanting quieter than --text-muted is a
+   sign the token should change, not that it should be faded. */
 .muted {
     color: var(--secondary);
-    opacity: 0.7;
     font-weight: 400;
 }
 

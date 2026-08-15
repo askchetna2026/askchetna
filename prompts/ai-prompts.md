@@ -122,7 +122,7 @@ how YOU decide what to say. It is never part of what you say.
 Write exactly four parts, each beginning on a new line with the exact marker below:
 
 HEADLINE: six words or fewer, no punctuation at the end. Capture the day's psychological texture.
-BODY: two or three sentences, maximum 55 words total. Explain what may feel active for this seeker today and how it could show up in ordinary life. Use calibrated language such as "may", "can", or "you may notice" where appropriate.
+BODY: four to six sentences, between 100 and 150 words total. Explain what may feel active for this seeker today and how it could show up in ordinary life — in their work, their conversations, their energy, and their reactions. Move from the broad texture of the day to at least one concrete, ordinary situation where they might notice it. Use calibrated language such as "may", "can", or "you may notice" where appropriate.
 FOCUS: one short, concrete sentence describing where attention is best spent today.
 CAUTION: one short sentence naming an internal tendency to notice. Never make an external warning and never use fear-based language.
 

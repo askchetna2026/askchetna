@@ -1682,3 +1682,28 @@
     gap: 16px;
     margin-top: 24px;
 }
+
+/* The header's action side: profile tabs, refine, timeline, share.
+   They were four flat siblings of the flex row, so justify-content
+   space-between spread them at x=536, 766, 929 and 1087 across a 1052px
+   container — the last one past its right edge — and each button squeezed
+   narrow enough to wrap its label onto three lines. */
+.headerActions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Labels stay on one line; the row wraps instead of the words. */
+.headerActions .addProfileBtn {
+    white-space: nowrap;
+    flex: none;
+}
+
+@media (max-width: 767px) {
+    /* Full width on a phone, where a wrapped row of pills reads as debris. */
+    .headerActions {
+        width: 100%;
+    }
+}

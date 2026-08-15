@@ -553,7 +553,10 @@ export default function ChartPageContent() {
                     </div>
                 </div>
 
-                {/* Profile Management UI */}
+                {/* One group, not four siblings. These were flat children of the
+                    header's flex row, so space-between strung them across it and
+                    the last one overflowed the container entirely. */}
+                <div className={styles.headerActions}>
                 {activeProfiles.length > 0 && (
                     <ProfileTabs
                         profiles={activeProfiles}
@@ -581,6 +584,7 @@ export default function ChartPageContent() {
                 </Link>
 
                 {profile?.chartData && <ShareChartCard profile={profile} />}
+                </div>
             </motion.div>
 
             {!hasVargas && (

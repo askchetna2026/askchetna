@@ -24,6 +24,7 @@ import { ComplexityProvider } from '@/context/ComplexityContext';
 import ProfileManager from '@/components/ProfileManager';
 import ProfileRequiredGate from '@/components/ProfileRequiredGate';
 import { CosmicStarfield } from '@/lib/cosmic/Starfield';
+import ScrollToTop from '@/components/ScrollToTop';
 import UpdateNotification from '@/components/UpdateNotification';
 
 const inter = Inter({
@@ -166,6 +167,7 @@ export default async function RootLayout({
         <div className="stars-layer-2"></div>
         <div className="central-portal-glow"></div>
         <div className="noise-overlay"></div>
+        <ScrollToTop />
         <AuthProvider>
           {/* Inside the provider because it now asks whether anyone is signed
               in — see Starfield.tsx. Safe to move: it is position:fixed with

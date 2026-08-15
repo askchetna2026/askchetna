@@ -1847,3 +1847,90 @@
 .chartInfoCard {
     width: 100%;
 }
+
+/* ── Birth record: one row, quieter, tighter ─────────────────────────────────
+   minmax(200px) + 16px gaps needs 1064px for five facts and the row is 1052,
+   so the fifth wrapped alone onto a second line. 150px fits all five with room
+   to spare and still holds "Birth Place: Patna, Bihar" without breaking. */
+.chartInfoGrid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px 20px;
+    font-size: 0.88rem;
+}
+
+@media (max-width: 700px) {
+    /* Two facts a line rather than one, and the row gap halved — stacked
+       single-column with a 16px gap read as double-spaced. */
+    .chartInfoGrid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px 14px;
+        font-size: 0.84rem;
+    }
+}
+
+/* Was clamped by the global h2 and running to two lines on desktop. This is a
+   record header, not a page title — the h1 above already carries that. */
+/* Explicit px rather than clamp(1rem, 1.6vw, 1.15rem): that resolved to 26px
+   in the browser despite both rules loading, and a record header is not worth
+   debugging rem arithmetic over. This is a label above five facts — the h1
+   already carries the page title. */
+.chartInfoTitle {
+    font-size: 17px;
+    line-height: 1.35;
+    margin-bottom: 12px;
+}
+
+@media (max-width: 700px) {
+    .chartInfoTitle {
+        font-size: 15px;
+    }
+}
+
+.chartInfoCard {
+    padding: 20px 24px;
+}
+
+@media (max-width: 700px) {
+    .chartInfoCard {
+        padding: 16px 18px;
+    }
+}
+
+/* ── Profile bar full width, actions on their own line ───────────────────────
+   The switcher is navigation between records and deserves the width; the three
+   buttons act on whichever record is selected, so they belong under it rather
+   than competing with it on the same line. */
+.headerRowEnd .headerActions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+}
+
+.headerRowEnd .headerActions > *:first-child {
+    width: 100%;
+}
+
+/* Quieter than the primary controls below them — these are utilities. */
+.headerRowEnd .headerButtons {
+    justify-content: flex-start;
+    gap: 8px;
+}
+
+.headerRowEnd .headerButtons .addProfileBtn {
+    min-height: 40px;
+    padding: 8px 14px;
+    font-size: 0.85rem;
+}
+
+@media (max-width: 700px) {
+    .headerRowEnd .headerButtons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    /* Share sits alone on the second line, so it takes the full width rather
+       than leaving a half-empty cell. */
+    .headerRowEnd .headerButtons > *:nth-child(3) {
+        grid-column: 1 / -1;
+    }
+}

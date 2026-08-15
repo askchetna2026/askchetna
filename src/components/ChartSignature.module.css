@@ -1,0 +1,87 @@
+/* Sits directly under the birth record and above the sixteen chart grids, so
+   the first thing on /chart that says something is prose rather than a button.
+   Tokens throughout; every colour here is one already measured against the
+   papered card ground. */
+
+.card {
+    padding: 28px 32px;
+    margin-bottom: 32px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--text-11);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-gold);
+}
+
+.headline {
+    font-family: var(--font-heading);
+    /* Its own size rather than the global h2 step: this is a card heading
+       inside a page that already has an h1, and the page scale reads as
+       shouting at this depth. */
+    font-size: var(--text-24);
+    line-height: 1.25;
+    color: var(--foreground);
+    margin: 0;
+    letter-spacing: 0.01em;
+}
+
+.body {
+    font-size: var(--text-16);
+    line-height: 1.7;
+    color: var(--foreground);
+    margin: 0;
+    max-width: var(--measure);
+}
+
+.balance {
+    font-size: var(--text-14);
+    line-height: 1.6;
+    color: var(--text-muted);
+    margin: 0;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-soft);
+    max-width: var(--measure);
+}
+
+.yogas {
+    list-style: none;
+    padding: 0;
+    margin: 4px 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.yoga {
+    font-size: var(--text-14);
+    line-height: 1.55;
+    color: var(--foreground);
+}
+
+/* The Sanskrit name is the label; the meaning is the part a reader who does
+   not have the vocabulary can actually use, so it gets its own line rather
+   than trailing in brackets. */
+.yogaMeaning {
+    display: block;
+    color: var(--text-muted);
+}
+
+@media (max-width: 700px) {
+    .card {
+        padding: 20px;
+    }
+
+    .headline {
+        font-size: var(--text-20);
+    }
+}

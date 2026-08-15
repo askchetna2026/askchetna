@@ -36,6 +36,7 @@ import { buildPricingUrl } from '@/lib/monetization';
 import Term from '@/components/Term';
 import DisclaimerNote from '@/components/DisclaimerNote';
 import ShareChartCard from '@/components/ShareChartCard';
+import ChartSignature from '@/components/ChartSignature';
 
 import { VARGA_DEFINITIONS, VARGA_CATEGORIES, getPersonalizedInterpretation } from "@/lib/astrology/vargaContent";
 
@@ -533,6 +534,12 @@ export default function ChartPageContent() {
                             </div>
                         </div>
                     )}
+
+                    {/* The first thing on this page that interprets anything.
+                        Before it, the earliest interpretation was the "View
+                        Detailed Insights" button below — data before meaning. */}
+                    <ChartSignature profileId={profile?.id ?? null} />
+
                     <div className={styles.subtitle}>
 
                         {hasPurchaseSuccess && purchaseIntent === 'chart_unlock' && (

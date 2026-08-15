@@ -118,8 +118,13 @@
     flex-wrap: wrap;
 }
 
+/* Was a hard 320px, which overflowed the gutter on a 360px phone before the
+   768px breakpoint could rescue it. Grows to 320px where there is room and
+   shrinks with the viewport where there is not, so the slot never sets the
+   page's minimum width. */
 .profileSlot {
-    width: 320px;
+    width: 100%;
+    max-width: 320px;
 }
 
 .profileSlot h3 {

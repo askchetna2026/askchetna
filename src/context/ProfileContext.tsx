@@ -1,8 +1,9 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { useSession } from 'next-auth/react';
 import { buildPricingUrl } from '@/lib/monetization';
-import { refreshProfiles } from '@/lib/profileStore';
+import { getProfiles, refreshProfiles } from '@/lib/profileStore';
 
 interface ProfileContextType {
     isDrawerOpen: boolean;
@@ -23,6 +24,36 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     const [isLimitModalOpen, setIsLimitModalOpen] = useState(false);
     const [profileData, setProfileData] = useState<any>(null);
     const [loading, setLoading] = useState(false);
+    const { status } = useSession();
+
+    /**
+     * Load the seeker's profiles once they are known to be signed in.
+     *
+     * Without this the context held `null` until something opened the
+     * new-profile drawer, because that was the only caller that fetched. Every
+     * consumer reading `profileData?.profiles ?? []` therefore saw an empty
+     * list forever — which is why /synastry offered "Select a profile" above
+     * nothing at all, and the page was impossible to use for its actual purpose
+     * even for someone with five profiles saved.
+     *
+     * `getProfiles`, not `refreshProfiles`: cache-first, and it collapses onto
+     * whatever request the page has already started, so this costs no extra
+     * round trip. The callback repaints if the network answer differs from the
+     * cached one.
+     */
+    useEffect(() => {
+        if (status !== 'authenticated') return;
+
+        let live = true;
+        void (async () => {
+            const data = await getProfiles((fresh) => {
+                if (live) setProfileData(fresh);
+            });
+            if (live && data) setProfileData(data);
+        })();
+
+        return () => { live = false; };
+    }, [status]);
 
     /**
      * Through the shared store, so this no longer races the rashi badge, the

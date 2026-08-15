@@ -1,13 +1,21 @@
+/* Picking a saved profile — the whole interaction on /synastry.
+
+   It was close to unusable on a phone. Three things compounded: the container
+   capped itself at 300px inside a slot that goes full-width on mobile, the list
+   was a 200px scroll box (about five rows, so it started scrolling exactly when
+   someone had enough profiles to need it), and the rows had a hover-only
+   response with no press state — on touch, tapping produced no feedback at all
+   and left the hover style stuck behind. */
+
 .container {
     display: flex;
     flex-direction: column;
     gap: 12px;
     width: 100%;
-    max-width: 300px;
 }
 
 .loading {
-    color: var(--secondary);
+    color: var(--text-muted);
     font-size: 0.9rem;
     text-align: center;
     padding: 10px;
@@ -17,27 +25,63 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    max-height: 200px;
+
+    /* Tall enough that a normal number of profiles never scrolls. The cap is
+       kept so a long list cannot push the Compare button off the screen, but at
+       60vh it is a real fallback rather than the default state. */
+    max-height: min(60vh, 420px);
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .profileBtn {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 10px 12px;
+    width: 100%;
+
+    /* 44px is the smallest comfortable touch target; the old 10px padding on a
+       0.95rem line came to about 38px. */
+    min-height: 44px;
+    padding: 11px 14px;
+
     background: rgba(var(--foreground-rgb), 0.03);
     border: 1px solid rgba(var(--foreground-rgb), 0.08);
     border-radius: 8px;
     color: var(--foreground);
     font-size: 0.95rem;
-    transition: all 0.2s ease;
     text-align: left;
+    cursor: pointer;
+
+    /* Named properties, not `all`: `all` animates border and background
+       together with anything added later, and transitions layout properties by
+       accident. */
+    transition:
+        background-color 160ms var(--ease-out),
+        border-color 160ms var(--ease-out),
+        transform 160ms var(--ease-out);
 }
 
-.profileBtn:hover {
-    background: rgba(var(--foreground-rgb), 0.06);
-    transform: translateX(2px);
+/* Gated, or a tap on a touch screen leaves the row looking permanently
+   selected until something else is tapped. */
+@media (hover: hover) and (pointer: fine) {
+    .profileBtn:hover {
+        background: rgba(var(--foreground-rgb), 0.06);
+        border-color: rgba(var(--accent-gold-rgb), 0.35);
+    }
+}
+
+/* The press feedback the component had none of. This is the only confirmation
+   a touch user gets that the tap registered, since the panel it opens replaces
+   the list entirely. */
+.profileBtn:active {
+    transform: scale(0.97);
+    background: rgba(var(--foreground-rgb), 0.08);
+}
+
+.profileBtn:focus-visible {
+    outline: 2px solid var(--accent-gold);
+    outline-offset: 2px;
 }
 
 .newBtn {
@@ -45,24 +89,55 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 10px;
+    width: 100%;
+    min-height: 44px;
+    padding: 11px;
+
     background: transparent;
     border: 1px dashed var(--accent-gold);
     color: var(--accent-gold);
     border-radius: 8px;
     font-size: 0.9rem;
     font-weight: 500;
-    transition: all 0.2s ease;
+    cursor: pointer;
     margin-top: 4px;
+
+    transition:
+        background-color 160ms var(--ease-out),
+        transform 160ms var(--ease-out);
 }
 
-.newBtn:hover {
-    background: rgba(var(--accent-gold-rgb), 0.05);
+@media (hover: hover) and (pointer: fine) {
+    .newBtn:hover {
+        background: rgba(var(--accent-gold-rgb), 0.05);
+    }
 }
+
+.newBtn:active {
+    transform: scale(0.97);
+}
+
+.newBtn:focus-visible {
+    outline: 2px solid var(--accent-gold);
+    outline-offset: 2px;
+}
+
 /* Shown when the other synastry slot has taken every remaining profile. */
 .emptyHint {
     margin: 0 0 10px;
     font-size: 0.85rem;
     line-height: 1.5;
     color: var(--text-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .profileBtn,
+    .newBtn {
+        transition: background-color 160ms var(--ease-out);
+    }
+
+    .profileBtn:active,
+    .newBtn:active {
+        transform: none;
+    }
 }

@@ -627,3 +627,38 @@
 .avStrong    { color: var(--accent-gold); }
 .avAverage   { color: var(--text-muted); }
 .avChallenge { color: var(--accent-coral-text, #8C3A2B); }
+
+/* ── Hierarchy in the phase grid ─────────────────────────────────────────────
+   Four cards sat at identical weight: the reading of THIS chart next to three
+   general notes about the dasha lord. Same size, same border, same type — so
+   the eye had no reason to start anywhere, and the one genuinely personal
+   thing on the page read as a quarter of a row of tiles.
+
+   "Order, spacing, contrast, so the most important thing is the most obvious."
+   The chart reading takes the full width and a heavier frame; the three
+   supporting cards stay as they were and now read as what they are —
+   corroboration underneath, not peers. */
+.cardPrimary {
+    grid-column: 1 / -1;
+    border-color: var(--accent-gold-decor);
+    border-left: 3px solid var(--accent-gold);
+    background-image: var(--paper-tex);
+    background-blend-mode: var(--paper-tex-blend);
+    background-size: 300px;
+    box-shadow: var(--shadow-raise);
+}
+
+.card.cardPrimary h3 {
+    font-size: 1.45rem;
+    /* Sentence-case display type reads too loose at the +0.05em the global h3
+       carries for small caps. Tightened as it grows, per the size-specific
+       tracking rule. */
+    letter-spacing: -0.005em;
+}
+
+.card.cardPrimary p {
+    font-size: 1.08rem;
+    line-height: 1.65;
+    color: var(--foreground);
+    max-width: var(--measure);
+}

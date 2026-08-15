@@ -403,7 +403,7 @@ export default function TimingPageContent() {
                         the same period, which is the thing they actually came
                         to find out. */}
                     {lordContext?.placement && (
-                        <div className={styles.card}>
+                        <div className={`${styles.card} ${styles.cardPrimary}`}>
                             <div className={styles.cardHeader}>
                                 <User size={18} />
                                 <h3>In Your Chart</h3>

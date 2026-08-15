@@ -102,6 +102,8 @@ export default function TimingPageContent() {
     const [aiInsight, setAiInsight] = useState<any>(null);
     const [transits, setTransits] = useState<any>(null);
     const [transitsLoading, setTransitsLoading] = useState(false);
+    const [analysis, setAnalysis] = useState<any[] | null>(null);
+    const [yogas, setYogas] = useState<string[]>([]);
 
     useEffect(() => {
         if (status === 'authenticated') {
@@ -128,6 +130,7 @@ export default function TimingPageContent() {
                 setSelectedProfileId(initialId);
                 fetchDashas(initialId);
                 fetchTransits(initialId);
+                fetchAnalysis(initialId);
             } else {
                 setLoading(false);
                 setProfilesLoading(false);
@@ -161,6 +164,26 @@ export default function TimingPageContent() {
         } finally {
             setLoading(false);
             setProfilesLoading(false);
+        }
+    };
+
+    /**
+     * The engine's reading of THIS chart, per planet.
+     *
+     * It has always been computed — it is what the AI prompts receive as
+     * context — but nothing rendered it, so the page fell back to a table
+     * keyed on the dasha lord's name. Cheap to ask for: the route memoises on
+     * (profileId, updatedAt), and a natal chart does not change.
+     */
+    const fetchAnalysis = async (profileId: string) => {
+        try {
+            const res = await fetch(`/api/astrology/analysis?profileId=${profileId}`);
+            if (!res.ok) return;
+            const data = await res.json();
+            setAnalysis(Array.isArray(data.analysis) ? data.analysis : null);
+            setYogas(Array.isArray(data.yogas) ? data.yogas : []);
+        } catch (e) {
+            console.error('Failed to load chart analysis', e);
         }
     };
 
@@ -213,6 +236,10 @@ export default function TimingPageContent() {
         setSelectedProfileId(id);
         fetchDashas(id);
         fetchTransits(id);
+        // Cleared first: leaving the previous seeker's reading on screen while
+        // the new one loads is worse than showing nothing.
+        setAnalysis(null);
+        fetchAnalysis(id);
         router.push(`/timing?profileId=${id}`, { scroll: false });
     };
 
@@ -249,6 +276,12 @@ export default function TimingPageContent() {
     /* Where the current lord actually sits in THIS profile's chart. Recomputed
        when either changes, so switching profile switches the reading rather
        than leaving the previous seeker's placement on screen. */
+    /* The engine's entry for the running dasha lord, if the analysis has
+       arrived. Everything it carries is derived from this chart. */
+    const lordAnalysis = currentDasha && analysis
+        ? analysis.find((a: any) => a.planet === currentDasha.lord) ?? null
+        : null;
+
     const lordContext = currentDasha
         ? describeDashaLord(selectedProfile?.chartData, currentDasha.lord)
         : null;
@@ -390,7 +423,9 @@ export default function TimingPageContent() {
                             <Sparkles size={18} />
                             <h3>What This Phase Supports</h3>
                         </div>
-                        <p>{interpretation?.supports || "Observing cosmic patterns..."}</p>
+                        {/* The engine's reading of THIS chart when we have it;
+                            the lord-name table only as a fallback. */}
+                        <p>{lordAnalysis?.synthesis?.balances_with || interpretation?.supports || "Observing cosmic patterns..."}</p>
                     </div>
 
                     <div className={styles.card}>
@@ -398,7 +433,7 @@ export default function TimingPageContent() {
                             <Info size={18} />
                             <h3>What It Resists</h3>
                         </div>
-                        <p>{interpretation?.resists || "Analyzing celestial friction..."}</p>
+                        <p>{lordAnalysis?.synthesis?.challenge || interpretation?.resists || "Analyzing celestial friction..."}</p>
                     </div>
 
                     <div className={styles.card}>
@@ -406,7 +441,13 @@ export default function TimingPageContent() {
                             <Calendar size={18} />
                             <h3>Lifecycle Themes</h3>
                         </div>
-                        <p>{interpretation?.themes || "Extracting emotional resonance..."}</p>
+                        <p>{lordAnalysis?.synthesis?.repeats_when || interpretation?.themes || "Extracting emotional resonance..."}</p>
+                        {lordAnalysis && (
+                            <p className={styles.cardMeta}>
+                                {lordAnalysis.nakshatra} pada {lordAnalysis.nakshatraPada}
+                                {' · '}load {lordAnalysis.load} ({lordAnalysis.loadClassification})
+                            </p>
+                        )}
                     </div>
                 </div>
             )}

@@ -473,11 +473,23 @@ export default function ChartPageContent() {
                 transition={{ duration: 0.45, ease: [0.23, 1, 0.32, 1] }}
             >
                 <div className="text-left w-full">
-                    <span className="cosmic-label mb-2 inline-block">Varga Portfolio · Divisional Insights</span>
+                    {/* Page orientation, at page level rather than inside a card.
+                        /chart had no h1 at all — the only heading was this title
+                        nested two levels into the birth-details card, so the
+                        document started at h2 and the page never said plainly
+                        what it was. `cosmic-label` was carrying that job as a
+                        styled span, which is presentation standing in for
+                        structure. */}
+                    <h1 className={styles.pageHeading}>
+                        {profile ? `${profile.name}'s birth chart` : 'Your birth chart'}
+                    </h1>
+                    <p className={styles.pageLede}>
+                        The sky at the moment you were born, and what each division of it describes.
+                    </p>
                     {profile && (
                         <div className={`${styles.chartInfoCard} sacred-card`}>
                             <div className={styles.chartInfoContent}>
-                                <h2 className="mystic-text text-2xl mb-4 text-[var(--accent-gold)]">
+                                <h2 className={styles.chartInfoTitle}>
                                     Cosmic blueprint for {profile.name} • {new Date(profile.dateOfBirth).toLocaleDateString()}
                                 </h2>
                                 <div className="sacred-divider ml-0 justify-start mb-4"></div>

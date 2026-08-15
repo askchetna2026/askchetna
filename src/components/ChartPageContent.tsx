@@ -504,8 +504,8 @@ export default function ChartPageContent() {
                                             return `${H12}:${m} ${ampm}`;
                                         })(profile.timeOfBirth)}</div>
                                         <div><span className="text-[var(--primary-dark)]">Birth Place:</span> {profile.placeOfBirth}</div>
-                                        <div><span className="text-[var(--primary-dark)]"><Term termKey="ascendant">Ascendant</Term> Sign:</span> {getZodiacSign(profile.chartData.ascendant)}</div>
-                                        <div><span className="text-[var(--primary-dark)]"><Term termKey="moonsign">Moon Sign</Term>:</span> {getZodiacSign(profile.chartData.planets.Moon.longitude)}</div>
+                                        <div><span className="text-[var(--primary-dark)]"><Term termKey="ascendant" sign={getZodiacSign(profile.chartData.ascendant)}>Ascendant</Term> Sign:</span> {getZodiacSign(profile.chartData.ascendant)}</div>
+                                        <div><span className="text-[var(--primary-dark)]"><Term termKey="moonsign" sign={getZodiacSign(profile.chartData.planets.Moon.longitude)}>Moon Sign</Term>:</span> {getZodiacSign(profile.chartData.planets.Moon.longitude)}</div>
                                         <div><span className="text-[var(--primary-dark)]">Western Zodiac:</span> {(function (d) {
                                             const m = d.getMonth() + 1, da = d.getDate();
                                             if ((m == 3 && da >= 21) || (m == 4 && da <= 19)) return "Aries";

@@ -3,17 +3,61 @@
 import { useState } from 'react';
 import styles from './Term.module.css';
 
+// Predicates completing "Your <sign> Ascendant …" / "Your <sign> Moon …".
+//
+// These exist because the generic `example` below is written around one fixed
+// sign, and the tooltip is read while the reader's OWN sign is on screen beside
+// it — a Gemini Ascendant was being told what an Aries Ascendant does. A reader
+// who opens a glossary because they do not understand a term is the last person
+// who should have to work out that the example is not about them.
+//
+// `example` stays as the fallback for /glossary, where no chart is on screen.
+const ASCENDANT_BY_SIGN: Record<string, string> = {
+    Aries: 'walks into meetings and takes charge, even when it feels uncertain from the inside.',
+    Taurus: 'is steady and unhurried — people read you as calm, and as hard to rush.',
+    Gemini: 'is quick and curious, and will talk to fill a silence; people read you as bright and a little restless.',
+    Cancer: 'reads the mood of a room before saying much — careful first, warm once you have settled.',
+    Leo: 'arrives noticeably; people register that you have walked in, and you feel the attention.',
+    Virgo: 'notices the detail nobody else mentioned; it can read as precise, or as reserved.',
+    Libra: 'meets people halfway by default, smoothing friction before it has properly formed.',
+    Scorpio: 'gives very little away early; people find you intense and difficult to read.',
+    Sagittarius: 'is open and direct — the honest sentence tends to arrive before the diplomatic one.',
+    Capricorn: 'comes across measured and serious; people often assume you are older or more senior than you are.',
+    Aquarius: 'is friendly but slightly apart — you observe a group for a while before joining it.',
+    Pisces: 'is soft-edged and adaptive; you take on the mood of whoever you are with.',
+};
+
+const MOON_BY_SIGN: Record<string, string> = {
+    Aries: 'reacts fast when hurt — heat first, and then it passes almost as quickly.',
+    Taurus: 'wants routine and physical comfort, and retreats into familiar things when unsettled.',
+    Gemini: 'needs to talk it through; a feeling does not settle until it has been named out loud.',
+    Cancer: 'goes very quiet when hurt, and needs time and safety before opening up again.',
+    Leo: 'needs to feel seen — being overlooked stings considerably more than being disagreed with.',
+    Virgo: 'tidies and fixes when anxious; comfort comes from having something back under control.',
+    Libra: 'needs the air cleared — unresolved tension sits heavier than the disagreement itself did.',
+    Scorpio: 'feels deeply and privately; trust is slow to give, and slower to rebuild once broken.',
+    Sagittarius: 'needs space and movement, and feels trapped by too much closeness at once.',
+    Capricorn: 'handles it alone first; asking for help tends to feel like a last resort.',
+    Aquarius: 'steps back to think rather than feel, processing at a distance before coming back.',
+    Pisces: 'absorbs whatever is in the room, and needs solitude to work out which feelings are yours.',
+};
+
 // Plain-English glossary used by the inline tooltip and the /glossary page (5.1, 8.1)
-export const GLOSSARY: Record<string, { label: string; plain: string; example: string }> = {
+export const GLOSSARY: Record<
+    string,
+    { label: string; plain: string; example: string; bySign?: Record<string, string> }
+> = {
     ascendant: {
         label: 'Ascendant (Lagna)',
         plain: 'How the world sees you at first glance — your social energy and default behaviour in a room.',
         example: 'An Aries Ascendant walks into meetings and takes charge, even if internally uncertain.',
+        bySign: ASCENDANT_BY_SIGN,
     },
     moonsign: {
         label: 'Moon Sign (Rashi)',
         plain: 'Your emotional core — how you feel, what you need to feel safe, and how you react when hurt.',
         example: 'A Cancer Moon goes very quiet when hurt; it needs time and safety before opening up again.',
+        bySign: MOON_BY_SIGN,
     },
     dasha: {
         label: 'Dasha',
@@ -67,12 +111,38 @@ export const GLOSSARY: Record<string, { label: string; plain: string; example: s
     },
 };
 
-export default function Term({ termKey, children }: { termKey: string; children?: React.ReactNode }) {
+// "Moon Sign" reads as "Your Gemini Moon", not "Your Gemini Moon Sign".
+const SUBJECT: Record<string, string> = { ascendant: 'Ascendant', moonsign: 'Moon' };
+
+function personalExample(
+    entry: (typeof GLOSSARY)[string],
+    termKey: string,
+    sign?: string,
+): string | null {
+    if (!sign || !entry.bySign) return null;
+    const predicate = entry.bySign[sign];
+    // An unrecognised sign falls back rather than composing a broken sentence.
+    if (!predicate) return null;
+    return `Your ${sign} ${SUBJECT[termKey.toLowerCase()]} ${predicate}`;
+}
+
+export default function Term({
+    termKey,
+    sign,
+    children,
+}: {
+    termKey: string;
+    /** The reader's own sign for this term, when one is on screen. Swaps the
+     *  generic example for one about their chart. */
+    sign?: string;
+    children?: React.ReactNode;
+}) {
     const [open, setOpen] = useState(false);
     const entry = GLOSSARY[termKey.toLowerCase()];
     if (!entry) return <>{children}</>;
 
     const tooltipId = `term-${termKey.toLowerCase()}`;
+    const example = personalExample(entry, termKey, sign) ?? entry.example;
 
     return (
         <span
@@ -100,7 +170,7 @@ export default function Term({ termKey, children }: { termKey: string; children?
                 <span className={styles.tooltip} role="tooltip" id={tooltipId}>
                     <strong>{entry.label}</strong>
                     <span className={styles.plain}>{entry.plain}</span>
-                    <span className={styles.example}>{entry.example}</span>
+                    <span className={styles.example}>{example}</span>
                 </span>
             )}
         </span>

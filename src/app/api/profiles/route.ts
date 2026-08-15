@@ -3,6 +3,7 @@ import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
 import { prepareChartForStorage } from '@/lib/astrology/chartStorage';
+import { requireUser } from '@/lib/apiAuth';
 
 type CreateProfileRequestBody = {
     name?: string;
@@ -44,14 +45,14 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
     try {
-        const session = await auth();
-
-        if (!session?.user?.id) {
-            return NextResponse.json(
-                { error: 'Unauthorized' },
-                { status: 401 }
-            );
-        }
+        // requireUser, not auth(): this inserts a row with a userId foreign key,
+        // and a JWT can outlive the user it names. Without the existence check
+        // that arrives as `Foreign key constraint violated: Profile_userId_fkey`
+        // — a 500 whose message says nothing about the one fix, signing in
+        // again. See src/lib/apiAuth.ts.
+        const authed = await requireUser();
+        if (!authed.ok) return authed.response;
+        const session = { user: { id: authed.userId } };
 
         const body = await req.json() as CreateProfileRequestBody;
         const { name, dateOfBirth, timeOfBirth, placeOfBirth, latitude, longitude, timezone, gender, chartData } = body;

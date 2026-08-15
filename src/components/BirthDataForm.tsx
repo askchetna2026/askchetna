@@ -217,7 +217,20 @@ export default function BirthDataForm({ onChartGenerated, initialData }: BirthDa
                     }),
                 });
 
-                if (!saveRes.ok) throw new Error("Failed to save profile.");
+                if (!saveRes.ok) {
+                    // Surface the server's reason rather than a generic failure.
+                    // The one that matters is SESSION_STALE: a valid JWT naming
+                    // a user row that no longer exists, which used to arrive as
+                    // an opaque foreign-key 500 and is only fixed by signing in
+                    // again — something "Failed to save profile." never says.
+                    const err = await saveRes.json().catch(() => ({}));
+                    if (err?.code === 'SESSION_STALE') {
+                        throw new Error(
+                            'Your session has expired. Please sign out and sign in again, then re-enter these details.'
+                        );
+                    }
+                    throw new Error(err?.error || 'Failed to save profile.');
+                }
                 const savedProfile = await saveRes.json();
                 // A new profile exists, so every cached copy is stale — including
                 // the one the rashi badge and the profile gate read.

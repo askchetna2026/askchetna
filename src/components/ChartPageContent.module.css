@@ -1805,3 +1805,45 @@
         flex: 1 1 400px;
     }
 }
+
+/* ── The header is a stack, not two columns ──────────────────────────────────
+   Making it a row put the title and the birth record in a 452px column and
+   pushed the controls to the opposite corner, leaving roughly 600x450px of
+   empty parchment between them. Worse, it did not scale: the switcher already
+   reads "1 / 2 profiles", and every profile added makes that column taller
+   while the void beside it stays exactly as empty.
+
+   Stacked, each part takes the width it needs. The birth record in particular
+   was never meant to be a tall column — .chartInfoGrid is already
+   auto-fit/minmax(200px), so given the full width it lays its five facts out
+   as a row instead of stacking them two-up. */
+.headerRowEnd {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 18px;
+}
+
+.headerRowEnd > *:first-child {
+    flex: none;
+    width: 100%;
+}
+
+/* Controls sit under the title as one row, wrapping as profiles are added
+   rather than growing a column. */
+.headerRowEnd .headerActions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 14px;
+    width: 100%;
+}
+
+.headerRowEnd .headerButtons {
+    justify-content: flex-start;
+}
+
+/* Full width, so the five birth facts read across rather than down. */
+.chartInfoCard {
+    width: 100%;
+}

@@ -11,20 +11,20 @@ export default function AboutPage() {
         <main className={styles.legalPage}>
             <div className={styles.container}>
                 <div className={styles.hero}>
-                    <span className="cosmic-label mb-2">Our Vision · Darshana</span>
-                    <h1 className="mystic-text text-6xl">About AskChetna</h1>
+                    <span className="cosmic-label">Our Vision · Darshana</span>
+                    <h1 className="mystic-text">About AskChetna</h1>
                     <div className="sacred-divider"></div>
                     <p className={styles.heroSubtitle}>Awareness, Not Prediction</p>
                 </div>
 
-                <section className="mb-12">
+                <section>
                     <p style={{ fontSize: '1.15rem', lineHeight: 1.8 }}>
                         Most people come to astrology when something isn't working. A relationship that keeps unravelling the same way. A career that feels stuck. A quiet sense that you keep tripping over the same invisible wire — and you can't see why.
                     </p>
                     <p>
                         You don't need someone to tell you what will happen next. You need to understand the pattern you're already living inside. That's the moment AskChetna was built for.
                     </p>
-                    <h2 className="mystic-text text-3xl mb-4 mt-8">What is AskChetna?</h2>
+                    <h2 className="mystic-text">What is AskChetna?</h2>
                     <p>
                         <strong>AskChetna</strong> (चेतना) is a Sanskrit word meaning "awareness" or "consciousness." It represents the essence of our platform: a space for self-reflection, understanding, and conscious decision-making through the lens of Vedic astrology.
                     </p>
@@ -33,10 +33,10 @@ export default function AboutPage() {
                     </p>
                 </section>
 
-                <section className="mb-12">
-                    <h2 className="mystic-text text-3xl mb-4">Our Philosophy</h2>
+                <section>
+                    <h2 className="mystic-text">Our Philosophy</h2>
                     <div className={`${styles.importantNotice} sacred-card`}>
-                        <h3 className="mystic-text !text-xl mb-4 text-[var(--accent-gold)]">What AskChetna Is:</h3>
+                        <h3 className="mystic-text">What AskChetna Is:</h3>
                         <ul>
                             <li><strong>A tool for self-awareness</strong> — Understanding your strengths, challenges, and natural tendencies</li>
                             <li><strong>A guide for timing</strong> — Recognizing favorable and challenging periods in your life</li>

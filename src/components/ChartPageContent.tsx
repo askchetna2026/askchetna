@@ -337,7 +337,7 @@ export default function ChartPageContent() {
     if (!profile && !loading) {
         return (
             <div className={`container ${styles.pageContainer}`}>
-                <div className="max-w-2xl mx-auto text-center mb-12">
+                <div className={styles.introBlock}>
                     <h1 className={styles.title}>Welcome to AskChetna</h1>
                     <p className={styles.subtitle}>
                         To verify the stars, we first need to know where you stand. <br />
@@ -355,7 +355,7 @@ export default function ChartPageContent() {
         return (
             <div className={`container ${styles.pageContainer}`}>
                 <div className={styles.headerRow}>
-                    <div className="text-left">
+                    <div>
                         <h1 className={styles.title}>Update Profile</h1>
                         <p className={styles.subtitle}>Modify your birth details to update your charts.</p>
                     </div>
@@ -442,15 +442,15 @@ export default function ChartPageContent() {
                                 onClick={() => toggleChartDetails(key)}
                             >
                                 {isExpanded ? 'Hide Details' : 'View Detailed Insights'}
-                                {isExpanded ? <PlusCircle className="rotate-45" size={16} /> : <Zap size={16} />}
+                                {isExpanded ? <PlusCircle className={styles.rotated} size={16} /> : <Zap size={16} />}
                             </button>
                         </>
                     )}
 
                     {!isUnlocked && (
-                        <div className="p-8 text-center opacity-40">
-                            <p className="italic leading-relaxed">{info.definition.substring(0, 100)}...</p>
-                            <p className="mt-4 text-xs font-bold uppercase tracking-widest text-[var(--accent-gold)]">
+                        <div className={styles.lockedPreview}>
+                            <p>{info.definition.substring(0, 100)}...</p>
+                            <p className={styles.lockedHint}>
                                 Unlock to read the full analysis
                             </p>
                         </div>
@@ -472,7 +472,7 @@ export default function ChartPageContent() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.45, ease: [0.23, 1, 0.32, 1] }}
             >
-                <div className="text-left w-full">
+                <div>
                     {/* Page orientation, at page level rather than inside a card.
                         /chart had no h1 at all — the only heading was this title
                         nested two levels into the birth-details card, so the
@@ -492,10 +492,10 @@ export default function ChartPageContent() {
                                 <h2 className={styles.chartInfoTitle}>
                                     Cosmic blueprint for {profile.name} • {new Date(profile.dateOfBirth).toLocaleDateString()}
                                 </h2>
-                                <div className="sacred-divider ml-0 justify-start mb-4"></div>
+                                <div className="sacred-divider"></div>
                                 {profile.chartData && (
                                     <div className={styles.chartInfoGrid}>
-                                        <div><span className="text-[var(--primary-dark)]">Birth Time:</span> {(function (t) {
+                                        <div><span className={styles.factLabel}>Birth Time:</span> {(function (t) {
                                             if (!t) return 'Unknown';
                                             const [h, m] = t.split(':');
                                             const H = parseInt(h);
@@ -503,10 +503,10 @@ export default function ChartPageContent() {
                                             const H12 = H % 12 || 12;
                                             return `${H12}:${m} ${ampm}`;
                                         })(profile.timeOfBirth)}</div>
-                                        <div><span className="text-[var(--primary-dark)]">Birth Place:</span> {profile.placeOfBirth}</div>
-                                        <div><span className="text-[var(--primary-dark)]"><Term termKey="ascendant" sign={getZodiacSign(profile.chartData.ascendant)}>Ascendant</Term> Sign:</span> {getZodiacSign(profile.chartData.ascendant)}</div>
-                                        <div><span className="text-[var(--primary-dark)]"><Term termKey="moonsign" sign={getZodiacSign(profile.chartData.planets.Moon.longitude)}>Moon Sign</Term>:</span> {getZodiacSign(profile.chartData.planets.Moon.longitude)}</div>
-                                        <div><span className="text-[var(--primary-dark)]">Western Zodiac:</span> {(function (d) {
+                                        <div><span className={styles.factLabel}>Birth Place:</span> {profile.placeOfBirth}</div>
+                                        <div><span className={styles.factLabel}><Term termKey="ascendant" sign={getZodiacSign(profile.chartData.ascendant)}>Ascendant</Term> Sign:</span> {getZodiacSign(profile.chartData.ascendant)}</div>
+                                        <div><span className={styles.factLabel}><Term termKey="moonsign" sign={getZodiacSign(profile.chartData.planets.Moon.longitude)}>Moon Sign</Term>:</span> {getZodiacSign(profile.chartData.planets.Moon.longitude)}</div>
+                                        <div><span className={styles.factLabel}>Western Zodiac:</span> {(function (d) {
                                             const m = d.getMonth() + 1, da = d.getDate();
                                             if ((m == 3 && da >= 21) || (m == 4 && da <= 19)) return "Aries";
                                             if ((m == 4 && da >= 20) || (m == 5 && da <= 20)) return "Taurus";
@@ -608,7 +608,7 @@ export default function ChartPageContent() {
 
             {!hasVargas && (
                 <div className={`${styles.initializeSection} sacred-card`}>
-                    <Sparkles size={32} className="mx-auto text-[var(--accent-gold)] mb-4" />
+                    <Sparkles size={32} className={styles.initializeIcon} aria-hidden="true" />
                     <h2 className="mystic-text">Advanced Insights Available</h2>
                     <p>Your profile needs one-time synchronization to unlock 16 additional divisional charts.</p>
                     <button
@@ -1150,7 +1150,7 @@ export default function ChartPageContent() {
                                                                         </>
                                                                     )}
                                                                     <p>
-                                                                        <strong>Awareness Insight:</strong> <span className="italic">{getDetailedInsight(pName, signName, house, activeChart!)}</span>
+                                                                        <strong>Awareness Insight:</strong> <em>{getDetailedInsight(pName, signName, house, activeChart!)}</em>
                                                                     </p>
                                                                 </div>
                                                             </div>

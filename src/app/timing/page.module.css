@@ -186,6 +186,35 @@
     text-align: center;
 }
 
+/* The lede under a section title. Carried `text-sm text-[var(--text-muted)]
+   mt-1 tracking-wide` — all Tailwind, all inert — so it rendered at body size
+   in body colour and read as a first paragraph rather than a subtitle. */
+.sectionLede {
+    margin-top: 4px;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    letter-spacing: 0.02em;
+    color: var(--text-muted);
+    text-align: center;
+    max-width: var(--measure);
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* An in-section loader, not a whole-page one. `.loadingState` above is
+   min-height: 60vh, which is right when the page has nothing else on it and
+   far too tall for a panel inside a page that is already drawn. */
+.sectionLoading {
+    display: flex;
+    justify-content: center;
+    padding: 48px;
+    opacity: 0.5;
+}
+
+.revealBtn {
+    margin-top: 16px;
+}
+
 .timelineList {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -469,7 +498,36 @@
         padding: 24px;
     }
 
-    .timelineList {
+    /* The lede under a section title. Carried `text-sm text-[var(--text-muted)]
+   mt-1 tracking-wide` — all Tailwind, all inert — so it rendered at body size
+   in body colour and read as a first paragraph rather than a subtitle. */
+.sectionLede {
+    margin-top: 4px;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    letter-spacing: 0.02em;
+    color: var(--text-muted);
+    text-align: center;
+    max-width: var(--measure);
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* An in-section loader, not a whole-page one. `.loadingState` above is
+   min-height: 60vh, which is right when the page has nothing else on it and
+   far too tall for a panel inside a page that is already drawn. */
+.sectionLoading {
+    display: flex;
+    justify-content: center;
+    padding: 48px;
+    opacity: 0.5;
+}
+
+.revealBtn {
+    margin-top: 16px;
+}
+
+.timelineList {
         grid-template-columns: 1fr 1fr;
     }
 
@@ -491,7 +549,36 @@
         padding: 24px 12px;
     }
 
-    .timelineList {
+    /* The lede under a section title. Carried `text-sm text-[var(--text-muted)]
+   mt-1 tracking-wide` — all Tailwind, all inert — so it rendered at body size
+   in body colour and read as a first paragraph rather than a subtitle. */
+.sectionLede {
+    margin-top: 4px;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    letter-spacing: 0.02em;
+    color: var(--text-muted);
+    text-align: center;
+    max-width: var(--measure);
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* An in-section loader, not a whole-page one. `.loadingState` above is
+   min-height: 60vh, which is right when the page has nothing else on it and
+   far too tall for a panel inside a page that is already drawn. */
+.sectionLoading {
+    display: flex;
+    justify-content: center;
+    padding: 48px;
+    opacity: 0.5;
+}
+
+.revealBtn {
+    margin-top: 16px;
+}
+
+.timelineList {
         grid-template-columns: 1fr;
     }
 

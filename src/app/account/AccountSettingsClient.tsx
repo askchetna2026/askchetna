@@ -181,9 +181,9 @@ export default function AccountSettingsClient({
             </Link>
 
             <header className={styles.header}>
-                <span className="cosmic-label mb-2 block">Your Account</span>
-                <h1 className="mystic-text text-4xl mb-4">Account Settings</h1>
-                <div className="sacred-divider mb-8"></div>
+                <span className="cosmic-label">Your Account</span>
+                <h1 className="mystic-text">Account Settings</h1>
+                <div className="sacred-divider"></div>
             </header>
 
             <section className={styles.section}>

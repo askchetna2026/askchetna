@@ -196,6 +196,57 @@
     gap: 8px;
 }
 
+/* The label half of each birth-record fact ("Birth Time:", "Moon Sign:").
+   It carried `text-[var(--primary-dark)]`, which failed twice over: the class
+   is Tailwind, which is not installed, and `--primary-dark` is not a token
+   this stylesheet defines either. So label and value rendered identically and
+   the row read as one run-on line. */
+.factLabel {
+    color: var(--foreground);
+    font-weight: 600;
+}
+
+/* Header block for the empty state, and the locked-chart preview. Both were
+   built entirely from Tailwind utilities, so they rendered as full-width,
+   left-aligned, unpadded text. */
+.introBlock {
+    max-width: 42rem;
+    margin: 0 auto 48px;
+    text-align: center;
+}
+
+.lockedPreview {
+    padding: 32px;
+    text-align: center;
+    opacity: 0.4;
+}
+
+.lockedPreview p:first-child {
+    font-style: italic;
+    line-height: 1.7;
+}
+
+.lockedHint {
+    margin-top: 16px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--accent-gold);
+}
+
+/* The "expanded" affordance: a plus rotated into a cross. `rotate-45` is
+   Tailwind, so the icon sat as an unrotated plus next to the word "Hide". */
+.rotated {
+    transform: rotate(45deg);
+}
+
+.initializeIcon {
+    display: block;
+    margin: 0 auto 16px;
+    color: var(--accent-gold);
+}
+
 .addProfileBtn {
     display: flex;
     align-items: center;
@@ -384,7 +435,58 @@
         padding: 24px;
     }
 
-    .addProfileBtn {
+    /* The label half of each birth-record fact ("Birth Time:", "Moon Sign:").
+   It carried `text-[var(--primary-dark)]`, which failed twice over: the class
+   is Tailwind, which is not installed, and `--primary-dark` is not a token
+   this stylesheet defines either. So label and value rendered identically and
+   the row read as one run-on line. */
+.factLabel {
+    color: var(--foreground);
+    font-weight: 600;
+}
+
+/* Header block for the empty state, and the locked-chart preview. Both were
+   built entirely from Tailwind utilities, so they rendered as full-width,
+   left-aligned, unpadded text. */
+.introBlock {
+    max-width: 42rem;
+    margin: 0 auto 48px;
+    text-align: center;
+}
+
+.lockedPreview {
+    padding: 32px;
+    text-align: center;
+    opacity: 0.4;
+}
+
+.lockedPreview p:first-child {
+    font-style: italic;
+    line-height: 1.7;
+}
+
+.lockedHint {
+    margin-top: 16px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--accent-gold);
+}
+
+/* The "expanded" affordance: a plus rotated into a cross. `rotate-45` is
+   Tailwind, so the icon sat as an unrotated plus next to the word "Hide". */
+.rotated {
+    transform: rotate(45deg);
+}
+
+.initializeIcon {
+    display: block;
+    margin: 0 auto 16px;
+    color: var(--accent-gold);
+}
+
+.addProfileBtn {
         width: 100%;
         justify-content: center;
     }
@@ -1696,7 +1798,58 @@
 }
 
 /* Labels stay on one line; the row wraps instead of the words. */
-.headerActions .addProfileBtn {
+.headerActions /* The label half of each birth-record fact ("Birth Time:", "Moon Sign:").
+   It carried `text-[var(--primary-dark)]`, which failed twice over: the class
+   is Tailwind, which is not installed, and `--primary-dark` is not a token
+   this stylesheet defines either. So label and value rendered identically and
+   the row read as one run-on line. */
+.factLabel {
+    color: var(--foreground);
+    font-weight: 600;
+}
+
+/* Header block for the empty state, and the locked-chart preview. Both were
+   built entirely from Tailwind utilities, so they rendered as full-width,
+   left-aligned, unpadded text. */
+.introBlock {
+    max-width: 42rem;
+    margin: 0 auto 48px;
+    text-align: center;
+}
+
+.lockedPreview {
+    padding: 32px;
+    text-align: center;
+    opacity: 0.4;
+}
+
+.lockedPreview p:first-child {
+    font-style: italic;
+    line-height: 1.7;
+}
+
+.lockedHint {
+    margin-top: 16px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--accent-gold);
+}
+
+/* The "expanded" affordance: a plus rotated into a cross. `rotate-45` is
+   Tailwind, so the icon sat as an unrotated plus next to the word "Hide". */
+.rotated {
+    transform: rotate(45deg);
+}
+
+.initializeIcon {
+    display: block;
+    margin: 0 auto 16px;
+    color: var(--accent-gold);
+}
+
+.addProfileBtn {
     white-space: nowrap;
     flex: none;
 }
@@ -1916,7 +2069,58 @@
     gap: 8px;
 }
 
-.headerRowEnd .headerButtons .addProfileBtn {
+.headerRowEnd .headerButtons /* The label half of each birth-record fact ("Birth Time:", "Moon Sign:").
+   It carried `text-[var(--primary-dark)]`, which failed twice over: the class
+   is Tailwind, which is not installed, and `--primary-dark` is not a token
+   this stylesheet defines either. So label and value rendered identically and
+   the row read as one run-on line. */
+.factLabel {
+    color: var(--foreground);
+    font-weight: 600;
+}
+
+/* Header block for the empty state, and the locked-chart preview. Both were
+   built entirely from Tailwind utilities, so they rendered as full-width,
+   left-aligned, unpadded text. */
+.introBlock {
+    max-width: 42rem;
+    margin: 0 auto 48px;
+    text-align: center;
+}
+
+.lockedPreview {
+    padding: 32px;
+    text-align: center;
+    opacity: 0.4;
+}
+
+.lockedPreview p:first-child {
+    font-style: italic;
+    line-height: 1.7;
+}
+
+.lockedHint {
+    margin-top: 16px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--accent-gold);
+}
+
+/* The "expanded" affordance: a plus rotated into a cross. `rotate-45` is
+   Tailwind, so the icon sat as an unrotated plus next to the word "Hide". */
+.rotated {
+    transform: rotate(45deg);
+}
+
+.initializeIcon {
+    display: block;
+    margin: 0 auto 16px;
+    color: var(--accent-gold);
+}
+
+.addProfileBtn {
     min-height: 40px;
     padding: 8px 14px;
     font-size: 0.85rem;

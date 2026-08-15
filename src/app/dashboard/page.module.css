@@ -70,7 +70,7 @@
     font-size: 1.6rem;
     font-weight: 700;
     margin-bottom: 4px;
-    color: var(--foreground);
+    color: var(--accent-gold);
     letter-spacing: -0.02em;
     line-height: 1.2;
 }
@@ -275,6 +275,13 @@
     font-size: 2.25rem;
     margin-bottom: 16px;
     color: var(--foreground);
+    position: relative;
+}
+
+.heroSection h3 {
+    font-size: 1.35rem;
+    margin-bottom: 8px;
+    color: var(--accent-gold);
     position: relative;
 }
 
@@ -1622,7 +1629,14 @@
         font-size: 1.5rem;
     }
 
-    .heroSection p {
+    .heroSection h3 {
+    font-size: 1.35rem;
+    margin-bottom: 8px;
+    color: var(--accent-gold);
+    position: relative;
+}
+
+.heroSection p {
         font-size: 1rem;
     }
 

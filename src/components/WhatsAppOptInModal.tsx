@@ -95,7 +95,7 @@ export default function WhatsAppOptInModal({ isOpen, onClose, onSuccess, current
                     }}>
                         <MessageSquare size={32} />
                     </div>
-                    <h2 className="mystic-text text-2xl text-[var(--accent-gold)] mb-2">Connect WhatsApp</h2>
+                    <h2 className="mystic-text" style={{ color: 'var(--accent-gold)' }}>Connect WhatsApp</h2>
                     <p style={{ color: 'var(--foreground)', opacity: 0.8, fontSize: '14px', lineHeight: 1.5 }}>
                         Enable WhatsApp to chat directly with your AI astrologer and receive your daily horoscope!
                     </p>

@@ -475,9 +475,9 @@ export default function DashboardPage() {
     return (
         <div className={styles.profileContainer}>
             <div className={styles.pageTitleBlock}>
-                <span className="cosmic-label mb-2 block">Dharma Dashboard</span>
-                <h1 className="mystic-text text-4xl mb-4">Your Cosmic Center</h1>
-                <div className="sacred-divider mb-6 mx-auto"></div>
+                <span className="cosmic-label">Dharma Dashboard</span>
+                <h1 className="mystic-text">Your Cosmic Center</h1>
+                <div className="sacred-divider"></div>
             </div>
 
             <header className={`${styles.header} sacred-card`}>
@@ -491,7 +491,7 @@ export default function DashboardPage() {
                             )}
                         </div>
                         <div>
-                            <h1 className={`${styles.userName} mystic-text text-[var(--accent-gold)]`}>Welcome back, {session.user?.name?.split(' ')[0] || 'Friend'}</h1>
+                            <h1 className={`${styles.userName} mystic-text`}>Welcome back, {session.user?.name?.split(' ')[0] || 'Friend'}</h1>
                             <p className={styles.userEmail}>{session.user?.email}</p>
                         </div>
                     </div>
@@ -627,8 +627,8 @@ export default function DashboardPage() {
                     {activeSection === 'overview' && (
                         <div className={styles.overviewGrid}>
                             <section className={`${styles.heroSection} sacred-card`}>
-                                <h3 className="mystic-text text-xl mb-2 text-[var(--accent-gold)]">Ready for clarity?</h3>
-                                <p className="text-[var(--foreground)] opacity-80 my-2 text-sm max-w-[400px]">The stars have moved since your last visit. Ask a new question or create a profile.</p>
+                                <h3 className="mystic-text">Ready for clarity?</h3>
+                                <p>The stars have moved since your last visit. Ask a new question or create a profile.</p>
                                 {PAYMENTS_ENABLED && (isOutOfCredits || isLowCredit) && (
                                     <div className={styles.infoNote}>
                                         <Info size={14} />
@@ -640,7 +640,7 @@ export default function DashboardPage() {
                                     </div>
                                 )}
                                 <div className={styles.heroActions}>
-                                    <Link href="/clarity" className="primary-btn-cosmic text-sm">
+                                    <Link href="/clarity" className="primary-btn-cosmic">
                                         <Sparkles size={16} /> Ask AI Astrologer
                                     </Link>
                                     <button 
@@ -658,11 +658,11 @@ export default function DashboardPage() {
                                         <WhatsAppIcon size={24} />
                                     </button>
                                     {PAYMENTS_ENABLED && (
-                                        <Link href={dashboardTopUpUrl} className="secondary-btn-cosmic text-sm">
+                                        <Link href={dashboardTopUpUrl} className="secondary-btn-cosmic">
                                             <CreditCard size={16} /> Top Up Credits
                                         </Link>
                                     )}
-                                    <button onClick={openNewProfileModal} className="secondary-btn-cosmic text-sm">
+                                    <button onClick={openNewProfileModal} className="secondary-btn-cosmic">
                                         <PlusCircle size={16} /> New Profile
                                     </button>
                                 </div>

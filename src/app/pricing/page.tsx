@@ -12,7 +12,7 @@ export default async function PricingPage() {
         return (
             <div className={styles.container}>
                 <div className={styles.infoSection}>
-                    <h1 className="mystic-text text-4xl mb-4">Credit Purchases Paused</h1>
+                    <h1 className="mystic-text">Credit Purchases Paused</h1>
                     <p className={styles.subtitle}>{PAYMENTS_PAUSED_MESSAGE}</p>
                 </div>
             </div>

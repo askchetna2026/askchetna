@@ -277,7 +277,7 @@ export default function TimingPageContent() {
     return (
         <div className={styles.container}>
             <header className={styles.header}>
-                <span className="cosmic-label mb-2 inline-block">Gochar & Dasha · Celestial Weather</span>
+                <span className="cosmic-label">Gochar & Dasha · Celestial Weather</span>
                 <h1 className="mystic-text">Timing & Seasons</h1>
                 <div className="sacred-divider"></div>
                 <p className={styles.subtitle}>
@@ -328,7 +328,7 @@ export default function TimingPageContent() {
             {currentDasha && (
                 <div className={`${styles.currentPeriod} sacred-card`}>
                     <div className={styles.periodLabel}>Current Major Phase (<Term termKey="mahadasha">Mahadasha</Term>)</div>
-                    <h2 className="mystic-text text-3xl my-2">{currentDasha.lord} Period</h2>
+                    <h2 className="mystic-text">{currentDasha.lord} Period</h2>
                     <div className={styles.periodDates}>
                         {new Date(currentDasha.start).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })} —
                         {new Date(currentDasha.end).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}
@@ -336,12 +336,12 @@ export default function TimingPageContent() {
 
                     {!aiInsight && (
                         <button
-                            className="primary-btn-cosmic mt-4"
+                            className={`primary-btn-cosmic ${styles.revealBtn}`}
                             onClick={fetchAiInsight}
                             disabled={fetchingAi}
                         >
                             {fetchingAi ? (
-                                <Loader2 size={18} className="animate-spin" />
+                                <Loader2 size={18} className="animate-spin" aria-hidden="true" />
                             ) : (
                                 <Zap size={18} />
                             )}
@@ -354,10 +354,10 @@ export default function TimingPageContent() {
             {/* AI Insight Section */}
             {aiInsight && (
                 <div className={styles.aiInsightSection}>
-                    <div className={`${styles.aiCard} sacred-card !border-[var(--accent-gold)]`}>
+                    <div className={`${styles.aiCard} sacred-card`}>
                         <div className={styles.aiCardHeader}>
-                            <Sparkles size={20} className="text-[var(--accent-gold)]" />
-                            <h3 className="mystic-text !text-xl">Cosmic Flavor Analysis</h3>
+                            <Sparkles size={20} />
+                            <h3 className="mystic-text">Cosmic Flavor Analysis</h3>
                         </div>
                         <p className={styles.aiContent}>{aiInsight.phaseFlavor}</p>
                     </div>
@@ -444,7 +444,7 @@ export default function TimingPageContent() {
             <section className={styles.timelineSection}>
                 <div className={styles.sectionHeader}>
                     <h2 className={styles.sectionTitle}>Current Cosmic Weather (Gochar)</h2>
-                    <p className="text-sm text-[var(--text-muted)] mt-1 tracking-wide">
+                    <p className={styles.sectionLede}>
                         Temporary planetary movements currently interacting with your natal chart.
                     </p>
                 </div>
@@ -509,7 +509,7 @@ export default function TimingPageContent() {
                     <h2 className={styles.sectionTitle}>Extended Timeline Analysis</h2>
                 </div>
                 {loading ? (
-                    <div className="flex justify-center p-12 opacity-50">
+                    <div className={styles.sectionLoading}>
                         <div className={styles.spinner}></div>
                     </div>
                 ) : (

@@ -327,9 +327,9 @@ export default function PricingClient({ plans, platform }: PricingClientProps) {
 
             <div className={styles.container}>
                 <div className={styles.header}>
-                    <span className="cosmic-label mb-2 block">Value & Exchange Â· Dana</span>
-                    <h1 className="mystic-text text-5xl mb-4">Sacred Exchange</h1>
-                    <div className="sacred-divider mb-8"></div>
+                    <span className="cosmic-label">Value & Exchange Â· Dana</span>
+                    <h1 className="mystic-text">Sacred Exchange</h1>
+                    <div className="sacred-divider"></div>
                     <p className={styles.subtitle}>
                         AskChetna follows a simple and transparent pricing model. You pay only for what you choose to explore - no subscriptions, no pressure.
                     </p>
@@ -409,7 +409,7 @@ export default function PricingClient({ plans, platform }: PricingClientProps) {
                                 </ul>
                                 <button
                                     onClick={() => handlePurchase(plan)}
-                                    className="primary-btn-cosmic w-full"
+                                    className={`primary-btn-cosmic ${styles.planBtn}`}
                                     disabled={loading === plan.key}
                                 >
                                     {loading === plan.key ? 'Processing...' : getButtonLabel(plan, effectiveIntent)}
@@ -435,7 +435,7 @@ export default function PricingClient({ plans, platform }: PricingClientProps) {
                 )}
 
                 <div className={styles.infoSection}>
-                    <h2 className="mystic-text text-2xl mb-4">What You&apos;re Paying For</h2>
+                    <h2 className="mystic-text">What You&apos;re Paying For</h2>
                     <ul>
                         <li>Structured astrological interpretation</li>
                         <li>AI-assisted reflection and guidance</li>
@@ -445,7 +445,7 @@ export default function PricingClient({ plans, platform }: PricingClientProps) {
                 </div>
 
                 <div className={styles.infoSection}>
-                    <h2 className="mystic-text text-2xl mb-4">You Are NOT Paying For</h2>
+                    <h2 className="mystic-text">You Are NOT Paying For</h2>
                     <ul>
                         <li>Fortune-telling or predictions</li>
                         <li>Emergency answers or urgent decisions</li>
@@ -461,7 +461,7 @@ export default function PricingClient({ plans, platform }: PricingClientProps) {
                 </div>
 
                 <div className={styles.infoSection}>
-                    <h2 className="mystic-text text-2xl mb-4">Frequently Asked Questions</h2>
+                    <h2 className="mystic-text">Frequently Asked Questions</h2>
                     <ul>
                         {FAQ_ITEMS.map((item) => (
                             <li key={item.question}>

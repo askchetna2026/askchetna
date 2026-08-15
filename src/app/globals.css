@@ -607,6 +607,71 @@ html:not(.native-app) h3 { font-size: clamp(1rem, 2vw, 1.25rem); }
 .native-app h2 { font-size: clamp(1.25rem, 4vw, 1.9rem); }
 .native-app h3 { font-size: clamp(1.0625rem, 2.8vw, 1.35rem); }
 
+/* ── The two classes the pages already ask for ───────────────────────────────
+   `mystic-text` appears on 25 headings across 15 files and `cosmic-label` on
+   14 spans, and NEITHER was defined anywhere in this stylesheet. They read as
+   design-system classes, so page after page was written against an API that
+   did not exist.
+
+   What their absence actually cost is spacing, not type. Every heading here
+   already gets Playfair and the fluid scale from the element rules above, so
+   the font survived — but the reset at the top of this file is `* { margin: 0 }`,
+   and the `mb-2` / `mb-4` / `mb-8` these classes were always paired with are
+   Tailwind, which is not installed. So every one of those headings sat flush
+   against the paragraph beneath it.
+
+   The margin lives on THESE classes rather than on bare `h1, h2, h3` on
+   purpose. A global heading margin would also land on the many headings that
+   sit inside flex and grid containers already spacing themselves with `gap`,
+   and double-space them. Opting in through a class the page already wrote is
+   the same fix without that blast radius.
+
+   em rather than px so one rule serves an h1 and an h3 proportionally. */
+.mystic-text {
+  font-family: var(--font-heading), 'Playfair Display', 'Cinzel', serif;
+  color: var(--foreground);
+  margin-bottom: 0.5em;
+}
+
+/* The small kicker above a page heading — "Our Vision · Darshana". Ornament,
+   so it takes the decorative gold; it is never the only thing naming a page.
+   (See ChartPageContent, where this span standing in for a missing h1 was
+   presentation doing structure's job.) */
+.cosmic-label {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-gold);
+  margin-bottom: 0.75em;
+}
+
+/* Spinning loader icons.
+   Several components pass `animate-spin` to a lucide <Loader2 />, which is
+   Tailwind and matches nothing here — so every one of those spinners was a
+   stationary icon sitting in a button that said "Scanning…". A frozen spinner
+   reads as a hung request, which is the opposite of what it is there to say.
+
+   The page modules that own a spinner define their own `.spinner` and
+   `@keyframes spin` locally; this is for the icon components that have no
+   module of their own. */
+@keyframes chetna-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: chetna-spin 1s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-spin {
+    animation-duration: 2.5s;
+  }
+}
+
 /* ═══════════════════════════════════════════════
    SACRED UI ELEMENTS
    ═══════════════════════════════════════════════ */

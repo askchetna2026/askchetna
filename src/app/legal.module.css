@@ -87,6 +87,16 @@
     border-radius: 8px;
 }
 
+/* Both headings inside the notice, not one of them.
+   "What AskChetna Is:" carried `text-[var(--accent-gold)]` — a Tailwind class
+   matching nothing here — while "What AskChetna Is NOT:" carried nothing at
+   all. So the pair was meant to be styled alike and rendered alike only by
+   accident, in the inherited colour. Putting it on the container's h3 keeps
+   the intent and makes the two consistent by construction. */
+.importantNotice h3 {
+    color: var(--accent-gold);
+}
+
 .importantNotice h2 {
     margin-top: 0;
     border-bottom: none;

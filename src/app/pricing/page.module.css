@@ -78,12 +78,17 @@
     border: 1px solid var(--border-soft);
     padding: 12px 18px;
     border-radius: 999px;
-    transition: all 0.2s ease;
+    transition: border-color 0.2s ease, color 0.2s ease;
 }
 
-.secondaryLink:hover {
-    border-color: var(--accent-gold);
-    color: var(--accent-gold);
+/* Hover gated throughout this file: on touch it fires on tap and stays applied
+   after navigation, leaving a card or link looking selected on a page the
+   reader has already left. */
+@media (hover: hover) and (pointer: fine) {
+    .secondaryLink:hover {
+        border-color: var(--accent-gold);
+        color: var(--accent-gold);
+    }
 }
 
 /* Pricing Cards */
@@ -100,13 +105,15 @@
     border-radius: var(--radius-lg);
     border: 1px solid var(--card-border);
     box-shadow: var(--glass-shadow);
-    transition: all 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     text-align: center;
 }
 
-.priceCard:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+@media (hover: hover) and (pointer: fine) {
+    .priceCard:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+    }
 }
 
 .featured {
@@ -170,13 +177,23 @@
     color: var(--btn-fg);
     border-radius: 50px;
     font-weight: 500;
-    transition: all 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
     text-decoration: none;
 }
 
-.ctaBtn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+@media (hover: hover) and (pointer: fine) {
+    .ctaBtn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+}
+
+/* The purchase button spans its card. It carried `w-full`, which is Tailwind
+   and matches nothing here, so it was sitting at its content width in the
+   middle of a centred card — reading as a link rather than the card's action. */
+.planBtn {
+    display: block;
+    width: 100%;
 }
 
 /* Info Sections */

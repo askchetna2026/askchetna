@@ -12,8 +12,8 @@ export default function HowWeCalculatePage() {
         <main className={styles.legalPage}>
             <div className={styles.container}>
                 <div className={styles.hero}>
-                    <span className="cosmic-label mb-2">Transparency · Pramana</span>
-                    <h1 className="mystic-text text-5xl">How We Calculate Your Chart</h1>
+                    <span className="cosmic-label">Transparency · Pramana</span>
+                    <h1 className="mystic-text">How We Calculate Your Chart</h1>
                     <div className="sacred-divider"></div>
                     <p className={styles.heroSubtitle}>The science behind the chart — no black boxes.</p>
                 </div>

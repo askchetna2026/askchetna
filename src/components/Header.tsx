@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import styles from './Header.module.css';
 import Logo from './Logo';
 import ProfileMenu from './ProfileMenu';
-import { Menu, X, CreditCard, LayoutDashboard, LogOut, Info, BookOpen, MessageSquare, Sparkles, Users, UserCog, Settings } from 'lucide-react';
+import { Menu, X, CreditCard, LayoutDashboard, LogOut, Info, BookOpen, MessageSquare, Sparkles, Users, UserCog, Settings, Compass } from 'lucide-react';
 import { PAYMENTS_ENABLED } from '@/lib/paymentConfig';
 import { isClientNativeApp } from '@/lib/platform';
 
@@ -93,6 +93,9 @@ export default function Header() {
                 <Link href="/consult" className={`${styles.navLink} ${pathname.startsWith('/consult') ? styles.activeLink : ''}`}>Astrologers</Link>
                 <Link href="/synastry" className={`${styles.navLink} ${pathname === '/synastry' ? styles.activeLink : ''}`}>Relationships</Link>
                 <Link href="/blog" className={`${styles.navLink} ${pathname === '/blog' ? styles.activeLink : ''}`}>Blog</Link>
+                {/* The signed-out home's explanation of the product, which a
+                    signed-in seeker otherwise has no route to. */}
+                <Link href="/explore" className={`${styles.navLink} ${pathname === '/explore' ? styles.activeLink : ''}`}>Explore</Link>
                 {PAYMENTS_ENABLED && (
                   <Link href="/pricing" className={`${styles.navLink} ${pathname === '/pricing' ? styles.activeLink : ''}`}>Credit</Link>
                 )}
@@ -202,6 +205,9 @@ export default function Header() {
                       </Link>
                       <Link href="/blog" className={`${styles.mobileNavLink} ${pathname === '/blog' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
                         <BookOpen size={20} /> Blog
+                      </Link>
+                      <Link href="/explore" className={`${styles.mobileNavLink} ${pathname === '/explore' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                        <Compass size={20} /> Explore
                       </Link>
                       {PAYMENTS_ENABLED && (
                         <Link href="/pricing" className={`${styles.mobileNavLink} ${pathname === '/pricing' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>

@@ -1622,3 +1622,59 @@
         padding: 20px;
     }
 }
+
+/* ── Layouts that were written in Tailwind ───────────────────────────────────
+   Same problem as /timing's gochar section: these were `flex flex-col
+   md:flex-row justify-between items-center gap-4` and `space-y-12`, and
+   Tailwind is not installed. Every one resolved to nothing, so the page header
+   never became a row on desktop, the chart never centred, and the vertical
+   rhythm between varga sections was whatever the elements' own margins
+   happened to be. */
+
+/* Stacks on a phone, becomes a row with the action pushed right on desktop —
+   which is what the md:flex-row justify-between was asking for. */
+.headerRow {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+@media (min-width: 768px) {
+    .headerRow {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
+
+.headerRowEnd {
+    composes: headerRow;
+}
+
+@media (min-width: 768px) {
+    .headerRowEnd {
+        align-items: flex-end;
+    }
+}
+
+.centerRow {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+/* space-y-12 / space-y-4: gap between siblings, not a margin on each. */
+.stackLg {
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+}
+
+.stackSm {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 24px;
+}

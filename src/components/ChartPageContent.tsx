@@ -354,7 +354,7 @@ export default function ChartPageContent() {
     if (isEditing) {
         return (
             <div className={`container ${styles.pageContainer}`}>
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                <div className={styles.headerRow}>
                     <div className="text-left">
                         <h1 className={styles.title}>Update Profile</h1>
                         <p className={styles.subtitle}>Modify your birth details to update your charts.</p>
@@ -430,7 +430,7 @@ export default function ChartPageContent() {
 
                     {isUnlocked && vargaData && (
                         <>
-                            <div className="flex justify-center mb-4">
+                            <div className={styles.centerRow}>
                                 {/* 220px inside a 321px grid column wasted a third of
                                     every cell and made each thumbnail harder to read
                                     than it needed to be. The grid owns the size. */}
@@ -467,7 +467,7 @@ export default function ChartPageContent() {
                 cards' own entrance is easy to miss because it happens while the
                 eye is still on the header. */}
             <motion.div
-                className="flex flex-col md:flex-row justify-between items-end mb-8 gap-4"
+                className={styles.headerRowEnd}
                 initial={reduceMotion ? false : { opacity: 0, y: -12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.45, ease: [0.23, 1, 0.32, 1] }}
@@ -599,7 +599,7 @@ export default function ChartPageContent() {
             )}
 
             {hasVargas && (
-                <div className="space-y-12">
+                <div className={styles.stackLg}>
                     {/* Trinity Section (Always Visible) */}
                     <div className={styles.trinitySection}>
                         <motion.div
@@ -950,7 +950,7 @@ export default function ChartPageContent() {
                                                     Astrology is a map of consciousness, not a set of fixed predictions. Each chart represents a different layer of your internal landscape, offering insights into how you process energy, respond to challenges, and find equilibrium.
                                                     This specific divisional chart helps you bridge the gap between your physical reality and your spiritual potential.
                                                 </p>
-                                                <div className="mt-6 space-y-4">
+                                                <div className={styles.stackSm}>
                                                     <div className={styles.significanceBox}>
                                                         <h5 className={styles.significanceTitle}>Core Significance</h5>
                                                         <p className={styles.significanceText}>{VARGA_DEFINITIONS[activeChart]?.definition}</p>

@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { Sunrise, Compass, Eye } from 'lucide-react';
 import styles from './DailyInsightCard.module.css';
+// Shared, so this and JournalWidget cannot disagree about what "today" is.
+import { localDay } from '@/lib/localDay';
 
 interface DailyInsight {
     headline: string;
@@ -19,13 +21,6 @@ interface DailyInsightCardProps {
      * platform in here, the screen that knows its own styling passes it in.
      */
     className?: string;
-}
-
-/** The seeker's local calendar day — the same key the API stores against. */
-function localDay(): string {
-    const d = new Date();
-    const pad = (n: number) => String(n).padStart(2, '0');
-    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
 const cacheKey = (day: string) => `askchetna:daily-insight:${day}`;

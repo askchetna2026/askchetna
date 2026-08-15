@@ -1,0 +1,70 @@
+.page {
+    min-height: 100vh;
+    padding: 80px 24px 60px;
+}
+
+.container {
+    max-width: 780px;
+    margin: 0 auto;
+}
+
+.lede {
+    font-size: var(--text-16);
+    line-height: 1.7;
+    color: var(--text-muted);
+    /* Capped, like the other long-form pages. */
+    max-width: var(--measure);
+    margin-bottom: 32px;
+}
+
+.history {
+    margin-top: 48px;
+}
+
+.historyTitle {
+    font-family: var(--font-heading);
+    font-size: var(--text-20);
+    color: var(--foreground);
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--card-border);
+    margin-bottom: 8px;
+}
+
+.empty {
+    font-size: var(--text-15);
+    line-height: 1.7;
+    color: var(--text-muted);
+    padding: 20px 0;
+}
+
+/* Each entry is a dated block rather than a card. A month of cards reads as a
+   grid of objects; the point here is a continuous record you scroll back
+   through, which is what a journal actually is. */
+.entry {
+    padding: 22px 0;
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.entryDate {
+    font-size: var(--text-12);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent-gold);
+    margin-bottom: 8px;
+}
+
+.entryBody {
+    font-size: var(--text-16);
+    line-height: 1.75;
+    color: var(--foreground);
+    max-width: var(--measure);
+    /* Reflections are written with line breaks and they carry meaning. */
+    white-space: pre-wrap;
+}
+
+@media (max-width: 700px) {
+    .page {
+        padding: 40px 20px 40px;
+    }
+}

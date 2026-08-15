@@ -17,6 +17,10 @@ const protectedPaths = [
     // behind a session check by the time it renders — but it is a real route, so
     // a direct hit needs the same boundary as any other signed-in screen.
     "/today",
+    // Personal reflections. The page redirects unauthenticated visitors itself,
+    // but the same reasoning as /account applies: the boundary should be
+    // enforced before any rendering begins.
+    "/journal",
     // The page itself also redirects when unauthenticated, but gating here means
     // the auth boundary is enforced before any rendering begins rather than
     // relying on a streamed redirect instruction.

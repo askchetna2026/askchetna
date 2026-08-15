@@ -5,16 +5,22 @@ import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { useLocalStorage } from '@/lib/useLocalStorage';
+import { localDay } from '@/lib/localDay';
 import styles from './JournalWidget.module.css';
 
 type JournalPreview = { id: string; date: string; content: string };
 
 export default function JournalWidget() {
     const { data: session } = useSession();
-    const today = new Date().toISOString().split('T')[0];
+    // Local, not UTC — see src/lib/localDay.ts. The UTC form filed an entry
+    // written after midnight IST under the previous day.
+    const today = localDay();
     const [localEntries, setLocalEntries] = useLocalStorage<Record<string, string>>('chetna_journal', {});
     const [currentEntry, setCurrentEntry] = useState('');
     const [isSaved, setIsSaved] = useState(false);
+    /** Bumped only by a successful save, so the recent list refetches then and
+     *  not when the initial load sets isSaved. */
+    const [savedCount, setSavedCount] = useState(0);
     const [analysis, setAnalysis] = useState<any>(null);
     const [loading, setLoading] = useState(false);
     const [analyzing, setAnalyzing] = useState(false);
@@ -32,16 +38,24 @@ export default function JournalWidget() {
         }
     }, [today]);
 
-    // Load initial entry
+    // Keyed on the user ID, not the session OBJECT.
+    //
+    // useSession() hands back a fresh object identity on re-render, so an
+    // effect depending on `session` re-runs on every render — which is how a
+    // single mount of this widget was firing GET /api/journal five times.
+    // `localEntries` was in here too, so every save re-triggered the load.
+    const userId = session?.user?.id;
     useEffect(() => {
-        if (session) {
+        if (userId) {
             fetchEntryFromDB();
-        } else {
-            if (localEntries[today]) {
-                setCurrentEntry(localEntries[today]);
-            }
+        } else if (localEntries[today]) {
+            setCurrentEntry(localEntries[today]);
         }
-    }, [session, today, fetchEntryFromDB, localEntries]);
+        // localEntries is deliberately not a dependency: it is the fallback for
+        // signed-out visitors, read once, and listing it re-ran the fetch on
+        // every write.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [userId, today, fetchEntryFromDB]);
 
     const handleSave = async () => {
         setLoading(true);
@@ -57,6 +71,7 @@ export default function JournalWidget() {
                 });
                 if (res.ok) {
                     setIsSaved(true);
+                    setSavedCount((n) => n + 1);
                 }
             } else {
                 setLocalEntries({
@@ -105,7 +120,7 @@ export default function JournalWidget() {
     const [recent, setRecent] = useState<JournalPreview[]>([]);
 
     useEffect(() => {
-        if (!session) return;
+        if (!userId) return;
         let cancelled = false;
         (async () => {
             try {
@@ -121,7 +136,7 @@ export default function JournalWidget() {
             cancelled = true;
         };
         // Re-runs after a save so a new entry appears in the list below.
-    }, [session, isSaved]);
+    }, [userId, savedCount]);
 
     // Today's own entry is the one being edited above, so showing it again
     // underneath would read as a duplicate.

@@ -13,6 +13,7 @@ import AstrologerHome from '@/components/consultations/AstrologerHome';
 import WhatsAppOptInModal from '@/components/WhatsAppOptInModal';
 import { useProfile } from '@/context/ProfileContext';
 import { buildPricingUrl } from '@/lib/monetization';
+import { getProfiles } from '@/lib/profileStore';
 import { PAYMENTS_ENABLED, PAYMENTS_PAUSED_MESSAGE } from '@/lib/paymentConfig';
 
 interface UserProfile {
@@ -187,13 +188,13 @@ export default function DashboardPage() {
         try {
             setLoading(true);
             // In a real app, these would be separate or combined API calls
-            const [creditsRes, profilesRes, questionsRes, exportsRes, creditHistoryRes, activeProfileRes, creditRequestsRes, accountRes] = await Promise.all([
+            const [creditsRes, profilesRes, questionsRes, exportsRes, creditHistoryRes, activeData, creditRequestsRes, accountRes] = await Promise.all([
                 fetch('/api/credits/check'),
                 fetch('/api/profiles'),
                 fetch('/api/questions'),
                 fetch('/api/user/exports'),
                 fetch('/api/credits/history'),
-                fetch('/api/profiles/active'), // Fetch active profile & limit metadata
+                getProfiles(), // Active profile & limit metadata, via the shared store
                 fetch('/api/credits/requests'),
                 fetch('/api/user/account')
             ]);
@@ -203,7 +204,6 @@ export default function DashboardPage() {
             const questionsData = await questionsRes.ok ? await questionsRes.json() : [];
             const exportsData = await exportsRes.ok ? await exportsRes.json() : [];
             const creditHistoryData = await creditHistoryRes.ok ? await creditHistoryRes.json() : [];
-            const activeData = await activeProfileRes.ok ? await activeProfileRes.json() : {};
             const creditRequestsData = await creditRequestsRes.ok ? await creditRequestsRes.json() : null;
             const accountJson = await accountRes.ok ? await accountRes.json() : { phone: null, whatsappOptIn: false };
 
@@ -216,9 +216,9 @@ export default function DashboardPage() {
             });
 
             setProfileStats({
-                active: activeData.profiles?.length || 0,
-                limit: activeData.limit || 5,
-                extra: activeData.extraSlots || 0
+                active: activeData?.profiles?.length || 0,
+                limit: activeData?.limit || 5,
+                extra: (activeData?.extraSlots as number) || 0
             });
 
 

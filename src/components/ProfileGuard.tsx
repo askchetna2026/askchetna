@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useProfile } from '@/context/ProfileContext';
+import { getProfiles } from '@/lib/profileStore';
 import styles from './ProfileGuard.module.css';
 
 interface ProfileGuardProps {
@@ -30,14 +31,13 @@ export default function ProfileGuard({ children }: ProfileGuardProps) {
 
     const checkActiveProfile = async () => {
         try {
-            const res = await fetch('/api/profiles/active');
-            const data = await res.json();
-
-            if (res.ok && data?.profiles?.length > 0) {
-                setHasActiveProfile(true);
-            } else {
-                setHasActiveProfile(false);
-            }
+            // Through the shared store: this gate wraps whole pages, so its
+            // check used to be a second identical request racing whatever the
+            // page itself was already asking for.
+            const data = await getProfiles((fresh) => {
+                setHasActiveProfile((fresh.profiles?.length ?? 0) > 0);
+            });
+            setHasActiveProfile((data?.profiles?.length ?? 0) > 0);
         } catch (error) {
             console.error('Failed to check active profile:', error);
             setHasActiveProfile(false);

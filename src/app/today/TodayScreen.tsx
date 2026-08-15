@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react';
 import { Users, ArrowRight, ChevronRight, Sparkles, Check } from 'lucide-react';
 import { useProfile } from '@/context/ProfileContext';
 import AppScreenChrome from '@/components/app/AppScreenChrome';
+import { getProfiles, primaryProfile } from '@/lib/profileStore';
 import styles from './today.module.css';
 
 interface Transit {
@@ -140,10 +141,10 @@ export default function TodayScreen() {
         // the screen. Everything else paints without waiting for it.
         (async () => {
             try {
-                const profileRes = await fetch('/api/profiles/active', { cache: 'no-store' });
-                if (!profileRes.ok) return;
-                const profileData = await profileRes.json();
-                const profileId = profileData?.profiles?.[0]?.id;
+                // Was `cache: 'no-store'` on its own fetch, so this screen
+                // always paid a fresh round trip for a profile list the store
+                // already had — and which cannot change while the page is open.
+                const profileId = primaryProfile(await getProfiles())?.id;
                 if (!profileId || !live) return;
 
                 const dashaRes = await fetch(`/api/astrology/dashas?profileId=${profileId}`);

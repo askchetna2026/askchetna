@@ -11,6 +11,7 @@ import DashaTimeline from '@/components/DashaTimeline';
 import Term from '@/components/Term';
 import DisclaimerNote from '@/components/DisclaimerNote';
 import { useComplexity } from '@/context/ComplexityContext';
+import { getProfiles } from '@/lib/profileStore';
 
 interface UserProfile {
     id: string;
@@ -113,9 +114,8 @@ export default function TimingPageContent() {
     const fetchProfiles = async () => {
         try {
             setProfilesLoading(true);
-            const profRes = await fetch('/api/profiles/active');
-            const activeData = await profRes.json();
-            const profiles = activeData.profiles || [];
+            const activeData = await getProfiles();
+            const profiles = activeData?.profiles || [];
             setActiveProfiles(profiles);
 
             if (profiles.length > 0) {

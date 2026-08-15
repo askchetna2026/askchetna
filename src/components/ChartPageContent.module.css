@@ -1742,3 +1742,66 @@
     color: var(--accent-gold);
     margin: 0 0 16px;
 }
+
+/* The header reads as one block, not three clusters with holes between them.
+
+   Before: the title column inherited text-align: center from .pageContainer
+   and sat centred inside a 452px box on the left, while the switcher and three
+   buttons wrapped across a 584px area at four different y positions — because
+   a 112px-tall profile switcher and a 44px button were sharing flex lines that
+   centred each item independently. */
+.headerRowEnd,
+.headerRow {
+    text-align: left;
+}
+
+/* Give the title side a real share of the width instead of a narrow column
+   beside a gap. */
+.headerRowEnd > *:first-child {
+    flex: 1 1 460px;
+    min-width: 0;
+}
+
+/* Switcher above, actions below, both aligned to the same edge — so the two
+   kinds of control read as two rows rather than four scattered pills. */
+.headerActions {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    flex: 0 1 auto;
+}
+
+.headerButtons {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+@media (min-width: 900px) {
+    .headerActions {
+        align-items: flex-end;
+    }
+
+    .headerButtons {
+        justify-content: flex-end;
+    }
+}
+
+/* Equal heights, or a wrapping row centres each item inside its own line and
+   they sit 4-6px apart vertically for no visible reason. Measured before:
+   44px, 50px and 40px, landing at y=656, 652 and 713. */
+.headerButtons > * {
+    min-height: 44px;
+    box-sizing: border-box;
+    align-self: stretch;
+}
+
+/* The three buttons came to 595px against 584px of available space, so the
+   last one wrapped by 11px. Letting the title column give up a little lets
+   them sit on one line at this width. */
+@media (min-width: 900px) {
+    .headerRowEnd > *:first-child {
+        flex: 1 1 400px;
+    }
+}

@@ -582,20 +582,27 @@ export default function ChartPageContent() {
                     />
                 )}
 
-                <button onClick={() => setIsEditing(true)} className={styles.addProfileBtn}>
-                    <PlusCircle size={18} />
-                    Refine Birth Details
-                </button>
+                {/* The three page actions, kept in their own row. They were flex
+                    siblings of the profile switcher, which is 112px tall against
+                    their 44px — so every flex line centred items of wildly
+                    different heights and nothing lined up. A switcher and an
+                    action are different kinds of control; they now sit apart. */}
+                <div className={styles.headerButtons}>
+                    <button onClick={() => setIsEditing(true)} className={styles.addProfileBtn}>
+                        <PlusCircle size={18} />
+                        Refine Birth Details
+                    </button>
 
-                <Link
-                    href={`/timing?profileId=${selectedProfile?.id}`}
-                    className={styles.addProfileBtn}
-                >
-                    <Clock size={18} />
-                    View Timeline
-                </Link>
+                    <Link
+                        href={`/timing?profileId=${selectedProfile?.id}`}
+                        className={styles.addProfileBtn}
+                    >
+                        <Clock size={18} />
+                        View Timeline
+                    </Link>
 
-                {profile?.chartData && <ShareChartCard profile={profile} />}
+                    {profile?.chartData && <ShareChartCard profile={profile} />}
+                </div>
                 </div>
             </motion.div>
 

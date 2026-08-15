@@ -461,44 +461,55 @@ export default function TimingPageContent() {
                     </p>
                 </div>
                 {transitsLoading ? (
-                    <div className="flex justify-center p-8 opacity-50"><div className={styles.spinner}></div></div>
+                    <div className={styles.loadingState}><div className={styles.spinner}></div></div>
                 ) : transits ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {transits.keyTransits.length > 0 ? transits.keyTransits.map((transitText: string, idx: number) => {
-                            const [title, rest] = transitText.split(': ');
-                            const isSadeSati = title.includes('Sade Sati');
-                            const isJupiter = title.includes('Jupiter');
-                            return (
-                                <div key={idx} className={`${styles.card} border-l-4 ${isSadeSati ? 'border-amber-500' : isJupiter ? 'border-green-500' : 'border-[var(--primary)]'}`}>
-                                    <h4 className="font-semibold text-[var(--primary)] text-sm mb-1 uppercase tracking-wider">{title}</h4>
-                                    <p className="text-sm text-[var(--foreground)]">{rest || transitText}</p>
+                    <>
+                        <div className={styles.transitGrid}>
+                            {transits.keyTransits.length > 0 ? transits.keyTransits.map((transitText: string, idx: number) => {
+                                const [title, rest] = transitText.split(': ');
+                                const accent = title.includes('Sade Sati')
+                                    ? styles.transitCardSadeSati
+                                    : title.includes('Jupiter') ? styles.transitCardJupiter : '';
+                                return (
+                                    <div key={idx} className={`${styles.transitCard} ${accent}`}>
+                                        <h4 className={styles.transitTitle}>{title}</h4>
+                                        <p className={styles.transitText}>{rest || transitText}</p>
+                                    </div>
+                                );
+                            }) : (
+                                <div className={styles.transitCard}>
+                                    <p className={styles.transitText}>No major heavy-planet transits are currently active. Enjoy this period of relative cosmic calm.</p>
                                 </div>
-                            );
-                        }) : (
-                            <div className={`${styles.card} col-span-full text-center py-8 opacity-70`}>
-                                <p>No major heavy-planet transits are currently active. Enjoy this period of relative cosmic calm.</p>
-                            </div>
-                        )}
+                            )}
+                        </div>
 
                         {transits.ashtakavargaScores && transits.ashtakavargaScores.length > 0 && (
-                            <div className="col-span-full mt-6">
-                                <h3 className="font-semibold text-[var(--primary)] mb-4 uppercase tracking-widest text-sm">Ashtakavarga Transit Strengths</h3>
-                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3">
-                                    {transits.ashtakavargaScores.map((av: any) => (
-                                        <div key={av.planet} className={`${styles.card} flex flex-col items-center p-4 text-center`} title={av.meaning}>
-                                            <span className="font-bold text-md">{av.planet}</span>
-                                            <div className="text-3xl font-light my-2" style={{ color: av.score >= 5 ? 'var(--success, #4ade80)' : av.score <= 3 ? 'var(--error, #f87171)' : 'var(--primary)' }}>
-                                                {av.score}<span className="text-sm text-[var(--text-muted)]">/8</span>
+                            <div className={styles.avSection}>
+                                <h3 className={styles.avHeading}>How today&apos;s sky is treating each planet</h3>
+                                <p className={styles.avExplainer}>
+                                    Each planet is scored out of 8 for where it is sitting right now
+                                    relative to your chart. Higher means the area it governs tends to
+                                    move more easily this period; lower means it asks for more effort.
+                                    It is a weather reading, not a verdict.
+                                </p>
+                                <div className={styles.avGrid}>
+                                    {transits.ashtakavargaScores.map((av: any) => {
+                                        const tone = av.score >= 5 ? styles.avStrong
+                                            : av.score <= 3 ? styles.avChallenge : styles.avAverage;
+                                        return (
+                                            <div key={av.planet} className={styles.avItem}>
+                                                <span className={styles.avPlanet}>{av.planet}</span>
+                                                <span className={`${styles.avScore} ${tone}`}>
+                                                    {av.score}<small>/8</small>
+                                                </span>
+                                                <span className={`${styles.avQuality} ${tone}`}>{av.quality}</span>
                                             </div>
-                                            <span className="text-xs uppercase tracking-wider font-semibold" style={{ color: av.score >= 5 ? 'var(--success, #4ade80)' : av.score <= 3 ? 'var(--error, #f87171)' : 'var(--secondary)' }}>
-                                                {av.quality}
-                                            </span>
-                                        </div>
-                                    ))}
+                                        );
+                                    })}
                                 </div>
                             </div>
                         )}
-                    </div>
+                    </>
                 ) : null}
             </section>
 

@@ -508,3 +508,122 @@
         justify-content: center;
     }
 }
+/* ── Gochar & Ashtakavarga ───────────────────────────────────────────────────
+   This section was written entirely in Tailwind utility classes — grid-cols-7,
+   col-span-full, mb-4, text-center, border-l-4 — and Tailwind is not installed
+   in this project and never has been. Every one of them resolved to nothing.
+
+   So the seven Ashtakavarga planets, intended as a single row, rendered as
+   seven full-width blocks each carrying three short lines; the heading's margin
+   vanished and it collided with the card beneath it; and the only class that
+   did anything was .card, whose 32px padding made each block enormous.
+
+   None of that was a design decision. This is the layout those classes were
+   asking for, written in CSS the project actually loads. */
+
+.transitGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.transitCard {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-left: 4px solid var(--accent-gold-decor);
+    border-radius: var(--radius-md);
+    padding: 18px 20px;
+}
+
+.transitCardSadeSati { border-left-color: var(--accent-coral-decor, #C48E8E); }
+.transitCardJupiter  { border-left-color: var(--accent-gold); }
+
+.transitTitle {
+    margin: 0 0 6px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent-gold);
+}
+
+.transitText {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: var(--foreground);
+    max-width: var(--measure);
+}
+
+.avSection { margin-top: 32px; }
+
+.avHeading {
+    margin: 0 0 6px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent-gold);
+}
+
+/* The jargon needs a sentence, not a tooltip. "5/8" means nothing to a reader
+   who has never met ashtakavarga, and the old markup hid the explanation in a
+   title attribute that no touch device will ever show. */
+.avExplainer {
+    margin: 0 0 16px;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    max-width: var(--measure);
+}
+
+/* Seven tiles, which is what grid-cols-7 was after. auto-fit rather than a
+   fixed seven so it reflows to 3 and 2 without needing a breakpoint each. */
+.avGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+    gap: 10px;
+}
+
+.avItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 12px 8px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-md);
+    text-align: center;
+}
+
+.avPlanet {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--foreground);
+}
+
+.avScore {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+}
+
+.avScore small {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+}
+
+.avQuality {
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+/* Colour carries the same meaning as the word beneath it, never on its own —
+   the label is what a colour-blind reader relies on. */
+.avStrong    { color: var(--accent-gold); }
+.avAverage   { color: var(--text-muted); }
+.avChallenge { color: var(--accent-coral-text, #8C3A2B); }

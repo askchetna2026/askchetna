@@ -490,12 +490,19 @@ export default function ChartPageContent() {
                         <div className={`${styles.chartInfoCard} sacred-card`}>
                             <div className={styles.chartInfoContent}>
                                 <h2 className={styles.chartInfoTitle}>
-                                    Cosmic blueprint for {profile.name} • {new Date(profile.dateOfBirth).toLocaleDateString()}
+                                    Cosmic blueprint for {profile.name}
+                                    {/* Its own element so the narrow layout can
+                                        put the date on a line of its own. Inline,
+                                        it wrapped mid-phrase and left the bullet
+                                        leading the second line. */}
+                                    <span className={styles.chartInfoDate}>
+                                        {new Date(profile.dateOfBirth).toLocaleDateString()}
+                                    </span>
                                 </h2>
                                 <div className="sacred-divider"></div>
                                 {profile.chartData && (
                                     <div className={styles.chartInfoGrid}>
-                                        <div><span className={styles.factLabel}>Birth Time:</span> {(function (t) {
+                                        <div><span className={styles.factLabel}>Birth Time</span> {(function (t) {
                                             if (!t) return 'Unknown';
                                             const [h, m] = t.split(':');
                                             const H = parseInt(h);
@@ -503,10 +510,10 @@ export default function ChartPageContent() {
                                             const H12 = H % 12 || 12;
                                             return `${H12}:${m} ${ampm}`;
                                         })(profile.timeOfBirth)}</div>
-                                        <div><span className={styles.factLabel}>Birth Place:</span> {profile.placeOfBirth}</div>
-                                        <div><span className={styles.factLabel}><Term termKey="ascendant" sign={getZodiacSign(profile.chartData.ascendant)}>Ascendant</Term> Sign:</span> {getZodiacSign(profile.chartData.ascendant)}</div>
-                                        <div><span className={styles.factLabel}><Term termKey="moonsign" sign={getZodiacSign(profile.chartData.planets.Moon.longitude)}>Moon Sign</Term>:</span> {getZodiacSign(profile.chartData.planets.Moon.longitude)}</div>
-                                        <div><span className={styles.factLabel}>Western Zodiac:</span> {(function (d) {
+                                        <div><span className={styles.factLabel}>Birth Place</span> {profile.placeOfBirth}</div>
+                                        <div><span className={styles.factLabel}><Term termKey="ascendant" sign={getZodiacSign(profile.chartData.ascendant)}>Ascendant</Term> Sign</span> {getZodiacSign(profile.chartData.ascendant)}</div>
+                                        <div><span className={styles.factLabel}><Term termKey="moonsign" sign={getZodiacSign(profile.chartData.planets.Moon.longitude)}>Moon Sign</Term></span> {getZodiacSign(profile.chartData.planets.Moon.longitude)}</div>
+                                        <div><span className={styles.factLabel}>Western Zodiac</span> {(function (d) {
                                             const m = d.getMonth() + 1, da = d.getDate();
                                             if ((m == 3 && da >= 21) || (m == 4 && da <= 19)) return "Aries";
                                             if ((m == 4 && da >= 20) || (m == 5 && da <= 20)) return "Taurus";

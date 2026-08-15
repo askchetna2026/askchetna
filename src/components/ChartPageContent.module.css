@@ -186,13 +186,18 @@
     z-index: 1;
 }
 
+/* The grid's own colour is the VALUE colour — the values are bare text nodes
+   between the label spans, so they inherit it. Label and value used to sit at
+   --secondary and --foreground, two browns close enough that the pair read as
+   one run of text; the value now takes the darkest ink and the label steps
+   back to muted, so the eye lands on the answer rather than the question. */
 .chartInfoGrid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 16px;
     font-size: 0.95rem;
-    color: var(--secondary);
-    font-weight: 500;
+    color: var(--foreground);
+    font-weight: 600;
     letter-spacing: 0.02em;
 }
 
@@ -208,8 +213,16 @@
    this stylesheet defines either. So label and value rendered identically and
    the row read as one run-on line. */
 .factLabel {
-    color: var(--foreground);
-    font-weight: 600;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+/* The colon belongs to the SIDE-BY-SIDE arrangement, not to the label itself.
+   It is punctuation joining a label to a value on one line; once the two stack
+   on a narrow screen it is a mark left hanging off a heading. In CSS rather
+   than in the markup so the mobile rules below can simply drop it. */
+.factLabel::after {
+    content: ':';
 }
 
 /* Header block for the empty state, and the locked-chart preview. Both were
@@ -445,58 +458,7 @@
         padding: 24px;
     }
 
-    /* The label half of each birth-record fact ("Birth Time:", "Moon Sign:").
-   It carried `text-[var(--primary-dark)]`, which failed twice over: the class
-   is Tailwind, which is not installed, and `--primary-dark` is not a token
-   this stylesheet defines either. So label and value rendered identically and
-   the row read as one run-on line. */
-.factLabel {
-    color: var(--foreground);
-    font-weight: 600;
-}
-
-/* Header block for the empty state, and the locked-chart preview. Both were
-   built entirely from Tailwind utilities, so they rendered as full-width,
-   left-aligned, unpadded text. */
-.introBlock {
-    max-width: 42rem;
-    margin: 0 auto 48px;
-    text-align: center;
-}
-
-.lockedPreview {
-    padding: 32px;
-    text-align: center;
-    opacity: 0.4;
-}
-
-.lockedPreview p:first-child {
-    font-style: italic;
-    line-height: 1.7;
-}
-
-.lockedHint {
-    margin-top: 16px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    color: var(--accent-gold);
-}
-
-/* The "expanded" affordance: a plus rotated into a cross. `rotate-45` is
-   Tailwind, so the icon sat as an unrotated plus next to the word "Hide". */
-.rotated {
-    transform: rotate(45deg);
-}
-
-.initializeIcon {
-    display: block;
-    margin: 0 auto 16px;
-    color: var(--accent-gold);
-}
-
-.addProfileBtn {
+    .addProfileBtn {
         width: 100%;
         justify-content: center;
     }
@@ -1834,58 +1796,7 @@
 }
 
 /* Labels stay on one line; the row wraps instead of the words. */
-.headerActions /* The label half of each birth-record fact ("Birth Time:", "Moon Sign:").
-   It carried `text-[var(--primary-dark)]`, which failed twice over: the class
-   is Tailwind, which is not installed, and `--primary-dark` is not a token
-   this stylesheet defines either. So label and value rendered identically and
-   the row read as one run-on line. */
-.factLabel {
-    color: var(--foreground);
-    font-weight: 600;
-}
-
-/* Header block for the empty state, and the locked-chart preview. Both were
-   built entirely from Tailwind utilities, so they rendered as full-width,
-   left-aligned, unpadded text. */
-.introBlock {
-    max-width: 42rem;
-    margin: 0 auto 48px;
-    text-align: center;
-}
-
-.lockedPreview {
-    padding: 32px;
-    text-align: center;
-    opacity: 0.4;
-}
-
-.lockedPreview p:first-child {
-    font-style: italic;
-    line-height: 1.7;
-}
-
-.lockedHint {
-    margin-top: 16px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    color: var(--accent-gold);
-}
-
-/* The "expanded" affordance: a plus rotated into a cross. `rotate-45` is
-   Tailwind, so the icon sat as an unrotated plus next to the word "Hide". */
-.rotated {
-    transform: rotate(45deg);
-}
-
-.initializeIcon {
-    display: block;
-    margin: 0 auto 16px;
-    color: var(--accent-gold);
-}
-
-.addProfileBtn {
+.headerActions .addProfileBtn {
     white-space: nowrap;
     flex: none;
 }
@@ -2052,8 +1963,36 @@
        single-column with a 16px gap read as double-spaced. */
     .chartInfoGrid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 6px 14px;
+        gap: 12px 14px;
         font-size: 0.84rem;
+    }
+
+    /* Label ABOVE value, not beside it.
+       Side by side, a label is as wide as its longest word-wrap allows: at
+       375px "Ascendant Sign:" and "Western Zodiac:" each broke onto two lines
+       while their value stayed on the first, so no two rows shared a baseline
+       and the block read as debris. Stacking gives every pair the full column
+       width, which is enough for any of these labels on one line, and puts all
+       five values on a predictable left edge. */
+    .chartInfoGrid > div {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1px;
+    }
+
+    /* At this size the label is doing the job of a column header, so it takes
+       the quieter treatment that implies — the value below is the content. */
+    .factLabel {
+        font-size: 0.68rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        font-weight: 700;
+    }
+
+    .factLabel::after {
+        content: none;
     }
 }
 
@@ -2063,6 +2002,13 @@
    in the browser despite both rules loading, and a record header is not worth
    debugging rem arithmetic over. This is a label above five facts — the h1
    already carries the page title. */
+/* The bullet is CSS, so it can be dropped when the date moves to its own
+   line. As literal text between name and date it wrapped mid-phrase on a
+   narrow screen and left "• 27/06/1973" leading the second line. */
+.chartInfoDate::before {
+    content: ' • ';
+}
+
 .chartInfoTitle {
     font-size: 17px;
     line-height: 1.35;
@@ -2070,6 +2016,19 @@
 }
 
 @media (max-width: 700px) {
+    .chartInfoDate {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 400;
+        color: var(--text-muted);
+        letter-spacing: 0.04em;
+        margin-top: 2px;
+    }
+
+    .chartInfoDate::before {
+        content: none;
+    }
+
     .chartInfoTitle {
         font-size: 15px;
     }
@@ -2105,58 +2064,7 @@
     gap: 8px;
 }
 
-.headerRowEnd .headerButtons /* The label half of each birth-record fact ("Birth Time:", "Moon Sign:").
-   It carried `text-[var(--primary-dark)]`, which failed twice over: the class
-   is Tailwind, which is not installed, and `--primary-dark` is not a token
-   this stylesheet defines either. So label and value rendered identically and
-   the row read as one run-on line. */
-.factLabel {
-    color: var(--foreground);
-    font-weight: 600;
-}
-
-/* Header block for the empty state, and the locked-chart preview. Both were
-   built entirely from Tailwind utilities, so they rendered as full-width,
-   left-aligned, unpadded text. */
-.introBlock {
-    max-width: 42rem;
-    margin: 0 auto 48px;
-    text-align: center;
-}
-
-.lockedPreview {
-    padding: 32px;
-    text-align: center;
-    opacity: 0.4;
-}
-
-.lockedPreview p:first-child {
-    font-style: italic;
-    line-height: 1.7;
-}
-
-.lockedHint {
-    margin-top: 16px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    color: var(--accent-gold);
-}
-
-/* The "expanded" affordance: a plus rotated into a cross. `rotate-45` is
-   Tailwind, so the icon sat as an unrotated plus next to the word "Hide". */
-.rotated {
-    transform: rotate(45deg);
-}
-
-.initializeIcon {
-    display: block;
-    margin: 0 auto 16px;
-    color: var(--accent-gold);
-}
-
-.addProfileBtn {
+.headerRowEnd .headerButtons .addProfileBtn {
     min-height: 40px;
     padding: 8px 14px;
     font-size: 0.85rem;

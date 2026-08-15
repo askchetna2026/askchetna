@@ -339,7 +339,11 @@ body {
      respected, as it should. It only stops the WebView's own guesswork. */
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  font-family: var(--font-main);
+  /* --font-devanagari is a FALLBACK, not a replacement. The browser reaches it
+     only for glyphs --font-main has no coverage for, which is the whole
+     Devanagari block and nothing else — so no Latin text is affected. Before
+     it, Hindi fell through to whatever the OS supplied. */
+  font-family: var(--font-main), var(--font-devanagari), system-ui, sans-serif;
   color: var(--foreground);
   line-height: 1.6;
   transition: color 0.5s ease;
@@ -574,7 +578,7 @@ a {
    TYPOGRAPHY & HEADINGS
    ═══════════════════════════════════════════════ */
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading), 'Playfair Display', 'Cinzel', serif;
+  font-family: var(--font-heading), 'Playfair Display', 'Cinzel', var(--font-devanagari), serif;
   font-weight: 600;
   line-height: 1.1;
   letter-spacing: 0.05em; /* Increased tracking for luxurious feel */
@@ -665,7 +669,7 @@ html:not(.native-app) h3 { font-size: clamp(1rem, 2vw, 1.25rem); }
 
    em rather than px so one rule serves an h1 and an h3 proportionally. */
 .mystic-text {
-  font-family: var(--font-heading), 'Playfair Display', 'Cinzel', serif;
+  font-family: var(--font-heading), 'Playfair Display', 'Cinzel', var(--font-devanagari), serif;
   color: var(--foreground);
   margin-bottom: 0.5em;
 }

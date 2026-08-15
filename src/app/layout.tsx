@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Suspense } from 'react';
-import { Inter, Playfair_Display } from 'next/font/google';
+import { Inter, Playfair_Display, Tiro_Devanagari_Hindi } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -37,6 +37,25 @@ const playfair = Playfair_Display({
   subsets: ['latin'],
   variable: '--font-heading',
   weight: ['400', '500', '600', '700', '800'],
+  display: 'swap',
+});
+
+/**
+ * Devanagari. Neither Inter nor Playfair carries a single glyph of it, and the
+ * product renders Devanagari in two places — the kundali's planet labels
+ * behind the EN/हिंदी toggle, and चेतना on /about. Those were falling back to
+ * whatever the operating system happened to supply, which differs between
+ * Windows, Android and iOS and matches nothing about the manuscript design.
+ *
+ * It sits at the END of the font stacks below rather than replacing anything:
+ * the browser only reaches it for glyphs the Latin faces do not have, so no
+ * Latin text changes. Tiro Devanagari Hindi is a text face with real calligraphic
+ * roots, which is the same argument the rest of this design makes.
+ */
+const tiroDevanagari = Tiro_Devanagari_Hindi({
+  subsets: ['devanagari', 'latin'],
+  variable: '--font-devanagari',
+  weight: ['400'],
   display: 'swap',
 });
 
@@ -137,7 +156,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en" data-theme="light" suppressHydrationWarning>
-      <body className={`${inter.variable} ${playfair.variable}`}>
+      <body className={`${inter.variable} ${playfair.variable} ${tiroDevanagari.variable}`}>
         {/*
           Tags <html> with .native-app / data-app-platform before first paint so
           the app-only safe-area rules apply without a visible reflow. Done with

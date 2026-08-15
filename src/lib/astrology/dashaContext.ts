@@ -122,3 +122,108 @@ function ordinal(n: number): string {
     if (n === 3) return '3rd';
     return `${n}th`;
 }
+
+/**
+ * What a given house holds in THIS chart.
+ *
+ * /chart's house modal showed a paragraph from a twelve-entry table — the same
+ * text for every seeker alive with a 4th house. That paragraph is not wrong;
+ * explaining what a house governs is legitimately universal. What was missing
+ * was the other half: which sign it falls in for this person, who is sitting in
+ * it, and where its ruler went. Those three facts are what make the universal
+ * description apply to someone.
+ *
+ * Composed here rather than in the component so /chart and any later surface
+ * describe a house the same way.
+ */
+export interface HouseContext {
+    house: number;
+    sign: string | null;
+    lord: string | null;
+    lordHouse: number | null;
+    occupants: Array<{ name: string; dignity: string | null; isRetrograde: boolean }>;
+    /** One or two sentences, true of this chart only. */
+    inYourChart: string | null;
+}
+
+/* Only what this function reads, rather than the full ChartData. ChartDisplay
+   receives a narrower shape (no `mc`), and requiring the whole type would have
+   forced a cast at the one call site that matters. */
+type HouseChartInput = {
+    planets: Record<string, { longitude?: number; dignity?: string; isRetrograde?: boolean }>;
+    ascendant: number;
+};
+
+export function describeHouse(
+    chartData: HouseChartInput | null | undefined,
+    house: number,
+    signLords: Record<string, string>
+): HouseContext {
+    const empty: HouseContext = {
+        house, sign: null, lord: null, lordHouse: null, occupants: [], inYourChart: null,
+    };
+
+    const planets = chartData?.planets;
+    if (!planets || typeof chartData?.ascendant !== 'number') return empty;
+
+    /* Whole-sign houses: the ascendant's sign is the 1st, and each house after
+       it is the next sign. This is the same scheme the chart itself is drawn
+       in, so the modal cannot disagree with the diagram behind it. */
+    const ascIndex = Math.floor(chartData.ascendant / 30);
+    const signIndex = (ascIndex + house - 1) % 12;
+    const sign = ZODIAC_SIGNS_LOCAL[signIndex] ?? null;
+    const lord = sign ? signLords[sign] ?? null : null;
+
+    const occupants = Object.entries(planets)
+        .filter(([, p]) => p && typeof p.longitude === 'number' && Math.floor(p.longitude / 30) === signIndex)
+        .map(([name, p]) => ({
+            name,
+            dignity: (name === 'Rahu' || name === 'Ketu') ? null : (p.dignity ?? null),
+            isRetrograde: Boolean(p.isRetrograde) && name !== 'Rahu' && name !== 'Ketu',
+        }));
+
+    const lordPos = lord ? planets[lord] : null;
+    const lordHouse = lordPos && typeof lordPos.longitude === 'number'
+        ? ((Math.floor(lordPos.longitude / 30) - ascIndex + 12) % 12) + 1
+        : null;
+
+    const parts: string[] = [];
+
+    if (sign) {
+        parts.push(`In your chart this house falls in ${sign}${lord ? `, ruled by ${lord}` : ''}.`);
+    }
+
+    if (occupants.length) {
+        const names = occupants.map((o) =>
+            o.dignity && o.dignity !== 'Neutral' ? `${o.name} (${o.dignity.toLowerCase()})` : o.name
+        );
+        parts.push(
+            occupants.length === 1
+                ? `${names[0]} sits here, so this area carries that planet's character directly.`
+                : `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]} sit here together.`
+        );
+    } else {
+        parts.push('No planet sits here, which is ordinary — most houses are empty, and the area is then read through its ruler.');
+    }
+
+    if (lord && lordHouse) {
+        parts.push(
+            lordHouse === house
+                ? `Its ruler ${lord} is in the house it rules, which keeps the area self-contained.`
+                : `Its ruler ${lord} sits in the ${ordinal(lordHouse)}, so this part of life tends to play out through that area.`
+        );
+    }
+
+    return {
+        house, sign, lord, lordHouse, occupants,
+        inYourChart: parts.length ? parts.join(' ') : null,
+    };
+}
+
+/* Local copy rather than an import: zodiac.ts exports ZODIAC_SIGNS, but taking
+   it from there and re-exporting it through this module was how calculator.ts
+   crept into client bundles before. */
+const ZODIAC_SIGNS_LOCAL = [
+    'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
+    'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces',
+];

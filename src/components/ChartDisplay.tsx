@@ -1,4 +1,6 @@
 "use client";
+import { describeHouse } from '@/lib/astrology/dashaContext';
+import { SIGN_LORDS } from '@/lib/astrology/interpretations';
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -106,6 +108,10 @@ const HOUSE_THEMES: Record<number, { title: string, theme: string, awareness: st
 
 export default function ChartDisplay({ data, isMoonChart, width = '100%', height = 'auto', language: propLanguage = 'en' }: ChartDisplayProps) {
     const [activeHouse, setActiveHouse] = useState<number | null>(null);
+
+    /* Recomputed when the open house changes. Pure arithmetic over the stored
+       chart — no request, no model call. */
+    const houseContext = activeHouse ? describeHouse(data, activeHouse, SIGN_LORDS) : null;
     const [language, setLanguage] = useState<'en' | 'hi'>(propLanguage);
 
     const getPlanetLabel = (name: string) => {
@@ -326,6 +332,29 @@ export default function ChartDisplay({ data, isMoonChart, width = '100%', height
                                 }}>
                                     {HOUSE_THEMES[activeHouse!].theme}
                                 </p>
+
+                                {/* The half that was missing. The paragraph above
+                                    explains what the house governs and is the same
+                                    for everyone, which is correct — a house means
+                                    what it means. This says what it holds in THIS
+                                    chart: the sign it falls in, who sits there, and
+                                    where its ruler went. Derived from the stored
+                                    chart, so it costs nothing and cannot drift from
+                                    the diagram behind the modal. */}
+                                {houseContext?.inYourChart && (
+                                    <p style={{
+                                        marginTop: '18px',
+                                        paddingTop: '16px',
+                                        borderTop: '1px solid var(--card-border)',
+                                        fontSize: '1.02rem',
+                                        lineHeight: '1.75',
+                                        color: 'var(--foreground)',
+                                        maxWidth: '600px'
+                                    }}>
+                                        <strong style={{ color: 'var(--accent-gold)' }}>In your chart. </strong>
+                                        {houseContext.inYourChart}
+                                    </p>
+                                )}
                             </div>
 
                             <div style={{

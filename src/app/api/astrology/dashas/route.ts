@@ -6,6 +6,36 @@ import prisma from '@/lib/prisma';
 // pull the 16.8 MB ephemeris into this route's bundle and pay its load cost on
 // every cold start — for a function that never touches it.
 import { calculateVimsottariDashas, type ChartData } from '@/lib/astrology/zodiac';
+import { cached, utcHourKey } from '@/lib/astrology/skyCache';
+
+const HOUR_MS = 60 * 60 * 1000;
+
+type Period = { lord: string; start: Date | string; end: Date | string; isCurrent?: boolean };
+
+/**
+ * The current Mahadasha and Antardasha, and nothing else.
+ *
+ * Safe to memoise for an hour despite depending on "now": a Mahadasha runs 6–20
+ * years and an Antardasha months, so an hour-old answer can only be wrong
+ * within an hour of a boundary the seeker cannot perceive to the minute anyway.
+ * The same reasoning the transit route already uses for the Moon's sign.
+ */
+function currentPhase(dashas: Period[]) {
+    const maha = dashas.find((d) => d.isCurrent) ?? null;
+    const antar = maha
+        ? ((maha as Period & { antardashas?: Period[] }).antardashas ?? []).find((a) => a.isCurrent) ?? null
+        : null;
+
+    return {
+        current: maha && {
+            lord: maha.lord,
+            start: maha.start,
+            end: maha.end,
+            antardasha: antar && { lord: antar.lord, start: antar.start, end: antar.end },
+        },
+        source: 'stored' as const,
+    };
+}
 
 /**
  * The seeker's dasha timeline.
@@ -57,6 +87,23 @@ export async function GET(req: NextRequest) {
             );
 
             if (typeof storedMoon === 'number') {
+                // `?current=1` — just the phase the seeker is in right now.
+                //
+                // The full tree is 757 KB and took ~7s to serialise and ship on
+                // the dev box. The home page's chapter card renders a lord, two
+                // dates and a sub-period from it — about a hundred bytes — so
+                // the whole page was waiting on three quarters of a megabyte it
+                // discarded. The timeline at /timing still asks for everything.
+                if (searchParams.get('current') === '1') {
+                    return NextResponse.json(
+                        await cached(
+                            `dasha-current:${profileId}:${utcHourKey()}`,
+                            HOUR_MS,
+                            async () => currentPhase(calculateVimsottariDashas(storedMoon, birthDate)),
+                        ),
+                    );
+                }
+
                 const dashas = calculateVimsottariDashas(storedMoon, birthDate);
                 return NextResponse.json({
                     dashas,

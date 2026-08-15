@@ -208,14 +208,42 @@ html.native-app .inputContainer {
     margin-right: auto;
 }
 
+/* The answer sections, brought onto the parchment and given a measure.
+
+   Alignment was already handled — .resultContainer sets text-align: left, so
+   the prose was never inheriting the hero's centring.
+
+   What was wrong: the box-shadow was `0 15px 40px rgba(0,0,0,0.7)` plus an
+   indigo glow, both tuned for the retired dark theme, which on parchment reads
+   as a bruise rather than a lift. And the container is 800px wide with no cap
+   on the text inside it, so the longest prose in the product — the phase
+   overview and the guidance lists — ran the full width.
+
+   text-align: left is restated rather than inherited so the rule survives if
+   this section is ever reused outside .resultContainer. */
 .section {
     background: var(--card-bg);
-    padding: 32px;
+    background-image: var(--paper-tex);
+    background-blend-mode: var(--paper-tex-blend);
+    background-size: 300px;
+    padding: 28px 32px;
     border-radius: var(--radius-lg);
-    border: none;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7), 0 0 20px rgba(74, 47, 168, 0.15);
+    border: 1px solid var(--card-border);
+    box-shadow: var(--shadow-raise);
     position: relative;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.section p,
+.section li {
+    max-width: var(--measure);
+}
+
+@media (max-width: 600px) {
+    .section {
+        padding: 20px 18px;
+    }
 }
 .section::before {
     content: '';

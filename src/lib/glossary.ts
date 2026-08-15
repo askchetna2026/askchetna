@@ -114,4 +114,22 @@ export const GLOSSARY: Record<
         plain: 'One of twelve life areas in your chart — self, money, communication, home, and so on.',
         example: 'Planets in the 10th house tend to shape your career and public reputation.',
     },
+    // Added for /timing, which cannot ban its own vocabulary the way the daily
+    // note does — dashas and nakshatras ARE its subject. The rule there is
+    // different: keep the term, and gloss it the first time it appears.
+    pada: {
+        label: 'Pada',
+        plain: 'A quarter of a nakshatra. Each one is divided into four, and which quarter a planet falls in shades how it expresses.',
+        example: 'Two people can share a nakshatra and still differ noticeably if their planets sit in different padas.',
+    },
+    dignity: {
+        label: 'Dignity (exalted / debilitated)',
+        plain: 'How comfortable a planet is in the sign it occupies — exalted is its easiest placement, debilitated its most awkward.',
+        example: 'A debilitated planet is not a bad one. It is a planet that has to work harder to express itself cleanly, and often does so later in life.',
+    },
+    sadesati: {
+        label: 'Sade Sati',
+        plain: 'The roughly seven and a half years while Saturn passes over and around your Moon sign — a long stretch of consolidation.',
+        example: 'Sade Sati tends to slow things down and ask for maturity, rather than deliver one dramatic event.',
+    },
 };

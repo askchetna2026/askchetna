@@ -61,6 +61,30 @@ interface DashaPeriod {
     antardashas?: Antardasha[];
 }
 
+/**
+ * "load 2 (Under-utilised)" in words.
+ *
+ * `load` counts the influences and pressures the engine finds on a planet, and
+ * the classification buckets that count. Both are internal vocabulary: a
+ * reader shown "load 2 (Under-utilised)" learns nothing, and the number
+ * invites them to think there is a scale they should be scoring well on.
+ * There is not — a quiet planet is not a worse one.
+ */
+function describeLoad(load: number, classification: string): string {
+    switch (classification) {
+        case 'Under-utilised':
+            return 'few other planets pull on it, so it acts on its own terms and can be easy to overlook';
+        case 'Balanced':
+            return 'a workable amount of pull from elsewhere in the chart';
+        case 'Overloaded':
+            return 'a lot of the chart leans on it, so it can feel stretched';
+        case 'Highly Pressured':
+            return 'more of the chart leans on it than on anything else, which is where the strain tends to show';
+        default:
+            return `${classification.toLowerCase()} (${load})`;
+    }
+}
+
 const LORD_DESCRIPTIONS: Record<string, { supports: string, resists: string, themes: string }> = {
     'Jupiter': { supports: 'Growth, wisdom, teaching, expansion.', resists: 'Reckless shortcuts, lack of foundations.', themes: 'Optimism, spiritual seeking.' },
     'Saturn': { supports: 'Discipline, structure, long-term legacy.', resists: 'Laziness, superficial expansion.', themes: 'Duty, maturity, reality checks.' },
@@ -399,8 +423,13 @@ export default function TimingPageContent() {
                             <p>{lordContext.placement}</p>
                             {lordContext.nakshatra && (
                                 <p className={styles.cardMeta}>
-                                    Nakshatra: {lordContext.nakshatra}
-                                    {lordContext.dignity ? ` · ${lordContext.dignity}` : ''}
+                                    <Term termKey="nakshatra">Nakshatra</Term>: {lordContext.nakshatra}
+                                    {lordContext.dignity ? (
+                                        <>
+                                            {' · '}
+                                            <Term termKey="dignity">{lordContext.dignity}</Term>
+                                        </>
+                                    ) : null}
                                 </p>
                             )}
                         </div>
@@ -432,8 +461,11 @@ export default function TimingPageContent() {
                         <p>{lordAnalysis?.synthesis?.repeats_when || interpretation?.themes || "Extracting emotional resonance..."}</p>
                         {lordAnalysis && (
                             <p className={styles.cardMeta}>
-                                {lordAnalysis.nakshatra} pada {lordAnalysis.nakshatraPada}
-                                {' · '}load {lordAnalysis.load} ({lordAnalysis.loadClassification})
+                                <Term termKey="nakshatra">{lordAnalysis.nakshatra}</Term>
+                                {', '}
+                                <Term termKey="pada">pada</Term> {lordAnalysis.nakshatraPada}
+                                {' — '}
+                                {describeLoad(lordAnalysis.load, lordAnalysis.loadClassification)}
                             </p>
                         )}
                     </div>
@@ -460,7 +492,11 @@ export default function TimingPageContent() {
                                     : title.includes('Jupiter') ? styles.transitCardJupiter : '';
                                 return (
                                     <div key={idx} className={`${styles.transitCard} ${accent}`}>
-                                        <h4 className={styles.transitTitle}>{title}</h4>
+                                        <h4 className={styles.transitTitle}>
+                                            {title.includes('Sade Sati')
+                                                ? <Term termKey="sadesati">{title}</Term>
+                                                : title}
+                                        </h4>
                                         <p className={styles.transitText}>{rest || transitText}</p>
                                     </div>
                                 );

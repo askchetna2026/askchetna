@@ -11,6 +11,16 @@ interface DailyInsight {
     caution: string;
 }
 
+interface DailyInsightCardProps {
+    /**
+     * Appended to the card's own class, for callers whose surface has a
+     * different card language. The app's Today screen uses a larger radius and
+     * a papered ground than the web widget column does; rather than branch on
+     * platform in here, the screen that knows its own styling passes it in.
+     */
+    className?: string;
+}
+
 /** The seeker's local calendar day — the same key the API stores against. */
 function localDay(): string {
     const d = new Date();
@@ -51,7 +61,7 @@ const cacheKey = (day: string) => `askchetna:daily-insight:${day}`;
  */
 let inFlight: Promise<DailyInsight | null> | null = null;
 
-export default function DailyInsightCard() {
+export default function DailyInsightCard({ className = '' }: DailyInsightCardProps = {}) {
     const [insight, setInsight] = useState<DailyInsight | null>(null);
     const [state, setState] = useState<'loading' | 'ready' | 'unavailable'>('loading');
 
@@ -137,7 +147,7 @@ export default function DailyInsightCard() {
 
     if (state === 'loading') {
         return (
-            <section className={`${styles.card} papered`} aria-busy="true" aria-label="Reading today">
+            <section className={`${styles.card} papered ${className}`} aria-busy="true" aria-label="Reading today">
                 <div className={styles.shimmerLine} style={{ width: '45%' }} />
                 <div className={styles.shimmerLine} style={{ width: '92%' }} />
                 <div className={styles.shimmerLine} style={{ width: '78%' }} />
@@ -148,7 +158,7 @@ export default function DailyInsightCard() {
     if (!insight) return null;
 
     return (
-        <section className={`${styles.card} papered`}>
+        <section className={`${styles.card} papered ${className}`}>
             <span className={styles.eyebrow}>
                 <Sunrise size={13} aria-hidden="true" /> Today, for you
             </span>

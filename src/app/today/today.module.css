@@ -209,6 +209,25 @@
 
 /* The product's central claim — "which season you are in" — as a thing to read
    rather than a link to a page about it. */
+/* The daily note, wearing this screen's card language rather than the web
+   widget column's. Only the frame is restated — type, spacing and colour come
+   from DailyInsightCard's own module, so a change there still lands here.
+
+   Scoped under .screen for specificity, not for nesting: the card's own
+   `.card` rule sets a smaller radius at the same 0,1,0 weight, so a bare
+   `.dailyNote` would win or lose purely on which stylesheet webpack emitted
+   last — that is, silently, and differently between dev and a production
+   build. The card is a direct child of .screen, so this is 0,2,0 and settles
+   it. */
+.screen .dailyNote {
+    padding: 14px var(--gutter) 15px;
+    background-image: var(--paper-tex);
+    background-blend-mode: var(--paper-tex-blend);
+    background-size: 300px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-raise);
+}
+
 .season {
     display: block;
     padding: 14px var(--gutter) 15px;

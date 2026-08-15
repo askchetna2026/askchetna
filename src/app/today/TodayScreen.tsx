@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react';
 import { Users, ArrowRight, ChevronRight, Sparkles, Check } from 'lucide-react';
 import { useProfile } from '@/context/ProfileContext';
 import AppScreenChrome from '@/components/app/AppScreenChrome';
+import DailyInsightCard from '@/components/DailyInsightCard';
 import { getProfiles, primaryProfile } from '@/lib/profileStore';
 import styles from './today.module.css';
 
@@ -290,6 +291,14 @@ export default function TodayScreen() {
                     </Link>
                 )}
             </section>
+
+            {/* ── Today's note, written for this seeker ─────────────────────── */}
+            {/* Sits between the sky and the season deliberately: the sky says
+                what changed, this says what it may mean for them, the season
+                says where it sits in the longer arc. The card renders nothing
+                at all when there is no chart yet or the model is unreachable,
+                so it needs no guard here. */}
+            <DailyInsightCard className={styles.dailyNote} />
 
             {/* ── Which season you are in ──────────────────────────────────── */}
             {/* Deliberately NOT a grid of shortcuts to Chart / Ask / Timing:

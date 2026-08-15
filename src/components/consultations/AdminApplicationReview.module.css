@@ -127,8 +127,10 @@
     cursor: pointer;
 }
 
-.row:hover {
-    border-color: var(--accent-gold);
+@media (hover: hover) and (pointer: fine) {
+    .row:hover {
+        border-color: var(--accent-gold);
+    }
 }
 
 .rowMain {

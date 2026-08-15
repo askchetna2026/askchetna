@@ -17,8 +17,10 @@
     overflow: hidden;
 }
 
-.trigger:hover {
-    border-color: var(--accent-gold);
+@media (hover: hover) and (pointer: fine) {
+    .trigger:hover {
+        border-color: var(--accent-gold);
+    }
 }
 
 .trigger:focus-visible {
@@ -94,7 +96,17 @@
     cursor: pointer;
 }
 
-.item:hover,
+/* Split from `.item:focus-visible`. Combined, a tap on a touch screen applied the
+   hover half and left it applied after navigation. The focus style has to
+   stay OUTSIDE the gate — keyboard users need it on every device. */
+@media (hover: hover) and (pointer: fine) {
+    .item:hover {
+        background: rgba(var(--accent-gold-rgb), 0.1);
+        color: var(--accent-gold);
+        outline: none;
+    }
+}
+
 .item:focus-visible {
     background: rgba(var(--accent-gold-rgb), 0.1);
     color: var(--accent-gold);
@@ -119,7 +131,16 @@
     color: var(--error);
 }
 
-.signOut:hover,
+/* Split from `.signOut:focus-visible`. Combined, a tap on a touch screen applied the
+   hover half and left it applied after navigation. The focus style has to
+   stay OUTSIDE the gate — keyboard users need it on every device. */
+@media (hover: hover) and (pointer: fine) {
+    .signOut:hover {
+        background: var(--error-bg);
+        color: var(--error);
+    }
+}
+
 .signOut:focus-visible {
     background: var(--error-bg);
     color: var(--error);

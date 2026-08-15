@@ -58,11 +58,13 @@
     transition: all 0.3s ease;
 }
 
-.closeButton:hover {
-    background: rgba(var(--foreground-rgb), 0.05);
-    color: var(--accent-gold);
-    border-color: var(--accent-gold);
-    transform: rotate(90deg);
+@media (hover: hover) and (pointer: fine) {
+    .closeButton:hover {
+        background: rgba(var(--foreground-rgb), 0.05);
+        color: var(--accent-gold);
+        border-color: var(--accent-gold);
+        transform: rotate(90deg);
+    }
 }
 
 .drawerContent {
@@ -84,8 +86,10 @@
     border-radius: 10px;
 }
 
-.drawerContent::-webkit-scrollbar-thumb:hover {
-    background: rgba(var(--accent-gold-rgb), 0.4);
+@media (hover: hover) and (pointer: fine) {
+    .drawerContent::-webkit-scrollbar-thumb:hover {
+        background: rgba(var(--accent-gold-rgb), 0.4);
+    }
 }
 
 /* Mobile */

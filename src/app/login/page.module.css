@@ -97,8 +97,10 @@
     transition: color 0.2s ease;
 }
 
-.checkboxLabel:hover {
-    color: var(--primary);
+@media (hover: hover) and (pointer: fine) {
+    .checkboxLabel:hover {
+        color: var(--primary);
+    }
 }
 
 .checkboxLabel input {
@@ -125,9 +127,11 @@
     transition: all 0.2s ease;
 }
 
-.submitBtn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+@media (hover: hover) and (pointer: fine) {
+    .submitBtn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
 }
 
 .divider {
@@ -171,9 +175,11 @@
     transition: all 0.2s ease;
 }
 
-.googleBtn:hover {
-    border-color: var(--accent-gold);
-    background: rgba(var(--foreground-rgb), 0.02);
+@media (hover: hover) and (pointer: fine) {
+    .googleBtn:hover {
+        border-color: var(--accent-gold);
+        background: rgba(var(--foreground-rgb), 0.02);
+    }
 }
 
 .toggle {
@@ -193,8 +199,10 @@
     text-decoration: underline;
 }
 
-.toggleBtn:hover {
-    color: var(--primary);
+@media (hover: hover) and (pointer: fine) {
+    .toggleBtn:hover {
+        color: var(--primary);
+    }
 }
 
 .disclaimer {
@@ -210,8 +218,10 @@
     text-decoration: underline;
 }
 
-.disclaimer a:hover {
-    color: var(--primary);
+@media (hover: hover) and (pointer: fine) {
+    .disclaimer a:hover {
+        color: var(--primary);
+    }
 }
 
 @media (max-width: 480px) {

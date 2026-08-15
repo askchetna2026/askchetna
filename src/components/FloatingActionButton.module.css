@@ -24,9 +24,11 @@
     animation: pulse 2s infinite;
 }
 
-.fab:hover {
-    transform: scale(1.1) rotate(90deg);
-    box-shadow: 0 6px 20px rgba(181, 137, 46, 0.6);
+@media (hover: hover) and (pointer: fine) {
+    .fab:hover {
+        transform: scale(1.1) rotate(90deg);
+        box-shadow: 0 6px 20px rgba(181, 137, 46, 0.6);
+    }
 }
 
 .fab:active {

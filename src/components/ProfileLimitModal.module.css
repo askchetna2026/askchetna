@@ -39,9 +39,11 @@
     transition: all 0.2s ease;
 }
 
-.closeBtn:hover {
-    background: rgba(181, 137, 46, 0.1);
-    color: var(--accent-gold);
+@media (hover: hover) and (pointer: fine) {
+    .closeBtn:hover {
+        background: rgba(181, 137, 46, 0.1);
+        color: var(--accent-gold);
+    }
 }
 
 .iconContainer {
@@ -96,11 +98,13 @@
     overflow: hidden;
 }
 
-.optionCard:hover {
-    border-color: var(--accent-gold);
-    background: rgba(181, 137, 46, 0.08);
-    transform: translateY(-4px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4), 0 0 15px rgba(181, 137, 46, 0.2);
+@media (hover: hover) and (pointer: fine) {
+    .optionCard:hover {
+        border-color: var(--accent-gold);
+        background: rgba(181, 137, 46, 0.08);
+        transform: translateY(-4px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4), 0 0 15px rgba(181, 137, 46, 0.2);
+    }
 }
 
 .disabledOption {
@@ -108,11 +112,13 @@
     opacity: 0.8;
 }
 
-.disabledOption:hover {
-    transform: none;
-    box-shadow: none;
-    border-color: rgba(var(--foreground-rgb), 0.1);
-    background: rgba(var(--foreground-rgb), 0.05);
+@media (hover: hover) and (pointer: fine) {
+    .disabledOption:hover {
+        transform: none;
+        box-shadow: none;
+        border-color: rgba(var(--foreground-rgb), 0.1);
+        background: rgba(var(--foreground-rgb), 0.05);
+    }
 }
 
 .optionIcon {
@@ -212,10 +218,12 @@
     transition: all 0.2s ease;
 }
 
-.btnCancel:hover {
-    border-color: var(--foreground);
-    color: var(--foreground);
-    background: rgba(var(--foreground-rgb), 0.05);
+@media (hover: hover) and (pointer: fine) {
+    .btnCancel:hover {
+        border-color: var(--foreground);
+        color: var(--foreground);
+        background: rgba(var(--foreground-rgb), 0.05);
+    }
 }
 
 .btnConfirm {
@@ -231,10 +239,12 @@
     box-shadow: 0 4px 12px rgba(181, 137, 46, 0.3);
 }
 
-.btnConfirm:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(181, 137, 46, 0.4);
-    filter: brightness(1.1);
+@media (hover: hover) and (pointer: fine) {
+    .btnConfirm:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(181, 137, 46, 0.4);
+        filter: brightness(1.1);
+    }
 }
 
 @keyframes fadeIn {

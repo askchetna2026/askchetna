@@ -97,9 +97,11 @@
     margin-bottom: 12px;
 }
 
-.createButton:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(181, 137, 46, 0.4);
+@media (hover: hover) and (pointer: fine) {
+    .createButton:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(181, 137, 46, 0.4);
+    }
 }
 
 .homeLink {
@@ -110,9 +112,11 @@
     transition: color 0.2s ease;
 }
 
-.homeLink:hover {
-    color: var(--accent-gold);
-    text-decoration: underline;
+@media (hover: hover) and (pointer: fine) {
+    .homeLink:hover {
+        color: var(--accent-gold);
+        text-decoration: underline;
+    }
 }
 
 @media (max-width: 768px) {

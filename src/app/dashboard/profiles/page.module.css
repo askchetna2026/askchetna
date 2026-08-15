@@ -18,8 +18,10 @@
     transition: color 0.2s ease;
 }
 
-.backLink:hover {
-    color: var(--accent-gold);
+@media (hover: hover) and (pointer: fine) {
+    .backLink:hover {
+        color: var(--accent-gold);
+    }
 }
 
 .title {
@@ -71,9 +73,11 @@
     transition: all 0.2s ease;
 }
 
-.selectAllBtn:hover {
-    border-color: var(--accent-gold);
-    color: var(--accent-gold);
+@media (hover: hover) and (pointer: fine) {
+    .selectAllBtn:hover {
+        border-color: var(--accent-gold);
+        color: var(--accent-gold);
+    }
 }
 
 .profileList {
@@ -93,9 +97,11 @@
     transition: all 0.2s ease;
 }
 
-.profileCard:hover {
-    border-color: var(--accent-gold);
-    transform: translateX(4px);
+@media (hover: hover) and (pointer: fine) {
+    .profileCard:hover {
+        border-color: var(--accent-gold);
+        transform: translateX(4px);
+    }
 }
 
 .disabledCard {
@@ -103,10 +109,12 @@
     cursor: pointer;
 }
 
-.disabledCard:hover {
-    border-color: var(--accent-gold);
-    transform: translateX(4px);
-    opacity: 1;
+@media (hover: hover) and (pointer: fine) {
+    .disabledCard:hover {
+        border-color: var(--accent-gold);
+        transform: translateX(4px);
+        opacity: 1;
+    }
 }
 
 .selectedCard {
@@ -200,9 +208,11 @@
     transition: all 0.2s ease;
 }
 
-.viewButton:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(181, 137, 46, 0.3);
+@media (hover: hover) and (pointer: fine) {
+    .viewButton:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(181, 137, 46, 0.3);
+    }
 }
 
 .actionsGroup {
@@ -224,9 +234,11 @@
     justify-content: center;
 }
 
-.deleteBtn:hover {
-    background: rgba(255, 99, 71, 0.1);
-    color: #ff6347;
+@media (hover: hover) and (pointer: fine) {
+    .deleteBtn:hover {
+        background: rgba(255, 99, 71, 0.1);
+        color: #ff6347;
+    }
 }
 
 .disabledIcon {
@@ -255,9 +267,11 @@
     transition: all 0.2s ease;
 }
 
-.createLink:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(181, 137, 46, 0.3);
+@media (hover: hover) and (pointer: fine) {
+    .createLink:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(181, 137, 46, 0.3);
+    }
 }
 
 .loadingContainer {
@@ -339,8 +353,10 @@
     transition: all 0.2s ease;
 }
 
-.cancelBulkBtn:hover {
-    background: rgba(255, 255, 255, 0.05);
+@media (hover: hover) and (pointer: fine) {
+    .cancelBulkBtn:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
 }
 
 .bulkDeleteBtn {
@@ -354,10 +370,12 @@
     transition: all 0.2s ease;
 }
 
-.bulkDeleteBtn:hover {
-    background: #e5533d;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(255, 99, 71, 0.3);
+@media (hover: hover) and (pointer: fine) {
+    .bulkDeleteBtn:hover {
+        background: #e5533d;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255, 99, 71, 0.3);
+    }
 }
 
 @media (max-width: 768px) {

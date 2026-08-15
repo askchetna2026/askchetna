@@ -118,9 +118,11 @@
     border-bottom: none;
 }
 
-.suggestionItem:hover {
-    background: rgba(181, 137, 46, 0.1);
-    color: var(--primary);
+@media (hover: hover) and (pointer: fine) {
+    .suggestionItem:hover {
+        background: rgba(181, 137, 46, 0.1);
+        color: var(--primary);
+    }
 }
 
 .submitBtn {
@@ -139,10 +141,12 @@
     transition: all 0.3s ease;
 }
 
-.submitBtn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(181, 137, 46, 0.4);
-    filter: brightness(1.1);
+@media (hover: hover) and (pointer: fine) {
+    .submitBtn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(181, 137, 46, 0.4);
+        filter: brightness(1.1);
+    }
 }
 
 .submitBtn:disabled {

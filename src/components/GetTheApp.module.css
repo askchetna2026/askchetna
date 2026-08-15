@@ -46,6 +46,8 @@
     transition: border-color 0.2s ease;
 }
 
-.store:hover {
-    border-color: var(--accent-gold);
+@media (hover: hover) and (pointer: fine) {
+    .store:hover {
+        border-color: var(--accent-gold);
+    }
 }

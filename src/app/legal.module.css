@@ -48,10 +48,26 @@
     font-weight: 600;
 }
 
+/* Prose caps at --measure; the container stays 900px so headings, the notice
+   box and the warning box keep their width.
+
+   .container is max-width: 900px, which at the 16px base is ~112 characters a
+   line — roughly half as long again as the 68ch this design system defines as
+   its measure, and past the point where the eye reliably finds the start of
+   the next line. These six long-form pages (about, privacy, terms, disclaimer,
+   refund, how-we-calculate) are the longest reads on the site, so they were
+   the worst place for it. */
+.container p,
+.container li {
+    max-width: var(--measure);
+}
+
 .container p {
     margin-bottom: 16px;
     color: var(--foreground);
-    text-align: justify;
+    /* Was `justify`. Justified text with no hyphenation opens rivers of white
+       space, and it was doing so across a 112-character line. */
+    text-align: left;
 }
 
 .container ul,
@@ -75,8 +91,10 @@
     transition: opacity 0.2s;
 }
 
-.container a:hover {
-    opacity: 0.8;
+@media (hover: hover) and (pointer: fine) {
+    .container a:hover {
+        opacity: 0.8;
+    }
 }
 
 .importantNotice {
@@ -134,8 +152,10 @@
     transition: opacity 0.2s;
 }
 
-.backLink a:hover {
-    opacity: 0.7;
+@media (hover: hover) and (pointer: fine) {
+    .backLink a:hover {
+        opacity: 0.7;
+    }
 }
 
 @media (max-width: 768px) {

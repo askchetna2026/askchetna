@@ -66,8 +66,10 @@
     border-bottom: none;
 }
 
-.blogItem:hover {
-    background: rgba(var(--accent-gold-rgb), 0.05);
+@media (hover: hover) and (pointer: fine) {
+    .blogItem:hover {
+        background: rgba(var(--accent-gold-rgb), 0.05);
+    }
 }
 
 .blogRow {
@@ -110,9 +112,11 @@
     transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
-.blogItem:hover .rowArrow {
-    transform: translateX(5px);
-    opacity: 1;
+@media (hover: hover) and (pointer: fine) {
+    .blogItem:hover .rowArrow {
+        transform: translateX(5px);
+        opacity: 1;
+    }
 }
 
 /* Detail View */
@@ -135,8 +139,10 @@
     transition: opacity 0.2s ease;
 }
 
-.backButton:hover {
-    opacity: 0.8;
+@media (hover: hover) and (pointer: fine) {
+    .backButton:hover {
+        opacity: 0.8;
+    }
 }
 
 .fullPost {
@@ -247,7 +253,9 @@
     transition: all 0.25s ease;
 }
 
-.whatsappShare:hover {
-    background: rgba(37, 211, 102, 0.2);
-    transform: translateY(-1px);
+@media (hover: hover) and (pointer: fine) {
+    .whatsappShare:hover {
+        background: rgba(37, 211, 102, 0.2);
+        transform: translateY(-1px);
+    }
 }

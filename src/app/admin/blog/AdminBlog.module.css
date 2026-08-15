@@ -22,8 +22,10 @@
     transition: color 0.2s ease;
 }
 
-.backLink:hover {
-    color: var(--accent-gold);
+@media (hover: hover) and (pointer: fine) {
+    .backLink:hover {
+        color: var(--accent-gold);
+    }
 }
 
 .title {
@@ -91,10 +93,12 @@
     transition: all 0.2s ease;
 }
 
-.submitBtn:hover:not(:disabled) {
-    transform: translateY(-2px);
-    filter: brightness(1.1);
-    box-shadow: 0 8px 16px rgba(var(--accent-gold-rgb), 0.2);
+@media (hover: hover) and (pointer: fine) {
+    .submitBtn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        filter: brightness(1.1);
+        box-shadow: 0 8px 16px rgba(var(--accent-gold-rgb), 0.2);
+    }
 }
 
 .submitBtn:disabled {

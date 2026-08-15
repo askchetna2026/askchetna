@@ -40,9 +40,11 @@
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.storyCard:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+@media (hover: hover) and (pointer: fine) {
+    .storyCard:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+    }
 }
 
 .levelBadge {

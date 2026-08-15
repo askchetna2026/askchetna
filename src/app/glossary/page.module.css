@@ -36,9 +36,11 @@
     transition: border-color 0.3s ease, transform 0.3s ease;
 }
 
-.card:hover {
-    border-color: rgba(181, 137, 46, 0.5);
-    transform: translateY(-3px);
+@media (hover: hover) and (pointer: fine) {
+    .card:hover {
+        border-color: rgba(181, 137, 46, 0.5);
+        transform: translateY(-3px);
+    }
 }
 
 .term {

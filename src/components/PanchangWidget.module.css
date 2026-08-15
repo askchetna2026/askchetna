@@ -185,10 +185,12 @@
     transition: all 0.3s ease;
 }
 
-.muhurtaItem:hover {
-    background: rgba(181, 137, 46, 0.08);
-    transform: translateY(-2px);
-    border-color: rgba(181, 137, 46, 0.3);
+@media (hover: hover) and (pointer: fine) {
+    .muhurtaItem:hover {
+        background: rgba(181, 137, 46, 0.08);
+        transform: translateY(-2px);
+        border-color: rgba(181, 137, 46, 0.3);
+    }
 }
 
 .muhurtaLabel {

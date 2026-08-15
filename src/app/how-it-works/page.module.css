@@ -91,9 +91,11 @@
     transition: all 0.3s ease;
 }
 
-.content:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+@media (hover: hover) and (pointer: fine) {
+    .content:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+    }
 }
 
 .content h3 {

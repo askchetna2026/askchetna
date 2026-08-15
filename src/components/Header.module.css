@@ -73,11 +73,13 @@
     opacity: 0.85;
 }
 
-.navLink:hover {
-    opacity: 1;
-    color: var(--accent-gold);
-    text-shadow: 0 0 20px rgba(181, 137, 46, 0.5);
-    text-shadow: 0 0 10px rgba(181, 137, 46, 0.4);
+@media (hover: hover) and (pointer: fine) {
+    .navLink:hover {
+        opacity: 1;
+        color: var(--accent-gold);
+        text-shadow: 0 0 20px rgba(181, 137, 46, 0.5);
+        text-shadow: 0 0 10px rgba(181, 137, 46, 0.4);
+    }
 }
 
 .activeLink {
@@ -122,13 +124,17 @@
     box-shadow: none;
 }
 
-.loginBtn:hover {
-    transform: translateY(-1px);
-    background: var(--btn-bg-hover);
+@media (hover: hover) and (pointer: fine) {
+    .loginBtn:hover {
+        transform: translateY(-1px);
+        background: var(--btn-bg-hover);
+    }
 }
 
-[data-theme='light'] .loginBtn:hover {
-    background: var(--btn-bg-hover);
+@media (hover: hover) and (pointer: fine) {
+    [data-theme='light'] .loginBtn:hover {
+        background: var(--btn-bg-hover);
+    }
 }
 
 .authGroup {
@@ -156,10 +162,12 @@
     border-color: var(--card-border);
 }
 
-.signOutBtn:hover {
-    border-color: var(--accent-rose);
-    color: var(--accent-rose);
-    background: rgba(var(--foreground-rgb), 0.02);
+@media (hover: hover) and (pointer: fine) {
+    .signOutBtn:hover {
+        border-color: var(--accent-rose);
+        color: var(--accent-rose);
+        background: rgba(var(--foreground-rgb), 0.02);
+    }
 }
 
 .menuToggle {
@@ -260,9 +268,11 @@
     transition: all 0.2s ease;
 }
 
-.mobileNavLink:hover {
-    background: rgba(var(--accent-gold-rgb), 0.05);
-    color: var(--accent-gold);
+@media (hover: hover) and (pointer: fine) {
+    .mobileNavLink:hover {
+        background: rgba(var(--accent-gold-rgb), 0.05);
+        color: var(--accent-gold);
+    }
 }
 
 .mobileActiveLink {
@@ -337,9 +347,11 @@
     white-space: nowrap;
 }
 
-.mobileSignInBtn:hover {
-    background: rgba(181, 137, 46, 0.1);
-    border-color: var(--accent-gold);
+@media (hover: hover) and (pointer: fine) {
+    .mobileSignInBtn:hover {
+        background: rgba(181, 137, 46, 0.1);
+        border-color: var(--accent-gold);
+    }
 }
 
 [data-theme='light'] .mobileSignInBtn {
@@ -371,10 +383,12 @@
     box-shadow: 0 0 10px rgba(181, 137, 46, 0.2);
 }
 
-.navCta:hover {
-    background: transparent;
-    color: var(--accent-gold) !important;
-    box-shadow: 0 0 15px rgba(181, 137, 46, 0.4);
+@media (hover: hover) and (pointer: fine) {
+    .navCta:hover {
+        background: transparent;
+        color: var(--accent-gold) !important;
+        box-shadow: 0 0 15px rgba(181, 137, 46, 0.4);
+    }
 }
 
 .navCtaActive {

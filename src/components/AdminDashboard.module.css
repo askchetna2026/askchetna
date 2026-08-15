@@ -43,9 +43,11 @@
     font-weight: 500;
 }
 
-.navItem:hover {
-    background-color: rgba(var(--foreground-rgb), 0.05);
-    color: var(--foreground);
+@media (hover: hover) and (pointer: fine) {
+    .navItem:hover {
+        background-color: rgba(var(--foreground-rgb), 0.05);
+        color: var(--foreground);
+    }
 }
 
 .navItem.active {
@@ -229,8 +231,10 @@
     border-bottom: none;
 }
 
-.table tr:hover {
-    background-color: rgba(var(--foreground-rgb), 0.02);
+@media (hover: hover) and (pointer: fine) {
+    .table tr:hover {
+        background-color: rgba(var(--foreground-rgb), 0.02);
+    }
 }
 
 /* Pricing List */
@@ -315,9 +319,11 @@
     transition: all 0.2s ease;
 }
 
-.saveBtn:hover,
-.sendBtn:hover:not(:disabled) {
-    background-color: var(--accent-gold-dim);
+@media (hover: hover) and (pointer: fine) {
+    .saveBtn:hover,
+    .sendBtn:hover:not(:disabled) {
+        background-color: var(--accent-gold-dim);
+    }
 }
 
 .sendBtn:disabled {
@@ -343,10 +349,12 @@
     border-color: rgba(var(--accent-gold-rgb), 0.2);
 }
 
-.editBtn:hover {
-    background: var(--btn-bg);
-    color: var(--btn-fg);
-    /* Improved contrast */
+@media (hover: hover) and (pointer: fine) {
+    .editBtn:hover {
+        background: var(--btn-bg);
+        color: var(--btn-fg);
+        /* Improved contrast */
+    }
 }
 
 .deleteBtn {
@@ -355,9 +363,11 @@
     border-color: rgba(244, 67, 54, 0.2);
 }
 
-.deleteBtn:hover {
-    background: #f44336;
-    color: #fff;
+@media (hover: hover) and (pointer: fine) {
+    .deleteBtn:hover {
+        background: #f44336;
+        color: #fff;
+    }
 }
 
 .actions {
@@ -415,9 +425,11 @@
     border-color: rgba(76, 175, 80, 0.2);
 }
 
-.approveBtn:hover {
-    background: #4caf50;
-    color: #fff;
+@media (hover: hover) and (pointer: fine) {
+    .approveBtn:hover {
+        background: #4caf50;
+        color: #fff;
+    }
 }
 
 .rejectBtn {
@@ -426,9 +438,11 @@
     border-color: rgba(244, 67, 54, 0.2);
 }
 
-.rejectBtn:hover {
-    background: #f44336;
-    color: #fff;
+@media (hover: hover) and (pointer: fine) {
+    .rejectBtn:hover {
+        background: #f44336;
+        color: #fff;
+    }
 }
 
 .newsletterSection {

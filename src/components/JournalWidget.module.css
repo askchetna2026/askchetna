@@ -119,14 +119,18 @@
     color: var(--accent-gold);
 }
 
-.saveBtn:hover,
-.analyzeBtn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+@media (hover: hover) and (pointer: fine) {
+    .saveBtn:hover,
+    .analyzeBtn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
 }
 
-.analyzeBtn:hover {
-    background: rgba(181, 137, 46, 0.05);
+@media (hover: hover) and (pointer: fine) {
+    .analyzeBtn:hover {
+        background: rgba(181, 137, 46, 0.05);
+    }
 }
 
 .saveBtn:disabled,
@@ -220,8 +224,10 @@
     font-family: var(--font-main);
 }
 
-.infoLink:hover {
-    color: var(--primary);
+@media (hover: hover) and (pointer: fine) {
+    .infoLink:hover {
+        color: var(--primary);
+    }
 }
 
 .modalOverlay {
@@ -265,8 +271,10 @@
     transition: color 0.2s ease;
 }
 
-.closeBtn:hover {
-    color: var(--primary);
+@media (hover: hover) and (pointer: fine) {
+    .closeBtn:hover {
+        color: var(--primary);
+    }
 }
 
 .modalContent h4 {

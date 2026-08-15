@@ -158,10 +158,12 @@ html.native-app .inputContainer {
     box-shadow: none;
 }
 
-.askBtn:not(:disabled):hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(181, 137, 46, 0.3);
-    filter: brightness(1.1);
+@media (hover: hover) and (pointer: fine) {
+    .askBtn:not(:disabled):hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(181, 137, 46, 0.3);
+        filter: brightness(1.1);
+    }
 }
 
 .loadingState {
@@ -425,10 +427,12 @@ html.native-app .inputContainer {
     transition: all 0.3s ease;
 }
 
-.resetBtn:hover {
-    background: rgba(74, 47, 168, 0.1);
-    border-color: rgba(74, 47, 168, 0.6);
-    box-shadow: 0 0 15px rgba(74, 47, 168, 0.2);
+@media (hover: hover) and (pointer: fine) {
+    .resetBtn:hover {
+        background: rgba(74, 47, 168, 0.1);
+        border-color: rgba(74, 47, 168, 0.6);
+        box-shadow: 0 0 15px rgba(74, 47, 168, 0.2);
+    }
 }
 
 .creditsInfo {
@@ -460,9 +464,11 @@ html.native-app .inputContainer {
     transition: all 0.3s ease;
 }
 
-.actionLink:hover {
-    background: var(--btn-bg);
-    color: var(--btn-fg);
+@media (hover: hover) and (pointer: fine) {
+    .actionLink:hover {
+        background: var(--btn-bg);
+        color: var(--btn-fg);
+    }
 }
 
 @media (max-width: 768px) {
@@ -525,8 +531,10 @@ html.native-app .inputContainer {
     transition: color 0.2s ease;
 }
 
-.backLink:hover {
-    color: var(--accent-gold);
+@media (hover: hover) and (pointer: fine) {
+    .backLink:hover {
+        color: var(--accent-gold);
+    }
 }
 
 .historyMeta {
@@ -606,11 +614,13 @@ html.native-app .inputContainer {
     transition: all 0.3s ease;
 }
 
-.chip:hover {
-    background: rgba(181, 137, 46, 0.1);
-    border-color: var(--accent-gold);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(181, 137, 46, 0.15);
+@media (hover: hover) and (pointer: fine) {
+    .chip:hover {
+        background: rgba(181, 137, 46, 0.1);
+        border-color: var(--accent-gold);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(181, 137, 46, 0.15);
+    }
 }
 
 /* Sample Response Collapsible */
@@ -638,8 +648,10 @@ html.native-app .inputContainer {
     transition: background 0.3s;
 }
 
-.sampleResponseHeader:hover {
-    background: rgba(255, 255, 255, 0.02);
+@media (hover: hover) and (pointer: fine) {
+    .sampleResponseHeader:hover {
+        background: rgba(255, 255, 255, 0.02);
+    }
 }
 
 .sampleResponseContent {
@@ -700,9 +712,11 @@ html.native-app .inputContainer {
     transition: all 0.3s ease;
 }
 
-.responseActionBtn:hover {
-    background: rgba(181, 137, 46, 0.16);
-    border-color: rgba(181, 137, 46, 0.6);
+@media (hover: hover) and (pointer: fine) {
+    .responseActionBtn:hover {
+        background: rgba(181, 137, 46, 0.16);
+        border-color: rgba(181, 137, 46, 0.6);
+    }
 }
 
 /* Inline disclaimer footnote */

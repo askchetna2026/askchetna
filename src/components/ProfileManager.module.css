@@ -14,8 +14,10 @@
     transition: all 0.2s ease;
 }
 
-.toggleBtn:hover {
-    background: rgba(42, 64, 92, 0.05);
+@media (hover: hover) and (pointer: fine) {
+    .toggleBtn:hover {
+        background: rgba(42, 64, 92, 0.05);
+    }
 }
 
 .dropdown {
@@ -61,8 +63,10 @@
     transition: background 0.2s ease;
 }
 
-.item:hover {
-    background: rgba(var(--foreground-rgb), 0.05);
+@media (hover: hover) and (pointer: fine) {
+    .item:hover {
+        background: rgba(var(--foreground-rgb), 0.05);
+    }
 }
 
 .name {
@@ -86,6 +90,8 @@
     padding: 4px;
 }
 
-.deleteBtn:hover {
-    opacity: 1;
+@media (hover: hover) and (pointer: fine) {
+    .deleteBtn:hover {
+        opacity: 1;
+    }
 }

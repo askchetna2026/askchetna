@@ -171,9 +171,11 @@
     transition: background-color 0.15s var(--ease-out), color 0.15s var(--ease-out);
 }
 
-.chip:hover {
-    border-color: var(--btn-bg);
-    color: var(--btn-bg);
+@media (hover: hover) and (pointer: fine) {
+    .chip:hover {
+        border-color: var(--btn-bg);
+        color: var(--btn-bg);
+    }
 }
 
 .chipOn {
@@ -183,9 +185,11 @@
     font-weight: 600;
 }
 
-.chipOn:hover {
-    background: var(--btn-bg-hover);
-    color: var(--btn-fg);
+@media (hover: hover) and (pointer: fine) {
+    .chipOn:hover {
+        background: var(--btn-bg-hover);
+        color: var(--btn-fg);
+    }
 }
 
 /* ── Hours rows ────────────────────────────────────────────────────────── */
@@ -235,9 +239,11 @@
     cursor: pointer;
 }
 
-.remove:hover {
-    color: var(--error);
-    border-color: var(--error);
+@media (hover: hover) and (pointer: fine) {
+    .remove:hover {
+        color: var(--error);
+        border-color: var(--error);
+    }
 }
 
 .emptyRow {
@@ -263,8 +269,10 @@
     cursor: pointer;
 }
 
-.addRow:hover {
-    background: var(--band-alt-bg);
+@media (hover: hover) and (pointer: fine) {
+    .addRow:hover {
+        background: var(--band-alt-bg);
+    }
 }
 
 /* ── Footer ────────────────────────────────────────────────────────────── */
@@ -294,9 +302,11 @@
     transition: background-color 0.18s var(--ease-out);
 }
 
-.btnFill:hover:not(:disabled) {
-    background: var(--btn-bg-hover);
-    border-color: var(--btn-bg-hover);
+@media (hover: hover) and (pointer: fine) {
+    .btnFill:hover:not(:disabled) {
+        background: var(--btn-bg-hover);
+        border-color: var(--btn-bg-hover);
+    }
 }
 
 .btnFill:disabled {

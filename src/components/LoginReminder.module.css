@@ -27,8 +27,10 @@
     transition: opacity 0.2s;
 }
 
-.closeBtn:hover {
-    opacity: 1;
+@media (hover: hover) and (pointer: fine) {
+    .closeBtn:hover {
+        opacity: 1;
+    }
 }
 
 .content {
@@ -109,9 +111,11 @@
     transition: transform 0.2s;
 }
 
-.loginBtn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(181, 137, 46, 0.3);
+@media (hover: hover) and (pointer: fine) {
+    .loginBtn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(181, 137, 46, 0.3);
+    }
 }
 
 @media (max-width: 480px) {

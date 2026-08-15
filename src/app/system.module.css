@@ -58,8 +58,10 @@
     transition: all 0.25s ease;
 }
 
-.secondaryLink:hover {
-    background: rgba(181, 137, 46, 0.1);
+@media (hover: hover) and (pointer: fine) {
+    .secondaryLink:hover {
+        background: rgba(181, 137, 46, 0.1);
+    }
 }
 
 .orb {

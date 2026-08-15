@@ -157,9 +157,11 @@
     border-color: var(--btn-bg);
 }
 
-.btnFill:hover:not(:disabled) {
-    background: var(--btn-bg-hover);
-    border-color: var(--btn-bg-hover);
+@media (hover: hover) and (pointer: fine) {
+    .btnFill:hover:not(:disabled) {
+        background: var(--btn-bg-hover);
+        border-color: var(--btn-bg-hover);
+    }
 }
 
 .btnNight {
@@ -168,9 +170,11 @@
     border-color: var(--accent-gold-decor);
 }
 
-.btnNight:hover:not(:disabled) {
-    background: var(--accent-gold-decor);
-    color: var(--night-ink);
+@media (hover: hover) and (pointer: fine) {
+    .btnNight:hover:not(:disabled) {
+        background: var(--accent-gold-decor);
+        color: var(--night-ink);
+    }
 }
 
 .btnQuiet {
@@ -179,9 +183,11 @@
     border-color: var(--btn-bg);
 }
 
-.btnQuiet:hover:not(:disabled) {
-    background: var(--btn-bg);
-    color: var(--btn-fg);
+@media (hover: hover) and (pointer: fine) {
+    .btnQuiet:hover:not(:disabled) {
+        background: var(--btn-bg);
+        color: var(--btn-fg);
+    }
 }
 
 .btnFill:active,
@@ -352,8 +358,10 @@
     border-bottom: none;
 }
 
-.q:hover {
-    background: var(--band-alt-bg);
+@media (hover: hover) and (pointer: fine) {
+    .q:hover {
+        background: var(--band-alt-bg);
+    }
 }
 
 .qBody {

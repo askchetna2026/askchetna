@@ -56,9 +56,11 @@
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.inviteBtn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(181, 137, 46, 0.4);
+@media (hover: hover) and (pointer: fine) {
+    .inviteBtn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(181, 137, 46, 0.4);
+    }
 }
 
 /* What this relationship teaches you */
@@ -188,9 +190,11 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.analyzeBtn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+@media (hover: hover) and (pointer: fine) {
+    .analyzeBtn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
 }
 
 .analyzeBtn:disabled {

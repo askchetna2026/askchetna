@@ -14,8 +14,10 @@
     margin-bottom: 24px;
 }
 
-.back:hover {
-    color: var(--accent-gold);
+@media (hover: hover) and (pointer: fine) {
+    .back:hover {
+        color: var(--accent-gold);
+    }
 }
 
 .hero {
@@ -176,6 +178,8 @@
     text-align: right;
 }
 
-.pagerLink:hover {
-    color: var(--accent-gold);
+@media (hover: hover) and (pointer: fine) {
+    .pagerLink:hover {
+        color: var(--accent-gold);
+    }
 }

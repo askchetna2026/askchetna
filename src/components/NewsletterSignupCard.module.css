@@ -148,10 +148,12 @@
     white-space: nowrap;
 }
 
-.submitButton:hover:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: 0 10px 24px rgba(181, 137, 46, 0.24);
-    filter: brightness(1.04);
+@media (hover: hover) and (pointer: fine) {
+    .submitButton:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 10px 24px rgba(181, 137, 46, 0.24);
+        filter: brightness(1.04);
+    }
 }
 
 .submitButton:disabled {
@@ -197,8 +199,10 @@
     text-decoration: none;
 }
 
-.secondaryLink:hover {
-    text-decoration: underline;
+@media (hover: hover) and (pointer: fine) {
+    .secondaryLink:hover {
+        text-decoration: underline;
+    }
 }
 
 @media (max-width: 900px) {

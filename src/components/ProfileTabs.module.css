@@ -45,10 +45,12 @@
     /* Ensure text is visible */
 }
 
-.tab:hover {
-    background: rgba(181, 137, 46, 0.1);
-    border-color: var(--accent-gold);
-    transform: translateY(-2px);
+@media (hover: hover) and (pointer: fine) {
+    .tab:hover {
+        background: rgba(181, 137, 46, 0.1);
+        border-color: var(--accent-gold);
+        transform: translateY(-2px);
+    }
 }
 
 .tab.active {
@@ -89,10 +91,12 @@
     min-width: 60px;
 }
 
-.addTab:hover {
-    background: rgba(181, 137, 46, 0.1);
-    border-color: var(--accent-gold);
-    transform: scale(1.05);
+@media (hover: hover) and (pointer: fine) {
+    .addTab:hover {
+        background: rgba(181, 137, 46, 0.1);
+        border-color: var(--accent-gold);
+        transform: scale(1.05);
+    }
 }
 
 .upgradeTab {
@@ -112,10 +116,12 @@
     font-size: 0.85rem;
 }
 
-.upgradeTab:hover {
-    background: linear-gradient(135deg, rgba(181, 137, 46, 0.24), rgba(122, 44, 18, 0.18));
-    border-color: var(--accent-gold);
-    transform: translateY(-2px);
+@media (hover: hover) and (pointer: fine) {
+    .upgradeTab:hover {
+        background: linear-gradient(135deg, rgba(181, 137, 46, 0.24), rgba(122, 44, 18, 0.18));
+        border-color: var(--accent-gold);
+        transform: translateY(-2px);
+    }
 }
 
 .tabsInfo {

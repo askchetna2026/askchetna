@@ -96,19 +96,25 @@
     background: rgba(255, 255, 255, 0.03);
 }
 
-.primaryButton:hover,
-.secondaryButton:hover,
-.linkCard:hover {
-    transform: translateY(-2px);
+@media (hover: hover) and (pointer: fine) {
+    .primaryButton:hover,
+    .secondaryButton:hover,
+    .linkCard:hover {
+        transform: translateY(-2px);
+    }
 }
 
-.primaryButton:hover {
-    box-shadow: 0 12px 28px rgba(181, 137, 46, 0.24);
-    filter: brightness(1.04);
+@media (hover: hover) and (pointer: fine) {
+    .primaryButton:hover {
+        box-shadow: 0 12px 28px rgba(181, 137, 46, 0.24);
+        filter: brightness(1.04);
+    }
 }
 
-.secondaryButton:hover {
-    box-shadow: 0 12px 28px rgba(255, 255, 255, 0.06);
+@media (hover: hover) and (pointer: fine) {
+    .secondaryButton:hover {
+        box-shadow: 0 12px 28px rgba(255, 255, 255, 0.06);
+    }
 }
 
 .proofCard {

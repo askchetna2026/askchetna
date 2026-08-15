@@ -60,9 +60,11 @@
     transition: all 0.2s ease;
 }
 
-.closeButton:hover {
-    background: rgba(var(--foreground-rgb), 0.1);
-    color: var(--foreground);
+@media (hover: hover) and (pointer: fine) {
+    .closeButton:hover {
+        background: rgba(var(--foreground-rgb), 0.1);
+        color: var(--foreground);
+    }
 }
 
 .header {
@@ -119,9 +121,11 @@
     transition: all 0.2s ease;
 }
 
-.cancelButton:hover {
-    border-color: var(--text-muted);
-    background: rgba(var(--foreground-rgb), 0.05);
+@media (hover: hover) and (pointer: fine) {
+    .cancelButton:hover {
+        border-color: var(--text-muted);
+        background: rgba(var(--foreground-rgb), 0.05);
+    }
 }
 
 .confirmButton {
@@ -151,9 +155,11 @@
     color: white;
 }
 
-.confirmButton:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+@media (hover: hover) and (pointer: fine) {
+    .confirmButton:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
 }
 
 @media (max-width: 768px) {

@@ -19,9 +19,11 @@
     white-space: nowrap;
 }
 
-.navItem:hover {
-    background-color: rgba(var(--foreground-rgb), 0.05);
-    color: var(--foreground);
+@media (hover: hover) and (pointer: fine) {
+    .navItem:hover {
+        background-color: rgba(var(--foreground-rgb), 0.05);
+        color: var(--foreground);
+    }
 }
 
 /* Was a gold fill with #1a1a1a text. --accent-gold has to stay dark enough to

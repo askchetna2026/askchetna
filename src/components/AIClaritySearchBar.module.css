@@ -64,9 +64,11 @@
     transition: all 0.3s ease;
 }
 
-.searchBtn:hover:not(:disabled) {
-    background: var(--accent-gold-dim);
-    transform: scale(1.02);
+@media (hover: hover) and (pointer: fine) {
+    .searchBtn:hover:not(:disabled) {
+        background: var(--accent-gold-dim);
+        transform: scale(1.02);
+    }
 }
 
 .searchBtn:disabled {

@@ -13,8 +13,10 @@
     transition: all 0.25s ease;
 }
 
-.shareBtn:hover {
-    background: rgba(181, 137, 46, 0.2);
+@media (hover: hover) and (pointer: fine) {
+    .shareBtn:hover {
+        background: rgba(181, 137, 46, 0.2);
+    }
 }
 
 .shareBtn:disabled {

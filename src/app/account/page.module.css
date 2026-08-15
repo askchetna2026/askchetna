@@ -86,8 +86,10 @@
     color: var(--accent-gold);
 }
 
-.secondaryBtn:hover:not(:disabled) {
-    background: rgba(181, 137, 46, 0.1);
+@media (hover: hover) and (pointer: fine) {
+    .secondaryBtn:hover:not(:disabled) {
+        background: rgba(181, 137, 46, 0.1);
+    }
 }
 
 .dangerBtn {
@@ -96,8 +98,10 @@
     color: var(--error, #ffb4ab);
 }
 
-.dangerBtn:hover:not(:disabled) {
-    background: rgba(255, 180, 171, 0.16);
+@media (hover: hover) and (pointer: fine) {
+    .dangerBtn:hover:not(:disabled) {
+        background: rgba(255, 180, 171, 0.16);
+    }
 }
 
 .secondaryBtn:disabled,

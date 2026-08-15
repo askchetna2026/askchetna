@@ -58,9 +58,11 @@
     transition: all 0.2s ease;
 }
 
-.purchaseNoticeBtn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 8px 24px rgba(181, 137, 46, 0.25);
+@media (hover: hover) and (pointer: fine) {
+    .purchaseNoticeBtn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 24px rgba(181, 137, 46, 0.25);
+    }
 }
 
 .formWrapper {
@@ -73,8 +75,10 @@
     transition: transform 0.3s ease;
 }
 
-.formWrapper:hover {
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+@media (hover: hover) and (pointer: fine) {
+    .formWrapper:hover {
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+    }
 }
 
 .chartSection {
@@ -137,9 +141,11 @@
     white-space: nowrap;
 }
 
-.tab:hover {
-    border-color: var(--accent-gold);
-    color: var(--primary);
+@media (hover: hover) and (pointer: fine) {
+    .tab:hover {
+        border-color: var(--accent-gold);
+        color: var(--primary);
+    }
 }
 
 .activeTab {
@@ -263,11 +269,13 @@
     box-shadow: 0 4px 15px rgba(181, 137, 46, 0.2);
 }
 
-.addProfileBtn:hover {
-    transform: translateY(-2px);
-    background: rgba(var(--accent-gold-rgb), 0.15);
-    border-color: rgba(var(--accent-gold-rgb), 0.5);
-    box-shadow: 0 8px 25px rgba(var(--accent-gold-rgb), 0.1);
+@media (hover: hover) and (pointer: fine) {
+    .addProfileBtn:hover {
+        transform: translateY(-2px);
+        background: rgba(var(--accent-gold-rgb), 0.15);
+        border-color: rgba(var(--accent-gold-rgb), 0.5);
+        box-shadow: 0 8px 25px rgba(var(--accent-gold-rgb), 0.1);
+    }
 }
 
 .addProfileBtn:active {
@@ -288,10 +296,12 @@
     transition: all 0.2s ease;
 }
 
-.backLinkBtn:hover {
-    border-color: var(--accent-gold);
-    color: var(--accent-gold);
-    background: rgba(181, 137, 46, 0.05);
+@media (hover: hover) and (pointer: fine) {
+    .backLinkBtn:hover {
+        border-color: var(--accent-gold);
+        color: var(--accent-gold);
+        background: rgba(181, 137, 46, 0.05);
+    }
 }
 
 .contentBlock {
@@ -633,9 +643,11 @@
     transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-.trinityCard:hover {
-    transform: translateY(-12px) scale(1.02);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 35px rgba(74, 47, 168, 0.3);
+@media (hover: hover) and (pointer: fine) {
+    .trinityCard:hover {
+        transform: translateY(-12px) scale(1.02);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 35px rgba(74, 47, 168, 0.3);
+    }
 }
 
 .vargaCard {
@@ -661,10 +673,12 @@
     opacity: 0.5;
 }
 
-.vargaCard:hover {
-    background: var(--card-bg);
-    transform: translateY(-8px);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(74, 47, 168, 0.25);
+@media (hover: hover) and (pointer: fine) {
+    .vargaCard:hover {
+        background: var(--card-bg);
+        transform: translateY(-8px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(74, 47, 168, 0.25);
+    }
 }
 
 .analysisBtn {
@@ -684,10 +698,12 @@
     transition: all 0.3s ease;
 }
 
-.analysisBtn:hover {
-    border-color: var(--accent-gold);
-    color: var(--primary);
-    background: rgba(181, 137, 46, 0.05);
+@media (hover: hover) and (pointer: fine) {
+    .analysisBtn:hover {
+        border-color: var(--accent-gold);
+        color: var(--primary);
+        background: rgba(181, 137, 46, 0.05);
+    }
 }
 
 .analysisBtn.active {
@@ -940,9 +956,11 @@
     box-shadow: 0 4px 15px rgba(181, 137, 46, 0.2);
 }
 
-.unlockBtn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(181, 137, 46, 0.3);
+@media (hover: hover) and (pointer: fine) {
+    .unlockBtn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 20px rgba(181, 137, 46, 0.3);
+    }
 }
 
 @keyframes pulse {
@@ -1005,9 +1023,11 @@
     white-space: nowrap;
 }
 
-.categoryBtn:hover {
-    color: var(--primary);
-    background: rgba(255, 255, 255, 0.05);
+@media (hover: hover) and (pointer: fine) {
+    .categoryBtn:hover {
+        color: var(--primary);
+        background: rgba(255, 255, 255, 0.05);
+    }
 }
 
 .categoryBtn.active {
@@ -1037,9 +1057,11 @@
     transition: all 0.3s ease;
 }
 
-.initializeBtn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(181, 137, 46, 0.3);
+@media (hover: hover) and (pointer: fine) {
+    .initializeBtn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(181, 137, 46, 0.3);
+    }
 }
 
 /* Card Container for Accordion */
@@ -1104,10 +1126,12 @@
     bottom: -2px;
 }
 
-.tabButton:hover {
-    color: var(--accent-gold);
-    background: rgba(181, 137, 46, 0.08);
-    border-radius: 8px 8px 0 0;
+@media (hover: hover) and (pointer: fine) {
+    .tabButton:hover {
+        color: var(--accent-gold);
+        background: rgba(181, 137, 46, 0.08);
+        border-radius: 8px 8px 0 0;
+    }
 }
 
 .activeTabButton {
@@ -1247,8 +1271,10 @@
     transition: all 0.2s;
 }
 
-.exportBtn:hover {
-    background: rgba(181, 137, 46, 0.2);
+@media (hover: hover) and (pointer: fine) {
+    .exportBtn:hover {
+        background: rgba(181, 137, 46, 0.2);
+    }
 }
 
 .drawerClose {
@@ -1261,8 +1287,10 @@
     transition: color 0.2s;
 }
 
-.drawerClose:hover {
-    color: var(--accent-gold);
+@media (hover: hover) and (pointer: fine) {
+    .drawerClose:hover {
+        color: var(--accent-gold);
+    }
 }
 
 .drawerContent {
@@ -1564,9 +1592,11 @@
     transition: all 0.2s;
 }
 
-.btnCancel:hover {
-    color: var(--foreground);
-    border-color: var(--foreground);
+@media (hover: hover) and (pointer: fine) {
+    .btnCancel:hover {
+        color: var(--foreground);
+        border-color: var(--foreground);
+    }
 }
 
 .btnConfirm {
@@ -1580,9 +1610,11 @@
     transition: all 0.2s;
 }
 
-.btnConfirm:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 15px rgba(181, 137, 46, 0.4);
+@media (hover: hover) and (pointer: fine) {
+    .btnConfirm:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 15px rgba(181, 137, 46, 0.4);
+    }
 }
 
 .btnPremium {
@@ -1596,8 +1628,10 @@
     transition: all 0.2s;
 }
 
-.btnPremium:hover {
-    box-shadow: 0 0 15px rgba(255, 71, 71, 0.4);
+@media (hover: hover) and (pointer: fine) {
+    .btnPremium:hover {
+        box-shadow: 0 0 15px rgba(255, 71, 71, 0.4);
+    }
 }
 
 .guidanceContainer {
@@ -1660,9 +1694,11 @@
     transition: all 0.3s ease;
 }
 
-.insightCard:hover {
-    border-color: rgba(181, 137, 46, 0.4);
-    background: rgba(255, 255, 255, 0.04);
+@media (hover: hover) and (pointer: fine) {
+    .insightCard:hover {
+        border-color: rgba(181, 137, 46, 0.4);
+        background: rgba(255, 255, 255, 0.04);
+    }
 }
 
 .insightHeader {

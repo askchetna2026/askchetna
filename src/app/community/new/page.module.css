@@ -19,8 +19,10 @@
     transition: color 0.2s;
 }
 
-.backLink:hover {
-    color: var(--accent-gold);
+@media (hover: hover) and (pointer: fine) {
+    .backLink:hover {
+        color: var(--accent-gold);
+    }
 }
 
 .title {
@@ -90,9 +92,11 @@
     align-self: flex-start;
 }
 
-.submitBtn:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px -10px rgba(181, 137, 46, 0.5);
+@media (hover: hover) and (pointer: fine) {
+    .submitBtn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px -10px rgba(181, 137, 46, 0.5);
+    }
 }
 
 .submitBtn:disabled {

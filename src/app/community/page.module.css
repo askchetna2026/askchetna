@@ -70,9 +70,11 @@
     gap: 8px;
 }
 
-.createBtn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px -10px rgba(181, 137, 46, 0.5);
+@media (hover: hover) and (pointer: fine) {
+    .createBtn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px -10px rgba(181, 137, 46, 0.5);
+    }
 }
 
 .topicList {
@@ -93,10 +95,12 @@
     gap: 12px;
 }
 
-.topicCard:hover {
-    background: rgba(255, 255, 255, 0.04);
-    border-color: var(--accent-gold);
-    transform: translateX(10px);
+@media (hover: hover) and (pointer: fine) {
+    .topicCard:hover {
+        background: rgba(255, 255, 255, 0.04);
+        border-color: var(--accent-gold);
+        transform: translateX(10px);
+    }
 }
 
 .topicHeader {
@@ -213,9 +217,11 @@
         max-width: none;
     }
 
+    @media (hover: hover) and (pointer: fine) {
     .topicCard:hover {
-        transform: none;
-    }
+            transform: none;
+        }
+}
 
     .topicTitle {
         font-size: 1.3rem;

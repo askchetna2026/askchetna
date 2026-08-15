@@ -331,9 +331,11 @@
     transition: all 0.2s ease;
 }
 
-.profileTab:hover {
-    background: rgba(var(--foreground-rgb), 0.1);
-    color: var(--primary);
+@media (hover: hover) and (pointer: fine) {
+    .profileTab:hover {
+        background: rgba(var(--foreground-rgb), 0.1);
+        color: var(--primary);
+    }
 }
 
 .activeTab {
@@ -342,10 +344,12 @@
     color: var(--btn-fg);
 }
 
-.activeTab:hover {
-    background: var(--btn-bg);
-    color: var(--btn-fg);
-    opacity: 0.9;
+@media (hover: hover) and (pointer: fine) {
+    .activeTab:hover {
+        background: var(--btn-bg);
+        color: var(--btn-fg);
+        opacity: 0.9;
+    }
 }
 
 .selectedInfo {
@@ -378,9 +382,11 @@
     margin-right: auto;
 }
 
-.aiRevealBtn:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 15px 30px rgba(181, 137, 46, 0.3);
+@media (hover: hover) and (pointer: fine) {
+    .aiRevealBtn:hover {
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: 0 15px 30px rgba(181, 137, 46, 0.3);
+    }
 }
 
 .aiRevealBtn:disabled {

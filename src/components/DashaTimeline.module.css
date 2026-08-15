@@ -45,9 +45,11 @@
     transition: all 0.25s ease;
 }
 
-.segment:hover {
-    border-color: rgba(181, 137, 46, 0.5);
-    color: var(--foreground);
+@media (hover: hover) and (pointer: fine) {
+    .segment:hover {
+        border-color: rgba(181, 137, 46, 0.5);
+        color: var(--foreground);
+    }
 }
 
 .segLord {

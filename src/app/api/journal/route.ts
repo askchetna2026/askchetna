@@ -12,8 +12,21 @@ export async function GET(req: NextRequest) {
         const { searchParams } = new URL(req.url);
         const date = searchParams.get('date');
 
+        // No date means "the most recent entries", which is what the home
+        // widget shows instead of an empty composer. Kept on the same route so
+        // the single-day fetch below is untouched.
         if (!date) {
-            return NextResponse.json({ error: 'Date is required' }, { status: 400 });
+            const limit = Math.min(Number(searchParams.get('limit')) || 3, 20);
+            const entries = await prisma.journalEntry.findMany({
+                where: { userId: session.user.id },
+                orderBy: { date: 'desc' },
+                take: limit,
+                // Explicit rather than a default SELECT *: `transit` is a JSON
+                // blob this list never renders, and pulling it per row would
+                // make a preview list cost more than the page it sits on.
+                select: { id: true, date: true, content: true },
+            });
+            return NextResponse.json({ entries });
         }
 
         const entry = await prisma.journalEntry.findUnique({

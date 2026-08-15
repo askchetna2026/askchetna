@@ -2,9 +2,12 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
+import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { useLocalStorage } from '@/lib/useLocalStorage';
 import styles from './JournalWidget.module.css';
+
+type JournalPreview = { id: string; date: string; content: string };
 
 export default function JournalWidget() {
     const { data: session } = useSession();
@@ -95,6 +98,35 @@ export default function JournalWidget() {
     };
 
     const [showInfoModal, setShowInfoModal] = useState(false);
+    // The composer opens as a single line and grows once the reader engages.
+    // A full-height empty textarea was dominating the home page's best column
+    // and reading as a broken panel rather than an invitation to write.
+    const [composing, setComposing] = useState(false);
+    const [recent, setRecent] = useState<JournalPreview[]>([]);
+
+    useEffect(() => {
+        if (!session) return;
+        let cancelled = false;
+        (async () => {
+            try {
+                const res = await fetch('/api/journal?limit=3');
+                if (!res.ok) return;
+                const data = await res.json();
+                if (!cancelled) setRecent(data.entries || []);
+            } catch (err) {
+                console.error('Failed to fetch recent entries:', err);
+            }
+        })();
+        return () => {
+            cancelled = true;
+        };
+        // Re-runs after a save so a new entry appears in the list below.
+    }, [session, isSaved]);
+
+    // Today's own entry is the one being edited above, so showing it again
+    // underneath would read as a duplicate.
+    const past = recent.filter((e) => e.date !== today && e.content.trim());
+    const expanded = composing || currentEntry.length > 0;
 
     return (
         <div className={styles.widget}>
@@ -112,38 +144,70 @@ export default function JournalWidget() {
             </div>
 
             <textarea
-                className={styles.textarea}
+                className={`${styles.textarea} ${expanded ? styles.textareaOpen : ''}`}
                 value={currentEntry}
+                onFocus={() => setComposing(true)}
                 onChange={(e) => {
                     setCurrentEntry(e.target.value);
                     setIsSaved(false);
                 }}
-                placeholder="How is the energy manifesting for you today? Record your observations..."
+                placeholder="How is today landing for you?"
             />
 
-            <div className={styles.footer}>
-                <span className={styles.status}>
-                    {isSaved ? 'Your reflection is saved' : 'You have unsaved thoughts'}
-                </span>
-                <div className={styles.btns}>
-                    {session && (
+            {/* The controls only earn their space once there is something to
+                save or analyse; before that they are two disabled buttons. */}
+            {expanded && (
+                <div className={styles.footer}>
+                    <span className={styles.status}>
+                        {isSaved ? 'Your reflection is saved' : 'You have unsaved thoughts'}
+                    </span>
+                    <div className={styles.btns}>
+                        {session && (
+                            <button
+                                onClick={handleAnalyze}
+                                className={styles.analyzeBtn}
+                                disabled={analyzing || !currentEntry || currentEntry.length < 10}
+                            >
+                                {analyzing ? 'Analyzing...' : 'Analyze Patterns'}
+                            </button>
+                        )}
                         <button
-                            onClick={handleAnalyze}
-                            className={styles.analyzeBtn}
-                            disabled={analyzing || !currentEntry || currentEntry.length < 10}
+                            onClick={handleSave}
+                            className={styles.saveBtn}
+                            disabled={isSaved || loading}
                         >
-                            {analyzing ? 'Analyzing...' : 'Analyze Patterns'}
+                            {loading ? 'Saving...' : 'Save Reflection'}
                         </button>
-                    )}
-                    <button
-                        onClick={handleSave}
-                        className={styles.saveBtn}
-                        disabled={isSaved || loading}
-                    >
-                        {loading ? 'Saving...' : 'Save Reflection'}
-                    </button>
+                    </div>
                 </div>
-            </div>
+            )}
+
+            {/* Earlier reflections, so the card carries a record of the reader's
+                own patterns rather than an empty box. This is the "notice
+                patterns over time" idea the product is built on, made visible. */}
+            {past.length > 0 && (
+                <div className={styles.recent}>
+                    <span className={styles.recentLabel}>Earlier reflections</span>
+                    {past.map((entry) => (
+                        <Link
+                            key={entry.id}
+                            href="/journal"
+                            className={styles.recentItem}
+                        >
+                            <span className={styles.recentDate}>
+                                {new Date(`${entry.date}T00:00:00`).toLocaleDateString('en-US', {
+                                    month: 'short',
+                                    day: 'numeric',
+                                })}
+                            </span>
+                            <span className={styles.recentText}>{entry.content}</span>
+                        </Link>
+                    ))}
+                    <Link href="/journal" className={styles.recentAll}>
+                        Open journal →
+                    </Link>
+                </div>
+            )}
 
             {analysis && (
                 <div className={styles.analysisBox}>

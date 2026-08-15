@@ -7,11 +7,15 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
-    transition: all 0.3s ease;
+    transition: box-shadow 0.3s ease;
 }
 
-.widget:hover {
-    box-shadow: 0 12px 40px rgba(var(--foreground-rgb), 0.08);
+/* Gated: on touch the hover shadow fires on tap and stays applied afterwards,
+   leaving the card looking selected on a page the reader has already left. */
+@media (hover: hover) and (pointer: fine) {
+    .widget:hover {
+        box-shadow: 0 12px 40px rgba(var(--foreground-rgb), 0.08);
+    }
 }
 
 .header {
@@ -44,10 +48,13 @@
     max-width: 600px;
 }
 
+/* Opens as a single line. A 100px+ empty box was the largest element in the
+   home page's main column and read as a broken panel rather than a prompt;
+   it grows to a real writing surface the moment the reader focuses it. */
 .textarea {
     width: 100%;
-    min-height: 100px;
-    padding: 16px;
+    height: 52px;
+    padding: 14px 16px;
     background: rgba(var(--foreground-rgb), 0.03);
     border: 1px solid var(--card-border);
     border-radius: var(--radius-sm);
@@ -56,7 +63,14 @@
     color: var(--foreground);
     resize: none;
     outline: none;
-    transition: all 0.2s ease;
+    /* Was `transition: all`, which animates border, shadow and anything added
+       later — including layout properties by accident. */
+    transition: height 0.25s ease, background 0.2s ease, border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.textareaOpen {
+    height: 160px;
 }
 
 .textarea:focus {
@@ -294,5 +308,77 @@
     to {
         transform: translateY(0);
         opacity: 1;
+    }
+}
+/* ── Earlier reflections ─────────────────────────────────────────────────────
+   Replaces the dead space that an over-tall empty composer used to occupy on
+   the home page. Showing the reader their own past entries is the product's
+   central claim — notice your patterns — made concrete, and it gives the
+   column real content instead of height. */
+.recent {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-top: 16px;
+    border-top: 1px solid var(--card-border);
+}
+
+.recentLabel {
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+.recentItem {
+    display: flex;
+    gap: 12px;
+    align-items: baseline;
+    padding: 8px 10px;
+    margin: 0 -10px;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.2s ease;
+}
+
+.recentDate {
+    flex-shrink: 0;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent-gold);
+    width: 52px;
+}
+
+/* One line each: this is a way back into an entry, not the entry itself. */
+.recentText {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+}
+
+.recentAll {
+    align-self: flex-start;
+    margin-top: 8px;
+    font-size: 0.78rem;
+    color: var(--accent-gold);
+    text-decoration: none;
+}
+
+/* Gated: an ungated :hover fires on tap on a touch device and stays applied
+   after navigation, leaving a row looking selected on a page already left. */
+@media (hover: hover) and (pointer: fine) {
+    .recentItem:hover {
+        background: rgba(var(--foreground-rgb), 0.04);
+    }
+
+    .recentAll:hover {
+        text-decoration: underline;
     }
 }

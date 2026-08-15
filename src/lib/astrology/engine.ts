@@ -123,7 +123,12 @@ export class VedicAnalysisEngine {
             const preciseDegree = (pos.longitude % 30).toFixed(2);
 
             // 10. Synthesis
-            const synthesis = this.synthesize(planetName, house, signName, dignityLabel, loadClassification);
+            const synthesis = this.synthesize(
+                planetName, house, signName, dignityLabel, loadClassification,
+                // Everything below was already computed here and simply not
+                // passed in, which is why three synthesis fields were constants.
+                influences, pressures, nakshatra, nakshatraLord
+            );
 
             results.push({
                 planet: planetName,
@@ -212,16 +217,66 @@ export class VedicAnalysisEngine {
         return "Highly Pressured";
     }
 
-    private static synthesize(planet: string, house: number, sign: string, dignity: string, load: string): any {
-        // This is a template-based synthesis that AI can expand upon
+    /**
+     * The reader-facing half of a planet's analysis.
+     *
+     * Three of these fields used to be constants: `repeats_when` and
+     * `balances_with` returned the same string for every planet in every chart
+     * in the database, and `challenge` had two possible values. Sun and Ketu in
+     * one test chart came back identical across all three. Since this is the
+     * part a person actually reads, "personalised analysis" was ending in the
+     * same generic sentence for everyone.
+     *
+     * They are now built from what the engine had already worked out a few
+     * lines earlier and simply was not handing over — which planets aspect this
+     * one, which pressure it, and the nakshatra it repeats through.
+     */
+    private static synthesize(
+        planet: string,
+        house: number,
+        sign: string,
+        dignity: string,
+        load: string,
+        influences: string[] = [],
+        pressures: string[] = [],
+        nakshatra: string = '',
+        nakshatraLord: string = ''
+    ): any {
+        const list = (names: string[]) =>
+            names.length === 1
+                ? names[0]
+                : `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`;
+
+        /* The difficulty a placement actually has, in the order that matters:
+           a pressured planet's challenge is the pressure, not a generic one. */
+        const challenge = pressures.length
+            ? `Holding steady when ${list(pressures)} press on it — ${load === 'Highly Pressured'
+                ? 'the combined weight is what tips into over-effort'
+                : 'usually as urgency rather than obstruction'}`
+            : load === 'Highly Pressured'
+                ? 'Carrying more than this placement is built to hold at once'
+                : `Giving ${HOUSE_DOMAINS[house] || 'this area'} enough attention for it to develop`;
+
+        /* Nakshatra is the classical seat of compulsion, so naming it and its
+           lord says something true about WHEN the pattern recurs rather than
+           asserting that habit exists. */
+        const repeats_when = nakshatra
+            ? `${nakshatra} is triggered — its lord ${nakshatraLord} tends to replay the pattern before it is noticed`
+            : 'The pattern runs before it is noticed';
+
+        /* What actually steadies it: the planets already supporting it. */
+        const balances_with = influences.length
+            ? `The support of ${list(influences)}, which this placement can lean on deliberately`
+            : `Deliberate pacing, since nothing else in the chart is steadying ${planet} directly`;
+
         return {
             theme: PLANET_THEMES[planet]?.split(',')[0] || 'Life energy',
             acts_in: HOUSE_DOMAINS[house] || 'Specific life areas',
             feels_like: SIGN_TONES[sign] || 'Unique vibration',
             strength: `${dignity} and ${load}`,
-            challenge: load === 'Highly Pressured' ? "Potential for burnout or over-effort" : "Integration into daily life",
-            repeats_when: "Awareness is dimmed by habit",
-            balances_with: "Conscious observation and pacing"
+            challenge,
+            repeats_when,
+            balances_with
         };
     }
 

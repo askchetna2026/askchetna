@@ -1,11 +1,18 @@
 .pageContainer {
     padding: 80px 24px;
+    /* Room for the fixed composer, so the end of an answer is readable rather
+       than sitting underneath the box you are about to type in. */
+    padding-bottom: calc(180px + env(safe-area-inset-bottom, 0px));
     max-width: 900px;
     margin: 0 auto;
     text-align: center;
     min-height: 80vh;
     position: relative;
     z-index: 1;
+}
+
+html.native-app .pageContainer {
+    padding-bottom: calc(180px + var(--app-tabbar-height) + env(safe-area-inset-bottom, 0px));
 }
 
 .title {
@@ -65,19 +72,41 @@
     font-size: 1.5rem;
 }
 
+/* Was `position: sticky; bottom: 24px` on the LAST element in the flow, which
+   does nothing at all — sticky-bottom only holds an element up while there is
+   content below it to scroll past. In practice the composer sat at the end of
+   the document and you had to scroll to the bottom of a long answer to find
+   the box to ask the next question.
+
+   Fixed, so it is always where you left it. */
 .inputContainer {
-    position: sticky;
-    bottom: 24px;
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
     z-index: 100;
+
     display: flex;
     flex-direction: column;
     gap: 16px;
-    max-width: 800px;
-    margin: 40px auto 0;
+    width: min(800px, calc(100% - 32px));
     background: var(--card-bg);
+    background-image: var(--paper-tex);
+    background-blend-mode: var(--paper-tex-blend);
+    background-size: 300px;
+    border: 1px solid var(--card-border);
     padding: 16px;
     border-radius: 32px;
-    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(74, 47, 168, 0.1);
+
+    /* Was 0 -10px 40px rgba(0,0,0,.5) — tuned for the retired dark theme and
+       far too heavy on parchment. This lifts it off the page without staining
+       the paper behind it. */
+    box-shadow: 0 -6px 24px rgba(var(--foreground-rgb), 0.10);
+}
+
+/* Clear of the app's bottom tab bar, which would otherwise sit on top of it. */
+html.native-app .inputContainer {
+    bottom: calc(16px + var(--app-tabbar-height) + env(safe-area-inset-bottom, 0px));
 }
 
 .questionInput {

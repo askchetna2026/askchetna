@@ -882,28 +882,41 @@
   gap: 32px;
 }
 
+/* Panchang, full width beneath both columns. It is the only widget on this
+   page whose height the READER controls, and inside the 1fr rail expanding it
+   added ~600px to one side — reopening the blank panel the column balance
+   exists to prevent. Here it can grow to any height without unbalancing
+   anything, and its auto-fit inner grids use the extra width. */
+.panchangRow {
+  margin-top: 32px;
+}
+
 /* Three items in a two-column grid always left the third stranded on a row of
    its own, which read as a mistake rather than a set. One column in a side
    column this width also gives each label room to sit beside its icon instead
    of under it. */
+/* Four small tiles across, not four full-width bars down.
+   Every one of these is ALSO in the top navigation — they are a shortcut, not
+   content — and as stacked bars they occupied 258px of the side column, which
+   is more than the daily note beside them. As a compact row they cost ~78px
+   and stop competing with the widgets they sit under. */
 .quickLinks {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
 }
 
-/* A row rather than a stacked block. Three of these are navigation, not
-   content, and 24px of padding around a vertical icon-over-label made each one
-   the size of a card competing with the widgets above it. */
 .quickLinkItem {
-  padding: 14px 16px;
+  padding: 12px 6px;
   background: var(--card-bg);
   border: 1px solid var(--card-border);
   border-radius: 12px;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
+  text-align: center;
+  gap: 6px;
   min-height: 44px;
   color: var(--foreground);
   text-decoration: none;
@@ -918,9 +931,9 @@
 
 .quickLinkItem span {
   font-weight: 500;
-  /* Takes the space between icon and arrow so the chevron sits at the far
-     edge of every row, giving the three a shared right margin to read down. */
-  flex: 1;
+  font-size: 0.72rem;
+  line-height: 1.25;
+  letter-spacing: 0.01em;
   transition: color 180ms var(--ease-out);
 }
 

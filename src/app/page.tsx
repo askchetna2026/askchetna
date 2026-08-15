@@ -4,11 +4,11 @@ import { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import styles from './page.module.css';
-import { ArrowRight, TrendingUp, Clock, MessageSquare } from 'lucide-react';
+import { ArrowRight, TrendingUp, Clock, MessageSquare, BookOpen } from 'lucide-react';
 import DailyInsightCard from '@/components/DailyInsightCard';
+import CurrentChapterCard from '@/components/CurrentChapterCard';
 import RashiBadge from '@/components/RashiBadge';
 import EnergyWidget from '@/components/EnergyWidget';
-import JournalWidget from '@/components/JournalWidget';
 import PanchangWidget from '@/components/PanchangWidget';
 import CosmicMandala from '@/components/CosmicMandala';
 import RashiMedallions from '@/components/sections/RashiMedallions';
@@ -72,44 +72,62 @@ export default function Home() {
             </div>
 
             {/* Two columns split by WHOSE information it is, not by importance.
-                All four widgets used to stack in the main column while the side
-                column held three links — 751px of content beside 417px that was
-                two-thirds empty, and a page that scrolled further than it
-                needed to.
+                Left is about this seeker: the note written for them today, and
+                the multi-year chapter that note sits inside. Right is today's
+                sky, which is identical for everyone, plus the ways on.
 
-                Left is about this seeker: the note written for them, and the
-                journal they write back into. Right is today's sky, which is
-                identical for everyone, plus the ways on. */}
+                The columns are sized to end together. Measured at 1200px:
+                left 794px against right 845px. That balance is the point — an
+                earlier arrangement left ~360px of blank parchment under the
+                shorter column, so anything added to one side should be checked
+                against the other rather than dropped in. Panchang sits below
+                both, full width, because it is the one widget whose height the
+                reader changes. */}
             <div className={styles.widgetGrid}>
               <div className={styles.mainColumn}>
                 {/* First deliberately: the one thing here written about this
                     seeker specifically, and the reason to open the app on a
                     given morning. */}
                 <DailyInsightCard />
-                <JournalWidget />
+                {/* The years-long chapter the daily note above sits inside.
+                    Renders nothing until it has a real phase. */}
+                <CurrentChapterCard />
               </div>
 
               <div className={styles.sideColumn}>
                 <EnergyWidget />
-                <PanchangWidget />
                 <div className={styles.quickLinks}>
                   <Link href="/chart" className={styles.quickLinkItem}>
-                    <TrendingUp size={24} color="var(--accent-gold)" />
-                    <span>See My Chart</span>
-                    <ArrowRight size={16} />
+                    <TrendingUp size={20} color="var(--accent-gold)" />
+                    <span>My Chart</span>
                   </Link>
                   <Link href="/timing" className={styles.quickLinkItem}>
-                    <Clock size={24} color="var(--accent-gold)" />
-                    <span>View Your Timeline</span>
-                    <ArrowRight size={16} />
+                    <Clock size={20} color="var(--accent-gold)" />
+                    <span>Timeline</span>
                   </Link>
                   <Link href="/clarity" className={styles.quickLinkItem}>
-                    <MessageSquare size={24} color="var(--accent-gold)" />
-                    <span>Ask Chetna AI</span>
-                    <ArrowRight size={16} />
+                    <MessageSquare size={20} color="var(--accent-gold)" />
+                    <span>Ask Chetna</span>
+                  </Link>
+                  {/* Journaling moved off this page: a composer here duplicated
+                      /journal, and an input box was the weakest thing in the
+                      page's best column. The habit keeps its entry point. */}
+                  <Link href="/journal" className={styles.quickLinkItem}>
+                    <BookOpen size={20} color="var(--accent-gold)" />
+                    <span>Journal</span>
                   </Link>
                 </div>
               </div>
+            </div>
+
+            {/* Full width, below both columns, rather than inside the narrow
+                rail. Expanding it there added ~600px to one side and reopened
+                the blank panel this layout exists to avoid; across the full
+                width its five elements and three timing boxes lay out in one
+                row each instead of a stack. Both inner grids are already
+                auto-fit, so they spread on their own. */}
+            <div className={styles.panchangRow}>
+              <PanchangWidget />
             </div>
           </div>
         </section>

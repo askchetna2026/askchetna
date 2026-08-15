@@ -5,17 +5,30 @@
     color: inherit;
 }
 
+/* Opens DOWNWARD. It used to be `bottom: 130%`, opening upward, and the terms
+   that use it sit in the birth-record's fact row at the BOTTOM of the card —
+   so the panel landed squarely on the card's own title and hid it. Below the
+   term there is only the chart grid, which the tooltip is allowed to cover
+   because it is dismissed the moment the pointer leaves.
+
+   Width is capped rather than fixed at 260px so a term near the right edge of
+   the row cannot push the panel past the viewport. */
 .tooltip {
     position: absolute;
-    bottom: 130%;
+    top: calc(100% + 10px);
     left: 50%;
     transform: translateX(-50%);
-    width: 260px;
+    width: max-content;
+    max-width: min(280px, 80vw);
     background: var(--card-bg);
+    background-image: var(--paper-tex);
+    background-blend-mode: var(--paper-tex-blend);
+    background-size: 300px;
     border: 1px solid var(--accent-gold);
     border-radius: 12px;
     padding: 14px 16px;
-    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+    /* Was 0.35 alpha black — a dark-theme shadow that stains parchment. */
+    box-shadow: 0 6px 20px rgba(var(--foreground-rgb), 0.14);
     z-index: 1000;
     display: flex;
     flex-direction: column;

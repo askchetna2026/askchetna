@@ -161,13 +161,17 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaGraph) }}
         />
-        <CosmicStarfield />
         <div className="cosmic-bg-overlay"></div>
         <div className="stars-layer-1"></div>
         <div className="stars-layer-2"></div>
         <div className="central-portal-glow"></div>
         <div className="noise-overlay"></div>
         <AuthProvider>
+          {/* Inside the provider because it now asks whether anyone is signed
+              in — see Starfield.tsx. Safe to move: it is position:fixed with
+              z-index -1, and none of these providers render a DOM wrapper that
+              could trap it in a new stacking context. */}
+          <CosmicStarfield />
           <ComplexityProvider>
             <ProfileProvider>
               <Header />

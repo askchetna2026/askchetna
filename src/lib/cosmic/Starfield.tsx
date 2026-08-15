@@ -1,6 +1,7 @@
 'use client';
 
 import { useSyncExternalStore } from 'react';
+import { useSession } from 'next-auth/react';
 import dynamic from 'next/dynamic';
 import { isClientNativeApp } from '@/lib/platform';
 
@@ -40,7 +41,27 @@ const notOnTheServer = () => false;
 
 export function CosmicStarfield() {
     const enabled = useSyncExternalStore(neverChanges, shouldRender, notOnTheServer);
+    const { status } = useSession();
 
     if (!enabled) return null;
+
+    /**
+     * Signed-in visitors do not get it either, for the reason the comment above
+     * already gives — it was only ever applied to native clients.
+     *
+     * The canvas is a marketing surface: it decorates the landing page someone
+     * looks at for thirty seconds before signing up. Once they have an account,
+     * every page they open is a page they sit on, and this one costs a 2 MB
+     * three.js chunk plus a permanent 10,000-star render loop on the GPU. It is
+     * mounted from the root layout, so that was being paid on the dashboard,
+     * the chart, timing — everywhere, forever.
+     *
+     * Gated on 'unauthenticated' rather than on `!session`, so the loading pass
+     * renders nothing: the dynamic import fires when this returns the canvas,
+     * and treating "not known yet" as signed-out would start the 2 MB download
+     * for people who turn out to be signed in.
+     */
+    if (status !== 'unauthenticated') return null;
+
     return <StarfieldCanvas />;
 }

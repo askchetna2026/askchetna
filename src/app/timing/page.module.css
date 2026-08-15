@@ -123,9 +123,24 @@
     transition: transform 0.3s ease;
 }
 
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--glass-shadow);
+/* Gated: on touch this fired on tap and left the card lifted afterwards. */
+@media (hover: hover) and (pointer: fine) {
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--glass-shadow);
+    }
+}
+
+/* The technical footnote under the chart-specific reading — nakshatra and
+   dignity. Set quieter than the sentence above it because it is corroboration
+   for a reader who wants it, not the point. */
+.cardMeta {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--card-border);
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+    color: var(--text-muted);
 }
 
 .cardHeader {

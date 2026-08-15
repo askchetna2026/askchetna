@@ -12,6 +12,7 @@ import Term from '@/components/Term';
 import DisclaimerNote from '@/components/DisclaimerNote';
 import { useComplexity } from '@/context/ComplexityContext';
 import { getProfiles } from '@/lib/profileStore';
+import { describeDashaLord } from '@/lib/astrology/dashaContext';
 
 interface UserProfile {
     id: string;
@@ -245,6 +246,13 @@ export default function TimingPageContent() {
     const interpretation = currentDasha ? LORD_DESCRIPTIONS[currentDasha.lord] : null;
     const selectedProfile = activeProfiles.find(p => p.id === selectedProfileId);
 
+    /* Where the current lord actually sits in THIS profile's chart. Recomputed
+       when either changes, so switching profile switches the reading rather
+       than leaving the previous seeker's placement on screen. */
+    const lordContext = currentDasha
+        ? describeDashaLord(selectedProfile?.chartData, currentDasha.lord)
+        : null;
+
     return (
         <div className={styles.container}>
             <header className={styles.header}>
@@ -354,6 +362,29 @@ export default function TimingPageContent() {
 
             {!aiInsight && (
                 <div className={styles.grid}>
+                    {/* First, and the only card here that is about THIS chart.
+                        The three that follow describe what the lord means in
+                        general — true, but identical for everyone sharing a
+                        mahadasha lord. This one is read off the seeker's own
+                        stored placement, so it differs between two people in
+                        the same period, which is the thing they actually came
+                        to find out. */}
+                    {lordContext?.placement && (
+                        <div className={styles.card}>
+                            <div className={styles.cardHeader}>
+                                <User size={18} />
+                                <h3>In Your Chart</h3>
+                            </div>
+                            <p>{lordContext.placement}</p>
+                            {lordContext.nakshatra && (
+                                <p className={styles.cardMeta}>
+                                    Nakshatra: {lordContext.nakshatra}
+                                    {lordContext.dignity ? ` · ${lordContext.dignity}` : ''}
+                                </p>
+                            )}
+                        </div>
+                    )}
+
                     <div className={styles.card}>
                         <div className={styles.cardHeader}>
                             <Sparkles size={18} />

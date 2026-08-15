@@ -51,12 +51,37 @@
    ratio that changes down the column — it measured 4.66:1 over the darkest
    tile and better elsewhere, which is not a thing you can hold a floor on.
    Solid token, 7.71:1 everywhere. */
+/* Inline anchors gave a 17px-tall target — the whole footer measured 16 links
+   under the 44px minimum, on every route in the app, which was the single
+   largest source of undersized tap targets anywhere. Block, so the padding
+   actually applies to the box.
+
+   The rhythm is unchanged on a pointer device (see the media query below);
+   only touch gets the taller rows, because that is where the miss happens. */
 .footerLinks a {
+    display: block;
     color: var(--text-muted);
     text-decoration: none;
     font-size: 0.9rem;
     line-height: 1.5;
+    padding-block: 12px;
     transition: color 200ms var(--ease-out);
+}
+
+/* Reclaim the spacing the padding just added, so the list looks as it did. */
+.footerLinks {
+    gap: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    /* A cursor is precise, so density is worth more than target size here. */
+    .footerLinks a {
+        padding-block: 0;
+    }
+
+    .footerLinks {
+        gap: 12px;
+    }
 }
 
 /* No padding-left on hover: shifting a link on hover moves the target out from
@@ -135,6 +160,9 @@
    A word is unambiguous and gives the button a hit area. */
 .subscribeBtn {
     flex: none;
+    /* Matches the 44px floor the rest of the footer now meets. It sits beside
+       the email field, so the pair also lines up. */
+    min-height: 44px;
     background: var(--accent-coral-text);
     border: 1px solid var(--accent-coral-text);
     border-radius: var(--radius-xs);
@@ -170,7 +198,14 @@
 
 /* Was rgba(58,35,26,.6) — 3.26:1 at 0.8rem uppercase, the smallest and
    lightest text in the footer and the one most in need of the floor. */
+/* Same 44px problem as the link columns, and worse here: these sit in a
+   wrapping row, so a short label like TERMS was an 18px-tall, 40px-wide target
+   with neighbours 18px away on either side. Inline-block so the padding
+   applies; the negative margin keeps the row's visual height where it was. */
 .legalSubNav a {
+    display: inline-block;
+    padding-block: 13px;
+    margin-block: -13px;
     color: var(--text-muted);
     text-decoration: none;
 }
@@ -206,8 +241,11 @@
     margin-top: 6px;
 }
 
+/* Was 0.6rem — 9.6px, and uppercase with 0.24em tracking on top, which is the
+   smallest text anywhere in the app. 0.72rem is 11.5px and still reads as a
+   colophon. */
 .footerColophon {
-    font-size: 0.6rem;
+    font-size: 0.72rem;
     letter-spacing: 0.24em;
     text-transform: uppercase;
     color: var(--text-muted);

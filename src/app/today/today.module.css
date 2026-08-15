@@ -94,20 +94,30 @@
 
 /* ── The sky card ─────────────────────────────────────────────────────────── */
 
-/* The one dark surface on the screen. It is the sky, and making it the only
-   night-coloured thing here is what stops the eye having to choose where to
-   land first. */
+/* This was the one dark surface on the screen — a night-sky slab that made the
+   eye land here first. It has been brought onto the parchment because it was
+   the only thing in either app reading as the retired dark theme, and a single
+   dark block among papered cards looks like a bug rather than a decision.
+   Hierarchy is kept by weight instead of by darkness: a heavier shadow, a gold
+   rule, and the largest type on the screen.
+
+   The whole block moves together or none of it does — every colour below was
+   tuned against the dark ground, so changing only the background would have
+   left pale text on parchment. */
 .skyCard {
     position: relative;
     padding: 18px var(--gutter) 16px;
     border-radius: var(--radius-lg);
     overflow: hidden;
 
-    background:
-        radial-gradient(120% 100% at 88% 4%, rgba(74, 47, 168, 0.55) 0%, transparent 58%),
-        linear-gradient(168deg, #2E3A6B 0%, var(--accent-neelam) 55%, #1D2647 100%);
+    background: var(--card-bg);
+    background-image: var(--paper-tex);
+    background-blend-mode: var(--paper-tex-blend);
+    background-size: 300px;
+    border: 1px solid var(--card-border);
+    border-top: 2px solid var(--accent-gold-decor);
     box-shadow: var(--shadow-float);
-    color: var(--night-fg);
+    color: var(--foreground);
 }
 
 .skyDate {
@@ -116,7 +126,7 @@
     font-size: 0.68rem;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--night-muted);
+    color: var(--text-muted);
 }
 
 .skyTransit {
@@ -125,13 +135,13 @@
     font-size: clamp(1.45rem, 6.6vw, 1.85rem);
     font-weight: 500;
     line-height: 1.12;
-    color: var(--night-heading);
+    color: var(--foreground);
 }
 
 .skyTheme {
     margin: 4px 0 0;
     font-size: 0.9rem;
-    color: var(--night-fg);
+    color: var(--text-muted);
 }
 
 /* Holds the transit's height while it loads, so nothing below shifts when the
@@ -142,9 +152,9 @@
     border-radius: var(--radius-sm);
     background: linear-gradient(
         90deg,
-        rgba(233, 228, 242, 0.06) 0%,
-        rgba(233, 228, 242, 0.14) 50%,
-        rgba(233, 228, 242, 0.06) 100%
+        rgba(var(--foreground-rgb), 0.05) 0%,
+        rgba(var(--foreground-rgb), 0.12) 50%,
+        rgba(var(--foreground-rgb), 0.05) 100%
     );
     background-size: 200% 100%;
     animation: skyShimmer 1.6s ease-in-out infinite;
@@ -164,21 +174,21 @@
     gap: 6px 20px;
     margin: 16px 0 0;
     padding-top: 14px;
-    border-top: 1px solid rgba(240, 224, 188, 0.22);
+    border-top: 1px solid var(--card-border);
 }
 
 .panchang dt {
     font-size: 0.6rem;
     letter-spacing: 0.13em;
     text-transform: uppercase;
-    color: var(--night-muted);
+    color: var(--text-muted);
 }
 
 .panchang dd {
     margin: 2px 0 0;
     font-size: 0.86rem;
     font-weight: 500;
-    color: var(--night-heading);
+    color: var(--foreground);
 }
 
 .skyLink,
@@ -194,7 +204,7 @@
     font: inherit;
     font-size: 0.84rem;
     font-weight: 600;
-    color: var(--night-heading);
+    color: var(--accent-gold);
     text-align: left;
     text-decoration: none;
     cursor: pointer;

@@ -17,6 +17,14 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_BUILD_ID: BUILD_ID,
   },
 
+  // Every AI prompt lives in prompts/ai-prompts.md and is read with fs at
+  // runtime. Nothing imports it, so Next's tracer cannot see it and would ship
+  // a deployment where every AI call throws ENOENT. Keyed to all routes because
+  // the AI helpers are reached from several of them.
+  outputFileTracingIncludes: {
+    "/*": ["prompts/**/*.md"],
+  },
+
   images: {
     remotePatterns: [
       {

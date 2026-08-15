@@ -1,3 +1,4 @@
+import { after } from 'next/server';
 import prisma from '@/lib/prisma';
 import { spendCredits, getBalance } from './credits';
 import {
@@ -241,6 +242,35 @@ export type EndReason =
  * somehow get past this check together.
  */
 export async function endConsultation(
+    consultationId: string,
+    reason: EndReason
+): Promise<{ ended: boolean; creditsCharged: number; earningsPaise: number }> {
+    const result = await settleConsultation(consultationId, reason);
+
+    // Rewrite what this astrologer remembers about this seeker.
+    //
+    // AFTER the transaction and outside it, deliberately. It calls a model, so
+    // holding a database transaction open for it would park a pooled connection
+    // on network latency — and this runs on the request that ends a session,
+    // which has already taken the money and written the earning. A memory that
+    // fails to update is a worse memory; a transaction that fails here would
+    // roll back a settlement.
+    //
+    // Only when a session actually ended: endConsultation is idempotent, and a
+    // second caller racing to close the same session must not spend a second
+    // model call rewriting the same notes.
+    if (result.ended) {
+        after(async () => {
+            const { rewriteConsultationMemory } = await import('./memory');
+            await rewriteConsultationMemory(consultationId);
+        });
+    }
+
+    return result;
+}
+
+/** The settlement itself — one transaction, no I/O beyond the database. */
+async function settleConsultation(
     consultationId: string,
     reason: EndReason
 ): Promise<{ ended: boolean; creditsCharged: number; earningsPaise: number }> {

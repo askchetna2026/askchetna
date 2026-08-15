@@ -190,6 +190,13 @@ export async function POST(
             select: { senderId: true, body: true },
         });
 
+        // What this persona remembers about this seeker from EARLIER sessions.
+        // Fixed size by construction, so it costs the same on turn one and turn
+        // two hundred — which is the reason it is a summary rather than the
+        // prior transcripts. See src/lib/consultations/memory.ts.
+        const { getConsultationMemory } = await import('@/lib/consultations/memory');
+        const memory = await getConsultationMemory(session.user.id, astrologer.id);
+
         const generated = await generateConsultationReply({
             persona:
                 (astrologer.aiSystemPrompt?.trim() ||
@@ -201,6 +208,7 @@ export async function POST(
                     body: m.body,
                 })),
             message: text,
+            memory: memory?.summary ?? null,
         });
 
         const stored = await prisma.consultationMessage.create({

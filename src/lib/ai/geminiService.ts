@@ -39,6 +39,7 @@ type AIFlow =
     | 'SYNASTRY_ANALYSIS'
     | 'REPORT_GENERATION'
     | 'CONSULTATION_REPLY'
+    | 'CONSULTATION_MEMORY'
     | 'WHATSAPP_CHAT'
     | 'DAILY_INSIGHT';
 type FlowComplexity = 'HIGH' | 'STANDARD';
@@ -72,6 +73,8 @@ const FLOW_COMPLEXITY: Record<AIFlow, FlowComplexity> = {
     // A live chat turn. Latency matters more than depth here — the seeker is
     // watching a paid block count down while it generates.
     CONSULTATION_REPLY: 'STANDARD',
+    // Runs once per ended session, off the seeker's critical path.
+    CONSULTATION_MEMORY: 'STANDARD',
     WHATSAPP_CHAT: 'STANDARD',
     // One short note per seeker per day. Volume scales with the size of the
     // user base rather than with engagement, so it takes the cheap tier.
@@ -86,6 +89,7 @@ const HYBRID_DEFAULTS: Record<AIFlow, { provider: AIProvider; modelName: string 
     SYNASTRY_ANALYSIS: { provider: 'gemini', modelName: 'gemini-2.5-pro' },
     REPORT_GENERATION: { provider: 'gemini', modelName: 'gemini-2.5-pro' },
     CONSULTATION_REPLY: { provider: 'openai', modelName: 'gpt-4o-mini' },
+    CONSULTATION_MEMORY: { provider: 'openai', modelName: 'gpt-4o-mini' },
     WHATSAPP_CHAT: { provider: 'deepseek', modelName: 'deepseek-chat' },
     DAILY_INSIGHT: { provider: 'deepseek', modelName: 'deepseek-chat' }
 };
@@ -540,6 +544,9 @@ export async function generateConsultationReply(params: {
     /** Oldest first. `role` is from the seeker's point of view. */
     history: Array<{ role: 'seeker' | 'astrologer'; body: string }>;
     message: string;
+    /** Rolling summary of EARLIER sessions with this seeker. Fixed size, so it
+     *  costs the same on turn one and turn two hundred. */
+    memory?: string | null;
 }): Promise<string> {
     const transcript = params.history
         .slice(-20) // Recent context only; a long session should not grow unboundedly.
@@ -548,12 +555,35 @@ export async function generateConsultationReply(params: {
 
     const prompt = renderPrompt('CONSULTATION_REPLY', {
         persona: params.persona,
+        memory:
+            params.memory?.trim() ||
+            '(this is your first conversation with this seeker)',
         transcript: transcript || '(this is the first message)',
         message: params.message,
     });
 
     const text = await callAI(prompt, 'CONSULTATION_REPLY');
     return text.trim();
+}
+
+/**
+ * Rewrite an astrologer's private notes about a seeker after a session ends.
+ *
+ * Once per session, never per turn — that ratio is what makes continuity
+ * affordable. Returns the previous notes unchanged if the model gives back
+ * nothing usable, so a bad call degrades the memory rather than erasing it.
+ */
+export async function rewriteMemorySummary(params: {
+    previous: string;
+    transcript: string;
+}): Promise<string> {
+    const prompt = renderPrompt('CONSULTATION_MEMORY', {
+        previous: params.previous.trim() || '(nothing yet — this was your first session)',
+        transcript: params.transcript,
+    });
+
+    const text = await callAI(prompt, 'CONSULTATION_MEMORY');
+    return text.trim() || params.previous;
 }
 
 /**

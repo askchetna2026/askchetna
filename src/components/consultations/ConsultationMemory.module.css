@@ -1,0 +1,113 @@
+/* Context for the conversation, not the conversation — so it sits above the
+   thread as a quiet band rather than a card competing with the messages. */
+
+.panel {
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-panel);
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px 14px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    color: var(--text-muted);
+    font-family: inherit;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.title {
+    font-size: var(--text-13);
+    font-weight: 600;
+    color: var(--foreground);
+}
+
+.meta {
+    margin-left: auto;
+    font-size: var(--text-11);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.chevron {
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.chevronOpen {
+    transform: rotate(180deg);
+}
+
+.body {
+    padding: 0 14px 14px;
+}
+
+.summary {
+    font-size: var(--text-14);
+    line-height: 1.65;
+    color: var(--foreground);
+    margin: 0;
+    max-width: var(--measure);
+    white-space: pre-wrap;
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-soft);
+}
+
+/* Says what this is before offering to delete it: people agree to "forget"
+   more readily when they can see it is a summary rather than a recording. */
+.note {
+    font-size: var(--text-12);
+    line-height: 1.55;
+    color: var(--text-muted);
+    margin: 0;
+    flex: 1;
+    min-width: 200px;
+}
+
+.forget {
+    flex-shrink: 0;
+    padding: 7px 14px;
+    font-size: var(--text-12);
+    font-weight: 600;
+    border-radius: 999px;
+    border: 1px solid var(--card-border);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.forget:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Gated: on touch these fire on tap and stay applied after the panel closes. */
+@media (hover: hover) and (pointer: fine) {
+    .header:hover {
+        background: rgba(var(--foreground-rgb), 0.03);
+    }
+
+    .forget:not(:disabled):hover {
+        border-color: var(--accent-coral);
+        color: var(--accent-coral);
+    }
+}

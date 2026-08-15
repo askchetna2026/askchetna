@@ -61,6 +61,7 @@ model User {
   deviceTokens           DeviceToken[]
   astrologer             Astrologer?
   consultations          Consultation[]
+  consultationMemories   ConsultationMemory[]
   appointments           Appointment[]
   astrologerApplications AstrologerApplication[]
 
@@ -566,6 +567,7 @@ model Astrologer {
   updatedAt DateTime @updatedAt
 
   consultations Consultation[]
+  memories      ConsultationMemory[]
   earnings      AstrologerEarning[]
   payouts       Payout[]
   availability  AstrologerAvailability[]
@@ -646,6 +648,50 @@ model ConsultationMessage {
 
   @@index([consultationId, sentAt])
   @@map("consultation_messages")
+}
+
+/// What an astrologer remembers about a seeker, between sessions.
+///
+/// A ROLLING SUMMARY, deliberately not a transcript. Continuity could have been
+/// built by replaying prior sessions into the prompt, and that is the version
+/// that does not survive contact with a real user: the reply flow already
+/// slices to the last 20 messages precisely because context cannot grow without
+/// bound, and every prior session carried verbatim would be re-read, and paid
+/// for, on every single turn forever. A few hundred words rewritten after each
+/// session is a fixed cost that still remembers.
+///
+/// It is also what makes "start a new conversation" mean something. The choice
+/// on offer is a clean transcript, not amnesia — the astrologer still knows who
+/// you are, which is the whole reason to come back to the same one.
+///
+/// Unique on (userId, astrologerId): memory belongs to the PAIRING. Two
+/// astrologers who have both spoken to the same seeker know different things
+/// about them, which is true of people and should be true here.
+///
+/// Applies to human astrologers as well as AI personas. A human reading a
+/// summary of what was discussed six weeks ago is the same feature — the only
+/// difference is that they read it rather than being prompted with it.
+model ConsultationMemory {
+  id           String     @id @default(cuid())
+  userId       String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  astrologerId String
+  astrologer   Astrologer @relation(fields: [astrologerId], references: [id], onDelete: Cascade)
+
+  /// Rewritten after each session from the previous summary plus that
+  /// session's transcript. Never appended to — appending is how a summary
+  /// becomes a transcript again.
+  summary String @db.Text
+
+  sessionCount  Int       @default(0)
+  lastSessionAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, astrologerId])
+  @@index([astrologerId, updatedAt])
+  @@map("consultation_memories")
 }
 
 /// Append-only earnings ledger, one row per consultation.

@@ -3,6 +3,7 @@ import { calculateChart } from '@/lib/astrology/calculator';
 import { VedicAnalysisEngine } from '@/lib/astrology/engine';
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
+import { cached, utcHourKey } from '@/lib/astrology/skyCache';
 
 export async function GET(req: NextRequest) {
     try {
@@ -18,26 +19,37 @@ export async function GET(req: NextRequest) {
         }
 
         const profile = await prisma.profile.findFirst({
-            where: { id: profileId, userId: session.user.id }
+            where: { id: profileId, userId: session.user.id },
+            select: { chartData: true, latitude: true, longitude: true },
         });
 
         if (!profile || !profile.chartData) {
             return NextResponse.json({ error: 'Profile or Chart Data not found' }, { status: 404 });
         }
 
+        // The natal half is immutable and the transiting half moves slowly, so
+        // the comparison is stable within an hour. /timing and /today both call
+        // this on arrival, and it was running a full ephemeris chart each time.
         const now = new Date();
-        const transitChart = await calculateChart(
-            now.getUTCFullYear(),
-            now.getUTCMonth() + 1,
-            now.getUTCDate(),
-            now.getUTCHours() + now.getUTCMinutes() / 60,
-            profile.latitude,
-            profile.longitude
+        const transits = await cached(
+            `transits:${profileId}:${utcHourKey(now)}`,
+            60 * 60 * 1000,
+            async () => {
+                const transitChart = await calculateChart(
+                    now.getUTCFullYear(),
+                    now.getUTCMonth() + 1,
+                    now.getUTCDate(),
+                    now.getUTCHours() + now.getUTCMinutes() / 60,
+                    profile.latitude,
+                    profile.longitude
+                );
+                return VedicAnalysisEngine.analyzeTransits(profile.chartData as any, transitChart);
+            }
         );
 
-        const transits = VedicAnalysisEngine.analyzeTransits(profile.chartData as any, transitChart);
-
-        return NextResponse.json({ success: true, transits });
+        return NextResponse.json({ success: true, transits }, {
+            headers: { 'Cache-Control': 'private, max-age=600' },
+        });
     } catch (error: any) {
         console.error("Transit API Error:", error);
         return NextResponse.json({ error: error.message || "Failed to calculate transits" }, { status: 500 });

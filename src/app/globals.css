@@ -167,6 +167,19 @@
      scale at all. Four of each, and paper edges are crisp — 16px pill corners
      read as app chrome, not print. */
   --radius-xs: 2px;
+  /* ── Reading measure ──────────────────────────────────────────────────
+     Line LENGTH, not line height. Measured across the app, the leading was
+     already fine — 1.6 to 1.7 everywhere — but the measure was wrong in both
+     directions: full-width prose ran to 93-98 characters a line on a 1372px
+     screen, where the eye loses the start of the next line, while inside cards
+     on a 375px phone it fell to about 35, which breaks a sentence into too
+     many fragments. Comfortable is roughly 45-75.
+
+     In `ch`, so it tracks the font size it is applied to rather than assuming
+     one. Apply to prose; leave labels, numbers and single-line UI text alone. */
+  --measure: 68ch;
+  --measure-tight: 56ch;
+
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 16px;

@@ -49,6 +49,8 @@
 }
 
 .phaseSummaryText {
+    /* Capped: measured at 93-98 characters a line on desktop. */
+    max-width: var(--measure);
     font-size: 1.05rem;
     line-height: 1.7;
     color: var(--secondary);
@@ -160,6 +162,16 @@
 .card p {
     color: var(--secondary);
     line-height: 1.7;
+    /* Full-width cards ran to 98 characters a line on a wide screen. */
+    max-width: var(--measure);
+}
+
+@media (max-width: 600px) {
+    /* 32px of padding each side of a 375px screen spends a sixth of the card
+       on margin, which is what pushed the measure down to ~35 characters. */
+    .card {
+        padding: 20px 18px;
+    }
 }
 
 .timelineSection {

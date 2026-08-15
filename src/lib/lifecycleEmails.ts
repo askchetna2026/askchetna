@@ -828,6 +828,14 @@ export async function maybeRunLifecycleAutomation(triggerSource: string) {
                 },
             });
         } catch (error) {
+            // P2034 is this design working, not failing. The claim runs at
+            // SERIALIZABLE precisely so that two page views arriving together
+            // cannot both open the same campaign window; the loser aborts, which
+            // is the outcome we want. Logging it as an error made a correct
+            // no-op look like an incident on every concurrent visit.
+            if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2034') {
+                continue;
+            }
             console.error(`Traffic lifecycle automation failed for ${config.campaignKey}:`, error);
         }
     }

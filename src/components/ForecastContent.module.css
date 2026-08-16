@@ -21,7 +21,7 @@
     margin: 0;
     max-width: var(--measure);
     color: var(--text-muted);
-    font-size: var(--text-17);
+    font-size: var(--text-18);
     line-height: 1.7;
 }
 
@@ -174,7 +174,7 @@
 .eventTitle {
     margin: 0;
     font-family: var(--font-heading);
-    font-size: var(--text-19);
+    font-size: var(--text-20);
     font-weight: 400;
     color: var(--foreground);
 }

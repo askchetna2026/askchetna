@@ -495,7 +495,7 @@
 .kootaHead h3 {
     margin: 0;
     font-family: var(--font-heading);
-    font-size: var(--text-22);
+    font-size: var(--text-24);
     font-weight: 400;
     color: var(--foreground);
 }

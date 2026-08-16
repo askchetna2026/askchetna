@@ -20,7 +20,7 @@
 .standfirst {
     max-width: var(--measure);
     color: var(--text-muted);
-    font-size: var(--text-17);
+    font-size: var(--text-18);
     line-height: 1.7;
     margin: 0;
 }
@@ -112,7 +112,7 @@
 
 .title {
     font-family: var(--font-heading);
-    font-size: var(--text-22);
+    font-size: var(--text-24);
     font-weight: 400;
     color: var(--foreground);
     margin: 0;

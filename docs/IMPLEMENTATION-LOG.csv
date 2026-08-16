@@ -1,4 +1,5 @@
 ﻿"Date","Type","Area","What was implemented","Version","Commit"
+"2026-08-16","Feature","i18n","Let Chetna answer in Hindi, with a fixed vocabulary","v3.5.70","836bec9"
 "2026-08-16","Feature","calendar","The lunar days ahead, computed rather than tabulated","v3.5.69","87d31f8"
 "2026-08-16","Feature","notifications","Tell people what is coming, once, and only if asked","v3.5.68","961961f"
 "2026-08-16","Feature","muhurat","Choose what you are doing, see today's windows for it","v3.5.67","9e1332e"

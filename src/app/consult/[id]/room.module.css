@@ -1,29 +1,24 @@
-/* The consultation room owns the viewport height; the chat fills what is left.
+/* The consultation room is ordinary page flow, with the composer fixed to the
+ * bottom of the viewport.
  *
- * ChatSession used to size itself with `calc(100dvh - 140px)`, which was right
- * while it was the only thing on the page. It stopped being right the moment
- * the memory panel was added above it: two elements, one of them a full
- * viewport tall, so the composer was pushed below the fold by exactly the
- * height of the panel — worse on a phone, and worse again with the panel open.
+ * It used to be `height: calc(100dvh - 140px)` with the transcript scrolling
+ * inside it. That 140px was a guess at the header, and it is wrong on every
+ * surface the header differs on — in the app it left the composer floating in
+ * the middle of the screen with a field of empty parchment underneath it.
  *
- * Owning the height here and letting the chat flex into the remainder means
- * anything else added above it later cannot push the composer off screen.
+ * Nothing here measures the header any more. The composer is positioned
+ * against the viewport, so where the room starts cannot move it, and the
+ * transcript simply grows and scrolls the page like any other content.
  */
 .room {
-    display: flex;
-    flex-direction: column;
-    /* dvh rather than vh: mobile browser chrome collapses and the usable
-       height changes with it. */
-    height: calc(100dvh - 140px);
     max-width: 780px;
     margin: 0 auto;
     padding: 0 16px;
+    /* Clears the fixed composer, so the last message is readable rather than
+       sitting underneath the box you are about to type in. */
+    padding-bottom: calc(104px + env(safe-area-inset-bottom, 0px));
 }
 
-/* min-height: 0 is what allows a flex child to be SMALLER than its content and
-   scroll internally. Without it the transcript expands to fit every message and
-   pushes the composer out of the viewport again. */
-.chat {
-    flex: 1;
-    min-height: 0;
+:global(html.native-app) .room {
+    padding-bottom: calc(104px + var(--app-tabbar-height) + env(safe-area-inset-bottom, 0px));
 }

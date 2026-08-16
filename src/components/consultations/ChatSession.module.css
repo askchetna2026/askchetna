@@ -1,15 +1,9 @@
-/* Height, max-width and padding now belong to the ROOM that wraps this (see
-   consult/[id]/room.module.css). They lived here while the chat was the only
-   thing on the page; once a memory panel sat above it, an element claiming a
-   full viewport for itself pushed the composer below the fold by exactly the
-   panel's height.
-
-   min-height: 0 is what lets the transcript inside scroll instead of growing
-   the whole column past the screen. */
+/* Ordinary flow. The room above owns width and padding; the composer below is
+   fixed to the viewport. Nothing here claims a height, which is what stopped
+   the composer from being pushed around by whatever sits above the chat. */
 .session {
     display: flex;
     flex-direction: column;
-    min-height: 0;
 }
 
 .loading {
@@ -62,15 +56,15 @@
     flex-shrink: 0;
 }
 
+/* Scrolls the PAGE, not itself.
+   An inner scroll region needs a known height, and the only way to know it was
+   to guess the header — which is the guess that put the composer in the middle
+   of the screen. Letting the transcript grow naturally removes the guess. */
 .transcript {
-    flex: 1;
-    overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 10px;
     padding: 18px 0;
-    /* Momentum scrolling in the iOS webview. */
-    -webkit-overflow-scrolling: touch;
 }
 
 .empty {
@@ -149,17 +143,36 @@
     font-size: var(--text-14);
 }
 
+/* Fixed to the viewport, so it is always where you left it regardless of how
+   long the transcript is or what sits above the chat.
+
+   Centred with left/right/auto margins rather than translateX(-50%) — the same
+   trap the /clarity composer fell into, where a framer-motion `transform: none`
+   wiped the centring and put half the control off screen. */
 .composer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    margin-inline: auto;
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    z-index: 100;
+
     display: flex;
     gap: 10px;
-    padding: 12px 0;
-    /* The tab bar is fixed in the app, so the composer needs to clear it as well
-       as the home indicator underneath. env() is 0px on the web. */
-    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    width: min(780px, calc(100% - 32px));
+    padding: 12px;
+    border-radius: 32px;
+    background: var(--card-bg);
+    background-image: var(--paper-tex);
+    background-blend-mode: var(--paper-tex-blend);
+    background-size: 300px;
+    border: 1px solid var(--card-border);
+    box-shadow: 0 -6px 24px rgba(var(--foreground-rgb), 0.10);
 }
 
+/* Clear of the app's bottom tab bar, which would otherwise sit on top of it. */
 :global(html.native-app) .composer {
-    padding-bottom: calc(12px + var(--app-tabbar-height) + env(safe-area-inset-bottom, 0px));
+    bottom: calc(12px + var(--app-tabbar-height) + env(safe-area-inset-bottom, 0px));
 }
 
 .input {
@@ -264,4 +277,17 @@
         animation: none;
         opacity: 0.5;
     }
+}
+
+/* The target for "scroll to newest".
+   scrollIntoView aligns to the edge of the scrollport, which here is the
+   viewport — and the composer is fixed over the bottom of it, so without a
+   scroll margin the newest message lands underneath the box you type into.
+   Matches the room's bottom padding. */
+.end {
+    scroll-margin-bottom: calc(104px + env(safe-area-inset-bottom, 0px));
+}
+
+:global(html.native-app) .end {
+    scroll-margin-bottom: calc(104px + var(--app-tabbar-height) + env(safe-area-inset-bottom, 0px));
 }

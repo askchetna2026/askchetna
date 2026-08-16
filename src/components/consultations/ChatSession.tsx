@@ -64,10 +64,13 @@ export default function ChatSession({
     const [promptDismissed, setPromptDismissed] = useState(false);
     const [notice, setNotice] = useState<string | null>(null);
     /** The seeker's message, shown before the server has confirmed it. */
-    const [pending, setPending] = useState<{ id: string; body: string } | null>(null);
+    const [pending, setPending] = useState<{ body: string; at: number } | null>(null);
 
     const lastMessageAt = useRef<string | null>(null);
-    const scrollRef = useRef<HTMLDivElement>(null);
+    /** Sentinel at the end of the transcript — what "scroll to newest" targets. */
+    const endRef = useRef<HTMLDivElement>(null);
+    /** First arrival jumps; later ones glide. */
+    const hasScrolledOnce = useRef(false);
 
     const isLive = status ? ['REQUESTED', 'ACTIVE'].includes(status.status) : false;
     const isOver = status ? !isLive || status.expired : false;
@@ -110,12 +113,66 @@ export default function ChatSession({
         return () => clearInterval(id);
     }, [refresh]);
 
+    /**
+     * Whether to still draw the optimistic bubble.
+     *
+     * Derived rather than cleared by the send, because the 4-second poll runs
+     * DURING the model call: it fetches the seeker's message from the server
+     * and appends it to `messages` while `pending` is still set, so both were
+     * drawn and the question appeared twice. Suppressing it the moment the real
+     * one lands closes that window regardless of which finishes first.
+     *
+     * Matched on body and arrival time rather than body alone, so sending the
+     * same sentence twice does not hide the second one behind the first.
+     */
+    const showPending =
+        pending !== null &&
+        !messages.some(
+            (m) => m.mine && m.body === pending.body && new Date(m.sentAt).getTime() >= pending.at - 5000
+        );
+
     // Stick to the newest message.
+    //
+    // The PAGE scrolls now, not an inner region — the transcript no longer has
+    // a height of its own, because the only way to give it one was to guess the
+    // header height, and that guess is what left the composer floating in the
+    // middle of the screen in the app.
+    //
+    // Also runs when the pending bubble or the thinking indicator appears,
+    // otherwise the thing telling you the send worked is below the fold.
+    // `status` gates the transcript's existence — the component renders a
+    // loading state until it arrives. Messages can land BEFORE it does, and an
+    // effect that ran then found endRef empty and never re-ran, which is why
+    // the view stayed at the top of a full conversation. The boolean flips once,
+    // so it cannot re-trigger on every poll the way `status` itself would.
+    const ready = status !== null;
+
     useEffect(() => {
-        scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
-        // Also when the pending bubble or the thinking indicator appears —
-        // otherwise the thing telling you it worked is below the fold.
-    }, [messages.length, pending, sending]);
+        if (!ready) return;
+
+        // The END OF THE CONVERSATION, not the end of the document. Scrolling
+        // the window to scrollHeight lands below whatever else the page renders
+        // under the chat — on this route, the site footer.
+        const go = () =>
+            endRef.current?.scrollIntoView({
+                block: 'end',
+                behavior: hasScrolledOnce.current ? 'smooth' : 'auto',
+            });
+
+        // Twice: once on the next frame, and once after layout has settled. A
+        // long reply reflows as it renders and as the fonts land, and a scroll
+        // measured before that finishes stops short of the bottom.
+        const raf = requestAnimationFrame(go);
+        const settle = setTimeout(() => {
+            go();
+            hasScrolledOnce.current = true;
+        }, 250);
+
+        return () => {
+            cancelAnimationFrame(raf);
+            clearTimeout(settle);
+        };
+    }, [ready, messages.length, showPending, sending]);
 
     const send = async () => {
         const body = draft.trim();
@@ -129,11 +186,10 @@ export default function ChatSession({
         // gone anywhere — so the natural reading was that the send had failed,
         // and the natural response was to press send again.
         //
-        // The optimistic bubble carries a temporary id. refresh() reconciles
-        // against the server and drops it once the real one arrives.
-        const optimisticId = `pending-${Date.now()}`;
+        // Timestamped so the render below can tell when the real message has
+        // landed and stop drawing this one.
         setDraft('');
-        setPending({ id: optimisticId, body });
+        setPending({ body, at: Date.now() });
         setSending(true);
         setNotice(null);
 
@@ -249,7 +305,7 @@ export default function ChatSession({
                 )}
             </header>
 
-            <div className={styles.transcript} ref={scrollRef}>
+            <div className={styles.transcript}>
                 {/* Also hidden while a message is in flight: the pending bubble is
                     already on screen, so "say hello" beside it contradicts itself. */}
                 {messages.length === 0 && !pending && !sending && (
@@ -272,7 +328,7 @@ export default function ChatSession({
                 {/* The seeker's message, already on screen before the server has
                     acknowledged it. Faded so it reads as in-flight rather than
                     delivered. */}
-                {pending && (
+                {showPending && (
                     <div className={`${styles.bubble} ${styles.mine} ${styles.pendingBubble}`}>
                         {pending.body}
                     </div>
@@ -293,6 +349,8 @@ export default function ChatSession({
                         </span>
                     </div>
                 )}
+
+                <div ref={endRef} className={styles.end} aria-hidden="true" />
             </div>
 
             {isOver && (

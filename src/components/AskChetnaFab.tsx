@@ -10,8 +10,18 @@ import styles from './AskChetnaFab.module.css';
 export default function AskChetnaFab() {
     const pathname = usePathname();
 
-    // Hide on the clarity page itself and on auth pages where it'd be redundant.
-    if (pathname === '/clarity' || pathname === '/login') return null;
+    // Hide where it is redundant, and anywhere it would sit on top of a
+    // composer. A consultation pins its input to the bottom of the viewport,
+    // which is exactly where this floats — it covered the send button, and a
+    // control that obscures the one you need is worse than one that is missing.
+    // startsWith rather than equality, because a consultation is /consult/<id>.
+    if (
+        pathname === '/login' ||
+        pathname?.startsWith('/clarity') ||
+        pathname?.startsWith('/consult')
+    ) {
+        return null;
+    }
 
     return (
         // The plain class is a hook for globals.css, which cannot see a CSS

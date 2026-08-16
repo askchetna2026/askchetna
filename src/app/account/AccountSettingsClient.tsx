@@ -6,6 +6,7 @@ import { AlertCircle, Bell, BellOff, ShieldAlert, Trash2, ChevronLeft, Edit2, Sa
 import Link from 'next/link';
 import styles from './page.module.css';
 import { isClientNativeApp } from '@/lib/platform';
+import NotificationPreferences from '@/components/NotificationPreferences';
 
 interface Props {
     email: string;
@@ -303,6 +304,15 @@ export default function AccountSettingsClient({
                     {pushState === 'loading' && <p className={styles.sectionText}>Checking…</p>}
                 </section>
             )}
+
+            {/* WHAT arrives, as distinct from the section above, which is
+                whether this device is allowed to receive anything at all.
+                Permission and preference are different questions and were
+                previously only asking the first one. */}
+            <section className={styles.section}>
+                <h2 className={styles.sectionTitle}>What we notify you about</h2>
+                <NotificationPreferences />
+            </section>
 
             <section className={styles.section}>
                 <h2 className={styles.sectionTitle}>WhatsApp Notifications</h2>

@@ -128,6 +128,18 @@ function jobs(): Job[] {
                 return sweepExpiredConsultations();
             },
         },
+        {
+            // Six-hourly rather than hourly: a dasha boundary is announced three
+            // days out, so there is no urgency, and this one sends push
+            // notifications — the job where running more often than necessary
+            // has a cost measured in other people's attention.
+            key: 'LAST_PERIOD_NOTICES',
+            intervalMinutes: 6 * 60,
+            run: async () => {
+                const { sendPeriodChangeNotices } = await import('./periodChanges');
+                return sendPeriodChangeNotices();
+            },
+        },
     ];
 }
 

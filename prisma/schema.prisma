@@ -66,6 +66,8 @@ model User {
   appointments           Appointment[]
   astrologerApplications AstrologerApplication[]
   savedInsights          SavedInsight[]
+  notificationPreference NotificationPreference?
+  notificationsSent      NotificationSent[]
 
   /// Lets the account purge find due accounts without scanning the whole table.
   @@index([deletionScheduledFor])
@@ -244,6 +246,56 @@ model JournalEntry {
 /// client — matching JournalEntry, and for the same reason. Deriving it from
 /// server time would roll the day over mid-evening for users east of UTC, which
 /// is most of this audience.
+/// What a seeker agrees to be told about.
+///
+/// A row per user rather than columns on User: notification kinds are a list
+/// that grows, and each one added to User would widen a table read on nearly
+/// every request. The absence of a row means "never asked", which is not the
+/// same as "said no" — the defaults below apply until someone chooses.
+///
+/// Defaults are deliberately uneven. A period change is a fact about the
+/// seeker's own chart that they cannot find out any other way, so it starts on.
+/// The daily note starts OFF: it would fire every day, and a notification
+/// nobody chose is the fastest way to have notifications turned off entirely.
+model NotificationPreference {
+  userId String @id
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// "Your daily note is ready."
+  dailyGuidance Boolean @default(false)
+  /// A mahadasha or antardasha boundary arriving.
+  periodChange  Boolean @default(true)
+  /// Appointment reminders, which someone booked and is expecting.
+  appointments  Boolean @default(true)
+
+  updatedAt DateTime @updatedAt
+
+  @@map("notification_preferences")
+}
+
+/// One notice that has gone out, so it cannot go out twice.
+///
+/// `dedupeKey` is the whole point and is built from the EVENT, not the moment —
+/// "u:<id>:antardasha:2026-12-28" rather than a timestamp. A sweep that runs
+/// hourly, restarts, or overlaps with another instance would otherwise re-send
+/// the same notice every hour for as long as the event stayed inside its
+/// window. The unique constraint is what makes the send idempotent; the insert
+/// is attempted BEFORE the push, so a crash mid-send costs a missed notice
+/// rather than a repeated one.
+model NotificationSent {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  dedupeKey String @unique
+  kind      String
+
+  sentAt DateTime @default(now())
+
+  @@index([userId, sentAt])
+  @@map("notifications_sent")
+}
+
 /// Something a seeker chose to keep.
 ///
 /// /clarity has had a "Save this response" button for months. It wrote to

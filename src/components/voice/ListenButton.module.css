@@ -1,0 +1,59 @@
+.wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    /* 44px tap floor. */
+    min-height: 44px;
+    padding: 10px 16px;
+    border: 1px solid var(--card-border);
+    border-radius: 999px;
+    background: var(--bg-panel);
+    color: var(--text-muted);
+    font-family: inherit;
+    font-size: var(--text-13);
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+
+/* Speaking is unmistakable — colour AND the icon becoming a stop square, so it
+   does not rely on hue alone. A voice the user cannot tell is running is the
+   one state this control must never have. */
+.speaking {
+    border-color: var(--accent-coral);
+    background: var(--accent-coral);
+    color: var(--btn-fg);
+}
+
+.label {
+    white-space: nowrap;
+}
+
+.progress {
+    font-size: var(--text-12);
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+/* Quiet, but always present. The point is that it is never absent, not that it
+   competes with the button. */
+.synthetic {
+    font-size: var(--text-11);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .button:not(.speaking):hover {
+        border-color: var(--accent-gold);
+        color: var(--foreground);
+    }
+}

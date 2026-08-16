@@ -1,4 +1,5 @@
 ﻿"Date","Type","Area","What was implemented","Version","Commit"
+"2026-08-16","Documentation","","Record Prakriti in the implementation log","v3.5.76","7834e4c"
 "2026-08-16","Feature","prakriti","Read constitution from the chart, and show the working","v3.5.75","a43e2c0"
 "2026-08-16","Documentation","","Level the implementation log","v3.5.74","0b93e59"
 "2026-08-16","Documentation","","Record the voice input in the implementation log","v3.5.73","ba1c1d1"

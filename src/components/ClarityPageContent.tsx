@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import DictateButton from '@/components/voice/DictateButton';
+import ListenButton from '@/components/voice/ListenButton';
 import { Send, Sparkles, MessageSquare, History, ArrowLeft, Bookmark, Share2, ShieldCheck, Check, Download } from 'lucide-react';
 import styles from '../app/clarity/page.module.css';
 
@@ -170,6 +171,35 @@ export default function ClarityPageContent() {
     }, [isAnalyzing]);
 
     /**
+     * The answer as continuous prose, in the order it is shown.
+     *
+     * One derivation feeding both Save and Listen. They had drifted apart the
+     * moment there were two: saving stored the sections it knew about, and a
+     * reading built separately would have spoken a different set — so someone
+     * would hear one answer and keep another. The section labels are written
+     * to be said aloud as well as read, which is why they are sentences rather
+     * than headings.
+     */
+    const answerAsProse = useMemo(() => {
+        if (!result) return '';
+        return [
+            result.phaseOverview,
+            result.finalVerdict,
+            result.patternInsights?.length
+                ? `What repeats:\n${result.patternInsights.map((p) => `• ${p}`).join('\n')}`
+                : '',
+            result.actionGuidance?.length
+                ? `Where to put your attention:\n${result.actionGuidance.map((a) => `• ${a}`).join('\n')}`
+                : '',
+            result.reflectiveQuestions?.length
+                ? `To sit with:\n${result.reflectiveQuestions.map((q) => `• ${q}`).join('\n')}`
+                : '',
+        ]
+            .filter(Boolean)
+            .join('\n\n');
+    }, [result]);
+
+    /**
      * Keep this reading.
      *
      * This used to write the answer into localStorage under
@@ -182,24 +212,7 @@ export default function ClarityPageContent() {
         if (!result || saving) return;
         setSaving(true);
         try {
-            // Flattened to the prose a reader would want back, in the order it
-            // was shown. Storing the raw object would mean /saved had to know
-            // the shape of a clarity answer for ever.
-            const body = [
-                result.phaseOverview,
-                result.finalVerdict,
-                result.patternInsights?.length
-                    ? `What repeats:\n${result.patternInsights.map((p) => `• ${p}`).join('\n')}`
-                    : '',
-                result.actionGuidance?.length
-                    ? `Where to put your attention:\n${result.actionGuidance.map((a) => `• ${a}`).join('\n')}`
-                    : '',
-                result.reflectiveQuestions?.length
-                    ? `To sit with:\n${result.reflectiveQuestions.map((q) => `• ${q}`).join('\n')}`
-                    : '',
-            ]
-                .filter(Boolean)
-                .join('\n\n');
+            const body = answerAsProse;
 
             const res = await fetch('/api/insights', {
                 method: 'POST',
@@ -627,6 +640,15 @@ export default function ClarityPageContent() {
                                 <button onClick={handleDownloadResponse} className={styles.responseActionBtn} disabled={isDownloading}>
                                     {isDownloading ? 'Generating...' : <><Download size={16} /> Download PDF</>}
                                 </button>
+                                {/* Reads the same prose that Save stores, so
+                                    what you hear and what you keep cannot
+                                    diverge. Renders nothing where the browser
+                                    has no voice for the language. */}
+                                <ListenButton
+                                    text={answerAsProse}
+                                    language={dictationLanguage}
+                                    label="Listen to this"
+                                />
                             </motion.div>
 
                             <motion.button

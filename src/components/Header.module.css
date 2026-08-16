@@ -256,6 +256,33 @@
     flex-grow: 1;
 }
 
+/* Section headings, added when the drawer reached seventeen flat items and
+   became a wall.
+   Tight leading above the group it labels and generous space before it, so the
+   grouping is legible as grouping rather than as more list. */
+.mobileGroup {
+    margin: 18px 16px 2px;
+    font-size: var(--text-11);
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+/* The first heading needs no space above it — the drawer header is already
+   there. */
+.mobileGroup:first-of-type {
+    margin-top: 4px;
+}
+
+/* Inside a group the rows sit closer than the 12px the drawer uses between
+   loose items, which is what makes the sections read as blocks. */
+.mobileGroupLinks {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
 .mobileNavLink {
     display: flex;
     align-items: center;

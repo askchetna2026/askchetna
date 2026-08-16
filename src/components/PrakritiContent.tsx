@@ -52,13 +52,35 @@ export default function PrakritiContent() {
         <main className={styles.page}>
             <header className={styles.head}>
                 <p className="cosmic-label">Prakriti · Constitution</p>
-                <h1 className="mystic-text">Your natural pattern</h1>
+                <h1 className="mystic-text">Your nature</h1>
                 <p className={styles.standfirst}>
-                    Vata, Pitta or Kapha — read from your rising sign, the graha that rules it,
-                    your Moon, and anything standing in your first house. Every factor is shown
-                    below, because this is one reading of the tradition and you should be able
-                    to see how it was arrived at.
+                    Ayurveda says everyone is a mix of three natures, with one usually stronger
+                    than the others. This works out which one leads in you, from your birth
+                    chart — and shows you exactly how it got there.
                 </p>
+                <details className={styles.explainer}>
+                    <summary>How this works, in plain English</summary>
+                    <p>
+                        The three natures are Vata, Pitta and Kapha. Roughly: Vata is movement
+                        and quickness, Pitta is heat and focus, Kapha is steadiness and
+                        endurance. Everyone has all three. What differs is the proportion, and
+                        that mix is what Ayurveda calls your prakriti.
+                    </p>
+                    <p>
+                        Normally it is worked out by an Ayurvedic practitioner asking about your
+                        build, your digestion, your sleep and your temperament. There is also an
+                        older practice of reading it from the birth chart instead, which is what
+                        this page does — using the sign rising when you were born, the planet
+                        that governs that sign, where your Moon is, and any planet sitting in
+                        the first part of your chart.
+                    </p>
+                    <p>
+                        Practitioners genuinely disagree about whether a chart can settle this
+                        at all. That is why every factor and its weight is listed below rather
+                        than just the answer: if you think a different reading is right, you can
+                        see precisely where this one differs from yours.
+                    </p>
+                </details>
             </header>
 
             {status === 'unauthenticated' && (

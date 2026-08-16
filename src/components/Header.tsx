@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import styles from './Header.module.css';
 import Logo from './Logo';
 import ProfileMenu from './ProfileMenu';
-import { Menu, X, CreditCard, LayoutDashboard, LogOut, Info, BookOpen, MessageSquare, Sparkles, Users, UserCog, Settings, Compass, Orbit, Bookmark, CalendarClock, Clock } from 'lucide-react';
+import { Menu, X, CreditCard, LayoutDashboard, LogOut, Info, BookOpen, MessageSquare, Sparkles, Users, UserCog, Settings, Compass, Orbit, Bookmark, CalendarClock, Clock, ShieldCheck } from 'lucide-react';
 import { PAYMENTS_ENABLED } from '@/lib/paymentConfig';
 import { isClientNativeApp } from '@/lib/platform';
 
@@ -164,101 +164,116 @@ export default function Header() {
                 <nav className={styles.mobileNavLinks}>
                   {status === 'authenticated' ? (
                     <>
+                      {/* GROUPED, because this reached seventeen flat rows and
+                          became a wall to scroll rather than a menu to read.
+                          The headings are the questions people arrive with —
+                          "what does my chart say", "when should I do this",
+                          "who can I ask" — not the shape of the codebase. */}
+
                       <Link href="/" className={`${styles.mobileNavLink} ${pathname === '/' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
                         <Sparkles size={20} /> Home
                       </Link>
-                      {/* Chart, Timing and Ask are tabs in the app — see isAppShell. */}
-                      {!isAppShell && (
-                        <>
+
+                      <p className={styles.mobileGroup}>Your chart</p>
+                      <div className={styles.mobileGroupLinks}>
+                        {/* Chart is a tab in the app — see isAppShell. */}
+                        {!isAppShell && (
                           <Link href="/chart" className={`${styles.mobileNavLink} ${pathname === '/chart' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                            <CreditCard size={20} /> Birth Chart
+                            <Orbit size={20} /> Birth chart
                           </Link>
+                        )}
+                        <Link href="/prakriti" className={`${styles.mobileNavLink} ${pathname === '/prakriti' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                          <Sparkles size={20} /> Your nature
+                        </Link>
+                        <Link href="/patterns" className={`${styles.mobileNavLink} ${pathname === '/patterns' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                          <ShieldCheck size={20} /> Sade Sati &amp; doshas
+                        </Link>
+                      </div>
+
+                      <p className={styles.mobileGroup}>Timing</p>
+                      <div className={styles.mobileGroupLinks}>
+                        {!isAppShell && (
                           <Link href="/timing" className={`${styles.mobileNavLink} ${pathname === '/timing' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                            <Info size={20} /> Timing & Seasons
+                            <Clock size={20} /> Your life chapters
                           </Link>
+                        )}
+                        <Link href="/forecast" className={`${styles.mobileNavLink} ${pathname === '/forecast' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                          <CalendarClock size={20} /> What&rsquo;s coming up
+                        </Link>
+                        <Link href="/muhurat" className={`${styles.mobileNavLink} ${pathname === '/muhurat' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                          <Clock size={20} /> Good times today
+                        </Link>
+                      </div>
+
+                      <p className={styles.mobileGroup}>Ask someone</p>
+                      <div className={styles.mobileGroupLinks}>
+                        {!isAppShell && (
                           <Link href="/clarity" className={`${styles.mobileNavLink} ${styles.mobileCtaLink} ${pathname === '/clarity' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
                             <MessageSquare size={20} /> Ask Chetna AI
                           </Link>
-                        </>
-                      )}
-                      {/* Not inside the !isAppShell block above: consulting a
-                          human astrologer is not a tab, so the drawer is the
-                          only way to reach it in the app. */}
-                      <Link href="/consult" className={`${styles.mobileNavLink} ${pathname.startsWith('/consult') ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                        <Users size={20} /> Talk to an Astrologer
-                      </Link>
+                        )}
+                        <Link href="/consult" className={`${styles.mobileNavLink} ${pathname.startsWith('/consult') ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                          <Users size={20} /> Talk to an astrologer
+                        </Link>
+                        <Link href="/synastry" className={`${styles.mobileNavLink} ${pathname === '/synastry' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                          <Users size={20} /> Two charts together
+                        </Link>
+                      </div>
 
-                      {/* Was footer-only, in the Explore column — which the app
-                          hides — so it was unreachable on Android and iOS. */}
+                      <p className={styles.mobileGroup}>Yours</p>
+                      <div className={styles.mobileGroupLinks}>
+                        <Link href="/journal" className={`${styles.mobileNavLink} ${pathname === '/journal' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                          <BookOpen size={20} /> Journal
+                        </Link>
+                        <Link href="/saved" className={`${styles.mobileNavLink} ${pathname === '/saved' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                          <Bookmark size={20} /> Saved insights
+                        </Link>
+                        {/* Dashboard is the "Today" tab and Account is the "Me"
+                            tab in the app.
+
+                            Account deletion lives behind /account, which both
+                            stores require to stay reachable in-app. Hiding this
+                            entry does NOT weaken that: in the app the Me tab is
+                            a permanent bottom-bar destination pointing at the
+                            same page, which is more prominent than a link
+                            buried in a drawer, not less. On the web there is no
+                            tab bar, so the entry stays. */}
+                        {!isAppShell && (
+                          <>
+                            <Link href="/dashboard" className={`${styles.mobileNavLink} ${pathname === '/dashboard' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                              <LayoutDashboard size={20} /> Dashboard
+                            </Link>
+                            <Link href="/account" className={`${styles.mobileNavLink} ${pathname === '/account' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                              <UserCog size={20} /> Account
+                            </Link>
+                          </>
+                        )}
+                        {PAYMENTS_ENABLED && (
+                          <Link href="/pricing" className={`${styles.mobileNavLink} ${pathname === '/pricing' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                            <CreditCard size={20} /> Credits
+                          </Link>
+                        )}
+                      </div>
+
+                      <p className={styles.mobileGroup}>Learn</p>
+                      <div className={styles.mobileGroupLinks}>
+                        <Link href="/learn" className={`${styles.mobileNavLink} ${pathname === '/learn' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                          <Compass size={20} /> Start here
+                        </Link>
+                        <Link href="/blog" className={`${styles.mobileNavLink} ${pathname === '/blog' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                          <BookOpen size={20} /> Writing
+                        </Link>
+                      </div>
+
+                      {/* Kept out of the groups: neither is something a seeker
+                          is looking for, and both belong at the bottom. */}
                       <Link href="/astrologer/register" className={`${styles.mobileNavLink} ${pathname.startsWith('/astrologer') ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                        <Sparkles size={20} /> Become an Astrologer
+                        <Sparkles size={20} /> Become an astrologer
                       </Link>
-
-                      {/* Admin reaches the console from the app too. isAdmin is
-                          already on the session (see the session callback in
-                          auth.ts), so no extra request is needed — and every
-                          admin route re-checks server-side regardless. */}
-                      {/* /admin, not /admin/astrologers — the console's own
-                          sidebar reaches every section from there. Deep-linking
-                          to one queue was why the app appeared to have an admin
-                          area containing nothing but astrologers. */}
                       {session?.user?.isAdmin && (
                         <Link href="/admin" className={`${styles.mobileNavLink} ${pathname.startsWith('/admin') ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
                           <UserCog size={20} /> Admin
                         </Link>
-                      )}
-                      <Link href="/synastry" className={`${styles.mobileNavLink} ${pathname === '/synastry' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                        <Users size={20} /> Relationships
-                      </Link>
-                      <Link href="/blog" className={`${styles.mobileNavLink} ${pathname === '/blog' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                        <BookOpen size={20} /> Blog
-                      </Link>
-                      {/* This drawer is a SEPARATE hardcoded list from the
-                          desktop nav above, so anything added there has to be
-                          added here too or it does not exist in the app at all
-                          — which is exactly what happened to /learn, /patterns
-                          and /saved when they shipped. */}
-                      <Link href="/forecast" className={`${styles.mobileNavLink} ${pathname === '/forecast' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                        <CalendarClock size={20} /> What is ahead
-                      </Link>
-                      <Link href="/muhurat" className={`${styles.mobileNavLink} ${pathname === '/muhurat' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                        <Clock size={20} /> When to begin
-                      </Link>
-                      <Link href="/prakriti" className={`${styles.mobileNavLink} ${pathname === '/prakriti' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                        <Sparkles size={20} /> Your Prakriti
-                      </Link>
-                      <Link href="/patterns" className={`${styles.mobileNavLink} ${pathname === '/patterns' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                        <Orbit size={20} /> Sade Sati &amp; Doshas
-                      </Link>
-                      <Link href="/saved" className={`${styles.mobileNavLink} ${pathname === '/saved' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                        <Bookmark size={20} /> Saved insights
-                      </Link>
-                      <Link href="/learn" className={`${styles.mobileNavLink} ${pathname === '/learn' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                        <Compass size={20} /> Learn
-                      </Link>
-                      {PAYMENTS_ENABLED && (
-                        <Link href="/pricing" className={`${styles.mobileNavLink} ${pathname === '/pricing' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                          <CreditCard size={20} /> Credits
-                        </Link>
-                      )}
-                      {/* Dashboard is the "Today" tab and Account is the "Me" tab in
-                          the app.
-
-                          Account deletion lives behind /account, which both stores
-                          require to stay reachable in-app. Hiding this entry does NOT
-                          weaken that: in the app the Me tab is a permanent bottom-bar
-                          destination pointing at the same page, which is more
-                          prominent than a link buried in a drawer, not less. On the
-                          web there is no tab bar, so the entry stays. */}
-                      {!isAppShell && (
-                        <>
-                          <Link href="/dashboard" className={`${styles.mobileNavLink} ${pathname === '/dashboard' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                            <LayoutDashboard size={20} /> Dashboard
-                          </Link>
-                          <Link href="/account" className={`${styles.mobileNavLink} ${pathname === '/account' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                            <UserCog size={20} /> Account
-                          </Link>
-                        </>
                       )}
                     </>
                   ) : (

@@ -93,12 +93,34 @@ export default function ForecastContent() {
         <main className={styles.page}>
             <header className={styles.head}>
                 <p className="cosmic-label">Agrima · What is ahead</p>
-                <h1 className="mystic-text">Your horizons</h1>
+                <h1 className="mystic-text">What&rsquo;s coming up</h1>
                 <p className={styles.standfirst}>
-                    Not a horoscope. These are the dates your own chart turns over — when a
-                    sub-period ends, when a slow planet reaches a new sign — taken from your
-                    dasha tree and the actual sky.
+                    The dates something actually changes in your chart — not a horoscope, and
+                    not written for your star sign. If nothing changes in the window you pick,
+                    this page says so.
                 </p>
+                <details className={styles.explainer}>
+                    <summary>How this works, in plain English</summary>
+                    <p>
+                        Indian astrology divides a life into long chapters, each governed by one
+                        planet. A chapter can run for six years or twenty, and inside it are
+                        shorter stretches governed by other planets — so at any moment you are
+                        in a big chapter and a smaller one inside it. Those are worked out from
+                        exactly where the Moon was when you were born, so they are yours and
+                        nobody else&rsquo;s.
+                    </p>
+                    <p>
+                        Separately, the slow-moving planets — Saturn, Jupiter and the two points
+                        called Rahu and Ketu — cross from one sign into the next every year or
+                        few. Those crossings are the same for everybody, but which part of
+                        <em> your</em> life they touch depends on your own chart.
+                    </p>
+                    <p>
+                        This page lists both, with dates. That is all it does. Nothing here is
+                        written by the AI, and nothing predicts an event — a date tells you when
+                        conditions shift, not what will happen to you on it.
+                    </p>
+                </details>
             </header>
 
             <nav className={styles.tabs} aria-label="Forecast horizon">
@@ -147,9 +169,11 @@ export default function ForecastContent() {
                         </p>
                         {data.period.mahadasha && (
                             <p className={styles.periodBody}>
-                                Running throughout: <strong>{data.period.mahadasha}</strong> mahadasha
+                                Throughout this window you are in your{' '}
+                                <strong>{data.period.mahadasha}</strong> chapter
                                 {data.period.antardasha && (
-                                    <>, <strong>{data.period.antardasha}</strong> sub-period</>
+                                    <>, and within it a shorter <strong>{data.period.antardasha}</strong>{' '}
+                                    stretch</>
                                 )}
                                 .
                             </p>
@@ -215,9 +239,10 @@ export default function ForecastContent() {
                     )}
 
                     <p className={styles.method}>
-                        Period boundaries come from your stored dasha tree; ingress dates are
-                        found by searching the ephemeris to the day. Nothing on this page is
-                        written by a model. <Link href="/timing">See the full timeline</Link>.
+                        Chapter dates come from your own birth chart. Planet crossings are found
+                        by checking the real positions of the planets, day by day, until the
+                        date they change sign. Nothing on this page is written by the AI.{' '}
+                        <Link href="/timing">See your whole life timeline</Link>.
                     </p>
 
                     <DisclaimerNote />

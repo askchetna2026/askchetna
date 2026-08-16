@@ -55,6 +55,19 @@ export interface ForecastResult {
 /** Planets slow enough that a sign change inside a window is worth naming. */
 export const SLOW_PLANETS = ['Saturn', 'Jupiter', 'Rahu', 'Ketu'] as const;
 
+/**
+ * How long each one spends in a sign, in words.
+ *
+ * Per planet rather than one phrase for all four: they differ by more than
+ * double, and a single figure would be wrong for three of them.
+ */
+const DWELL: Record<(typeof SLOW_PLANETS)[number], string> = {
+    Saturn: 'for about two and a half years',
+    Jupiter: 'for about a year',
+    Rahu: 'for about eighteen months',
+    Ketu: 'for about eighteen months',
+};
+
 interface DashaNode {
     lord: string;
     start: string;
@@ -93,8 +106,8 @@ function dashaEvents(chart: ChartData, fromMs: number, toMs: number): ForecastEv
             events.push({
                 date: isoDay(end),
                 kind: 'dasha',
-                title: `${maha.lord} mahadasha ends`,
-                detail: 'A chapter boundary — the longest cycle in the chart turns over.',
+                title: `Your ${maha.lord} chapter ends`,
+                detail: 'The longest cycle in your chart turns over — a new chapter begins the same day.',
             });
         }
 
@@ -104,8 +117,8 @@ function dashaEvents(chart: ChartData, fromMs: number, toMs: number): ForecastEv
                 events.push({
                     date: isoDay(aEnd),
                     kind: 'antardasha',
-                    title: `${antar.lord} sub-period ends`,
-                    detail: `Inside the ${maha.lord} mahadasha.`,
+                    title: `Your ${antar.lord} stretch ends`,
+                    detail: `A shorter stretch inside your longer ${maha.lord} chapter.`,
                 });
             }
         }
@@ -197,19 +210,23 @@ export async function ingressEvents(
                 date: isoDay(hi),
                 kind: 'ingress',
                 title: `${planet} enters ${ZODIAC_SIGNS[signB]}`,
+                // Said as a fact about the sky and a fact about their chart,
+                // without the counting-houses vocabulary. "The 7th sign from
+                // your Moon" means nothing to someone who has not been taught
+                // to count houses, and most readers have not.
+                //
+                // The dwell time is per planet. It briefly said "roughly two
+                // and a half years" for all four while this was being made
+                // readable — which is Saturn's pace and nobody else's: Jupiter
+                // clears a sign in about a year.
                 detail: house
-                    ? `The ${house}${ordinal(house)} sign from your Moon, leaving ${ZODIAC_SIGNS[signA]}.`
-                    : `Moving out of ${ZODIAC_SIGNS[signA]}.`,
+                    ? `Leaving ${ZODIAC_SIGNS[signA]}, where it has been ${DWELL[planet]}. This is the part of your chart ${house} signs on from where your Moon sits.`
+                    : `Leaving ${ZODIAC_SIGNS[signA]}.`,
             });
         }
     }
 
     return events;
-}
-
-function ordinal(n: number): string {
-    if (n % 100 >= 11 && n % 100 <= 13) return 'th';
-    return ['th', 'st', 'nd', 'rd'][n % 10] ?? 'th';
 }
 
 /**

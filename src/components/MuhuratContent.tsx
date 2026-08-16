@@ -74,12 +74,33 @@ export default function MuhuratContent() {
         <main className={styles.page}>
             <header className={styles.head}>
                 <p className="cosmic-label">Muhurta · Choosing a time</p>
-                <h1 className="mystic-text">When to begin</h1>
+                <h1 className="mystic-text">Good times today</h1>
                 <p className={styles.standfirst}>
-                    Pick what you are about to do. The windows below are today&rsquo;s, worked
-                    out from sunrise at your own location — the daylight span divided into
-                    eight, each part taking its character from the weekday rotation.
+                    Pick what you are about to do, and this shows you the better and worse
+                    hours for it today.
                 </p>
+                <details className={styles.explainer}>
+                    <summary>How this works, in plain English</summary>
+                    <p>
+                        Indian tradition splits the daylight — sunrise to sunset — into eight
+                        equal stretches, and gives each one a name and a character. Which name
+                        lands on which stretch depends on the day of the week, so Monday&rsquo;s
+                        pattern is different from Tuesday&rsquo;s.
+                    </p>
+                    <p>
+                        Three of the eight are considered good, one is for anything on the move,
+                        and three are usually avoided. Because it all counts from sunrise, the
+                        times shift a little every day and depend on where you are — which is
+                        why this is worked out from your own location rather than a fixed
+                        timetable.
+                    </p>
+                    <p>
+                        There are also two stretches most people avoid regardless, called Rahu
+                        Kaalam and Yamaganda. They follow a different rule, so a window can be
+                        good by one count and best avoided by the other. Where that happens,
+                        both are shown rather than one being quietly picked.
+                    </p>
+                </details>
             </header>
 
             <nav className={styles.intentions} aria-label="What are you doing">
@@ -131,17 +152,20 @@ export default function MuhuratContent() {
                         </p>
                         {data.nakshatra && data.category && (
                             <p className={styles.nakshatra}>
-                                Today runs under <strong>{data.nakshatra}</strong> —{' '}
-                                {data.category.toLowerCase()}. {data.categoryNote}
+                                The Moon sits in <strong>{data.nakshatra}</strong> today, which the
+                                tradition calls a {data.category.toLowerCase()} one.{' '}
+                                {data.categoryNote}
                                 {data.categorySuits === false && (
-                                    <> That is not among the characters this suits, which is worth
-                                    weighing against the windows below.</>
+                                    <> That is not the character this particular thing suits, so
+                                    weigh it against the hours below rather than either on its own.</>
                                 )}
                             </p>
                         )}
                         <p className={styles.abhijit}>
-                            Abhijit muhurta: {clock(data.abhijit.start)}–{clock(data.abhijit.end)}.
-                            Traditionally open for almost anything, whatever else the day holds.
+                            There is also a short stretch around midday —{' '}
+                            {clock(data.abhijit.start)} to {clock(data.abhijit.end)} — called
+                            Abhijit, which tradition treats as open for almost anything whatever
+                            else the day holds.
                         </p>
                     </section>
 
@@ -186,16 +210,18 @@ export default function MuhuratContent() {
                     </ul>
 
                     <p className={styles.caveat}>
-                        A muhurat does not make things work. It is a convention about when to
-                        begin, and the most it honestly offers is one less reason to hesitate.
-                        If a window suits and the day does not, or the reverse, that is the two
-                        conventions disagreeing — not a hidden answer.
+                        Picking a good hour does not make a thing work. This is a custom about
+                        when to start, and the most it honestly offers is one less reason to
+                        hesitate. If you have to act at a bad hour, act — nothing here is a
+                        reason to put off something that matters.
                     </p>
 
                     <p className={styles.method}>
-                        Choghadiya: the daylight span divided into eight from sunrise, each part
-                        labelled by the weekday rotation. Rahu Kaalam and Yamaganda are marked
-                        where they overlap. <Link href="/how-we-calculate">How we calculate</Link>.
+                        The method is called Choghadiya, and it is arithmetic rather than
+                        opinion: sunrise to sunset split into eight, named by the weekday. Every
+                        time on this page is worked out for your own location, so two people in
+                        different cities see different hours on the same day.{' '}
+                        <Link href="/how-we-calculate">How we calculate</Link>.
                     </p>
 
                     <DisclaimerNote />

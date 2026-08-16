@@ -260,3 +260,49 @@
 @media (hover: hover) and (pointer: fine) {
     .gateBtn:hover { background: var(--btn-bg-hover); }
 }
+
+/* ── the plain-English explainer ─────────────────────────────────────────
+   Collapsed. Someone who knows the tradition should not scroll past it;
+   someone who does not needs it before the rest of the page means anything. */
+
+.explainer {
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-md);
+    background: var(--bg-panel);
+    padding: 0 18px;
+}
+
+.explainer summary {
+    padding: 14px 0;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: var(--text-14);
+    font-weight: 600;
+    color: var(--accent-gold);
+    list-style: none;
+}
+
+.explainer summary::-webkit-details-marker { display: none; }
+
+.explainer summary::after {
+    content: '+';
+    margin-left: auto;
+    font-size: var(--text-18);
+    color: var(--text-muted);
+}
+
+.explainer[open] summary::after { content: '−'; }
+
+.explainer p {
+    margin: 0 0 14px;
+    max-width: var(--measure);
+    font-size: var(--text-15);
+    line-height: 1.7;
+    color: var(--text-muted);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .explainer summary:hover { color: var(--accent-coral); }
+}

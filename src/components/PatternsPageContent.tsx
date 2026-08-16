@@ -70,11 +70,37 @@ export default function PatternsPageContent() {
                 <p className="cosmic-label">Yoga &amp; Dosha</p>
                 <h1 className="mystic-text">The patterns people ask about</h1>
                 <p className={styles.standfirst}>
-                    Sade Sati, Mangal Dosha, Kala Sarpa. These are the terms most people meet
-                    first, usually somewhere that wanted them worried. Here is whether each one
-                    is actually present in your chart, which placements decide it, and what the
-                    tradition says moderates it.
+                    Sade Sati, Mangal Dosha, Kala Sarpa — the names people usually meet first,
+                    and usually somewhere that wanted them frightened. This checks your own
+                    chart and tells you plainly what is there and what is not.
                 </p>
+                <details className={styles.explainer}>
+                    <summary>What these names actually mean</summary>
+                    <p>
+                        Indian astrology has names for particular arrangements of planets. Some
+                        are considered helpful, some difficult. They are not curses and they are
+                        not diagnoses — they are descriptions of where the planets happened to be
+                        when you were born, or where they are now.
+                    </p>
+                    <p>
+                        <strong>Sade Sati</strong> is the roughly seven-and-a-half years when
+                        Saturn passes through the part of the sky around where your Moon was at
+                        birth. It reaches everyone, about once every thirty years.
+                    </p>
+                    <p>
+                        <strong>Mangal Dosha</strong> means Mars sits in one of a handful of
+                        specific places in your chart. It is traditionally raised when matching
+                        two people for marriage. <strong>Kala Sarpa</strong> means all the
+                        planets fall on one side of an imaginary line across your chart.
+                    </p>
+                    <p>
+                        The important part: none of these decide anything on its own. Each has
+                        conditions the tradition says soften it, and each is one factor in a
+                        chart that has dozens. Anyone who tells you one of these determines your
+                        marriage or your future is overstating what it can do — often because
+                        they are selling a remedy for it.
+                    </p>
+                </details>
             </header>
 
             {status === 'loading' && (

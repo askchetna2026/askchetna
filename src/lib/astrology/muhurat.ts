@@ -56,13 +56,13 @@ export interface Intention {
 /* ── Choghadiya ─────────────────────────────────────────────────────────── */
 
 const CHOGHADIYA_META: Record<string, { character: string; quality: Quality }> = {
-    Amrit: { character: 'The most open of the eight. Traditionally used for anything that matters.', quality: 'good' },
-    Shubh: { character: 'Used for ceremony, commitments and anything formal.', quality: 'good' },
-    Labh: { character: 'Used for gain — work, study, trade, anything you want to compound.', quality: 'good' },
-    Char: { character: 'Movable. Traditionally the window for travel and for things that need to keep moving.', quality: 'neutral' },
-    Rog: { character: 'Traditionally avoided, except for confronting a difficulty head-on.', quality: 'avoid' },
-    Kaal: { character: 'Traditionally avoided for anything begun with hope.', quality: 'avoid' },
-    Udveg: { character: 'Restless. Traditionally avoided for decisions.', quality: 'avoid' },
+    Amrit: { character: 'The best window of the day. Traditionally used for anything that matters.', quality: 'good' },
+    Shubh: { character: 'A good window. Traditionally used for ceremonies, promises and anything formal.', quality: 'good' },
+    Labh: { character: 'A good window for anything you want to grow — work, study, money, learning something new.', quality: 'good' },
+    Char: { character: 'A moving window. Traditionally the one for setting off on a journey, or anything that needs to keep moving.', quality: 'neutral' },
+    Rog: { character: 'Usually avoided. The tradition keeps it for facing a problem head-on, not for starting something hopeful.', quality: 'avoid' },
+    Kaal: { character: 'Usually avoided for anything you are starting with hope behind it.', quality: 'avoid' },
+    Udveg: { character: 'A restless window. Usually avoided for making decisions.', quality: 'avoid' },
 };
 
 /**

@@ -188,7 +188,7 @@ export function calculatePrakriti(chart: ChartData): PrakritiResult | null {
             found: ascSign,
             dosha: ascDosha,
             points: WEIGHT.ascendant,
-            why: 'The first house is read as the body, so the sign on it carries the most weight here.',
+            why: 'The sign coming up over the horizon at your birth. Tradition treats this as standing for the body itself, so it counts for most.',
         });
     }
 
@@ -201,7 +201,7 @@ export function calculatePrakriti(chart: ChartData): PrakritiResult | null {
             found: lord,
             dosha: lordDosha,
             points: WEIGHT.ascendantLord,
-            why: `${lord} governs ${ascSign}, so its nature is read into the body it rules.`,
+            why: `Every sign has a planet that governs it. ${lord} governs ${ascSign}, so its character is read into yours.`,
         });
     }
 
@@ -216,7 +216,7 @@ export function calculatePrakriti(chart: ChartData): PrakritiResult | null {
                 found: moonSign,
                 dosha: moonDosha,
                 points: WEIGHT.moon,
-                why: 'Prakriti describes temperament as well as build, and the Moon is the mind.',
+                why: 'Your nature is temperament as much as build, and the Moon stands for the mind. It counts, but for less than the two above.',
             });
         }
     }
@@ -238,7 +238,7 @@ export function calculatePrakriti(chart: ChartData): PrakritiResult | null {
             found: `${name} in ${ZODIAC_SIGNS[Math.floor(longitude / 30)]}`,
             dosha,
             points: WEIGHT.firstHousePlanet,
-            why: 'A graha standing in the first house is held to colour the physical self directly.',
+            why: 'A planet sitting in the first part of your chart is held to colour the body directly.',
         });
     }
 

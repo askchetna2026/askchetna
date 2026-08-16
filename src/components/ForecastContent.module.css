@@ -320,3 +320,58 @@
         gap: 2px;
     }
 }
+
+/* ── the plain-English explainer ──────────────────────────────────────────
+   Collapsed by default. Someone who already knows the tradition does not
+   need it and should not have to scroll past it; someone who does not needs
+   it before anything else on the page makes sense. A <details> is the one
+   control that serves both without a state machine. */
+
+.explainer {
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-md);
+    background: var(--bg-panel);
+    padding: 0 18px;
+}
+
+.explainer summary {
+    padding: 14px 0;
+    /* 44px tap floor for the whole row. */
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: var(--text-14);
+    font-weight: 600;
+    color: var(--accent-gold);
+    list-style: none;
+}
+
+.explainer summary::-webkit-details-marker {
+    display: none;
+}
+
+.explainer summary::after {
+    content: '+';
+    margin-left: auto;
+    font-size: var(--text-18);
+    color: var(--text-muted);
+}
+
+.explainer[open] summary::after {
+    content: '−';
+}
+
+.explainer p {
+    margin: 0 0 14px;
+    max-width: var(--measure);
+    font-size: var(--text-15);
+    line-height: 1.7;
+    color: var(--text-muted);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .explainer summary:hover {
+        color: var(--accent-coral);
+    }
+}

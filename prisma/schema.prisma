@@ -44,6 +44,14 @@ model User {
   isSubscribed           Boolean   @default(true) // For Newsletter
   whatsappOptIn          Boolean   @default(false) // Opt-in for WhatsApp notifications
 
+  /// Which language the AI writes in: "en" or "hi".
+  ///
+  /// A column on User rather than a preferences row, unlike notifications:
+  /// every AI call needs it, so it should come back with the user it is
+  /// already loading rather than costing a second query on the paid path.
+  /// The interface itself is still English — see src/lib/i18n/terms.ts.
+  language               String    @default("en")
+
   profiles               Profile[]
   questions              Question[]
   creditPacks            CreditPack[]

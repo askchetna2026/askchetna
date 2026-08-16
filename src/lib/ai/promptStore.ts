@@ -1,5 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
+// Both Node-only, like this module itself — it already reads from disk.
+import { currentLanguage } from '@/lib/i18n/context';
+import { languageInstruction } from '@/lib/i18n/terms';
 
 /**
  * Every prompt this app sends to a model, kept in `prompts/ai-prompts.md`
@@ -167,7 +170,19 @@ export function getPromptTemplate(id: PromptId): string {
  * Values are substituted literally and are NOT escaped: prompts are prose sent
  * to a model, not markup. Callers pass already-serialised chart JSON.
  */
-export function renderPrompt(id: PromptId, vars: Record<string, string> = {}): string {
+export function renderPrompt(
+    id: PromptId,
+    vars: Record<string, string> = {},
+    /**
+     * Appended after substitution, not stored in the markdown.
+     *
+     * The same rule applies to all fifteen flows, and fifteen copies of it in
+     * ai-prompts.md would be fifteen places for it to drift. Appended AFTER so
+     * it cannot be overridden by anything a template happens to say earlier —
+     * the last instruction in a prompt is the one a model weighs most.
+     */
+    suffix = ''
+): string {
     const template = getPromptTemplate(id);
     const missing: string[] = [];
 
@@ -187,7 +202,11 @@ export function renderPrompt(id: PromptId, vars: Record<string, string> = {}): s
         );
     }
 
-    return rendered;
+    // The language rule is appended automatically rather than at twelve call
+    // sites, so a new flow cannot forget it and quietly answer in English.
+    const language = suffix || languageInstruction(currentLanguage());
+
+    return language ? `${rendered}\n${language}` : rendered;
 }
 
 /** Drop the parsed copy. For tests and for the check script. */

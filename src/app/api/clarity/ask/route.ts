@@ -14,6 +14,7 @@ import {
     maybeSendFirstClarityFollowupEmail,
     maybeSendLowCreditLifecycleEmail,
 } from '@/lib/lifecycleEmails';
+import { applyUserLanguage } from '@/lib/i18n/context';
 
 export async function POST(req: NextRequest) {
     try {
@@ -25,6 +26,10 @@ export async function POST(req: NextRequest) {
         const authed = await requireUser();
         if (!authed.ok) return authed.response;
         const session = { user: { id: authed.userId } };
+
+        // The seeker's language, attached to this request so every prompt
+        // rendered below picks it up. See src/lib/i18n/context.ts.
+        await applyUserLanguage(session.user.id);
 
         // Burst protection (credits already cap overall usage)
         const burst = rateLimit(`ask:${session.user.id}`, { limit: 10, windowMs: 60 * 1000 });

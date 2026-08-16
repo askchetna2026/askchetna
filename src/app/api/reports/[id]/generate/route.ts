@@ -9,6 +9,7 @@ import { generateReportPDF, type ReportContent } from '@/lib/pdf';
 import { ANALYTICS_EVENTS } from '@/lib/analytics/events';
 import { recordAnalyticsEvent } from '@/lib/analytics/server';
 import { guardAiSpend } from '@/lib/ai/costGuard';
+import { applyUserLanguage } from '@/lib/i18n/context';
 
 export async function POST(
     req: NextRequest,
@@ -62,6 +63,10 @@ export async function POST(
         }
 
         if (forceRegenerate) {
+            // The seeker's language, attached to this request so every prompt
+            // rendered below picks it up. See src/lib/i18n/context.ts.
+            await applyUserLanguage(session.user.id);
+
             const limited = guardAiSpend(session.user.id, 'report-regenerate');
             if (limited) return limited;
         }

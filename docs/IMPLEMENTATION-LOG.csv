@@ -1,5 +1,5 @@
 ﻿"Date","Type","Area","What was implemented","Version","Commit"
-"2026-08-16","Other","","@ [v3.5.69] feat(calendar): the lunar days ahead, computed rather than tabulated","","74adafa"
+"2026-08-16","Feature","calendar","The lunar days ahead, computed rather than tabulated","v3.5.69","87d31f8"
 "2026-08-16","Feature","notifications","Tell people what is coming, once, and only if asked","v3.5.68","961961f"
 "2026-08-16","Feature","muhurat","Choose what you are doing, see today's windows for it","v3.5.67","9e1332e"
 "2026-08-16","Bug fix","ephemeris","Settle sidereal mode before the first real calculation","v3.5.66","22a0065"

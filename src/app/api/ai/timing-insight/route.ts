@@ -4,6 +4,7 @@ import prisma from '@/lib/prisma';
 import { generateTimingInsight } from '@/lib/ai/geminiService';
 import { ChartData } from '@/lib/astrology/calculator';
 import { guardAiSpend } from '@/lib/ai/costGuard';
+import { applyUserLanguage } from '@/lib/i18n/context';
 
 export async function POST(req: NextRequest) {
     try {
@@ -11,6 +12,10 @@ export async function POST(req: NextRequest) {
         if (!session?.user?.id) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
+
+        // The seeker's language, attached to this request so every prompt
+        // rendered below picks it up. See src/lib/i18n/context.ts.
+        await applyUserLanguage(session.user.id);
 
         const limited = guardAiSpend(session.user.id, 'timing-insight');
         if (limited) return limited;

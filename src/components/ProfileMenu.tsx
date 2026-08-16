@@ -9,6 +9,9 @@ import {
 } from 'lucide-react';
 import { isClientNativeApp } from '@/lib/platform';
 import { useComplexity } from '@/context/ComplexityContext';
+// terms.ts only — context.ts is Node-only and must never reach a client bundle.
+import { LANGUAGES, DEFAULT_LANGUAGE, isLanguage } from '@/lib/i18n/terms';
+import type { Language } from '@/lib/i18n/terms';
 import styles from './ProfileMenu.module.css';
 
 /**
@@ -21,10 +24,51 @@ import styles from './ProfileMenu.module.css';
  * The Account entry says what it contains for the same reason.
  */
 export default function ProfileMenu() {
-    const { data: session } = useSession();
+    const { data: session, status } = useSession();
     const pathname = usePathname();
     const [open, setOpen] = useState(false);
     const { complexity, setComplexity } = useComplexity();
+
+    const [language, setLanguage] = useState<Language>(DEFAULT_LANGUAGE);
+    const [savingLanguage, setSavingLanguage] = useState(false);
+
+    useEffect(() => {
+        if (status !== 'authenticated') return;
+        let cancelled = false;
+        fetch('/api/user/language')
+            .then((res) => (res.ok ? res.json() : null))
+            .then((data) => {
+                if (!cancelled && isLanguage(data?.language)) setLanguage(data.language);
+            })
+            .catch(() => {
+                // English is the default and the fallback; nothing to report.
+            });
+        return () => { cancelled = true; };
+    }, [status]);
+
+    /**
+     * Two languages, so a cycle rather than a picker. A select for a binary
+     * choice is a menu with one useful row in it.
+     */
+    const cycleLanguage = async () => {
+        if (savingLanguage) return;
+        const next: Language = language === 'en' ? 'hi' : 'en';
+
+        setSavingLanguage(true);
+        setLanguage(next);
+        try {
+            const res = await fetch('/api/user/language', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ language: next }),
+            });
+            if (!res.ok) throw new Error();
+        } catch {
+            setLanguage(language);
+        } finally {
+            setSavingLanguage(false);
+        }
+    };
     const ref = useRef<HTMLDivElement>(null);
 
     // App Info is meaningful in the app and meaningless in a browser. Safe to
@@ -102,11 +146,37 @@ export default function ProfileMenu() {
                             setComplexity(complexity === 'SIMPLE' ? 'TECHNICAL' : 'SIMPLE');
                         }}
                     >
-                        <Languages size={17} />
+                        <Settings size={17} />
+                        {/* Was labelled "Language Mode", which it never was —
+                            it switches how much jargon is shown, and sat right
+                            where a real language switch belongs. Renamed so the
+                            two are not confused now that one exists. */}
                         <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                            Language Mode: {complexity === 'SIMPLE' ? 'Simple' : 'Technical'}
+                            Detail: {complexity === 'SIMPLE' ? 'Simple' : 'Technical'}
                             <small className={styles.sub}>
                                 {complexity === 'SIMPLE' ? 'Jargon hidden' : 'Full astrological data'}
+                            </small>
+                        </span>
+                    </button>
+
+                    <button
+                        type="button"
+                        className={styles.item}
+                        role="menuitem"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            void cycleLanguage();
+                        }}
+                        disabled={savingLanguage}
+                    >
+                        <Languages size={17} />
+                        <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                            Language: {LANGUAGES.find((l) => l.code === language)?.native ?? 'English'}
+                            <small className={styles.sub}>
+                                {/* Said plainly, because a switch that changes
+                                    less than a reader expects is worse than one
+                                    that says what it does. */}
+                                What Chetna writes in. The app&rsquo;s own labels stay English for now.
                             </small>
                         </span>
                     </button>

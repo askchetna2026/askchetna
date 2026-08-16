@@ -191,6 +191,11 @@ export async function POST(
     // user id to use, which is the whole reason userId is nullable.
     let reply: { id: string; body: string; sentAt: string } | null = null;
     try {
+        // The seeker's language, so an AI astrologer answers in the language
+        // they asked in. See src/lib/i18n/context.ts.
+        const { applyUserLanguage } = await import('@/lib/i18n/context');
+        await applyUserLanguage(session.user.id);
+
         const { generateConsultationReply } = await import('@/lib/ai/geminiService');
 
         // Fetch user's active profile to provide context to AI

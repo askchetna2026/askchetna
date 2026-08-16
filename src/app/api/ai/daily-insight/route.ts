@@ -7,6 +7,7 @@ import { generateDailyInsight } from '@/lib/ai/geminiService';
 import { guardAiSpend } from '@/lib/ai/costGuard';
 import type { ChartData } from '@/lib/astrology/zodiac';
 import { getZodiacSign } from '@/lib/astrology/zodiac';
+import { applyUserLanguage } from '@/lib/i18n/context';
 
 /**
  * The seeker's note for today.
@@ -89,6 +90,10 @@ export async function POST(req: NextRequest) {
         if (!profile?.chartData) {
             return NextResponse.json({ error: 'No chart yet', code: 'PROFILE_MISSING' }, { status: 404 });
         }
+
+        // The seeker's language, attached to this request so every prompt
+        // rendered below picks it up. See src/lib/i18n/context.ts.
+        await applyUserLanguage(session.user.id);
 
         // Only now — after the cache miss and the profile check — does spend
         // become possible, so this is where the rate guard belongs.

@@ -154,6 +154,44 @@ async function getSwe() {
             // @ts-ignore
             instance.set_ephe_path('sweph');
 
+            // Settle the sidereal mode before any real calculation runs.
+            //
+            // Without this, every calc_ut AFTER the first one returned wrong
+            // longitudes for Jupiter and Saturn — and only those two. Measured
+            // from a cold server, twice, for 16 Aug 2026: run 1 gave Saturn
+            // 350.166 and Jupiter 106.093, runs 2 through 5 gave 22.151 and
+            // 98.452. The Sun, the Moon and the ascendant were byte-identical
+            // across all of them.
+            //
+            // 350.166 is the correct figure. It puts Saturn in Pisces, which is
+            // what /patterns independently reports when it finds Sade Sati in
+            // its rising phase for an Aries Moon, and a sweep across mid-August
+            // now shows Saturn retrograding smoothly from 350.261 to 349.976
+            // while Jupiter advances through Cancer — both continuous and both
+            // at the right speed. The 22.151 figure is 32 degrees away, which
+            // is roughly two and a half years of Saturn.
+            //
+            // This is the worst possible place for a wrong number, which is why
+            // it is worth a warm-up rather than a comment: Profile.chartData is
+            // calculated ONCE at onboarding and stored for the life of the
+            // account. Onboarding is essentially never a process's first
+            // ephemeris call, so the stored chart took the wrong branch —
+            // carrying a bad Saturn and Jupiter through Sade Sati, Gajakesari,
+            // Kala Sarpa and every reading built on them.
+            //
+            // The sid_mode and flags below match calculateChart deliberately: a
+            // warm-up in a different mode would not settle the same state.
+            try {
+                instance.set_sid_mode(1, 0, 0);
+                // J2000, an arbitrary well-covered epoch.
+                instance.calc_ut(2451545.0, 6 /* Saturn */, 65538);
+                instance.calc_ut(2451545.0, 5 /* Jupiter */, 65538);
+            } catch (warmupError) {
+                // A failed warm-up is not fatal — the instance still works, it
+                // just means the next real call may be the one that is wrong.
+                console.error('[SwissEph] Warm-up calculation failed:', warmupError);
+            }
+
             seLog('[SwissEph] Initialization complete!');
 
             sweInstance = instance;

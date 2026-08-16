@@ -1,0 +1,249 @@
+.page {
+    padding: 72px 24px 96px;
+    max-width: 780px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+.head {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.head h1 {
+    margin: 0;
+}
+
+.standfirst {
+    margin: 0;
+    max-width: var(--measure);
+    color: var(--text-muted);
+    font-size: var(--text-17);
+    line-height: 1.7;
+}
+
+/* ── horizon tabs ─────────────────────────────────────────────────────── */
+
+.tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tab {
+    /* 44px tap floor. */
+    min-height: 44px;
+    padding: 10px 18px;
+    border: 1px solid var(--card-border);
+    border-radius: 999px;
+    background: var(--bg-panel);
+    color: var(--text-muted);
+    font-family: inherit;
+    font-size: var(--text-14);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.tabOn {
+    background: var(--btn-bg);
+    border-color: var(--btn-bg);
+    color: var(--btn-fg);
+}
+
+.state {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-muted);
+    font-size: var(--text-15);
+}
+
+.gate {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 28px;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-md);
+    background: var(--bg-panel);
+}
+
+.gate p {
+    margin: 0;
+    max-width: var(--measure);
+    color: var(--text-muted);
+}
+
+.gateBtn {
+    padding: 11px 22px;
+    border-radius: 999px;
+    background: var(--btn-bg);
+    color: var(--btn-fg);
+    font-size: var(--text-14);
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+}
+
+/* ── the window ───────────────────────────────────────────────────────── */
+
+.period {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 20px 24px;
+    background: var(--bg-panel);
+    border: 1px solid var(--card-border);
+    border-left: 4px solid var(--accent-gold-decor);
+    border-radius: var(--radius-md);
+}
+
+.periodLabel {
+    margin: 0;
+    font-size: var(--text-12);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.periodBody {
+    margin: 0;
+    max-width: var(--measure);
+    line-height: 1.65;
+}
+
+.moon {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 0;
+    font-size: var(--text-14);
+    color: var(--text-muted);
+}
+
+/* ── events ───────────────────────────────────────────────────────────── */
+
+/* A numbered list in markup because it IS ordered — these are sequential
+   dates — but the marker is suppressed: the date is the better ordinal. */
+.events {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.event {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 18px 0 18px 22px;
+    border-left: 2px solid var(--border-soft);
+    position: relative;
+}
+
+/* The dot on the timeline. Sits ON the rule, so the events read as one thread
+   rather than as separate cards. */
+.event::before {
+    content: '';
+    position: absolute;
+    left: -5px;
+    top: 24px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent-gold-decor);
+}
+
+.eventDate {
+    font-size: var(--text-11);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent-gold);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.eventTitle {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: var(--text-19);
+    font-weight: 400;
+    color: var(--foreground);
+}
+
+.eventDetail {
+    margin: 0;
+    max-width: var(--measure);
+    font-size: var(--text-15);
+    line-height: 1.65;
+    color: var(--text-muted);
+}
+
+/* ── the empty window ─────────────────────────────────────────────────── */
+
+/* Given real weight rather than greyed out. "Nothing changes" is the honest
+   answer for most weeks, and treating it as an empty state would teach people
+   to read it as a failure of the page. */
+.quiet {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 24px;
+    background: var(--bg-panel);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-md);
+}
+
+.quiet p {
+    margin: 0;
+    max-width: var(--measure);
+    line-height: 1.7;
+}
+
+.quietNote {
+    font-size: var(--text-14);
+    color: var(--text-muted);
+}
+
+.method {
+    margin: 0;
+    max-width: var(--measure);
+    padding-top: 18px;
+    border-top: 1px solid var(--border-soft);
+    font-size: var(--text-13);
+    line-height: 1.65;
+    color: var(--text-muted);
+}
+
+.method a {
+    color: var(--accent-gold);
+}
+
+@media (max-width: 640px) {
+    .page {
+        padding: 48px 18px 72px;
+    }
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .tab:not(.tabOn):hover {
+        border-color: var(--accent-gold);
+        color: var(--foreground);
+    }
+
+    .gateBtn:hover {
+        background: var(--btn-bg-hover);
+    }
+
+    .method a:hover {
+        color: var(--accent-coral);
+    }
+}

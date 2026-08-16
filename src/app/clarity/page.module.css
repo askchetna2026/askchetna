@@ -81,8 +81,22 @@ html.native-app .pageContainer {
    Fixed, so it is always where you left it. */
 .inputContainer {
     position: fixed;
-    left: 50%;
-    transform: translateX(-50%);
+
+    /* Centred with left/right/auto margins, NOT translateX(-50%).
+       
+       It used to be `left: 50%; transform: translateX(-50%)`, and the element
+       is a framer-motion node that animates `y` on entry. When that animation
+       settles motion writes `transform: none` inline — which silently removed
+       the -50% shift that `left: 50%` depended on. The composer then sat with
+       its left edge at the middle of the screen and the right half, including
+       the send button, off the viewport entirely. On a 375px screen it measured
+       left 188, right 531.
+       
+       Nothing here depends on `transform` any more, so motion is free to own
+       it. */
+    left: 0;
+    right: 0;
+    margin-inline: auto;
     bottom: calc(16px + env(safe-area-inset-bottom, 0px));
     z-index: 100;
 
@@ -150,11 +164,17 @@ html.native-app .inputContainer {
     z-index: 2;
 }
 
+/* A disabled send button still has to look like a button.
+   
+   This was white-on-white — background rgba(255,255,255,0.1) with
+   rgba(255,255,255,0.5) text, both left over from the retired dark theme. On
+   parchment that is very nearly invisible, and the button is disabled until the
+   question reaches ten characters, so someone arriving at an empty box could
+   not see a send control at all. Muted, but present. */
 .askBtn:disabled {
-    opacity: 0.5;
     cursor: not-allowed;
-    background: rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.5);
+    background: var(--bg-soft);
+    color: var(--text-muted);
     box-shadow: none;
 }
 

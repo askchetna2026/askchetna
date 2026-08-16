@@ -1,4 +1,5 @@
 ﻿"Date","Type","Area","What was implemented","Version","Commit"
+"2026-08-16","Documentation","","Note in CLAUDE.md that the implementation log is generated","v3.5.50","10eecc0"
 "2026-08-16","Documentation","","Keep a generated record of every commit, maintained by a hook","v3.5.49","aa49b4a"
 "2026-08-16","Bug fix","Ask Chetna AI","The composer was sitting half off the screen","v3.5.48","f48333f"
 "2026-08-16","Bug fix","Consultations","Start the paid clock on the first message, not on the click","v3.5.47","deff9a4"

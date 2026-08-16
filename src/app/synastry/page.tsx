@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { UserPlus, Check } from 'lucide-react';
 import styles from './page.module.css';
 import ProfileSelector from '@/components/ProfileSelector';
@@ -149,6 +150,81 @@ export default function SynastryPage() {
 
             {showResult && result && (
                 <div className={styles.resultSection}>
+                    {/* The calculation, before the reading of it — on screen as
+                        well as in the route. This page used to open with the
+                        model's impression of two charts and never showed a
+                        traditional matching at all. */}
+                    {result.ashtakoota && (
+                        <section className={styles.kootaCard}>
+                            <div className={styles.kootaHead}>
+                                <div>
+                                    <h3>Ashtakoota</h3>
+                                    <p className={styles.kootaSub}>
+                                        The eight-fold traditional matching
+                                    </p>
+                                </div>
+                                <div className={styles.kootaScore}>
+                                    <span className={styles.kootaTotal}>
+                                        {result.ashtakoota.total}
+                                    </span>
+                                    <span className={styles.kootaMax}>
+                                        of {result.ashtakoota.max}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <ul className={styles.kootaList}>
+                                {result.ashtakoota.kutas.map((k: {
+                                    key: string; name: string; score: number; max: number;
+                                    a: string; b: string; basis: string; disputed?: boolean;
+                                }) => (
+                                    <li key={k.key} className={styles.kootaRow}>
+                                        <div className={styles.kootaRowHead}>
+                                            <span className={styles.kootaName}>{k.name}</span>
+                                            <span className={styles.kootaPts}>
+                                                {k.score}<span className={styles.kootaOf}>/{k.max}</span>
+                                            </span>
+                                        </div>
+                                        <span className={styles.kootaBar} aria-hidden="true">
+                                            <span
+                                                className={styles.kootaFill}
+                                                style={{ width: `${(k.score / k.max) * 100}%` }}
+                                            />
+                                        </span>
+                                        <p className={styles.kootaPair}>
+                                            {k.a} · {k.b}
+                                            {k.disputed && (
+                                                <span className={styles.kootaVariant}>
+                                                    {' '}— traditions differ on this table
+                                                </span>
+                                            )}
+                                        </p>
+                                        <p className={styles.kootaBasis}>{k.basis}</p>
+                                    </li>
+                                ))}
+                            </ul>
+
+                            {(result.ashtakoota.mangal.a || result.ashtakoota.mangal.b) && (
+                                <p className={styles.kootaMangal}>
+                                    {result.ashtakoota.mangal.cancelled
+                                        ? 'Both charts carry Mangal Dosha, which the tradition treats as cancelling it. This is the part most often left out.'
+                                        : `Mangal Dosha is present in ${result.ashtakoota.mangal.a ? personA?.name : personB?.name}'s chart. It is one factor among many — see the full explanation.`}
+                                </p>
+                            )}
+
+                            {/* The number is the least interesting thing here,
+                                and saying so is the difference between a tool
+                                and a verdict. */}
+                            <p className={styles.kootaCaveat}>
+                                A score is a starting point for a conversation, not a
+                                result. Two charts that total well can still need work, and
+                                a low total describes where deliberate effort goes — not
+                                whether a relationship can succeed.{' '}
+                                <Link href="/patterns">What these terms mean</Link>.
+                            </p>
+                        </section>
+                    )}
+
                     <div className={styles.overviewCard}>
                         <h3>Energetic Overview</h3>
                         <p>{result.aiAnalysis.connectionOverview}</p>

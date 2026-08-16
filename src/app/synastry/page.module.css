@@ -464,3 +464,173 @@
     line-height: 1.5;
     text-align: center;
 }
+
+/* ── Ashtakoota ─────────────────────────────────────────────────────────────
+   Placed above the AI reading, and styled to look like a calculation rather
+   than a headline: the total is stated plainly and the eight rows underneath
+   are what a reader (or an astrologer) actually checks. A single big number
+   with nothing under it is how a matching score becomes a verdict. */
+
+.kootaCard {
+    padding: 28px;
+    margin-bottom: 24px;
+    background: var(--bg-panel);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.kootaHead {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.kootaHead h3 {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: var(--text-22);
+    font-weight: 400;
+    color: var(--foreground);
+}
+
+.kootaSub {
+    margin: 4px 0 0;
+    font-size: var(--text-13);
+    color: var(--text-muted);
+}
+
+.kootaScore {
+    display: flex;
+    align-items: baseline;
+    gap: 7px;
+    font-variant-numeric: tabular-nums;
+}
+
+.kootaTotal {
+    font-family: var(--font-heading);
+    font-size: var(--text-40);
+    line-height: 1;
+    color: var(--foreground);
+}
+
+.kootaMax {
+    font-size: var(--text-14);
+    color: var(--text-muted);
+}
+
+.kootaList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.kootaRow {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.kootaRowHead {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.kootaName {
+    font-size: var(--text-15);
+    font-weight: 600;
+    color: var(--foreground);
+}
+
+.kootaPts {
+    font-size: var(--text-15);
+    color: var(--foreground);
+    font-variant-numeric: tabular-nums;
+}
+
+.kootaOf {
+    color: var(--text-muted);
+}
+
+.kootaBar {
+    display: block;
+    height: 5px;
+    border-radius: 999px;
+    background: var(--bg-soft);
+    overflow: hidden;
+}
+
+/* Ornament, so the decorative gold is the right token here. Deliberately NOT
+   red-to-green: colouring a low kuta as danger is the fear framing this whole
+   surface is meant to avoid. */
+.kootaFill {
+    display: block;
+    height: 100%;
+    background: var(--accent-gold-decor);
+}
+
+.kootaPair {
+    margin: 2px 0 0;
+    font-size: var(--text-13);
+    color: var(--foreground);
+}
+
+.kootaVariant {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.kootaBasis {
+    margin: 0;
+    font-size: var(--text-13);
+    line-height: 1.55;
+    color: var(--text-muted);
+    max-width: var(--measure);
+}
+
+.kootaMangal {
+    margin: 0;
+    padding: 14px 16px;
+    background: var(--bg-soft);
+    border-left: 3px solid var(--accent-gold-decor);
+    font-size: var(--text-14);
+    line-height: 1.6;
+    max-width: var(--measure);
+}
+
+.kootaCaveat {
+    margin: 0;
+    padding: 14px 16px;
+    background: var(--bg-soft);
+    border-left: 3px solid var(--accent-coral);
+    font-size: var(--text-14);
+    line-height: 1.6;
+    max-width: var(--measure);
+}
+
+.kootaCaveat a {
+    color: var(--accent-gold);
+}
+
+@media (max-width: 640px) {
+    .kootaCard {
+        padding: 20px;
+    }
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .kootaCaveat a:hover {
+        color: var(--accent-coral);
+    }
+}

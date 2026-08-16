@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { calculateTaraBala } from '@/lib/astrology/calculator';
+import { calculateAshtakoota } from '@/lib/astrology/ashtakoota';
 import { generateSynastryResponse } from '@/lib/ai/geminiService';
 import { guardAiSpend } from '@/lib/ai/costGuard';
 
@@ -29,21 +30,27 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Charts must be generated first' }, { status: 400 });
         }
 
-        // 1. Calculate basic cross-chart patterns
+        // 1. The deterministic layer, FIRST.
+        //
+        // This route used to compute Tara Bala — one of the eight kutas — and
+        // then hand two raw charts to a language model, which meant the "match"
+        // was an AI's impression rather than a calculation. Ashtakoota is the
+        // actual traditional matching, and it runs before anything interprets.
         const moonA = chartA.planets.Moon.longitude;
         const moonB = chartB.planets.Moon.longitude;
 
-        // Tara Bala
         const taraA = calculateTaraBala(moonB, moonA);
         const taraB = calculateTaraBala(moonA, moonB);
+        const ashtakoota = calculateAshtakoota(chartA, chartB);
 
-        // 2. AI Analysis
+        // 2. AI interpretation, given the numbers rather than asked to invent them.
         const aiResponse = await generateSynastryResponse(chartA, chartB, {
             a: personA.name,
             b: personB.name
         });
 
         return NextResponse.json({
+            ashtakoota,
             taraBala: {
                 personA_affectedByB: taraA,
                 personB_affectedByA: taraB

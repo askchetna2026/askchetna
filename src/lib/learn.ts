@@ -129,6 +129,20 @@ export const CURRICULUM: LearnSection[] = [
                 href: '/patterns',
                 needsChart: true,
             },
+            {
+                title: 'What is ahead',
+                blurb:
+                    'Tomorrow, this week, this month, this year — the dates your own chart turns over. Nothing generated; every line is a calculation.',
+                href: '/forecast',
+                needsChart: true,
+            },
+            {
+                title: 'When to begin',
+                blurb:
+                    'Choose what you are about to do and see today’s windows for it, worked out from sunrise where you are.',
+                href: '/muhurat',
+                needsChart: true,
+            },
         ],
     },
     {

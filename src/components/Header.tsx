@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import styles from './Header.module.css';
 import Logo from './Logo';
 import ProfileMenu from './ProfileMenu';
-import { Menu, X, CreditCard, LayoutDashboard, LogOut, Info, BookOpen, MessageSquare, Sparkles, Users, UserCog, Settings, Compass, Orbit, Bookmark } from 'lucide-react';
+import { Menu, X, CreditCard, LayoutDashboard, LogOut, Info, BookOpen, MessageSquare, Sparkles, Users, UserCog, Settings, Compass, Orbit, Bookmark, CalendarClock, Clock } from 'lucide-react';
 import { PAYMENTS_ENABLED } from '@/lib/paymentConfig';
 import { isClientNativeApp } from '@/lib/platform';
 
@@ -212,6 +212,12 @@ export default function Header() {
                           added here too or it does not exist in the app at all
                           — which is exactly what happened to /learn, /patterns
                           and /saved when they shipped. */}
+                      <Link href="/forecast" className={`${styles.mobileNavLink} ${pathname === '/forecast' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                        <CalendarClock size={20} /> What is ahead
+                      </Link>
+                      <Link href="/muhurat" className={`${styles.mobileNavLink} ${pathname === '/muhurat' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                        <Clock size={20} /> When to begin
+                      </Link>
                       <Link href="/patterns" className={`${styles.mobileNavLink} ${pathname === '/patterns' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
                         <Orbit size={20} /> Sade Sati &amp; Doshas
                       </Link>

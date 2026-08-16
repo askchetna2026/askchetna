@@ -662,20 +662,59 @@ export function calculateSunriseSunsetApproximation(year: number, month: number,
 export function calculateMuhurtas(year: number, month: number, day: number, lat: number, lng: number) {
     const { sunriseUTC, sunsetUTC, solarNoonUTC } = calculateSunriseSunsetApproximation(year, month, day, lat, lng);
     
-    // Convert to target day Date objects in UTC
-    const sunriseDate = new Date(Date.UTC(year, month - 1, day, Math.floor(sunriseUTC), (sunriseUTC % 1) * 60));
-    let sunsetDate = new Date(Date.UTC(year, month - 1, day, Math.floor(sunsetUTC), (sunsetUTC % 1) * 60));
-    // Handle wrap around if sunset crossed UTC midnight
-    if (sunsetUTC < sunriseUTC) {
-         sunsetDate = new Date(Date.UTC(year, month - 1, day + 1, Math.floor(sunsetUTC), (sunsetUTC % 1) * 60));
+    // Place each event on the requested LOCAL day, not the requested UTC day.
+    //
+    // These used to be stamped onto `Date.UTC(year, month - 1, day, hourUTC)`.
+    // For eastern longitudes that is a day late: sunrise in Mumbai is 05:23
+    // local, which is 23:53 UTC on the PREVIOUS date, so asking for the 16th
+    // returned an instant that reads as the 17th locally. The clock time looked
+    // right — 05:23 either way — so it never showed on a screen, but every
+    // consumer that reasoned about WHICH DAY the window belonged to inherited
+    // the error, including the Choghadiya rotation and Rahu Kaalam's weekday.
+    //
+    // Converting through local solar time keeps the same clock reading and puts
+    // it on the right date. The offset is longitude-derived rather than the
+    // political zone, matching how sunriseUTC itself was computed.
+    const solarOffsetHours = lng / 15;
+    const HOUR_IN_MS = 3600_000;
+
+    /** UTC instant of a local clock hour on the requested date. */
+    const atLocalHour = (utcHour: number) => {
+        // Local clock hour implied by this UTC hour at this longitude.
+        const localHour = (utcHour + solarOffsetHours + 24) % 24;
+        return new Date(
+            Date.UTC(year, month - 1, day) +
+            localHour * HOUR_IN_MS -
+            solarOffsetHours * HOUR_IN_MS
+        );
+    };
+
+    const sunriseDate = atLocalHour(sunriseUTC);
+    let sunsetDate = atLocalHour(sunsetUTC);
+    // Sunset is always after sunrise on the same local day; if the arithmetic
+    // above wrapped it backwards, it belongs to the following local day.
+    if (sunsetDate.getTime() <= sunriseDate.getTime()) {
+        sunsetDate = new Date(sunsetDate.getTime() + 24 * HOUR_IN_MS);
     }
-    const noonDate = new Date(Date.UTC(year, month - 1, day, Math.floor(solarNoonUTC), (solarNoonUTC % 1) * 60));
+    const noonDate = atLocalHour(solarNoonUTC);
 
     const dayDurationMs = sunsetDate.getTime() - sunriseDate.getTime();
     
     // 1. Rahu Kaalam & Yamaganda (Total day duration divided into 8 parts)
     const partMs = dayDurationMs / 8;
-    const weekday = new Date(year, month - 1, day).getDay(); // Local day
+
+    // The weekday of the DATE ASKED ABOUT, independent of where the server is.
+    //
+    // This was `new Date(year, month - 1, day).getDay()`, which builds the date
+    // in the SERVER's timezone and reads the weekday back out of it. Rahu
+    // Kaalam and Yamaganda are different eighths of the day for each weekday,
+    // so a server running west of the date line from its users put both
+    // periods in the wrong part — silently, and differently depending on where
+    // the deployment happened to run. Measured against a Monday in Mumbai it
+    // was marking Rahu Kaalam in the eighth part instead of the second.
+    //
+    // The caller passes a calendar date, so it is read back as one.
+    const weekday = new Date(Date.UTC(year, month - 1, day)).getUTCDay();
     
     // Indices for parts (0-7): Sun, Mon, Tue, Wed, Thu, Fri, Sat
     const rahuParts = [7, 1, 6, 4, 5, 3, 2];

@@ -32,6 +32,8 @@ export default function ClarityPageContent() {
     const [showSample, setShowSample] = useState(false);
     const [loadingStep, setLoadingStep] = useState(0);
     const [saved, setSaved] = useState(false);
+    const [saving, setSaving] = useState(false);
+    const [saveMsg, setSaveMsg] = useState<string | null>(null);
     const [shareMsg, setShareMsg] = useState<string | null>(null);
     const [isDownloading, setIsDownloading] = useState(false);
 
@@ -143,16 +145,63 @@ export default function ClarityPageContent() {
         return () => clearInterval(interval);
     }, [isAnalyzing]);
 
-    const handleSaveResponse = () => {
-        if (!result) return;
+    /**
+     * Keep this reading.
+     *
+     * This used to write the answer into localStorage under
+     * `chetna-saved-insights`, where nothing ever read it back — so the button
+     * said "Saved", the reading was never shown again, and it disappeared on a
+     * second device or a cleared cache. It now goes to the server and is listed
+     * at /saved.
+     */
+    const handleSaveResponse = async () => {
+        if (!result || saving) return;
+        setSaving(true);
         try {
-            const saved = JSON.parse(localStorage.getItem('chetna-saved-insights') || '[]');
-            saved.unshift({ ...result, savedAt: new Date().toISOString() });
-            localStorage.setItem('chetna-saved-insights', JSON.stringify(saved.slice(0, 50)));
+            // Flattened to the prose a reader would want back, in the order it
+            // was shown. Storing the raw object would mean /saved had to know
+            // the shape of a clarity answer for ever.
+            const body = [
+                result.phaseOverview,
+                result.finalVerdict,
+                result.patternInsights?.length
+                    ? `What repeats:\n${result.patternInsights.map((p) => `• ${p}`).join('\n')}`
+                    : '',
+                result.actionGuidance?.length
+                    ? `Where to put your attention:\n${result.actionGuidance.map((a) => `• ${a}`).join('\n')}`
+                    : '',
+                result.reflectiveQuestions?.length
+                    ? `To sit with:\n${result.reflectiveQuestions.map((q) => `• ${q}`).join('\n')}`
+                    : '',
+            ]
+                .filter(Boolean)
+                .join('\n\n');
+
+            const res = await fetch('/api/insights', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    source: 'clarity',
+                    title: result.questionContext,
+                    body,
+                    href: '/saved',
+                }),
+            });
+
+            if (!res.ok) {
+                setSaveMsg('Could not save that');
+                setTimeout(() => setSaveMsg(null), 2500);
+                return;
+            }
+
             setSaved(true);
             setTimeout(() => setSaved(false), 2500);
         } catch (err) {
             console.error('Failed to save insight:', err);
+            setSaveMsg('Could not save that');
+            setTimeout(() => setSaveMsg(null), 2500);
+        } finally {
+            setSaving(false);
         }
     };
 
@@ -533,8 +582,20 @@ export default function ClarityPageContent() {
 
                             {/* Save / Share actions */}
                             <motion.div className={styles.responseActions} variants={itemVariants}>
-                                <button onClick={handleSaveResponse} className={styles.responseActionBtn}>
-                                    {saved ? <><Check size={16} /> Saved</> : <><Bookmark size={16} /> Save this response</>}
+                                <button
+                                    onClick={handleSaveResponse}
+                                    className={styles.responseActionBtn}
+                                    disabled={saving}
+                                >
+                                    {saveMsg ? (
+                                        <>{saveMsg}</>
+                                    ) : saved ? (
+                                        <><Check size={16} /> Saved</>
+                                    ) : saving ? (
+                                        <><Bookmark size={16} /> Saving…</>
+                                    ) : (
+                                        <><Bookmark size={16} /> Save this response</>
+                                    )}
                                 </button>
                                 <button onClick={handleShareResponse} className={styles.responseActionBtn}>
                                     {shareMsg ? <><Check size={16} /> {shareMsg}</> : <><Share2 size={16} /> Share this insight</>}

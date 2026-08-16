@@ -65,8 +65,9 @@ model User {
   consultationRatings    ConsultationRating[]
   appointments           Appointment[]
   astrologerApplications AstrologerApplication[]
+  savedInsights          SavedInsight[]
 
-  /// Lets the purge cron find due accounts without scanning the whole table.
+  /// Lets the account purge find due accounts without scanning the whole table.
   @@index([deletionScheduledFor])
 }
 
@@ -243,6 +244,41 @@ model JournalEntry {
 /// client — matching JournalEntry, and for the same reason. Deriving it from
 /// server time would roll the day over mid-evening for users east of UTC, which
 /// is most of this audience.
+/// Something a seeker chose to keep.
+///
+/// /clarity has had a "Save this response" button for months. It wrote to
+/// localStorage under `chetna-saved-insights` and NOTHING ever read that key
+/// back — so the button said "Saved", the insight was never shown again, and it
+/// vanished with a cleared cache or a second device. A promise the interface
+/// made and did not keep.
+///
+/// The body is denormalised on purpose rather than pointing at the Question row
+/// it came from. What someone kept should stay exactly as it read when they
+/// kept it; a saved insight that silently changes because a prompt was retuned
+/// is not the thing they saved.
+model SavedInsight {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// Which surface it came from: "clarity", "patterns", "timing", "chart".
+  source String
+  /// Where to return to, when there is somewhere.
+  href   String?
+  title  String
+  body   String  @db.Text
+
+  /// The dasha running when it was kept, same shape as JournalEntry.transit.
+  /// This is what lets a saved insight be read later against the period it
+  /// belonged to rather than out of time.
+  context Json?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@map("saved_insights")
+}
+
 model DailyInsight {
   id     String @id @default(cuid())
   userId String

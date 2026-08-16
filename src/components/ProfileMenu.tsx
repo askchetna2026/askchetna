@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import {
-    LayoutDashboard, UserCog, Settings, LogOut, ShieldCheck, Sparkles, Languages
+    LayoutDashboard, UserCog, Settings, LogOut, ShieldCheck, Sparkles, Languages, Bookmark
 } from 'lucide-react';
 import { isClientNativeApp } from '@/lib/platform';
 import { useComplexity } from '@/context/ComplexityContext';
@@ -113,6 +113,12 @@ export default function ProfileMenu() {
 
                     <Link href="/dashboard" className={styles.item} role="menuitem">
                         <LayoutDashboard size={17} /> Dashboard
+                    </Link>
+
+                    {/* Beside Dashboard rather than in the main bar: this is a
+                        personal collection, which is what this menu holds. */}
+                    <Link href="/saved" className={styles.item} role="menuitem">
+                        <Bookmark size={17} /> Saved insights
                     </Link>
 
                     {/* Deletion lives behind this. Labelled so it is findable

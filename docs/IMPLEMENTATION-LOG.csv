@@ -1,4 +1,5 @@
 ﻿"Date","Type","Area","What was implemented","Version","Commit"
+"2026-08-16","Feature","","Three calculators without a signup, and a journal that remembers when","v3.5.58","f6a2ae4"
 "2026-08-16","Feature","patterns","Answer the questions people arrive frightened by","v3.5.57","b73e306"
 "2026-08-16","Bug fix","","Keep the deletion promise, and stop inventing Rahu Kaal","v3.5.56","c874c13"
 "2026-08-16","Documentation","","Record v3.5.54 in the implementation log","v3.5.55","1399486"

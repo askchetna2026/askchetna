@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import OpenAI from 'openai';
 import { ChartData, getNakshatra, getZodiacSign } from '../astrology/calculator';
-import { VedicAnalysisEngine } from '../astrology/engine';
+import { VedicAnalysisEngine, presentYogas } from '../astrology/engine';
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY!);
 
@@ -359,7 +359,7 @@ export async function generateTimingInsight(
 ): Promise<TimingInsight> {
     const sanitizedChart = sanitizeChartData(chartData);
     const analysis = VedicAnalysisEngine.analyze(chartData);
-    const yogas = VedicAnalysisEngine.detectYogas(chartData);
+    const yogas = presentYogas(VedicAnalysisEngine.detectYogas(chartData));
 
     const prompt = renderPrompt('TIMING_INSIGHT', {
         dashaLord: currentDasha.lord,
@@ -397,7 +397,7 @@ export async function generateJournalAnalysis(
         antardasha: currentDasha.antardasha,
         chart: JSON.stringify(sanitizedChart, null, 2),
         analysis: JSON.stringify(VedicAnalysisEngine.analyze(chartData), null, 2),
-        yogas: JSON.stringify(VedicAnalysisEngine.detectYogas(chartData), null, 2),
+        yogas: JSON.stringify(presentYogas(VedicAnalysisEngine.detectYogas(chartData)), null, 2),
     });
 
     try {
@@ -429,8 +429,8 @@ export async function generateSynastryResponse(
         chartB: JSON.stringify(sanitizedB, null, 2),
         analysisA: JSON.stringify(VedicAnalysisEngine.analyze(chartA), null, 2),
         analysisB: JSON.stringify(VedicAnalysisEngine.analyze(chartB), null, 2),
-        yogasA: JSON.stringify(VedicAnalysisEngine.detectYogas(chartA), null, 2),
-        yogasB: JSON.stringify(VedicAnalysisEngine.detectYogas(chartB), null, 2),
+        yogasA: JSON.stringify(presentYogas(VedicAnalysisEngine.detectYogas(chartA)), null, 2),
+        yogasB: JSON.stringify(presentYogas(VedicAnalysisEngine.detectYogas(chartB)), null, 2),
     });
 
     try {
@@ -463,7 +463,7 @@ export async function generatePlanetInsights(
 ): Promise<PlanetInsights> {
     const sanitizedChart = sanitizeChartData(chartData);
     const analysis = VedicAnalysisEngine.analyze(chartData);
-    const yogas = VedicAnalysisEngine.detectYogas(chartData);
+    const yogas = presentYogas(VedicAnalysisEngine.detectYogas(chartData));
     const isSimple = complexity === 'SIMPLE';
     const detailInstructions = getPromptTemplate(
         isSimple ? 'PLANET_INSIGHTS_DETAIL_SIMPLE' : 'PLANET_INSIGHTS_DETAIL_TECHNICAL'
@@ -502,7 +502,7 @@ export async function generateClarityResponse(
         timing: JSON.stringify(sanitizedChart.dashas?.find((d: any) => d.isCurrent), null, 2),
         question,
         analysis: JSON.stringify(VedicAnalysisEngine.analyze(chartData), null, 2),
-        yogas: JSON.stringify(VedicAnalysisEngine.detectYogas(chartData), null, 2),
+        yogas: JSON.stringify(presentYogas(VedicAnalysisEngine.detectYogas(chartData)), null, 2),
     });
 
     try {
@@ -596,7 +596,7 @@ export async function generateReportChapters(data: { name: string; gender: strin
         name: data.name,
         chart: JSON.stringify(sanitizedChart),
         analysis: JSON.stringify(VedicAnalysisEngine.analyze(data.chartData), null, 2),
-        yogas: JSON.stringify(VedicAnalysisEngine.detectYogas(data.chartData), null, 2),
+        yogas: JSON.stringify(presentYogas(VedicAnalysisEngine.detectYogas(data.chartData)), null, 2),
     };
 
     const promptPart1 = renderPrompt('REPORT_GENERATION_PART1', reportVars);

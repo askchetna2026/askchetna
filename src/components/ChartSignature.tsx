@@ -1,7 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { Compass } from 'lucide-react';
+// From conditions.ts, NOT engine.ts: the engine reaches the 16.8 MB ephemeris,
+// and this is a client component.
+import type { YogaFinding } from '@/lib/astrology/conditions';
 import styles from './ChartSignature.module.css';
 
 interface PlanetAnalysis {
@@ -35,7 +39,7 @@ interface PlanetAnalysis {
  */
 export default function ChartSignature({ profileId }: { profileId: string | null }) {
     const [analysis, setAnalysis] = useState<PlanetAnalysis[] | null>(null);
-    const [yogas, setYogas] = useState<string[]>([]);
+    const [yogas, setYogas] = useState<YogaFinding[]>([]);
 
     useEffect(() => {
         if (!profileId) return;
@@ -47,7 +51,14 @@ export default function ChartSignature({ profileId }: { profileId: string | null
                 const data = await res.json();
                 if (cancelled) return;
                 setAnalysis(Array.isArray(data.analysis) ? data.analysis : null);
-                setYogas(Array.isArray(data.yogas) ? data.yogas : []);
+                // Only what applies. The route returns absent conditions too,
+                // so that /patterns can say "this does not apply to you"; a
+                // signature line is not the place to read that.
+                setYogas(
+                    Array.isArray(data.yogas)
+                        ? (data.yogas as YogaFinding[]).filter((y) => y.present).slice(0, 3)
+                        : []
+                );
             } catch (err) {
                 console.error('Failed to load chart signature:', err);
             }
@@ -105,19 +116,24 @@ export default function ChartSignature({ profileId }: { profileId: string | null
                 so they belong here rather than beside one planet. */}
             {yogas.length > 0 && (
                 <ul className={styles.yogas}>
-                    {yogas.slice(0, 3).map((y) => {
-                        const [name, meaning] = y.split(' (');
-                        return (
-                            <li key={y} className={styles.yoga}>
-                                <strong>{name}</strong>
-                                {meaning ? (
-                                    <span className={styles.yogaMeaning}>
-                                        {meaning.replace(/\)$/, '').replace(/^[^-]*-\s*/, '')}
-                                    </span>
-                                ) : null}
-                            </li>
-                        );
-                    })}
+                    {yogas.map((y) => (
+                        <li key={y.key} className={styles.yoga}>
+                            <strong>{y.name}</strong>
+                            {/* The placements it rests on, not a verdict about
+                                them. This used to split a prose string on " ("
+                                and strip the trailing bracket, because the
+                                engine returned the reading baked into the name. */}
+                            {y.factors.length > 0 && (
+                                <span className={styles.yogaMeaning}>{y.factors.join(' · ')}</span>
+                            )}
+                        </li>
+                    ))}
+                    {/* Naming a yoga and leaving it unexplained is how someone
+                        ends up searching the term somewhere that wants them
+                        frightened. */}
+                    <li className={styles.yogaLink}>
+                        <Link href="/patterns">What these mean, and what they don&rsquo;t</Link>
+                    </li>
                 </ul>
             )}
         </section>

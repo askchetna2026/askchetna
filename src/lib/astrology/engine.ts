@@ -1,6 +1,25 @@
 import { ChartData, getNavamsaSign, getDignity, getZodiacSign, getNakshatra } from './calculator';
 import { SIGN_LORDS, SIGNS, getSignIndex, getAspects, getConjunctions } from './interpretations';
 import { analyzePlanetAshtakavarga } from './ashtakavarga';
+// Type and words both live there, and that file imports nothing that reaches
+// the ephemeris — so a client component can read it without pulling in 16.8 MB
+// of WASM behind the type.
+import type { YogaFinding } from './conditions';
+
+export type { YogaFinding };
+
+/**
+ * The findings that actually apply, for prompt context.
+ *
+ * detectYogas returns absent conditions too, because a report has to be able to
+ * say "this does not apply to you". A prompt must not receive those: given a
+ * list containing `present: false`, a model will find a way to mention it, and
+ * "you do not have Kala Sarpa Yoga" is an alarming sentence to meet in a
+ * reading that was about something else.
+ */
+export function presentYogas(findings: YogaFinding[]): YogaFinding[] {
+    return findings.filter((f) => f.present);
+}
 
 export interface AnalysisResult {
     planet: string;
@@ -280,74 +299,176 @@ export class VedicAnalysisEngine {
         };
     }
 
-    static detectYogas(chartData: ChartData): string[] {
-        const yogas: string[] = [];
+    /**
+     * The four chart-level conditions this engine can decide, as FACTS.
+     *
+     * Every entry is returned whether or not it is present, because "you do not
+     * have Mangal Dosha" is the answer most people searching the term actually
+     * want, and a detector that can only say yes cannot give it.
+     *
+     * `factors` are the placements that produced the verdict and nothing else.
+     * This used to return prose with the reading already inside it — Kala Sarpa
+     * came back as "brings intense karmic extremes and profound spiritual
+     * awakening", Gajakesari as "brings wisdom, respect, and lasting
+     * reputation". Two things went wrong with that. The tone could not be
+     * changed without editing a calculation, and the AI was handed a verdict
+     * where it should have been handed a fact to interpret — which is the exact
+     * separation the house rule about calculation before interpretation exists
+     * to keep. The words now live in conditions.ts.
+     */
+    static detectYogas(chartData: ChartData): YogaFinding[] {
         const p = chartData.planets;
-        
         const getSignIdx = (long: number) => Math.floor(long / 30);
-        
-        // 1. Gajakesari Yoga
-        if (p['Moon'] && p['Jupiter']) {
-            const moonSign = getSignIdx(p['Moon'].longitude);
-            const jupSign = getSignIdx(p['Jupiter'].longitude);
-            const dist = (jupSign - moonSign + 12) % 12 + 1;
-            if ([1, 4, 7, 10].includes(dist)) {
-                yogas.push("Gajakesari Yoga (Jupiter in Kendra from Moon - brings wisdom, respect, and lasting reputation)");
+        const findings: YogaFinding[] = [];
+
+        // 1. Gajakesari — Jupiter in a kendra (1/4/7/10) from the Moon.
+        {
+            const factors: string[] = [];
+            let present = false;
+            if (p['Moon'] && p['Jupiter']) {
+                const moonSign = getSignIdx(p['Moon'].longitude);
+                const jupSign = getSignIdx(p['Jupiter'].longitude);
+                const dist = ((jupSign - moonSign + 12) % 12) + 1;
+                present = [1, 4, 7, 10].includes(dist);
+                factors.push(`Jupiter sits ${dist} signs from the Moon`);
+                factors.push(`Moon in ${SIGNS[moonSign]}, Jupiter in ${SIGNS[jupSign]}`);
             }
+            findings.push({ key: 'gajakesari', name: 'Gajakesari Yoga', present, factors });
         }
 
-        // 2. Kuja Dosha (Manglik)
-        if (p['Mars']) {
-            const ascSign = Math.floor(chartData.ascendant / 30);
-            const marsSign = getSignIdx(p['Mars'].longitude);
-            const marsHouse = (marsSign - ascSign + 12) % 12 + 1;
-            if ([1, 4, 7, 8, 12].includes(marsHouse)) {
-                yogas.push(`Kuja Dosha / Manglik (Mars in ${marsHouse}th house - brings intense relational energy and passion)`);
+        // 2. Kuja Dosha (Manglik) — Mars in 1, 4, 7, 8 or 12 from the ascendant.
+        {
+            const factors: string[] = [];
+            let present = false;
+            if (p['Mars']) {
+                const ascSign = Math.floor(chartData.ascendant / 30);
+                const marsSign = getSignIdx(p['Mars'].longitude);
+                const marsHouse = ((marsSign - ascSign + 12) % 12) + 1;
+                present = [1, 4, 7, 8, 12].includes(marsHouse);
+                factors.push(`Mars in house ${marsHouse} from the ascendant`);
+                factors.push(`Mars in ${SIGNS[marsSign]}`);
             }
+            findings.push({ key: 'kuja-dosha', name: 'Mangal Dosha', present, factors });
         }
 
-        // 3. Kemadruma Yoga
-        if (p['Moon']) {
-            const moonSign = getSignIdx(p['Moon'].longitude);
-            const sign2 = (moonSign + 1) % 12;
-            const sign12 = (moonSign + 11) % 12;
-            let hasPlanetIn2 = false;
-            let hasPlanetIn12 = false;
-            
-            const validPlanets = ['Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'];
-            for (const name of validPlanets) {
-                if (p[name]) {
+        // 3. Kemadruma — no true planet in the sign before or after the Moon.
+        //    The Sun and the nodes are excluded, as the classical rule has it.
+        {
+            const factors: string[] = [];
+            let present = false;
+            if (p['Moon']) {
+                const moonSign = getSignIdx(p['Moon'].longitude);
+                const sign2 = (moonSign + 1) % 12;
+                const sign12 = (moonSign + 11) % 12;
+                const neighbours: string[] = [];
+
+                for (const name of ['Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn']) {
+                    if (!p[name]) continue;
                     const sign = getSignIdx(p[name].longitude);
-                    if (sign === sign2) hasPlanetIn2 = true;
-                    if (sign === sign12) hasPlanetIn12 = true;
+                    if (sign === sign2 || sign === sign12) neighbours.push(name);
                 }
+
+                present = neighbours.length === 0;
+                factors.push(`Moon in ${SIGNS[moonSign]}`);
+                factors.push(
+                    neighbours.length
+                        ? `${neighbours.join(', ')} in the signs either side of it`
+                        : 'No true planet in the sign either side of it'
+                );
             }
-            if (!hasPlanetIn2 && !hasPlanetIn12) {
-                yogas.push("Kemadruma Yoga (Moon isolated from true planets - indicates profound independence or episodic loneliness)");
-            }
+            findings.push({ key: 'kemadruma', name: 'Kemadruma Yoga', present, factors });
         }
 
-        // 4. Kala Sarpa Dosha
-        if (p['Rahu'] && p['Ketu']) {
-            const rahuL = p['Rahu'].longitude;
-            const traditional = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'];
-            let allForward = true;
-            let allBackward = true;
-            
-            for (const name of traditional) {
-                if (p[name]) {
+        // 4. Kala Sarpa — every classical planet on one side of the Rahu/Ketu axis.
+        {
+            const factors: string[] = [];
+            let present = false;
+            if (p['Rahu'] && p['Ketu']) {
+                const rahuL = p['Rahu'].longitude;
+                let allForward = true;
+                let allBackward = true;
+                const outside: string[] = [];
+
+                for (const name of ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn']) {
+                    if (!p[name]) continue;
                     let dF = p[name].longitude - rahuL;
                     if (dF < 0) dF += 360;
                     if (dF > 180) allForward = false;
                     if (dF < 180) allBackward = false;
                 }
+
+                present = allForward || allBackward;
+                if (!present) {
+                    // Naming which planets break the hemming is the useful fact:
+                    // it is why the condition does NOT apply.
+                    for (const name of ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn']) {
+                        if (!p[name]) continue;
+                        let dF = p[name].longitude - rahuL;
+                        if (dF < 0) dF += 360;
+                        if (dF > 180) outside.push(name);
+                    }
+                }
+
+                factors.push(`Rahu in ${SIGNS[getSignIdx(rahuL)]}, Ketu opposite`);
+                factors.push(
+                    present
+                        ? 'Every classical planet falls on one side of the nodal axis'
+                        : `The axis is broken — ${outside.length ? outside.join(', ') : 'planets'} fall on the other side`
+                );
             }
-            if (allForward || allBackward) {
-                yogas.push("Kala Sarpa Dosha (All planets hemmed between nodes - brings intense karmic extremes and profound spiritual awakening)");
-            }
+            findings.push({ key: 'kala-sarpa', name: 'Kala Sarpa Yoga', present, factors });
         }
 
-        return yogas;
+        return findings;
+    }
+
+    /**
+     * Sade Sati as a finding, in the same shape as the natal conditions.
+     *
+     * Separate from analyzeTransits, which already returns `{ active, phase }`
+     * and has other callers whose shape should not move. This is the same fact
+     * expressed the way /patterns consumes all five conditions.
+     *
+     * The one condition here that depends on TODAY rather than on birth, which
+     * is why the phase matters: the three are not interchangeable.
+     */
+    static sadeSatiFinding(natal: ChartData, transit: ChartData): YogaFinding {
+        const getSignIdx = (long: number) => Math.floor(long / 30);
+
+        const natalMoonSign = natal.planets['Moon']
+            ? getSignIdx(natal.planets['Moon'].longitude)
+            : getSignIdx(natal.ascendant);
+
+        const finding: YogaFinding = {
+            key: 'sade-sati',
+            name: 'Sade Sati',
+            present: false,
+            factors: [],
+        };
+
+        if (!transit.planets['Saturn']) return finding;
+
+        const saturnSign = getSignIdx(transit.planets['Saturn'].longitude);
+        const house = ((saturnSign - natalMoonSign + 12) % 12) + 1;
+
+        const PHASES: Record<number, string> = {
+            12: 'Rising',
+            1: 'Peak',
+            2: 'Setting',
+        };
+
+        finding.present = house === 12 || house === 1 || house === 2;
+        if (finding.present) finding.phase = PHASES[house];
+
+        finding.factors.push(`Moon in ${SIGNS[natalMoonSign]} at birth`);
+        finding.factors.push(`Saturn now in ${SIGNS[saturnSign]}`);
+        finding.factors.push(
+            finding.present
+                ? `That is ${house === 1 ? 'your Moon sign itself' : `the sign ${house === 12 ? 'before' : 'after'} it`}`
+                : `That is ${house} signs from your Moon — outside the three Sade Sati covers`
+        );
+
+        return finding;
     }
 
     static analyzeTransits(natal: ChartData, transit: ChartData) {

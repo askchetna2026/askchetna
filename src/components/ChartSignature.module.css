@@ -68,12 +68,30 @@
     color: var(--foreground);
 }
 
-/* The Sanskrit name is the label; the meaning is the part a reader who does
-   not have the vocabulary can actually use, so it gets its own line rather
-   than trailing in brackets. */
+/* The Sanskrit name is the label; underneath it are the placements the yoga
+   rests on, so a reader can see what produced it rather than being told. */
 .yogaMeaning {
     display: block;
     color: var(--text-muted);
+}
+
+.yogaLink {
+    font-size: var(--text-13);
+    padding-top: 4px;
+}
+
+.yogaLink a {
+    color: var(--accent-gold);
+    text-decoration: underline;
+    text-decoration-color: var(--border-soft);
+    text-underline-offset: 3px;
+    transition: color 0.2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .yogaLink a:hover {
+        color: var(--accent-coral);
+    }
 }
 
 @media (max-width: 700px) {

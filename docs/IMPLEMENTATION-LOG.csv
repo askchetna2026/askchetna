@@ -1,4 +1,5 @@
 ﻿"Date","Type","Area","What was implemented","Version","Commit"
+"2026-08-16","Documentation","","Record the voice input in the implementation log","v3.5.73","ba1c1d1"
 "2026-08-16","Feature","voice","Dictate a question instead of typing it","v3.5.72","6a82551"
 "2026-08-16","Documentation","","Bring the implementation log level with HEAD","v3.5.71","19528a1"
 "2026-08-16","Feature","i18n","Let Chetna answer in Hindi, with a fixed vocabulary","v3.5.70","836bec9"

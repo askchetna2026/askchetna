@@ -70,7 +70,14 @@ function writeCache(payload: Phase) {
  * Renders nothing at all until it has a real phase. A placeholder here would
  * reintroduce the hole it exists to close.
  */
-export default function CurrentChapterCard() {
+/**
+ * `className` is appended, not replaced. The app's Today screen needs to set
+ * its own gutter and paper texture on this card the way it does for the daily
+ * note, and without the prop that styling would have to reach in from outside
+ * by element — which is how a sibling stylesheet ends up winning or losing on
+ * webpack's emission order. See the note on `.screen .dailyNote`.
+ */
+export default function CurrentChapterCard({ className = '' }: { className?: string }) {
     const [dasha, setDasha] = useState<DashaPeriod | null>(null);
     const [sub, setSub] = useState<{ lord: string; end: string } | null>(null);
 
@@ -124,7 +131,7 @@ export default function CurrentChapterCard() {
     const endYear = new Date(dasha.end).getFullYear();
 
     return (
-        <div className={styles.card}>
+        <div className={`${styles.card} ${className}`.trim()}>
             <span className={styles.label}>
                 <Hourglass size={13} aria-hidden="true" /> Your current chapter
             </span>

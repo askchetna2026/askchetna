@@ -238,6 +238,19 @@
     box-shadow: var(--shadow-raise);
 }
 
+/* Same 0,2,0 specificity trick as .dailyNote above, and for the same reason:
+   CurrentChapterCard brings its own module's `.card` rule, and a single class
+   here would win or lose on webpack's emission order. */
+.screen .chapter {
+    margin-top: 14px;
+    padding: 14px var(--gutter) 15px;
+    background-image: var(--paper-tex);
+    background-blend-mode: var(--paper-tex-blend);
+    background-size: 300px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-raise);
+}
+
 .season {
     display: block;
     padding: 14px var(--gutter) 15px;

@@ -3,7 +3,7 @@ import { auth } from '@/auth';
 import { ANALYTICS_EVENTS, isAnalyticsEventType } from '@/lib/analytics/events';
 import { getRequestLocation, recordAnalyticsEvent } from '@/lib/analytics/server';
 import { maybeRunLifecycleAutomation } from '@/lib/lifecycleEmails';
-import { maybePurgeDueAccounts } from '@/lib/accountDeletion';
+import { runDueMaintenance } from '@/lib/maintenance/scheduler';
 
 /**
  * The page-view tracker.
@@ -59,15 +59,15 @@ export async function POST(req: NextRequest) {
                 console.error('Traffic lifecycle automation trigger failed:', error);
             }
 
-            // Deleting an account is a promise with a date on it, and the cron
-            // that used to keep it has not existed since `392c147`. Traffic is
-            // the trigger because the person who asked to be deleted is exactly
-            // the one who never returns to trigger anything themselves.
-            // Throttled to once an hour deployment-wide; see the comments there.
+            // Everything the removed crons used to drive: account purging,
+            // appointment reminders, the consultation sweep. Each claims its
+            // own hourly window, so this costs one cheap query on the vast
+            // majority of page views and does real work on none of them.
+            // See src/lib/maintenance/scheduler.ts.
             try {
-                await maybePurgeDueAccounts();
+                await runDueMaintenance();
             } catch (error) {
-                console.error('Traffic account purge trigger failed:', error);
+                console.error('Traffic maintenance trigger failed:', error);
             }
         });
 

@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import styles from './Header.module.css';
 import Logo from './Logo';
 import ProfileMenu from './ProfileMenu';
-import { Menu, X, CreditCard, LayoutDashboard, LogOut, Info, BookOpen, MessageSquare, Sparkles, Users, UserCog, Settings, Compass } from 'lucide-react';
+import { Menu, X, CreditCard, LayoutDashboard, LogOut, Info, BookOpen, MessageSquare, Sparkles, Users, UserCog, Settings, Compass, Orbit, Bookmark } from 'lucide-react';
 import { PAYMENTS_ENABLED } from '@/lib/paymentConfig';
 import { isClientNativeApp } from '@/lib/platform';
 
@@ -207,8 +207,19 @@ export default function Header() {
                       <Link href="/blog" className={`${styles.mobileNavLink} ${pathname === '/blog' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
                         <BookOpen size={20} /> Blog
                       </Link>
-                      <Link href="/explore" className={`${styles.mobileNavLink} ${pathname === '/explore' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                        <Compass size={20} /> Explore
+                      {/* This drawer is a SEPARATE hardcoded list from the
+                          desktop nav above, so anything added there has to be
+                          added here too or it does not exist in the app at all
+                          — which is exactly what happened to /learn, /patterns
+                          and /saved when they shipped. */}
+                      <Link href="/patterns" className={`${styles.mobileNavLink} ${pathname === '/patterns' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                        <Orbit size={20} /> Sade Sati &amp; Doshas
+                      </Link>
+                      <Link href="/saved" className={`${styles.mobileNavLink} ${pathname === '/saved' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                        <Bookmark size={20} /> Saved insights
+                      </Link>
+                      <Link href="/learn" className={`${styles.mobileNavLink} ${pathname === '/learn' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                        <Compass size={20} /> Learn
                       </Link>
                       {PAYMENTS_ENABLED && (
                         <Link href="/pricing" className={`${styles.mobileNavLink} ${pathname === '/pricing' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
@@ -239,6 +250,16 @@ export default function Header() {
                     <>
                       <Link href="/" className={styles.mobileNavLink} onClick={() => setIsMenuOpen(false)}>Home</Link>
                       <Link href="/about" className={styles.mobileNavLink} onClick={() => setIsMenuOpen(false)}>About Us</Link>
+                      {/* The calculators answer without an account, which makes
+                          them the most useful thing a signed-out visitor can be
+                          handed — and /learn is the hub that reaches them, the
+                          rashi pages and the glossary. */}
+                      <Link href="/learn" className={`${styles.mobileNavLink} ${pathname === '/learn' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                        <Compass size={20} /> Learn
+                      </Link>
+                      <Link href="/calculators/moon-sign" className={`${styles.mobileNavLink} ${pathname.startsWith('/calculators') ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                        <Orbit size={20} /> Free calculators
+                      </Link>
                       <Link href="/blog" className={styles.mobileNavLink} onClick={() => setIsMenuOpen(false)}>Blog</Link>
                       <Link href="/clarity" className={`${styles.mobileNavLink} ${styles.mobileCtaLink}`} onClick={() => setIsMenuOpen(false)}>Ask Chetna AI</Link>
                       <Link href="/consult" className={`${styles.mobileNavLink} ${pathname.startsWith('/consult') ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>

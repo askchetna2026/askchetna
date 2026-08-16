@@ -27,11 +27,12 @@ import prisma from '@/lib/prisma';
  * catch, and it is invisible from the outside because the user-facing half of
  * the flow works perfectly.
  *
- * So the sweep no longer depends on a scheduler existing. maybePurgeDueAccounts()
- * below is driven by ordinary traffic, the way the lifecycle mail engine already
- * is. The cron route still works and is still the better trigger if the Vercel
- * plan is ever configured for it; it is now a convenience rather than the only
- * thing standing between a promise and keeping it.
+ * So the sweep no longer depends on a scheduler existing. purgeDueAccounts() is
+ * driven by ordinary traffic — see src/lib/maintenance/scheduler.ts, which does
+ * the same for appointment reminders and the consultation sweep. The cron route
+ * still works and is still the better trigger if one is ever pointed at it; it
+ * is now a convenience rather than the only thing standing between a promise
+ * and keeping it.
  */
 
 /**
@@ -200,82 +201,4 @@ export async function purgeDueAccounts(limit = 100): Promise<PurgeResult> {
     }
 
     return { due: due.length, purged, failed };
-}
-
-/**
- * How often ordinary traffic may trigger a sweep.
- *
- * Hourly, not per-request: the grace period is seven days, so the difference
- * between purging at 14:00 and at 14:59 is nothing, while the difference
- * between one query an hour and one per page view is the whole cost.
- */
-const SWEEP_INTERVAL_MINUTES = 60;
-
-/** The row that IS the lock. */
-const SWEEP_KEY = 'LAST_DELETION_SWEEP';
-
-/**
- * Deliberately small. This runs behind a page view, not in a batch window, and
- * a backlog drains over the following hours rather than in one long transaction
- * attached to somebody's navigation.
- */
-const TRAFFIC_SWEEP_LIMIT = 20;
-
-/**
- * Minute-resolution epoch, because AppSetting.value is an Int. Seconds would
- * overflow Int32 in 2038; minutes hold until roughly the year 6000.
- */
-const nowMinute = () => Math.floor(Date.now() / 60_000);
-
-/** Per-instance gate, so the common case costs no query at all. */
-let lastLocalSweepMinute = 0;
-
-/**
- * Purge due accounts, at most once an hour across the whole deployment.
- *
- * Called from the analytics route via `after()`, alongside the lifecycle mail
- * engine that already works this way. Traffic is the trigger because the user
- * who asked to be deleted is precisely the one who never comes back — a
- * self-heal on their own next request, which is how expired consultations are
- * handled, would never fire for them.
- *
- * Never throws. A failed sweep must not turn a page view into an error.
- */
-export async function maybePurgeDueAccounts(): Promise<PurgeResult | null> {
-    const minute = nowMinute();
-
-    if (minute - lastLocalSweepMinute < SWEEP_INTERVAL_MINUTES) return null;
-    lastLocalSweepMinute = minute;
-
-    try {
-        // One statement, so exactly one of N concurrent instances sees a count
-        // of 1. Reading the row and then writing it would let two instances
-        // both pass the check and both sweep.
-        const claimed = await prisma.appSetting.updateMany({
-            where: { key: SWEEP_KEY, value: { lt: minute - SWEEP_INTERVAL_MINUTES } },
-            data: { value: minute },
-        });
-
-        if (claimed.count === 0) {
-            // Either another instance holds this hour, or the row has never
-            // existed. Creating it counts as claiming it; a unique violation
-            // means somebody else created it first, which is also a loss.
-            try {
-                await prisma.appSetting.create({
-                    data: {
-                        key: SWEEP_KEY,
-                        value: minute,
-                        description: 'Epoch minute of the last traffic-driven account purge.',
-                    },
-                });
-            } catch {
-                return null;
-            }
-        }
-
-        return await purgeDueAccounts(TRAFFIC_SWEEP_LIMIT);
-    } catch (error) {
-        console.error('Traffic-driven account purge failed:', error);
-        return null;
-    }
 }

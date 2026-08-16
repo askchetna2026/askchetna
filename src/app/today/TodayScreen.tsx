@@ -7,6 +7,7 @@ import { Users, ArrowRight, ChevronRight, Sparkles, Check } from 'lucide-react';
 import { useProfile } from '@/context/ProfileContext';
 import AppScreenChrome from '@/components/app/AppScreenChrome';
 import DailyInsightCard from '@/components/DailyInsightCard';
+import CurrentChapterCard from '@/components/CurrentChapterCard';
 import { getProfiles, primaryProfile } from '@/lib/profileStore';
 import styles from './today.module.css';
 
@@ -297,6 +298,14 @@ export default function TodayScreen() {
                 at all when there is no chart yet or the model is unreachable,
                 so it needs no guard here. */}
             <DailyInsightCard className={styles.dailyNote} />
+
+            {/* The years-long chapter the daily note above sits inside.
+                It shipped on the web home only, so the app — where the daily
+                note IS the home screen — showed a seeker what today feels like
+                with nothing to say which season it belongs to. Same component,
+                self-contained, and it renders nothing until it has a real
+                phase, so it needs no guard here either. */}
+            <CurrentChapterCard className={styles.chapter} />
 
             {/* ── Which season you are in ──────────────────────────────────── */}
             {/* Deliberately NOT a grid of shortcuts to Chart / Ask / Timing:

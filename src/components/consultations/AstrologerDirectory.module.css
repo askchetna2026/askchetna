@@ -175,3 +175,55 @@
     letter-spacing: 0.06em;
     vertical-align: middle;
 }
+
+/* The score on a card. A button because it opens the reviews — the number is
+   the affordance, so it has to be the thing you press. */
+/* Padded to a reachable height and pulled back by the same amount, so the tap
+   target is 28px while the line still sits where the layout wants it. A 16px
+   strip of text is a target you miss with a thumb. */
+.ratingLine {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin: -2px 0 -6px;
+    padding: 6px 0;
+    border: none;
+    background: none;
+    font-family: inherit;
+    font-size: var(--text-12);
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+/* Underlined because hover is the only other cue this is a button, and on a
+   phone there is no hover. */
+.ratingLine span {
+    text-decoration: underline;
+    text-decoration-color: var(--border-soft);
+    text-underline-offset: 3px;
+}
+
+.ratingLine svg {
+    color: var(--accent-gold-decor);
+}
+
+.ratingLine strong {
+    color: var(--foreground);
+    font-size: var(--text-13);
+}
+
+/* Said in words. A row of hollow stars reads as a bad score rather than an
+   absent one, which is unfair to an astrologer nobody has rated yet. */
+.noRating {
+    display: block;
+    margin-top: 4px;
+    font-size: var(--text-12);
+    color: var(--text-muted);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .ratingLine:hover strong,
+    .ratingLine:hover {
+        color: var(--accent-gold);
+    }
+}

@@ -1,0 +1,129 @@
+.card {
+    margin-top: 16px;
+    padding: 20px;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-md);
+    background: var(--bg-panel);
+    text-align: center;
+}
+
+.heading {
+    font-family: var(--font-heading);
+    font-size: var(--text-16);
+    color: var(--foreground);
+    margin: 0 0 14px;
+}
+
+.stars {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+}
+
+.star {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* 44px tap target, which a 26px icon does not give on its own. */
+    width: 44px;
+    height: 44px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.starOn {
+    color: var(--accent-gold-decor);
+}
+
+.star:disabled {
+    cursor: not-allowed;
+}
+
+.label {
+    display: block;
+    margin: 16px 0 6px;
+    font-size: var(--text-13);
+    color: var(--foreground);
+    text-align: left;
+}
+
+.optional {
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+.textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-sm);
+    background: var(--card-bg);
+    color: var(--foreground);
+    font-family: var(--font-main);
+    font-size: var(--text-14);
+    line-height: 1.55;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.textarea:focus {
+    border-color: var(--accent-gold);
+    box-shadow: 0 0 0 2px rgba(var(--accent-gold-rgb), 0.12);
+}
+
+.footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.count {
+    font-size: var(--text-12);
+    color: var(--text-muted);
+}
+
+/* Over the limit is a state the submit button already refuses, so this only has
+   to say why — not alarm anyone. */
+.countOver {
+    color: var(--accent-coral);
+    font-weight: 600;
+}
+
+.save {
+    padding: 9px 18px;
+    border-radius: 999px;
+    border: none;
+    background: var(--btn-bg);
+    color: var(--btn-fg);
+    font-size: var(--text-13);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.save:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.error {
+    margin: 10px 0 0;
+    font-size: var(--text-13);
+    color: var(--error);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .star:not(:disabled):hover {
+        transform: scale(1.1);
+    }
+
+    .save:not(:disabled):hover {
+        background: var(--btn-bg-hover);
+    }
+}

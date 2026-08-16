@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { MessageSquare, Loader2 } from 'lucide-react';
+import { MessageSquare, Loader2, Star } from 'lucide-react';
 import AstrologerAvatar from './AstrologerAvatar';
+import AstrologerReviews from './AstrologerReviews';
 import styles from './AstrologerDirectory.module.css';
 
 /**
@@ -24,6 +25,7 @@ type Astrologer = {
     languages: string[];
     specialities: string[];
     online: boolean;
+    rating: { average: number | null; count: number };
     /** Disclosed by the API, never inferred from the name or bio. */
     isAI: boolean;
     /** Credits charged per block. 1 is the global default. */
@@ -39,6 +41,8 @@ export default function AstrologerDirectory({
     const [astrologers, setAstrologers] = useState<Astrologer[] | null>(null);
     const [starting, setStarting] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
+    /** Which astrologer's reviews are open, if any. */
+    const [reviewsFor, setReviewsFor] = useState<string | null>(null);
 
     useEffect(() => {
         let cancelled = false;
@@ -146,6 +150,26 @@ export default function AstrologerDirectory({
                                 >
                                     {a.online ? 'Available' : 'Offline'}
                                 </span>
+
+                                {/* Nobody has rated yet is said in words. A row
+                                    of hollow stars reads as a bad score rather
+                                    than an absent one. */}
+                                {a.rating.count > 0 ? (
+                                    <button
+                                        type="button"
+                                        className={styles.ratingLine}
+                                        onClick={() => setReviewsFor(a.id)}
+                                        aria-label={`Read reviews for ${a.displayName} — ${a.rating.average?.toFixed(1)} out of 5 from ${a.rating.count} rating${a.rating.count === 1 ? '' : 's'}`}
+                                    >
+                                        <Star size={13} fill="currentColor" aria-hidden="true" />
+                                        <strong>{a.rating.average?.toFixed(1)}</strong>
+                                        <span>
+                                            {a.rating.count} rating{a.rating.count === 1 ? '' : 's'}
+                                        </span>
+                                    </button>
+                                ) : (
+                                    <span className={styles.noRating}>No ratings yet</span>
+                                )}
                             </div>
                         </div>
 
@@ -176,6 +200,16 @@ export default function AstrologerDirectory({
                     </article>
                 ))}
             </div>
+
+            {reviewsFor && (
+                <AstrologerReviews
+                    astrologerId={reviewsFor}
+                    astrologerName={
+                        astrologers?.find((x) => x.id === reviewsFor)?.displayName ?? 'Astrologer'
+                    }
+                    onClose={() => setReviewsFor(null)}
+                />
+            )}
         </div>
     );
 }

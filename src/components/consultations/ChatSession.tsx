@@ -6,6 +6,7 @@ import { Send, PhoneOff } from 'lucide-react';
 import SessionTimer from './SessionTimer';
 import ExtendPrompt from './ExtendPrompt';
 import AstrologerAvatar from './AstrologerAvatar';
+import RateConsultation from './RateConsultation';
 import styles from './ChatSession.module.css';
 
 /**
@@ -360,6 +361,15 @@ export default function ChatSession({
                         {status.creditsCharged} credit
                         {status.creditsCharged === 1 ? '' : 's'} used in total.
                     </p>
+                    {/* Asked here rather than mid-session: rating a
+                        conversation while it is still running rates something
+                        unfinished, and interrupting paid time to collect
+                        feedback spends the seeker's money on our needs. */}
+                    <RateConsultation
+                        consultationId={consultationId}
+                        astrologerName={status.astrologer.displayName}
+                    />
+
                     <button
                         type="button"
                         className={styles.again}

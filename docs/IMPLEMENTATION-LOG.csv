@@ -1,4 +1,6 @@
 ﻿"Date","Type","Area","What was implemented","Version","Commit"
+"2026-08-16","Other","","@ [v3.5.54] feat(consult): rate a finished session, and time-box the signup offer","","35cd8d0"
+"2026-08-16","Feature","Consultations","Read the actual earlier conversations, not a paraphrase","v3.5.53","a82bd47"
 "2026-08-16","Bug fix","Consultations","One copy of the question, and a composer that stays put","v3.5.52","a25334b"
 "2026-08-16","Documentation","","Bring the implementation log level with HEAD","v3.5.51","793d647"
 "2026-08-16","Documentation","","Note in CLAUDE.md that the implementation log is generated","v3.5.50","10eecc0"

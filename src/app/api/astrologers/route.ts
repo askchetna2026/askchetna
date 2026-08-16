@@ -92,6 +92,31 @@ export async function GET(request: Request) {
         return photoPointer(a.id, path);
     };
 
+    /**
+     * Ratings for the cards, in one grouped query over the ids just listed.
+     *
+     * Not a relation `_count`: that gives how MANY, and a directory needs the
+     * average as well. Scoped to the listed ids rather than the whole table so
+     * the work is proportional to the page, not the history.
+     */
+    const ratingRows = await prisma.consultationRating.groupBy({
+        by: ['astrologerId'],
+        where: { astrologerId: { in: astrologers.map((a) => a.id) } },
+        _avg: { stars: true },
+        _count: { _all: true },
+    });
+    const ratingBy = new Map(
+        ratingRows.map((r) => [
+            r.astrologerId,
+            {
+                // One decimal. Six implies a precision that a dozen opinions
+                // do not have.
+                average: r._avg.stars ? Number(r._avg.stars.toFixed(1)) : null,
+                count: r._count._all,
+            },
+        ])
+    );
+
     const cutoff = Date.now() - PRESENCE_WINDOW_MS;
     const withPresence = astrologers.map((a) => ({
         id: a.id,
@@ -109,6 +134,9 @@ export async function GET(request: Request) {
         // An AI persona has no browser to hold it online and no heartbeat to go
         // stale, so presence does not apply — it is always reachable.
         online: a.isAI || (a.isAvailable && !!a.lastSeenAt && a.lastSeenAt.getTime() > cutoff),
+        // Null average with a zero count means nobody has rated yet, which the
+        // card says in words rather than showing a hollow zero-star row.
+        rating: ratingBy.get(a.id) ?? { average: null, count: 0 },
     }));
 
     return NextResponse.json({

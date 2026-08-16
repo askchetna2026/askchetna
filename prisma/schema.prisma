@@ -62,6 +62,7 @@ model User {
   astrologer             Astrologer?
   consultations          Consultation[]
   consultationMemories   ConsultationMemory[]
+  consultationRatings    ConsultationRating[]
   appointments           Appointment[]
   astrologerApplications AstrologerApplication[]
 
@@ -568,6 +569,7 @@ model Astrologer {
 
   consultations Consultation[]
   memories      ConsultationMemory[]
+  ratings       ConsultationRating[]
   earnings      AstrologerEarning[]
   payouts       Payout[]
   availability  AstrologerAvailability[]
@@ -627,6 +629,7 @@ model Consultation {
 
   messages ConsultationMessage[]
   earning  AstrologerEarning?
+  rating   ConsultationRating?
 
   @@index([userId, createdAt])
   @@index([astrologerId, createdAt])
@@ -692,6 +695,41 @@ model ConsultationMemory {
   @@unique([userId, astrologerId])
   @@index([astrologerId, updatedAt])
   @@map("consultation_memories")
+}
+
+/// What a seeker thought of one consultation.
+///
+/// Unique on consultationId, which is the whole integrity model here: a rating
+/// belongs to a SESSION, so it can only be given by someone who had that
+/// session, and only once. Ratings detached from a session are the ones that
+/// can be manufactured.
+///
+/// Feedback is capped in words rather than characters because that is what was
+/// asked for and what a reader actually experiences — 50 words is a paragraph,
+/// 300 characters is a number nobody can picture.
+model ConsultationRating {
+  id             String       @id @default(cuid())
+  consultationId String       @unique
+  consultation   Consultation @relation(fields: [consultationId], references: [id], onDelete: Cascade)
+
+  userId       String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  astrologerId String
+  astrologer   Astrologer @relation(fields: [astrologerId], references: [id], onDelete: Cascade)
+
+  /// 1 to 5. Enforced by the route as well — a check constraint here would not
+  /// give the caller a usable error.
+  stars Int
+
+  /// Optional: a rating without words is still a rating, and demanding prose
+  /// is how you get "good" fifty times.
+  feedback String? @db.Text
+
+  createdAt DateTime @default(now())
+
+  /// Serves the astrologer's card: newest feedback first, and the aggregate.
+  @@index([astrologerId, createdAt])
+  @@map("consultation_ratings")
 }
 
 /// Append-only earnings ledger, one row per consultation.

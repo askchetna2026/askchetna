@@ -1,0 +1,194 @@
+/* A sheet, not an expanding card. A directory is a list you scan, and a card
+   that grows by twenty reviews pushes every other astrologer off the screen
+   while you read about one. */
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(var(--foreground-rgb), 0.35);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.sheet {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 640px;
+    max-height: 85dvh;
+    background: var(--bg-panel);
+    background-image: var(--paper-tex);
+    background-blend-mode: var(--paper-tex-blend);
+    background-size: 300px;
+    border: 1px solid var(--card-border);
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -12px 40px rgba(var(--foreground-rgb), 0.18);
+}
+
+@media (min-width: 768px) {
+    .overlay {
+        align-items: center;
+        padding: 24px;
+    }
+
+    .sheet {
+        border-radius: 20px;
+        max-height: 80dvh;
+    }
+}
+
+.head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--card-border);
+    flex-shrink: 0;
+}
+
+.title {
+    font-family: var(--font-heading);
+    font-size: var(--text-18);
+    color: var(--foreground);
+    margin: 0;
+}
+
+.close {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* 44px tap floor. */
+    width: 44px;
+    height: 44px;
+    margin: -10px -8px -10px 0;
+    border: none;
+    background: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.body {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 18px calc(18px) calc(22px + env(safe-area-inset-bottom, 0px));
+}
+
+.muted {
+    color: var(--text-muted);
+    font-size: var(--text-14);
+    margin: 12px 0;
+}
+
+.summary {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.average {
+    font-family: var(--font-heading);
+    font-size: var(--text-40);
+    line-height: 1;
+    color: var(--foreground);
+}
+
+.summaryStars {
+    display: flex;
+    gap: 2px;
+    color: var(--accent-gold-decor);
+}
+
+.summaryCount {
+    display: block;
+    margin-top: 4px;
+    font-size: var(--text-12);
+    color: var(--text-muted);
+}
+
+.bars {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.barRow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.barLabel,
+.barCount {
+    font-size: var(--text-12);
+    color: var(--text-muted);
+    width: 20px;
+    flex-shrink: 0;
+}
+
+.barCount {
+    text-align: right;
+}
+
+.barTrack {
+    flex: 1;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--bg-soft);
+    overflow: hidden;
+}
+
+.barFill {
+    display: block;
+    height: 100%;
+    /* Ornament, not text — the decorative gold is correct here. */
+    background: var(--accent-gold-decor);
+}
+
+.reviews {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-top: 1px solid var(--card-border);
+}
+
+.review {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.reviewStars {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    color: var(--accent-gold-decor);
+}
+
+.reviewDate {
+    margin-left: auto;
+    font-size: var(--text-11);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.reviewBody {
+    margin: 6px 0 0;
+    font-size: var(--text-14);
+    line-height: 1.6;
+    color: var(--foreground);
+    max-width: var(--measure);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .close:hover {
+        color: var(--foreground);
+    }
+}

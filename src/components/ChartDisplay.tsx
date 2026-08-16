@@ -387,38 +387,40 @@ export default function ChartDisplay({ data, isMoonChart, width = '100%', height
                 boxSizing: 'border-box'
             }}
         >
-            {/* 1. Language Toggle */}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginBottom: '16px' }}>
-                <button
-                    onClick={() => setLanguage('en')}
-                    style={{
-                        fontSize: '10px',
-                        padding: '5px 12px',
-                        borderRadius: '100px',
-                        background: language === 'en' ? 'var(--accent-gold)' : 'var(--bg-soft)',
-                        color: language === 'en' ? 'var(--btn-fg)' : 'var(--secondary)',
-                        border: '1px solid ' + (language === 'en' ? 'var(--accent-gold)' : 'var(--card-border)'),
-                        cursor: 'pointer',
-                        fontWeight: '800',
-                        lineHeight: 1,
-                        transition: 'background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease'
-                    }}
-                >EN</button>
-                <button
-                    onClick={() => setLanguage('hi')}
-                    style={{
-                        fontSize: '10px',
-                        padding: '5px 12px',
-                        borderRadius: '100px',
-                        background: language === 'hi' ? 'var(--accent-gold)' : 'var(--bg-soft)',
-                        color: language === 'hi' ? 'var(--btn-fg)' : 'var(--secondary)',
-                        border: '1px solid ' + (language === 'hi' ? 'var(--accent-gold)' : 'var(--card-border)'),
-                        cursor: 'pointer',
-                        fontWeight: '800',
-                        lineHeight: 1,
-                        transition: 'background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease'
-                    }}
-                >हिंदी</button>
+            {/* 1. Language Toggle
+                Measured at 42x22 on a 375px phone, which fails even the 24px
+                minimum, let alone the 44px one — and this is a control people
+                tap with a thumb while holding the phone. Sized up to 44 and
+                given aria-pressed, which it never had: without it a screen
+                reader announces two identical buttons and no current state. */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginBottom: '16px' }} role="group" aria-label="Chart language">
+                {(['en', 'hi'] as const).map((code) => {
+                    const active = language === code;
+                    return (
+                        <button
+                            key={code}
+                            onClick={() => setLanguage(code)}
+                            aria-pressed={active}
+                            style={{
+                                minHeight: '44px',
+                                minWidth: '56px',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: 'var(--text-12)',
+                                padding: '0 16px',
+                                borderRadius: '100px',
+                                background: active ? 'var(--accent-gold)' : 'var(--bg-soft)',
+                                color: active ? 'var(--btn-fg)' : 'var(--secondary)',
+                                border: '1px solid ' + (active ? 'var(--accent-gold)' : 'var(--card-border)'),
+                                cursor: 'pointer',
+                                fontWeight: '800',
+                                lineHeight: 1,
+                                transition: 'background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease'
+                            }}
+                        >{code === 'en' ? 'EN' : 'हिंदी'}</button>
+                    );
+                })}
             </div>
 
             {/* 2. SVG Chart Wrapper - THIS handles the width constraint */}

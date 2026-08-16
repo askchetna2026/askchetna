@@ -269,7 +269,12 @@
 .addProfileBtn {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 10px;
+    /* 12px padding either side of a 15px label computes to 40px, not the 44
+       this padding was clearly aiming for. Stated outright so it cannot drift
+       again the next time the font size changes. */
+    min-height: 44px;
     padding: 12px 24px;
     font-size: var(--text-15);
     font-weight: 700;
@@ -279,7 +284,7 @@
     border-radius: 100px;
     cursor: pointer;
     transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 15px rgba(181, 137, 46, 0.2);
+    box-shadow: 0 4px 15px rgba(var(--accent-gold-rgb), 0.2);
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -943,16 +948,28 @@
 }
 
 /* Grids & Layout */
+
+/* `min(320px, 100%)` rather than a bare `320px`, and it is load-bearing.
+   A bare minmax(320px, 1fr) track cannot shrink below 320px, so on a 375px
+   phone — where this grid's content box is 319px — every card sat 9px past
+   its container and the page scrolled sideways.
+
+   The media queries at the top of this file already tried to fix that by
+   dropping to a single column. They never ran: they sit ABOVE these rules and
+   carry the same specificity, so this declaration won on source order alone
+   and silently overrode both of them. Rather than reorder several hundred
+   lines and hope nothing else depended on the sequence, the base rule is now
+   correct on its own and needs no override to rescue it. */
 .trinityGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
     gap: 32px;
     margin-bottom: 64px;
 }
 
 .vargaGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
     gap: 32px;
     padding: 12px;
 }
@@ -2067,8 +2084,11 @@
     gap: 8px;
 }
 
+/* This is the rule that actually governs these two buttons — it outranks the
+   base .addProfileBtn on specificity, so raising the minimum there did nothing
+   until this one moved too. 44px, matching every other primary control. */
 .headerRowEnd .headerButtons .addProfileBtn {
-    min-height: 40px;
+    min-height: 44px;
     padding: 8px 14px;
     font-size: var(--text-14);
 }

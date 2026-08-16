@@ -93,9 +93,10 @@ export default function Header() {
                 <Link href="/consult" className={`${styles.navLink} ${pathname.startsWith('/consult') ? styles.activeLink : ''}`}>Astrologers</Link>
                 <Link href="/synastry" className={`${styles.navLink} ${pathname === '/synastry' ? styles.activeLink : ''}`}>Relationships</Link>
                 <Link href="/blog" className={`${styles.navLink} ${pathname === '/blog' ? styles.activeLink : ''}`}>Blog</Link>
-                {/* The signed-out home's explanation of the product, which a
-                    signed-in seeker otherwise has no route to. */}
-                <Link href="/explore" className={`${styles.navLink} ${pathname === '/explore' ? styles.activeLink : ''}`}>Explore</Link>
+                {/* Was /explore, which is now the first stop ON this path
+                    rather than a peer of it. One entry point to the reading,
+                    instead of two that do not mention each other. */}
+                <Link href="/learn" className={`${styles.navLink} ${pathname === '/learn' ? styles.activeLink : ''}`}>Learn</Link>
                 {PAYMENTS_ENABLED && (
                   <Link href="/pricing" className={`${styles.navLink} ${pathname === '/pricing' ? styles.activeLink : ''}`}>Credit</Link>
                 )}

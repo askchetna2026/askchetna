@@ -1,0 +1,283 @@
+.page {
+    padding: 72px 24px 96px;
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.head {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.head h1 {
+    margin: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.sanskrit {
+    font-family: var(--font-devanagari);
+    font-size: 0.6em;
+    color: var(--text-muted);
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+.intro {
+    margin: 0;
+    max-width: var(--measure);
+    color: var(--text-muted);
+    font-size: var(--text-17);
+    line-height: 1.7;
+}
+
+/* ---- form ---- */
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 26px;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-md);
+    background: var(--bg-panel);
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.field label {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-size: var(--text-13);
+    font-weight: 600;
+    color: var(--foreground);
+}
+
+.hint {
+    font-weight: 400;
+    font-size: var(--text-12);
+    color: var(--text-muted);
+}
+
+.field input {
+    padding: 11px 14px;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-sm);
+    background: var(--card-bg);
+    color: var(--foreground);
+    font-family: var(--font-main);
+    font-size: var(--text-15);
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.field input:focus {
+    border-color: var(--accent-gold);
+    box-shadow: 0 0 0 2px rgba(var(--accent-gold-rgb), 0.12);
+}
+
+.submit {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    /* 44px tap floor. */
+    min-height: 44px;
+    padding: 11px 26px;
+    border: none;
+    border-radius: 999px;
+    background: var(--btn-bg);
+    color: var(--btn-fg);
+    font-family: inherit;
+    font-size: var(--text-14);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.error {
+    margin: 0;
+    font-size: var(--text-14);
+    color: var(--error);
+}
+
+/* ---- result ---- */
+
+.result {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 28px;
+    border: 1px solid var(--card-border);
+    border-left: 4px solid var(--accent-gold-decor);
+    border-radius: var(--radius-md);
+    background: var(--bg-panel);
+}
+
+.headline {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.headlineValue {
+    font-family: var(--font-heading);
+    font-size: var(--text-40);
+    line-height: 1.1;
+    color: var(--foreground);
+}
+
+.headlineCaption {
+    font-size: var(--text-13);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.meaning {
+    margin: 0;
+    max-width: var(--measure);
+    line-height: 1.7;
+}
+
+/* Everything else the same calculation produced. Tabular figures so the
+   degrees and pada numbers line up down the column. */
+.alsoFound {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 14px 20px;
+    margin: 0;
+    padding: 18px 0 0;
+    border-top: 1px solid var(--border-soft);
+    font-variant-numeric: tabular-nums;
+}
+
+.alsoFound dt {
+    font-size: var(--text-11);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 3px;
+}
+
+.alsoFound dd {
+    margin: 0;
+    font-size: var(--text-16);
+    color: var(--foreground);
+}
+
+.next {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border-soft);
+}
+
+.theRest {
+    margin: 0;
+    max-width: var(--measure);
+    font-size: var(--text-14);
+    line-height: 1.65;
+    color: var(--text-muted);
+}
+
+.cta {
+    padding: 11px 22px;
+    border-radius: 999px;
+    background: var(--btn-bg);
+    color: var(--btn-fg);
+    font-size: var(--text-14);
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+}
+
+/* ---- siblings + method ---- */
+
+.siblings {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.siblingsHead {
+    font-family: var(--font-heading);
+    font-size: var(--text-16);
+    font-weight: 400;
+    color: var(--foreground);
+    margin: 0;
+}
+
+.siblings ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.siblings a {
+    color: var(--accent-gold);
+    font-size: var(--text-14);
+    text-decoration: underline;
+    text-decoration-color: var(--border-soft);
+    text-underline-offset: 3px;
+    transition: color 0.2s ease;
+}
+
+.method {
+    margin: 0;
+    max-width: var(--measure);
+    padding-top: 18px;
+    border-top: 1px solid var(--border-soft);
+    font-size: var(--text-13);
+    line-height: 1.65;
+    color: var(--text-muted);
+}
+
+.method a {
+    color: var(--accent-gold);
+}
+
+@media (max-width: 640px) {
+    .page {
+        padding: 48px 18px 72px;
+    }
+
+    .form,
+    .result {
+        padding: 20px;
+    }
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .submit:not(:disabled):hover,
+    .cta:hover {
+        background: var(--btn-bg-hover);
+    }
+
+    .siblings a:hover,
+    .method a:hover {
+        color: var(--accent-coral);
+    }
+}

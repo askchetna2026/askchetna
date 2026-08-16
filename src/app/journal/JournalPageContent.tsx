@@ -7,7 +7,13 @@ import JournalWidget from '@/components/JournalWidget';
 import { localDay } from '@/lib/localDay';
 import styles from './page.module.css';
 
-type Entry = { id: string; date: string; content: string };
+type Entry = {
+    id: string;
+    date: string;
+    content: string;
+    /** Resolved server-side when the entry was written. Null on older entries. */
+    transit?: { dashaLord?: string | null; antardashaLord?: string | null } | null;
+};
 
 const longDate = (iso: string) =>
     new Date(`${iso}T00:00:00`).toLocaleDateString('en-US', {
@@ -93,6 +99,20 @@ export default function JournalPageContent() {
                     {past.map((entry) => (
                         <article key={entry.id} className={styles.entry}>
                             <h3 className={styles.entryDate}>{longDate(entry.date)}</h3>
+                            {/* What was running when this was written. The
+                                point of keeping it: by the time someone wants
+                                to ask which period they kept writing this in,
+                                the dasha has moved on and the answer is no
+                                longer recoverable from the entry. Absent on
+                                anything written before the column was filled. */}
+                            {entry.transit?.dashaLord && (
+                                <p className={styles.entryContext}>
+                                    {entry.transit.dashaLord}
+                                    {entry.transit.antardashaLord
+                                        ? ` · ${entry.transit.antardashaLord} sub-period`
+                                        : ''}
+                                </p>
+                            )}
                             <p className={styles.entryBody}>{entry.content}</p>
                         </article>
                     ))}

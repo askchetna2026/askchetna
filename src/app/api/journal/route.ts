@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse, after } from 'next/server';
 import { auth } from '@/auth';
 import { requireUser } from '@/lib/apiAuth';
 import prisma from '@/lib/prisma';
+import { attachJournalContext } from '@/lib/journalContext';
 
 export async function GET(req: NextRequest) {
     try {
@@ -22,10 +23,12 @@ export async function GET(req: NextRequest) {
                 where: { userId: session.user.id },
                 orderBy: { date: 'desc' },
                 take: limit,
-                // Explicit rather than a default SELECT *: `transit` is a JSON
-                // blob this list never renders, and pulling it per row would
-                // make a preview list cost more than the page it sits on.
-                select: { id: true, date: true, content: true },
+                // Explicit rather than a default SELECT *, so a column added to
+                // this model does not start arriving on a preview list. The
+                // `transit` blob is small and fixed — four fields naming the
+                // dasha that was running — and /journal shows it under each
+                // entry, so it is worth its place here.
+                select: { id: true, date: true, content: true, transit: true },
             });
             return NextResponse.json({ entries });
         }
@@ -57,7 +60,11 @@ export async function POST(req: NextRequest) {
         if (!authed.ok) return authed.response;
         const session = { user: { id: authed.userId } };
 
-        const { date, content, transit } = await req.json();
+        // `transit` is deliberately NOT read off the body any more. The column
+        // records which dasha was running when this was written, and a client
+        // cannot be the authority on that — it is resolved from the seeker's
+        // own chart below, after the response has gone.
+        const { date, content } = await req.json();
 
         if (!date || content === undefined) {
             return NextResponse.json({ error: 'Date and content are required' }, { status: 400 });
@@ -70,16 +77,19 @@ export async function POST(req: NextRequest) {
                     date: date,
                 },
             },
-            update: {
-                content,
-                transit: transit || undefined,
-            },
+            update: { content },
             create: {
                 userId: session.user.id,
                 date,
                 content,
-                transit: transit || {},
             },
+        });
+
+        // Off the request path: someone pressing Save should not wait on a
+        // chart read, and if this fails they lose a piece of metadata rather
+        // than their writing.
+        after(async () => {
+            await attachJournalContext(entry.id, session.user.id, date);
         });
 
         return NextResponse.json(entry);

@@ -16,6 +16,10 @@ const ALWAYS_ALLOWED = [
     '/dashboard', '/account', '/app-info', '/pricing',   // the "Me" half
     '/login', '/onboarding', '/offline',
     '/privacy', '/terms', '/disclaimer', '/refund', '/contact', '/about',
+    // The calculators take birth details in the form itself and never read a
+    // stored profile, so demanding one first would gate a page whose entire
+    // purpose is working without an account.
+    '/calculators',
 ];
 
 /** The home page is its own case: prompt on arrival, but cancelling leaves you there. */

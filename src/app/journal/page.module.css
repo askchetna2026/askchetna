@@ -54,6 +54,15 @@
     margin-bottom: 8px;
 }
 
+/* Quieter than the date: it is context for the entry, not a heading of its own.
+   Absent entirely on entries written before the context was recorded, rather
+   than shown as an empty slot. */
+.entryContext {
+    font-size: var(--text-12);
+    color: var(--text-muted);
+    margin: -4px 0 10px;
+}
+
 .entryBody {
     font-size: var(--text-16);
     line-height: 1.75;

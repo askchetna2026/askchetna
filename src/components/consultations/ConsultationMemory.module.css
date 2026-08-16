@@ -1,57 +1,239 @@
-/* Context for the conversation, not the conversation — so it sits above the
-   thread as a quiet band rather than a card competing with the messages. */
+/* A single line in the flow; everything else in a sheet over it.
+ *
+ * This was an inline panel that expanded in place, which grew with its contents
+ * and took half the screen away from the live conversation it exists to support
+ * — and got worse the more history there was. Reference material for a chat
+ * should be one line until asked for.
+ */
 
-.panel {
-    border: 1px solid var(--card-border);
-    border-radius: var(--radius-sm);
-    background: var(--bg-panel);
-    margin-bottom: 16px;
-    overflow: hidden;
-}
-
-.header {
+.trigger {
     display: flex;
     align-items: center;
     gap: 8px;
     width: 100%;
-    padding: 12px 14px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    text-align: left;
+    margin-bottom: 12px;
+    padding: 10px 14px;
+    border: 1px solid var(--card-border);
+    border-radius: 999px;
+    background: var(--bg-panel);
     color: var(--text-muted);
     font-family: inherit;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    font-size: var(--text-13);
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease;
 }
 
-.title {
-    font-size: var(--text-13);
-    font-weight: 600;
+.trigger span:first-of-type {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.triggerAction {
+    flex-shrink: 0;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-size: var(--text-11);
+    color: var(--accent-gold);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .trigger:hover {
+        border-color: var(--accent-gold);
+        color: var(--foreground);
+    }
+}
+
+/* ── The sheet ───────────────────────────────────────────────────────────── */
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(var(--foreground-rgb), 0.35);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0;
+}
+
+/* Bottom sheet on a phone, centred panel from tablet up. Capped at 85dvh so it
+   can never become the thing it replaced — a panel taller than the screen. */
+.sheet {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 720px;
+    max-height: 85dvh;
+    background: var(--bg-panel);
+    background-image: var(--paper-tex);
+    background-blend-mode: var(--paper-tex-blend);
+    background-size: 300px;
+    border: 1px solid var(--card-border);
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -12px 40px rgba(var(--foreground-rgb), 0.18);
+}
+
+@media (min-width: 768px) {
+    .overlay {
+        align-items: center;
+        padding: 24px;
+    }
+
+    .sheet {
+        border-radius: 20px;
+        max-height: 80dvh;
+    }
+}
+
+.sheetHead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--card-border);
+    flex-shrink: 0;
+}
+
+.sheetTitle {
+    font-family: var(--font-heading);
+    font-size: var(--text-18);
+    color: var(--foreground);
+    margin: 0;
+}
+
+.close {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* 44px is the tap-target floor. */
+    width: 44px;
+    height: 44px;
+    margin: -10px -8px -10px 0;
+    border: none;
+    background: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+/* The scroll lives here, so the header and the page behind both stay put. */
+.sheetBody {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 16px 18px calc(20px + env(safe-area-inset-bottom, 0px));
+}
+
+.muted {
+    color: var(--text-muted);
+    font-size: var(--text-14);
+    padding: 12px 0;
+    margin: 0;
+}
+
+/* ── One past conversation ───────────────────────────────────────────────── */
+
+.session {
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.sessionHead {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    padding: 14px 0;
+    border: none;
+    background: none;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
     color: var(--foreground);
 }
 
-.meta {
-    margin-left: auto;
+.sessionDate {
+    font-size: var(--text-14);
+    font-weight: 600;
+}
+
+.sessionMeta {
+    flex-shrink: 0;
     font-size: var(--text-11);
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--text-muted);
 }
 
-.chevron {
-    flex-shrink: 0;
-    transition: transform 0.2s ease;
+.transcript {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 4px 0 16px;
 }
 
-.chevronOpen {
-    transform: rotate(180deg);
+/* Same left/right language as the live chat, so a transcript reads as the
+   conversation it was rather than a log of it. */
+.bubble {
+    max-width: 85%;
+    padding: 10px 13px;
+    border-radius: 14px;
+    font-size: var(--text-14);
+    line-height: 1.55;
+    white-space: pre-wrap;
 }
 
-.body {
-    padding: 0 14px 14px;
+.mine {
+    align-self: flex-end;
+    background: var(--bg-soft);
+    color: var(--foreground);
+    border-bottom-right-radius: 4px;
 }
+
+.theirs {
+    align-self: flex-start;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    color: var(--foreground);
+    border-bottom-left-radius: 4px;
+}
+
+.bubbleBody {
+    display: block;
+}
+
+.bubbleTime {
+    display: block;
+    margin-top: 4px;
+    font-size: var(--text-10);
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+}
+
+/* ── The summary ─────────────────────────────────────────────────────────── */
 
 .summary {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--card-border);
+}
+
+.summaryTitle {
+    font-size: var(--text-11);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent-gold);
+    margin: 0 0 8px;
+}
+
+.summaryBody {
     font-size: var(--text-14);
     line-height: 1.65;
     color: var(--foreground);
@@ -67,12 +249,8 @@
     gap: 16px;
     flex-wrap: wrap;
     margin-top: 14px;
-    padding-top: 12px;
-    border-top: 1px solid var(--border-soft);
 }
 
-/* Says what this is before offering to delete it: people agree to "forget"
-   more readily when they can see it is a summary rather than a recording. */
 .note {
     font-size: var(--text-12);
     line-height: 1.55;
@@ -84,7 +262,7 @@
 
 .forget {
     flex-shrink: 0;
-    padding: 7px 14px;
+    padding: 9px 16px;
     font-size: var(--text-12);
     font-weight: 600;
     border-radius: 999px;
@@ -100,10 +278,13 @@
     cursor: not-allowed;
 }
 
-/* Gated: on touch these fire on tap and stay applied after the panel closes. */
 @media (hover: hover) and (pointer: fine) {
-    .header:hover {
-        background: rgba(var(--foreground-rgb), 0.03);
+    .close:hover {
+        color: var(--foreground);
+    }
+
+    .sessionHead:hover .sessionDate {
+        color: var(--accent-gold);
     }
 
     .forget:not(:disabled):hover {

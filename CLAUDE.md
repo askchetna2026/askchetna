@@ -39,6 +39,13 @@ Live at https://askchetna.com (Vercel).
   `promptStore.ts` reads that file at runtime and `npm run prompts:check`
   (which `prebuild` runs) verifies all 15 still resolve. Editing a prompt is a
   markdown edit; `geminiService.ts` only parses the response.
+- **`docs/IMPLEMENTATION-LOG.md` / `.csv` are GENERATED — never edit them.**
+  `.husky/post-commit` regenerates them from `git log` and stages the result, so
+  the committed copy trails by exactly one commit (a file cannot describe the
+  commit that contains it). `npm run log:update` closes that gap before a
+  release. Because they are rebuilt rather than appended to, a rebase or a
+  reworded subject is picked up instead of leaving a stale line — which is also
+  why hand-editing them is pointless: the next commit overwrites it.
 - **Commit subjects carry the version**, e.g. `fix(env): … [v3.1.8]`. Stamped
   automatically by the `prepare-commit-msg` hook — do not add it by hand. The
   patch bumps on **every commit** (`scripts/auto-bump-patch.mjs`), so each

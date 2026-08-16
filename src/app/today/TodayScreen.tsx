@@ -14,8 +14,6 @@ interface Transit {
     transit: string;
     theme: string;
     prompt: string;
-    rahuKaal?: string;
-    auspiciousTime?: string;
 }
 
 interface Panchang {

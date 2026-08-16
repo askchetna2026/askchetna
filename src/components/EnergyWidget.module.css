@@ -148,16 +148,9 @@
     gap: 8px;
 }
 
-/* Carries the hue that the label no longer does. The border is not decoration:
-   without it a White or Yellow chip has no edge against the parchment card. */
-.swatch {
-    width: 0.85em;
-    height: 0.85em;
-    border-radius: 50%;
-    flex: 0 0 auto;
-    border: 1px solid var(--accent-gold);
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.45);
-}
+/* The lucky-colour swatch lived here. It went with "lucky colour" itself, which
+   was an array indexed by weekday — the same for every user alive that day, and
+   shown as though it were theirs. */
 
 .shimmer {
     height: 180px;

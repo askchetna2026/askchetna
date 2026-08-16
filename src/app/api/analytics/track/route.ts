@@ -3,6 +3,7 @@ import { auth } from '@/auth';
 import { ANALYTICS_EVENTS, isAnalyticsEventType } from '@/lib/analytics/events';
 import { getRequestLocation, recordAnalyticsEvent } from '@/lib/analytics/server';
 import { maybeRunLifecycleAutomation } from '@/lib/lifecycleEmails';
+import { maybePurgeDueAccounts } from '@/lib/accountDeletion';
 
 /**
  * The page-view tracker.
@@ -56,6 +57,17 @@ export async function POST(req: NextRequest) {
                 await maybeRunLifecycleAutomation('analytics_track');
             } catch (error) {
                 console.error('Traffic lifecycle automation trigger failed:', error);
+            }
+
+            // Deleting an account is a promise with a date on it, and the cron
+            // that used to keep it has not existed since `392c147`. Traffic is
+            // the trigger because the person who asked to be deleted is exactly
+            // the one who never returns to trigger anything themselves.
+            // Throttled to once an hour deployment-wide; see the comments there.
+            try {
+                await maybePurgeDueAccounts();
+            } catch (error) {
+                console.error('Traffic account purge trigger failed:', error);
             }
         });
 

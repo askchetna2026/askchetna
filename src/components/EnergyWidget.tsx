@@ -8,15 +8,23 @@ interface TransitInfo {
     theme: string;
     prompt: string;
     description?: string;
-    luckyColor?: string;
-    luckyNumber?: number;
-    auspiciousTime?: string;
-    rahuKaal?: string;
     error?: string;
 }
 
+/** Only the muhurtas are read here; the rest of the panchang lives on /today. */
+interface PanchangInfo {
+    muhurtas?: {
+        rahuKaalam: { start: string; end: string };
+        abhijit: { start: string; end: string };
+    };
+}
+
+const timeOnly = (iso?: string) =>
+    iso ? new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null;
+
 export default function EnergyWidget() {
     const [data, setData] = useState<TransitInfo | null>(null);
+    const [muhurtas, setMuhurtas] = useState<PanchangInfo['muhurtas'] | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -37,6 +45,31 @@ export default function EnergyWidget() {
                 console.error('Failed to fetch transits:', err.message);
                 setLoading(false);
             });
+    }, []);
+
+    // Separate call, because these two answers have different shapes: the sky
+    // above is the same for everyone and cached globally, while Rahu Kaal is a
+    // function of sunrise at ONE place and cannot be shared.
+    //
+    // This block used to come from the transit route, which had no seeker and
+    // so no coordinates — it returned a weekday lookup table that disagreed
+    // with the figure /today showed the same person on the same day.
+    //
+    // A 401 or a missing profile just means no block. It is not an error worth
+    // reporting: signed out, or not yet onboarded, are ordinary states.
+    useEffect(() => {
+        let cancelled = false;
+        fetch('/api/astrology/panchang')
+            .then(res => (res.ok ? res.json() : null))
+            .then((panchang: PanchangInfo | null) => {
+                if (!cancelled && panchang?.muhurtas) setMuhurtas(panchang.muhurtas);
+            })
+            .catch(() => {
+                // Nothing to show, which is the correct outcome.
+            });
+        return () => {
+            cancelled = true;
+        };
     }, []);
 
     if (loading) {
@@ -69,53 +102,28 @@ export default function EnergyWidget() {
             )}
 
             <div className={styles.divider}></div>
-            <p className={styles.prompt}>"{data.prompt}"</p>
+            <p className={styles.prompt}>&ldquo;{data.prompt}&rdquo;</p>
 
-            {(data.luckyColor || data.luckyNumber || data.auspiciousTime || data.rahuKaal) && (
+            {/* Computed from real sunrise and sunset at the profile's own
+                coordinates, so this agrees with /today. Renders nothing at all
+                when there is no profile to compute it from — an absent window
+                is honest, a guessed one is not. */}
+            {muhurtas && (
                 <>
                     <div className={styles.divider}></div>
                     <div className={styles.vedicElements}>
-                        {data.luckyColor && (
-                            <div className={styles.element}>
-                                <span className={styles.elementLabel}>Lucky Color</span>
-                                {/* The colour is SHOWN, not painted onto the word.
-                                    This used to set `color` to the colour itself, which
-                                    is unreadable for most of the values the API returns:
-                                    against the card, Yellow measured 1.06:1, White 1.14,
-                                    Silver 1.08, Gold 1.20, Red 2.38, Green 3.06 — only
-                                    Purple (5.60) cleared 4.5:1, so six days in seven the
-                                    word was invisible. A swatch carries the hue and the
-                                    label keeps a legible ink. The swatch has its own
-                                    border so a white or yellow chip still has an edge
-                                    on parchment. */}
-                                <span className={styles.elementValue}>
-                                    <span
-                                        className={styles.swatch}
-                                        style={{ background: data.luckyColor.toLowerCase() }}
-                                        aria-hidden="true"
-                                    />
-                                    {data.luckyColor}
-                                </span>
-                            </div>
-                        )}
-                        {data.luckyNumber && (
-                            <div className={styles.element}>
-                                <span className={styles.elementLabel}>Lucky Number</span>
-                                <span className={styles.elementValue}>{data.luckyNumber}</span>
-                            </div>
-                        )}
-                        {data.auspiciousTime && (
-                            <div className={styles.element}>
-                                <span className={styles.elementLabel}>Auspicious Time</span>
-                                <span className={styles.elementValue}>{data.auspiciousTime}</span>
-                            </div>
-                        )}
-                        {data.rahuKaal && (
-                            <div className={styles.element}>
-                                <span className={styles.elementLabel}>Rahu Kaal</span>
-                                <span className={styles.elementValue}>{data.rahuKaal}</span>
-                            </div>
-                        )}
+                        <div className={styles.element}>
+                            <span className={styles.elementLabel}>Abhijit Muhurta</span>
+                            <span className={styles.elementValue}>
+                                {timeOnly(muhurtas.abhijit.start)}–{timeOnly(muhurtas.abhijit.end)}
+                            </span>
+                        </div>
+                        <div className={styles.element}>
+                            <span className={styles.elementLabel}>Rahu Kaal</span>
+                            <span className={styles.elementValue}>
+                                {timeOnly(muhurtas.rahuKaalam.start)}–{timeOnly(muhurtas.rahuKaalam.end)}
+                            </span>
+                        </div>
                     </div>
                 </>
             )}

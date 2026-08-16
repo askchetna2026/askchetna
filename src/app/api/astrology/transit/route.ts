@@ -6,10 +6,11 @@ import { cached, utcHourKey } from '@/lib/astrology/skyCache';
  * Today's cosmic weather — the same for everybody.
  *
  * This handler takes no parameters, reads no session and looks at no profile.
- * Everything it returns is a function of the current instant: the Moon's sign,
- * and the weekday tables below. Yet it was loading and running the ephemeris on
- * every request, from every visitor, on both the home page and /today — twice
- * per visit, since EnergyWidget and TodayScreen each fetch it independently.
+ * Everything it returns is a function of the current instant: the Moon's sign
+ * and the reading that goes with it. Yet it was loading and running the
+ * ephemeris on every request, from every visitor, on both the home page and
+ * /today — twice per visit, since EnergyWidget and TodayScreen each fetch it
+ * independently.
  *
  * So it is computed once per UTC hour and shared by every caller. Nothing
  * personal passes through here, which is what makes one shared answer safe.
@@ -24,43 +25,24 @@ import { cached, utcHourKey } from '@/lib/astrology/skyCache';
  * request.
  */
 
-// Helper to calculate Rahu Kaal (inauspicious period)
-function calculateRahuKaal(date: Date): string {
-    const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
-
-    // Rahu Kaal periods (approximate 1.5 hour windows based on sunrise ~6 AM)
-    const rahuKaalPeriods: Record<number, string> = {
-        0: '4:30 PM - 6:00 PM', // Sunday
-        1: '7:30 AM - 9:00 AM', // Monday
-        2: '3:00 PM - 4:30 PM', // Tuesday
-        3: '12:00 PM - 1:30 PM', // Wednesday
-        4: '1:30 PM - 3:00 PM', // Thursday
-        5: '10:30 AM - 12:00 PM', // Friday
-        6: '9:00 AM - 10:30 AM', // Saturday
-    };
-
-    return rahuKaalPeriods[dayOfWeek] || '12:00 PM - 1:30 PM';
-}
-
-// Helper to get auspicious time (Abhijit Muhurta)
-function getAuspiciousTime(): string {
-    // Abhijit Muhurta is typically around midday (11:30 AM - 12:30 PM)
-    return '11:30 AM - 12:30 PM';
-}
-
-// Helper to get lucky number based on day of week
-function getLuckyNumber(date: Date): number {
-    const dayOfWeek = date.getDay();
-    const luckyNumbers = [3, 2, 9, 5, 3, 6, 8]; // Sun-Sat
-    return luckyNumbers[dayOfWeek];
-}
-
-// Helper to get lucky color based on day of week
-function getLuckyColor(date: Date): string {
-    const dayOfWeek = date.getDay();
-    const luckyColors = ['Gold', 'Silver', 'Red', 'Green', 'Yellow', 'White', 'Purple']; // Sun-Sat
-    return luckyColors[dayOfWeek];
-}
+/* This route used to also return Rahu Kaal, an "auspicious time", a lucky
+   number and a lucky colour. None of them were calculated.
+ *
+ * Rahu Kaal was a seven-entry table keyed on the day of the week, assuming
+ * sunrise at 6 AM everywhere; Abhijit was the constant string
+ * "11:30 AM - 12:30 PM". They could not be anything better here, because this
+ * response is memoised globally on the UTC hour and has no seeker to have
+ * coordinates. Meanwhile /api/astrology/panchang computes both properly from
+ * real sunrise and sunset at the profile's own location — so the same person
+ * was shown one Rahu Kaal on the home page and a different one on /today.
+ *
+ * Lucky number and lucky colour were likewise arrays indexed by weekday,
+ * identical for every user alive on a given day and presented as personal.
+ * They were also the only fortune-telling in the product, on a site whose
+ * About page says in as many words that it rejects that framing.
+ *
+ * All four are gone rather than fixed. The widget now reads the real panchang.
+ */
 
 const HOUR_MS = 60 * 60 * 1000;
 
@@ -148,20 +130,12 @@ async function computeSkyWeather(now: Date) {
     };
 
     const currentTheme = themes[moonSign] || themes['Pisces'];
-    const rahuKaal = calculateRahuKaal(now);
-    const auspiciousTime = getAuspiciousTime();
-    const luckyNumber = getLuckyNumber(now);
-    const luckyColor = getLuckyColor(now);
 
     return {
         transit: `Moon in ${moonSign}`,
         theme: currentTheme.theme,
         prompt: currentTheme.prompt,
         description: currentTheme.description,
-        luckyColor,
-        luckyNumber,
-        auspiciousTime,
-        rahuKaal,
     };
 }
 

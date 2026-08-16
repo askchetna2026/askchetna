@@ -1,0 +1,262 @@
+.page {
+    padding: 72px 24px 96px;
+    max-width: 780px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+.head { display: flex; flex-direction: column; gap: 12px; }
+.head h1 { margin: 0; }
+
+.standfirst {
+    margin: 0;
+    max-width: var(--measure);
+    color: var(--text-muted);
+    font-size: var(--text-17);
+    line-height: 1.7;
+}
+
+.state {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-muted);
+    font-size: var(--text-15);
+}
+
+.gate {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 28px;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-md);
+    background: var(--bg-panel);
+}
+
+.gate p { margin: 0; max-width: var(--measure); color: var(--text-muted); }
+
+.gateBtn {
+    padding: 11px 22px;
+    border-radius: 999px;
+    background: var(--btn-bg);
+    color: var(--btn-fg);
+    font-size: var(--text-14);
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+}
+
+/* ── the reading ──────────────────────────────────────────────────────── */
+
+.verdict {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 28px;
+    background: var(--bg-panel);
+    border: 1px solid var(--card-border);
+    border-left: 4px solid var(--accent-gold-decor);
+    border-radius: var(--radius-md);
+}
+
+.verdictHead {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.doshaName {
+    font-family: var(--font-heading);
+    font-size: var(--text-40);
+    line-height: 1;
+    color: var(--foreground);
+}
+
+.doshaSanskrit {
+    font-family: var(--font-devanagari);
+    font-size: var(--text-22);
+    color: var(--text-muted);
+}
+
+.dual {
+    margin: 0;
+    max-width: var(--measure);
+    font-size: var(--text-14);
+    line-height: 1.6;
+    color: var(--text-muted);
+}
+
+.elements {
+    margin: 0;
+    font-size: var(--text-12);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent-gold);
+}
+
+.summary {
+    margin: 0;
+    max-width: var(--measure);
+    font-size: var(--text-17);
+    line-height: 1.7;
+}
+
+/* ── the split ────────────────────────────────────────────────────────── */
+
+.bars {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.barRow {
+    display: grid;
+    grid-template-columns: 64px 1fr 46px;
+    align-items: center;
+    gap: 12px;
+    font-variant-numeric: tabular-nums;
+}
+
+.barLabel {
+    font-size: var(--text-13);
+    color: var(--foreground);
+}
+
+.barTrack {
+    height: 8px;
+    border-radius: 999px;
+    background: var(--bg-soft);
+    overflow: hidden;
+}
+
+/* Ornament, so the decorative gold is right. The leading dosha is stronger
+   rather than a different hue — three doshas in three colours would imply a
+   good one and a bad one, and there is no such thing here. */
+.barFill {
+    display: block;
+    height: 100%;
+    background: var(--border-soft);
+}
+
+.barFillOn {
+    background: var(--accent-gold-decor);
+}
+
+.barValue {
+    font-size: var(--text-13);
+    color: var(--text-muted);
+    text-align: right;
+}
+
+/* ── blocks ───────────────────────────────────────────────────────────── */
+
+.block {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-soft);
+}
+
+.blockHead {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: var(--text-20);
+    font-weight: 400;
+    color: var(--foreground);
+}
+
+.body {
+    margin: 0;
+    max-width: var(--measure);
+    line-height: 1.75;
+}
+
+.recognise {
+    margin: 0;
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: var(--measure);
+    line-height: 1.65;
+}
+
+.recognise li::marker { color: var(--accent-gold-decor); }
+
+/* ── the working ──────────────────────────────────────────────────────── */
+
+.working {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: var(--border-soft);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.contribution {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 16px;
+    background: var(--bg-panel);
+}
+
+.contribHead {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px 16px;
+}
+
+.contribFactor {
+    font-size: var(--text-14);
+    font-weight: 600;
+    color: var(--foreground);
+}
+
+.contribPoints {
+    font-size: var(--text-13);
+    color: var(--accent-gold);
+    font-variant-numeric: tabular-nums;
+}
+
+.contribWhy {
+    margin: 0;
+    max-width: var(--measure);
+    font-size: var(--text-13);
+    line-height: 1.55;
+    color: var(--text-muted);
+}
+
+/* ── the boundary ─────────────────────────────────────────────────────── */
+
+.boundary {
+    margin: 0;
+    padding: 18px 20px;
+    background: var(--bg-soft);
+    border-left: 3px solid var(--accent-coral);
+    font-size: var(--text-14);
+    line-height: 1.7;
+    max-width: var(--measure);
+}
+
+@media (max-width: 640px) {
+    .page { padding: 48px 18px 72px; }
+    .verdict { padding: 22px; }
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .gateBtn:hover { background: var(--btn-bg-hover); }
+}

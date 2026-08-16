@@ -100,6 +100,13 @@ export const CURRICULUM: LearnSection[] = [
                 href: '/chart',
                 needsChart: true,
             },
+            {
+                title: 'Your Prakriti',
+                blurb:
+                    'Vata, Pitta or Kapha read from your rising sign, its ruler and your Moon — with every factor shown, because practitioners differ on whether a chart can settle this.',
+                href: '/prakriti',
+                needsChart: true,
+            },
         ],
     },
     {

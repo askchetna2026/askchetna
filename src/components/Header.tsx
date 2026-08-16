@@ -121,14 +121,20 @@ export default function Header() {
               // it hosts account deletion and both stores want that findable.
               <ProfileMenu />
             ) : (
-              // Two doors, because they serve different people. "Know your
-              // prakriti" is the hook for a first-time visitor; it is not a
-              // word a RETURNING user scans for, so it was the only control in
-              // the bar and there was effectively no way to sign in from the
-              // desktop home page.
+              // Two doors, because they serve different people: a hook for a
+              // first-time visitor, and a plain way in for a returning one.
+              // The hook used to be the ONLY control in the bar, which left no
+              // way to sign in from the desktop home page at all.
+              //
+              // It used to read "KNOW YOUR PRAKRITI", and nothing behind it
+              // delivered that — there is no Prakriti feature, only this label.
+              // Signup asks for birth details and produces a chart, so that is
+              // what the button now promises. A call to action that describes
+              // the screen after next is the one place a product cannot afford
+              // to be aspirational.
               <>
                 <Link href="/login" className={styles.signInLink}>Sign in</Link>
-                <Link href="/login?mode=signup" className={styles.loginBtn}>KNOW YOUR PRAKRITI</Link>
+                <Link href="/login?mode=signup" className={styles.loginBtn}>KNOW YOUR CHART</Link>
               </>
             )}
           </div>
@@ -217,6 +223,9 @@ export default function Header() {
                       </Link>
                       <Link href="/muhurat" className={`${styles.mobileNavLink} ${pathname === '/muhurat' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
                         <Clock size={20} /> When to begin
+                      </Link>
+                      <Link href="/prakriti" className={`${styles.mobileNavLink} ${pathname === '/prakriti' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                        <Sparkles size={20} /> Your Prakriti
                       </Link>
                       <Link href="/patterns" className={`${styles.mobileNavLink} ${pathname === '/patterns' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
                         <Orbit size={20} /> Sade Sati &amp; Doshas

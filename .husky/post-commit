@@ -1,0 +1,18 @@
+# Keeps docs/IMPLEMENTATION-LOG.{md,csv} in step with the history.
+#
+# post-commit rather than pre-commit: the record describes commits, and at
+# pre-commit time the commit being made does not exist yet. Here it does, so
+# the regenerated file includes it.
+#
+# Regenerates and STAGES, deliberately — it does not commit or amend. Amending
+# would rewrite the commit that was just made, and because the record contains
+# commit hashes, an amend changes the hash, which changes the record, which
+# would amend again. The staged file rides along with the next commit instead,
+# so the committed copy trails by exactly one. `npm run log:update` closes that
+# gap before a release.
+#
+# Never blocks, like the other hooks here: a record that cannot be written is
+# not a reason to lose a commit.
+node scripts/generate-implementation-log.mjs >/dev/null 2>&1 \
+  && git add docs/IMPLEMENTATION-LOG.md docs/IMPLEMENTATION-LOG.csv 2>/dev/null
+exit 0

@@ -1,4 +1,5 @@
 ﻿"Date","Type","Area","What was implemented","Version","Commit"
+"2026-08-16","Bug fix","","Group the mobile menu, and write the new pages for people","v3.5.80","723f946"
 "2026-08-16","Bug fix","","Microphone permissions, saved charts in calculators, and less noise","v3.5.79","ae397de"
 "2026-08-16","Documentation","","Record read-aloud in the implementation log","v3.5.78","dbc8e97"
 "2026-08-16","Feature","voice","Read the answer aloud","v3.5.77","0748893"

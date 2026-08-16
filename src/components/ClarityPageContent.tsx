@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
+import DictateButton from '@/components/voice/DictateButton';
 import { Send, Sparkles, MessageSquare, History, ArrowLeft, Bookmark, Share2, ShieldCheck, Check, Download } from 'lucide-react';
 import styles from '../app/clarity/page.module.css';
 
@@ -26,6 +27,29 @@ export default function ClarityPageContent() {
     const hasPurchaseSuccess = searchParams.get('purchase') === 'success';
 
     const [question, setQuestion] = useState(initialQuery);
+
+    /**
+     * Dictate in the language Chetna already writes in.
+     *
+     * A recogniser set to the wrong tag does not error — it returns confident
+     * nonsense, which is the single biggest cause of dictation looking broken.
+     */
+    const [dictationLanguage, setDictationLanguage] = useState<'en' | 'hi'>('en');
+
+    useEffect(() => {
+        let cancelled = false;
+        fetch('/api/user/language')
+            .then((res) => (res.ok ? res.json() : null))
+            .then((data) => {
+                if (!cancelled && (data?.language === 'hi' || data?.language === 'en')) {
+                    setDictationLanguage(data.language);
+                }
+            })
+            .catch(() => {
+                // English is the default; nothing to report.
+            });
+        return () => { cancelled = true; };
+    }, []);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [credits, setCredits] = useState<number | null>(null);
@@ -629,6 +653,16 @@ export default function ClarityPageContent() {
                         value={question}
                         onChange={(e) => setQuestion(e.target.value)}
                         disabled={isAnalyzing}
+                    />
+                    {/* Fills the box; never sends. The question still leaves
+                        only when the seeker presses the button beside it,
+                        having read what was heard. */}
+                    <DictateButton
+                        language={dictationLanguage}
+                        disabled={isAnalyzing}
+                        onAppend={(text) =>
+                            setQuestion((q) => (q ? `${q.replace(/\s+$/, '')} ${text.trim()}` : text.trim()))
+                        }
                     />
                     <button
                         type="submit"

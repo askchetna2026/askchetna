@@ -7,6 +7,7 @@ import SessionTimer from './SessionTimer';
 import ExtendPrompt from './ExtendPrompt';
 import AstrologerAvatar from './AstrologerAvatar';
 import RateConsultation from './RateConsultation';
+import DictateButton from '@/components/voice/DictateButton';
 import styles from './ChatSession.module.css';
 
 /**
@@ -413,6 +414,15 @@ export default function ChatSession({
                            reply is composing should be able to type it. The
                            send button below is what prevents a second in-flight
                            request. */
+                    />
+                    {/* Fills the box; the seeker still presses send. In a paid
+                        session that matters more than anywhere else — a
+                        mis-heard sentence sent automatically would spend a
+                        message and part of the clock. */}
+                    <DictateButton
+                        onAppend={(text) =>
+                            setDraft((d) => (d ? `${d.replace(/\s+$/, '')} ${text.trim()}` : text.trim()))
+                        }
                     />
                     <button
                         type="submit"

@@ -1,0 +1,148 @@
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* 44px tap floor — this is a control people reach for one-handed. */
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border: 1px solid var(--card-border);
+    border-radius: 999px;
+    background: var(--bg-panel);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Listening is the one state that must be unmistakable — a microphone the user
+   believes is off is a privacy problem, not a UI problem. Colour AND a shape
+   change (the icon becomes a stop square), so it does not rely on hue alone. */
+.listening {
+    border-color: var(--accent-coral);
+    background: var(--accent-coral);
+    color: var(--btn-fg);
+    animation: dictate-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes dictate-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(var(--accent-coral-rgb), 0.45); }
+    50% { box-shadow: 0 0 0 6px rgba(var(--accent-coral-rgb), 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .listening {
+        animation: none;
+    }
+}
+
+.hint {
+    display: block;
+    width: 100%;
+    margin-top: 6px;
+    font-size: var(--text-12);
+    line-height: 1.5;
+    color: var(--text-muted);
+}
+
+/* ── the disclosure ───────────────────────────────────────────────────── */
+
+.sheet {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    background: rgba(var(--foreground-rgb), 0.35);
+}
+
+.sheetBody {
+    width: 100%;
+    max-width: 520px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 26px 24px calc(26px + env(safe-area-inset-bottom, 0px));
+    background: var(--bg-panel);
+    border: 1px solid var(--card-border);
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -12px 40px rgba(var(--foreground-rgb), 0.18);
+}
+
+.sheetTitle {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: var(--text-20);
+    font-weight: 400;
+    color: var(--foreground);
+}
+
+.sheetBody p {
+    margin: 0;
+    max-width: var(--measure);
+    font-size: var(--text-15);
+    line-height: 1.65;
+    color: var(--text-muted);
+}
+
+.sheetActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 6px;
+}
+
+.cancel,
+.confirm {
+    min-height: 44px;
+    padding: 11px 20px;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: var(--text-14);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.cancel {
+    border: 1px solid var(--card-border);
+    background: none;
+    color: var(--text-muted);
+}
+
+.confirm {
+    border: none;
+    background: var(--btn-bg);
+    color: var(--btn-fg);
+}
+
+@media (min-width: 768px) {
+    .sheet {
+        align-items: center;
+        padding: 24px;
+    }
+
+    .sheetBody {
+        border-radius: 20px;
+    }
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .button:not(:disabled):not(.listening):hover {
+        border-color: var(--accent-gold);
+        color: var(--foreground);
+    }
+
+    .cancel:hover {
+        color: var(--foreground);
+    }
+
+    .confirm:hover {
+        background: var(--btn-bg-hover);
+    }
+}

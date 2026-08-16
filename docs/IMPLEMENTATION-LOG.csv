@@ -1,4 +1,5 @@
 ﻿"Date","Type","Area","What was implemented","Version","Commit"
+"2026-08-16","Feature","learn","Put the reading material in an order","v3.5.61","bc2b1eb"
 "2026-08-16","Feature","saved","Make ""Save this response"" actually save something","v3.5.60","07ea974"
 "2026-08-16","Documentation","","Record the calculators and journal context in the log","v3.5.59","9e75876"
 "2026-08-16","Feature","","Three calculators without a signup, and a journal that remembers when","v3.5.58","f6a2ae4"

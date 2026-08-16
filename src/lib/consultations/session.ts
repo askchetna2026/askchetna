@@ -28,7 +28,7 @@ import {
  */
 
 export type StartResult =
-    | { ok: true; consultationId: string; deadlineAt: Date; secondsPerBlock: number }
+    | { ok: true; consultationId: string; deadlineAt: Date | null; secondsPerBlock: number }
     | { ok: false; reason: 'INSUFFICIENT_CREDITS'; available: number }
     | { ok: false; reason: 'ASTROLOGER_UNAVAILABLE' }
     | { ok: false; reason: 'ALREADY_IN_SESSION'; consultationId: string };
@@ -106,15 +106,25 @@ export async function startConsultation(
                 };
             }
 
-            const now = new Date();
+            // The clock does NOT start here.
+            //
+            // It used to: startedAt and deadlineAt were both set at creation, so
+            // the paid block began burning the instant someone tapped "chat" —
+            // through reading the astrologer's bio, through composing a first
+            // message, through a phone ringing. People were paying for the time
+            // before the conversation.
+            //
+            // beginConsultationClock() starts it on the first message instead.
+            // The credit is still spent here, because the block is bought at
+            // the door; what moves is when it starts being consumed.
             const consultation = await tx.consultation.create({
                 data: {
                     userId,
                     astrologerId,
                     kind,
                     status: 'ACTIVE',
-                    startedAt: now,
-                    deadlineAt: new Date(now.getTime() + blockSeconds * 1000),
+                    startedAt: null,
+                    deadlineAt: null,
                     blocksCharged: 1,
                     creditsCharged: creditsPerBlock,
                     // Snapshots. Never joined live — see the model comment.
@@ -130,7 +140,9 @@ export async function startConsultation(
             return {
                 ok: true as const,
                 consultationId: consultation.id,
-                deadlineAt: consultation.deadlineAt!,
+                // Null until the first message. Callers must treat it as "not
+                // started", never as "already over".
+                deadlineAt: consultation.deadlineAt,
                 secondsPerBlock: blockSeconds,
             };
         });
@@ -141,6 +153,57 @@ export async function startConsultation(
         throw error;
     }
 }
+
+/**
+ * Starts the paid clock, on the first message.
+ *
+ * Idempotent by construction: the update is conditional on deadlineAt still
+ * being null, so two messages arriving together cannot start two clocks or
+ * shorten the block. The second one updates nothing and reads the deadline the
+ * first one set.
+ *
+ * Returns the deadline in force after the call, started or already running.
+ */
+export async function beginConsultationClock(
+    consultationId: string
+): Promise<Date | null> {
+    const now = new Date();
+
+    const consultation = await prisma.consultation.findUnique({
+        where: { id: consultationId },
+        select: { deadlineAt: true, secondsPerBlock: true, status: true },
+    });
+    if (!consultation) return null;
+    if (consultation.deadlineAt) return consultation.deadlineAt;
+    if (!(LIVE_STATUSES as readonly string[]).includes(consultation.status)) return null;
+
+    const deadline = new Date(now.getTime() + consultation.secondsPerBlock * 1000);
+
+    // The `deadlineAt: null` in the WHERE is the race guard.
+    const updated = await prisma.consultation.updateMany({
+        where: { id: consultationId, deadlineAt: null },
+        data: { startedAt: now, deadlineAt: deadline },
+    });
+
+    if (updated.count === 1) return deadline;
+
+    // Someone else won. Read theirs rather than returning ours.
+    const fresh = await prisma.consultation.findUnique({
+        where: { id: consultationId },
+        select: { deadlineAt: true },
+    });
+    return fresh?.deadlineAt ?? null;
+}
+
+/**
+ * How long a session may sit unopened before it is treated as abandoned.
+ *
+ * Needed because a session with no clock cannot expire, and one live session
+ * per user is enforced — so without this, tapping "chat" and walking away would
+ * lock someone out of ever starting another one. Generous enough that a real
+ * pause to think is never mistaken for abandonment.
+ */
+export const UNSTARTED_ABANDON_SECONDS = 30 * 60;
 
 export type ExtendResult =
     | { ok: true; deadlineAt: Date; creditsCharged: number }
@@ -364,11 +427,20 @@ export async function closeExpiredForUser(userId: string): Promise<number> {
     const settings = await getSettings();
     const cutoff = new Date(Date.now() - settings.SESSION_GRACE_SECONDS * 1000);
 
+    // Two kinds of stale, since the clock no longer starts at creation:
+    // a session whose paid block ran out, and one that never opened at all.
+    // Without the second, an abandoned never-started session has no deadline to
+    // fall past, so it stays live forever and the one-live-session rule locks
+    // its owner out permanently.
+    const unstartedCutoff = new Date(Date.now() - UNSTARTED_ABANDON_SECONDS * 1000);
     const stale = await prisma.consultation.findMany({
         where: {
             userId,
             status: { in: [...LIVE_STATUSES] },
-            deadlineAt: { lt: cutoff },
+            OR: [
+                { deadlineAt: { lt: cutoff } },
+                { deadlineAt: null, createdAt: { lt: unstartedCutoff } },
+            ],
         },
         select: { id: true },
     });
@@ -401,8 +473,16 @@ export async function sweepExpiredConsultations(): Promise<{ closed: number }> {
     const settings = await getSettings();
     const cutoff = new Date(Date.now() - settings.SESSION_GRACE_SECONDS * 1000);
 
+    const unstartedCutoff = new Date(Date.now() - UNSTARTED_ABANDON_SECONDS * 1000);
     const expired = await prisma.consultation.findMany({
-        where: { status: { in: [...LIVE_STATUSES] }, deadlineAt: { lt: cutoff } },
+        where: {
+            status: { in: [...LIVE_STATUSES] },
+            OR: [
+                { deadlineAt: { lt: cutoff } },
+                // Never opened — see closeExpiredForUser.
+                { deadlineAt: null, createdAt: { lt: unstartedCutoff } },
+            ],
+        },
         select: { id: true },
         take: 200,
     });
@@ -422,9 +502,21 @@ export async function sweepExpiredConsultations(): Promise<{ closed: number }> {
 }
 
 /** Remaining seconds by server clock. Negative means already past due. */
+/**
+ * Seconds left on the paid block.
+ *
+ * A null deadline means NOT YET STARTED, and callers must not read the 0 here
+ * as expiry — check `hasStarted` first. Returning 0 keeps the arithmetic honest
+ * for anything summing time actually consumed, which is none.
+ */
 export function remainingSeconds(deadlineAt: Date | null): number {
     if (!deadlineAt) return 0;
     return Math.round((deadlineAt.getTime() - Date.now()) / 1000);
+}
+
+/** Whether the paid clock has been started by a first message. */
+export function hasStarted(deadlineAt: Date | null): boolean {
+    return deadlineAt !== null;
 }
 
 export { getBalance };

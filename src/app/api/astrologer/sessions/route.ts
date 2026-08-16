@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
-import { remainingSeconds, LIVE_STATUSES } from '@/lib/consultations/session';
+import { remainingSeconds, hasStarted, LIVE_STATUSES } from '@/lib/consultations/session';
 
 /**
  * The astrologer's own sessions: what is live now, and what happened recently.
@@ -39,6 +39,9 @@ export async function GET() {
                 status: true,
                 startedAt: true,
                 deadlineAt: true,
+                // Needed to report the full block for a session whose clock has
+                // not been started by a first message yet.
+                secondsPerBlock: true,
                 creditsCharged: true,
                 user: { select: { name: true } },
             },
@@ -74,8 +77,12 @@ export async function GET() {
                   // to be handed their contact details.
                   seeker: live.user.name?.split(' ')[0] ?? 'Seeker',
                   startedAt: live.startedAt?.toISOString() ?? null,
-                  remainingSeconds: Math.max(0, remainingSeconds(live.deadlineAt)),
-                  expired: remainingSeconds(live.deadlineAt) <= 0,
+                  // See the note in astrologer/home: not started is not expired.
+                  remainingSeconds: hasStarted(live.deadlineAt)
+                      ? Math.max(0, remainingSeconds(live.deadlineAt))
+                      : live.secondsPerBlock,
+                  clockStarted: hasStarted(live.deadlineAt),
+                  expired: hasStarted(live.deadlineAt) && remainingSeconds(live.deadlineAt) <= 0,
                   creditsCharged: live.creditsCharged,
               }
             : null,

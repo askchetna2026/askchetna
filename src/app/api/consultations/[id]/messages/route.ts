@@ -1,7 +1,13 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
-import { remainingSeconds, LIVE_STATUSES, endConsultation } from '@/lib/consultations/session';
+import {
+    remainingSeconds,
+    hasStarted,
+    LIVE_STATUSES,
+    endConsultation,
+    beginConsultationClock,
+} from '@/lib/consultations/session';
 
 const MAX_BODY = 4000;
 
@@ -40,7 +46,12 @@ async function loadParticipation(consultationId: string, userId: string) {
     return {
         consultation,
         isLive: (LIVE_STATUSES as readonly string[]).includes(consultation.status),
-        expired: remainingSeconds(consultation.deadlineAt) <= 0,
+        // A null deadline means the clock has not been started yet, NOT that it
+        // has run out. Treating remainingSeconds(null) === 0 as expiry here is
+        // what would reject the very first message of every session.
+        expired:
+            hasStarted(consultation.deadlineAt) &&
+            remainingSeconds(consultation.deadlineAt) <= 0,
     };
 }
 
@@ -146,6 +157,16 @@ export async function POST(
             { error: `Message is too long (max ${MAX_BODY} characters)` },
             { status: 400 }
         );
+    }
+
+    // The first message starts the paid clock.
+    //
+    // Only the SEEKER's message does, and only after validation: a session must
+    // not begin counting because someone opened the page, nor because an empty
+    // or over-long body was rejected. Idempotent, so every later message is a
+    // no-op that reads back the deadline already in force.
+    if (found.consultation.userId === session.user.id) {
+        await beginConsultationClock(id);
     }
 
     const message = await prisma.consultationMessage.create({

@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
 import { getSettings } from '@/lib/consultations/settings';
-import { remainingSeconds, LIVE_STATUSES } from '@/lib/consultations/session';
+import { remainingSeconds, hasStarted, LIVE_STATUSES } from '@/lib/consultations/session';
 import { zonedParts, zonedToUtc } from '@/lib/appointments';
 
 /**
@@ -180,8 +180,14 @@ export async function GET() {
         startedAt: c.startedAt?.toISOString() ?? null,
         // Server time decides, as it does on the seeker's side: a device clock
         // that disagrees would show a session as live after it has closed.
-        remainingSeconds: Math.max(0, remainingSeconds(c.deadlineAt)),
-        expired: remainingSeconds(c.deadlineAt) <= 0,
+        // A null deadline is "waiting for the seeker's first message", not
+        // "out of time" — reporting it as expired would grey out a session on
+        // the astrologer's desk before it had even begun.
+        remainingSeconds: hasStarted(c.deadlineAt)
+            ? Math.max(0, remainingSeconds(c.deadlineAt))
+            : c.secondsPerBlock,
+        clockStarted: hasStarted(c.deadlineAt),
+        expired: hasStarted(c.deadlineAt) && remainingSeconds(c.deadlineAt) <= 0,
         blockSeconds: c.secondsPerBlock,
         creditsCharged: c.creditsCharged,
         answered: answeredIds.has(c.id),

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
-import { remainingSeconds, LIVE_STATUSES } from '@/lib/consultations/session';
+import { remainingSeconds, hasStarted, LIVE_STATUSES } from '@/lib/consultations/session';
 import { getSettings } from '@/lib/consultations/settings';
 import { getBalance } from '@/lib/consultations/credits';
 
@@ -59,7 +59,14 @@ export async function GET(
     }
 
     const settings = await getSettings();
-    const remaining = remainingSeconds(consultation.deadlineAt);
+    // A null deadline means the paid clock has not been started by a first
+    // message yet. The block is bought and waiting, so report its FULL length
+    // rather than the 0 the arithmetic would otherwise give — and never call it
+    // expired, which is the reading that would close a session nobody had used.
+    const started = hasStarted(consultation.deadlineAt);
+    const remaining = started
+        ? remainingSeconds(consultation.deadlineAt)
+        : consultation.secondsPerBlock;
     const isLive = (LIVE_STATUSES as readonly string[]).includes(consultation.status);
 
     // Only the user paying can extend, so only they are prompted.
@@ -78,16 +85,23 @@ export async function GET(
         endedAt: consultation.endedAt?.toISOString() ?? null,
         deadlineAt: consultation.deadlineAt?.toISOString() ?? null,
         remainingSeconds: Math.max(0, remaining),
-        expired: isLive && remaining <= 0,
+        /** False until the first message. Drives "your time starts when you
+         *  send your first message" rather than a countdown. */
+        clockStarted: started,
+        expired: isLive && started && remaining <= 0,
         creditsCharged: consultation.creditsCharged,
         blocksCharged: consultation.blocksCharged,
         secondsPerBlock: consultation.secondsPerBlock,
         // Drives the prompt. Both conditions matter: offering an extension the
         // user cannot afford is worse than not offering one.
-        canExtend: isUser && isLive && remaining > 0 && balance >= 1,
+        canExtend: isUser && isLive && started && remaining > 0 && balance >= 1,
         shouldPromptExtend:
             isUser &&
             isLive &&
+            // Not before the clock is even running: `remaining` reports the
+            // full block then, but "you are running out of time" is nonsense
+            // before any time has been used.
+            started &&
             remaining > 0 &&
             remaining <= settings.EXTEND_PROMPT_AT_SECONDS,
         creditBalance: isUser ? balance : undefined,

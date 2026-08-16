@@ -91,7 +91,9 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
         consultationId: result.consultationId,
-        deadlineAt: result.deadlineAt.toISOString(),
+        // Null until the first message starts the clock. The client shows the
+        // full block rather than a countdown until then.
+        deadlineAt: result.deadlineAt?.toISOString() ?? null,
         secondsPerBlock: result.secondsPerBlock,
         kind,
     });

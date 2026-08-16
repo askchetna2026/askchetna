@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import {
-    LayoutDashboard, UserCog, Settings, LogOut, ShieldCheck, Sparkles, Languages, Bookmark
+    LayoutDashboard, UserCog, Settings, LogOut, ShieldCheck, Sparkles, Languages, Bookmark, NotebookPen
 } from 'lucide-react';
 import { isClientNativeApp } from '@/lib/platform';
 import { useComplexity } from '@/context/ComplexityContext';
@@ -185,8 +185,14 @@ export default function ProfileMenu() {
                         <LayoutDashboard size={17} /> Dashboard
                     </Link>
 
-                    {/* Beside Dashboard rather than in the main bar: this is a
-                        personal collection, which is what this menu holds. */}
+                    {/* Beside Dashboard rather than in the main bar: these are
+                        personal collections, which is what this menu holds.
+                        Journal was only in the mobile drawer, so on a laptop it
+                        had no route at all once /explore left the bar. */}
+                    <Link href="/journal" className={styles.item} role="menuitem">
+                        <NotebookPen size={17} /> Journal
+                    </Link>
+
                     <Link href="/saved" className={styles.item} role="menuitem">
                         <Bookmark size={17} /> Saved insights
                     </Link>

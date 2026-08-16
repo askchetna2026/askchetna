@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import styles from './Header.module.css';
 import Logo from './Logo';
 import ProfileMenu from './ProfileMenu';
+import NavDropdown from './NavDropdown';
 import { Menu, X, CreditCard, LayoutDashboard, LogOut, Info, BookOpen, MessageSquare, Sparkles, Users, UserCog, Settings, Compass, Orbit, Bookmark, CalendarClock, Clock, ShieldCheck } from 'lucide-react';
 import { PAYMENTS_ENABLED } from '@/lib/paymentConfig';
 import { isClientNativeApp } from '@/lib/platform';
@@ -84,19 +85,55 @@ export default function Header() {
           <nav className={styles.navLinks}>
             {status === 'authenticated' ? (
               <>
+                {/* GROUPED to match the mobile drawer.
+                    Six pages — the forecast, the muhurat windows, the doshas,
+                    prakriti, saved insights and the journal — were added to the
+                    drawer and not here, so they existed on a phone and nowhere
+                    on a laptop. Appending six more links was not possible: this
+                    bar already carried nine and would have wrapped. The headings
+                    match the drawer's exactly, so somewhere learnt on a phone is
+                    found in the same place on a laptop. */}
                 <Link href="/" className={`${styles.navLink} ${pathname === '/' ? styles.activeLink : ''}`}>Home</Link>
-                <Link href="/chart" className={`${styles.navLink} ${pathname === '/chart' ? styles.activeLink : ''}`}>Birth Chart</Link>
-                <Link href="/timing" className={`${styles.navLink} ${pathname === '/timing' ? styles.activeLink : ''}`}>Timing & Seasons</Link>
+
+                <NavDropdown
+                  className={styles.navLink}
+                  label="Your chart"
+                  items={[
+                    { href: '/chart', label: 'Birth chart', hint: 'The whole chart, and what it holds' },
+                    { href: '/prakriti', label: 'Your nature', hint: 'Vata, Pitta or Kapha, read from your chart' },
+                    { href: '/patterns', label: 'Sade Sati & doshas', hint: 'What is present, and what is not' },
+                  ]}
+                />
+
+                <NavDropdown
+                  className={styles.navLink}
+                  label="Timing"
+                  items={[
+                    { href: '/timing', label: 'Your life chapters', hint: 'The long periods, past and ahead' },
+                    { href: '/forecast', label: "What's coming up", hint: 'Dates something actually changes' },
+                    { href: '/muhurat', label: 'Good times today', hint: 'Better and worse hours for a thing' },
+                  ]}
+                />
+
                 <Link href="/clarity" className={`${styles.navCta} ${pathname === '/clarity' ? styles.navCtaActive : ''}`}>Ask Chetna AI</Link>
                 {/* Human astrologers, as distinct from the AI above. Placed
                     beside it so the two routes to an answer sit together. */}
                 <Link href="/consult" className={`${styles.navLink} ${pathname.startsWith('/consult') ? styles.activeLink : ''}`}>Astrologers</Link>
                 <Link href="/synastry" className={`${styles.navLink} ${pathname === '/synastry' ? styles.activeLink : ''}`}>Relationships</Link>
-                <Link href="/blog" className={`${styles.navLink} ${pathname === '/blog' ? styles.activeLink : ''}`}>Blog</Link>
+
                 {/* Was /explore, which is now the first stop ON this path
-                    rather than a peer of it. One entry point to the reading,
-                    instead of two that do not mention each other. */}
-                <Link href="/learn" className={`${styles.navLink} ${pathname === '/learn' ? styles.activeLink : ''}`}>Learn</Link>
+                    rather than a peer of it. Blog moved inside it — it is
+                    reading, and it was competing with Learn for the same idea. */}
+                <NavDropdown
+                  className={styles.navLink}
+                  label="Learn"
+                  items={[
+                    { href: '/learn', label: 'Start here', hint: 'Everything in the order it makes sense' },
+                    { href: '/calculators/moon-sign', label: 'Free calculators', hint: 'Moon sign, ascendant, nakshatra' },
+                    { href: '/blog', label: 'Writing', hint: 'Longer pieces' },
+                  ]}
+                />
+
                 {PAYMENTS_ENABLED && (
                   <Link href="/pricing" className={`${styles.navLink} ${pathname === '/pricing' ? styles.activeLink : ''}`}>Credit</Link>
                 )}

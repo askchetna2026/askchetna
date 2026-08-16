@@ -1,0 +1,93 @@
+.wrap {
+    position: relative;
+    display: inline-flex;
+}
+
+/* The trigger inherits .navLink from the header, so it sits on the baseline
+   with the plain links beside it. Only the chevron and the button reset are
+   added here — anything else would make it read as a different kind of thing
+   from its neighbours, which it is not. */
+.trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    border: none;
+    background: none;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.triggerActive {
+    color: var(--accent-gold);
+}
+
+.chevron,
+.chevronOpen {
+    transition: transform 0.2s ease;
+}
+
+.chevronOpen {
+    transform: rotate(180deg);
+}
+
+.menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    z-index: 200;
+    min-width: 260px;
+    display: flex;
+    flex-direction: column;
+    padding: 6px;
+    background: var(--bg-panel);
+    background-image: var(--paper-tex);
+    background-blend-mode: var(--paper-tex-blend);
+    background-size: 300px;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-md);
+    box-shadow: 0 14px 40px rgba(var(--foreground-rgb), 0.16);
+}
+
+.item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    color: var(--foreground);
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.itemActive {
+    color: var(--accent-gold);
+}
+
+.itemLabel {
+    font-size: var(--text-15);
+    font-weight: 500;
+}
+
+.itemHint {
+    font-size: var(--text-12);
+    line-height: 1.45;
+    color: var(--text-muted);
+}
+
+/* Split from :focus-visible deliberately. Combined, a tap on a touch screen
+   leaves the hover state stuck on after navigating — the same trap the rest of
+   this codebase gates for. */
+@media (hover: hover) and (pointer: fine) {
+    .item:hover {
+        background: rgba(var(--accent-gold-rgb), 0.06);
+        color: var(--accent-gold);
+    }
+
+    .trigger:hover {
+        color: var(--accent-gold);
+    }
+}
+
+.item:focus-visible {
+    outline: 2px solid var(--accent-gold);
+    outline-offset: -2px;
+}

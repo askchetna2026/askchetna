@@ -3,7 +3,8 @@
 import { useState, useEffect, FormEvent, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import type { ChartData } from '@/lib/astrology/zodiac';
-import { refreshProfiles } from '@/lib/profileStore';
+import { getProfiles, primaryProfile, refreshProfiles } from '@/lib/profileStore';
+import type { StoredProfile } from '@/lib/profileStore';
 import { INDIAN_CITIES } from '@/lib/indianCities';
 import ConfirmDialog from './ConfirmDialog';
 import { useProfile } from '@/context/ProfileContext';
@@ -113,23 +114,29 @@ export default function BirthDataForm({ onChartGenerated, initialData }: BirthDa
 
     const [loading, setLoading] = useState(false);
     const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error', text: string } | null>(null);
-    const [activeProfile, setActiveProfile] = useState<any>(null);
+    const [activeProfile, setActiveProfile] = useState<StoredProfile | null>(null);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
-    // Fetch active profile on mount
+    // The profile whose name the overwrite warning has to name.
+    //
+    // This was the last component still calling /api/profiles/active directly.
+    // Going through profileStore matters here more than anywhere else: this form
+    // is what CREATES profiles, and it already calls refreshProfiles() on save.
+    // Reading past the same cache it invalidates meant the warning could be
+    // computed from a copy the form itself had just made stale.
     useEffect(() => {
-        if (session?.user) {
-            fetch('/api/profiles/active')
-                .then(res => res.json())
-                .then(data => {
-                    if (data && data.profiles && data.profiles.length > 0) {
-                        setActiveProfile(data.profiles[0]);
-                    } else {
-                        setActiveProfile(null);
-                    }
-                })
-                .catch(err => console.error('Failed to fetch active profile:', err));
-        }
+        if (!session?.user) return;
+        let cancelled = false;
+
+        void getProfiles((fresh) => {
+            if (!cancelled) setActiveProfile(primaryProfile(fresh));
+        })
+            .then((data) => {
+                if (!cancelled) setActiveProfile(primaryProfile(data));
+            })
+            .catch((err) => console.error('Failed to fetch active profile:', err));
+
+        return () => { cancelled = true; };
     }, [session]);
 
     const handleSubmit = async (e: FormEvent) => {

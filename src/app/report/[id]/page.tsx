@@ -171,11 +171,18 @@ function ReportContent({ params }: ReportPageProps) {
                     <div className={styles.vargaCard}>
                         <h3>D9: The Soul Journey</h3>
                         <div className={styles.chartWrapper}>
+                            {/* The stored key is `D9`, not `d9`, and `planets` is
+                                already an object keyed by name — so the old
+                                `?.d9?.planets?.map(...)` resolved to undefined at
+                                every step and Object.fromEntries([]) drew an empty
+                                chart. `ascendant` is a bare longitude too, not
+                                `{ longitude, rasi }`. Optional chaining meant none
+                                of this threw; it just silently rendered twelve
+                                blank houses on a page selling divisional charts. */}
                             <ChartDisplay data={{
-                                planets: Object.fromEntries(profile.chartData?.vargas?.d9?.planets?.map((planet: any) => [planet.name, planet]) || []),
+                                planets: profile.chartData?.vargas?.D9?.planets ?? {},
                                 houses: profile.chartData?.houses,
-                                ascendant: profile.chartData?.vargas?.d9?.ascendant?.longitude,
-                                navamsaAscendant: profile.chartData?.vargas?.d9?.ascendant?.rasi?.toString(),
+                                ascendant: profile.chartData?.vargas?.D9?.ascendant ?? 0,
                             }} />
                         </div>
                         <p className={styles.vargaDesc}>Your inner strength and marital destiny.</p>
@@ -185,10 +192,9 @@ function ReportContent({ params }: ReportPageProps) {
                         <h3>D10: Career &amp; Status</h3>
                         <div className={styles.chartWrapper}>
                             <ChartDisplay data={{
-                                planets: Object.fromEntries(profile.chartData?.vargas?.d10?.planets?.map((planet: any) => [planet.name, planet]) || []),
+                                planets: profile.chartData?.vargas?.D10?.planets ?? {},
                                 houses: profile.chartData?.houses,
-                                ascendant: profile.chartData?.vargas?.d10?.ascendant?.longitude,
-                                navamsaAscendant: profile.chartData?.vargas?.d10?.ascendant?.rasi?.toString(),
+                                ascendant: profile.chartData?.vargas?.D10?.ascendant ?? 0,
                             }} />
                         </div>
                         <p className={styles.vargaDesc}>Professional growth and public recognition.</p>

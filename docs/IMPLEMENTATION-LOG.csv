@@ -1,4 +1,5 @@
 ﻿"Date","Type","Area","What was implemented","Version","Commit"
+"2026-08-16","Bug fix","Typography","Thirteen font sizes that were never applied","v3.5.83","062d52f"
 "2026-08-16","Bug fix","Navigation","Six pages existed on a phone and nowhere on a laptop","v3.5.82","5c144ff"
 "2026-08-16","Documentation","","Record the plain-English pass in the log","v3.5.81","22a90d9"
 "2026-08-16","Bug fix","","Group the mobile menu, and write the new pages for people","v3.5.80","723f946"

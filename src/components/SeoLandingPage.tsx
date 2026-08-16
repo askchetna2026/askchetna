@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import NewsletterSignupCard from '@/components/NewsletterSignupCard';
+import LandingCta from '@/components/LandingCta';
 import { absoluteUrl } from '@/lib/site';
 import type { SeoLandingPage as SeoLandingPageConfig } from '@/lib/seoLandingPages';
 import styles from './SeoLandingPage.module.css';
@@ -65,9 +66,15 @@ export default function SeoLandingPage({ page }: SeoLandingPageProps) {
                         <p className={styles.description}>{page.heroDescription}</p>
 
                         <div className={styles.heroActions}>
-                            <Link href={page.primaryCta.href} className={styles.primaryButton}>
-                                {page.primaryCta.label}
-                            </Link>
+                            {/* Auth-aware: a signed-in reader gets the
+                                destination rather than an invitation to join
+                                something they are already inside. */}
+                            <LandingCta
+                                href={page.primaryCta.href}
+                                label={page.primaryCta.label}
+                                signedInLabel={page.primaryCta.signedInLabel}
+                                className={styles.primaryButton}
+                            />
                             <Link href={page.secondaryCta.href} className={styles.secondaryButton}>
                                 {page.secondaryCta.label}
                             </Link>

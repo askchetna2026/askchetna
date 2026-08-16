@@ -72,6 +72,38 @@ export function isSpeechSupported(): boolean {
     return constructorFor() !== null;
 }
 
+/**
+ * Ask for the microphone, properly, before starting recognition.
+ *
+ * SpeechRecognition does not reliably raise the permission prompt itself — in
+ * several browsers it fails with `not-allowed` without ever asking, which is
+ * indistinguishable to the user from being refused. getUserMedia always
+ * prompts, so this asks first and then hands over.
+ *
+ * The stream is stopped the instant it is granted. Recognition opens its own
+ * capture, and leaving this one running would put the recording indicator on
+ * for the whole session.
+ *
+ * Inside the Android app this is what triggers Capacitor's own permission
+ * handling, which requests RECORD_AUDIO and grants the WebView — so the same
+ * call covers browser and app.
+ */
+export async function ensureMicrophoneAccess(): Promise<'granted' | 'denied' | 'unavailable'> {
+    if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getUserMedia) {
+        // No getUserMedia at all: let recognition try on its own rather than
+        // refusing outright, since some engines manage without it.
+        return 'unavailable';
+    }
+
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        stream.getTracks().forEach((track) => track.stop());
+        return 'granted';
+    } catch {
+        return 'denied';
+    }
+}
+
 export interface Dictation {
     stop(): void;
 }

@@ -67,6 +67,27 @@
 	<string>AskChetna saves your chart images to your photo library when you export or share them.</string>
 
 	<!--
+	  Dictating a question instead of typing it.
+
+	  BOTH keys are required and Apple rejects for the missing one: iOS treats
+	  recognition as separate from recording, so a build that declares only the
+	  microphone crashes the moment speech recognition starts. The strings say
+	  what the audio is for rather than asking for trust, because this is the
+	  sentence a reviewer reads and it is also the only explanation most people
+	  will ever see.
+
+	  Note this is currently moot in the app itself: SpeechRecognition is not
+	  exposed in WKWebView, so the dictation button hides there. These are
+	  declared because the capability is in the shipped web app the shell loads,
+	  and because a WKWebView that gains it later should not need a resubmission
+	  to use it.
+	-->
+	<key>NSMicrophoneUsageDescription</key>
+	<string>AskChetna uses the microphone only while you hold the dictate button, so you can speak a question instead of typing it.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>AskChetna turns what you say into text in the question box, for you to read and edit before sending. Nothing is sent until you press send.</string>
+
+	<!--
 	  Required for Firebase Phone Auth. iOS verification works by sending a
 	  SILENT push to prove the app instance is genuine, so the app must be able
 	  to receive remote notifications in the background. Without this the OTP

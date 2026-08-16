@@ -32,6 +32,14 @@ export type SeoLandingPage = {
     primaryCta: {
         label: string;
         href: string;
+        /**
+         * What the button says to someone already signed in.
+         *
+         * Required rather than optional: every page needs a considered answer,
+         * and an optional field would have let the next page added quietly go
+         * back to inviting existing users to sign up.
+         */
+        signedInLabel: string;
     };
     secondaryCta: {
         label: string;
@@ -58,6 +66,7 @@ export const SEO_LANDING_PAGES: Record<string, SeoLandingPage> = {
         primaryCta: {
             label: 'Sign Up and Ask a Question',
             href: '/login?mode=signup&callbackUrl=/clarity',
+            signedInLabel: 'Ask a Question',
         },
         secondaryCta: {
             label: 'See How Clarity Works',
@@ -141,6 +150,7 @@ export const SEO_LANDING_PAGES: Record<string, SeoLandingPage> = {
         primaryCta: {
             label: 'Sign Up for Relationship Insight',
             href: '/login?mode=signup&callbackUrl=/synastry',
+            signedInLabel: 'Compare Two Charts',
         },
         secondaryCta: {
             label: 'Explore Compatibility',
@@ -226,6 +236,7 @@ export const SEO_LANDING_PAGES: Record<string, SeoLandingPage> = {
         primaryCta: {
             label: 'Sign Up for Career Clarity',
             href: '/login?mode=signup&callbackUrl=/clarity',
+            signedInLabel: 'Ask About Your Work',
         },
         secondaryCta: {
             label: 'Ask a Career Question',
@@ -309,6 +320,7 @@ export const SEO_LANDING_PAGES: Record<string, SeoLandingPage> = {
         primaryCta: {
             label: 'Sign Up to View Your Timeline',
             href: '/login?mode=signup&callbackUrl=/timing',
+            signedInLabel: 'Open Your Timeline',
         },
         secondaryCta: {
             label: 'Explore Timing',

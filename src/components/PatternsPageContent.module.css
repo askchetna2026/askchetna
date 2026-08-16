@@ -262,3 +262,33 @@
         color: var(--accent-coral);
     }
 }
+
+/* Shown when nothing at all applies — a real answer, not an empty state. */
+.noneCard {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 26px;
+    border: 1px solid var(--card-border);
+    border-left: 4px solid var(--border-soft);
+    border-radius: var(--radius-md);
+    background: var(--bg-panel);
+}
+
+/* The conditions that were checked and did not apply. One line, because four
+   cards of "no" is clutter — but silence would read as "not looked at". */
+.alsoChecked {
+    margin: 0;
+    padding: 14px 16px;
+    background: var(--bg-soft);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-14);
+    line-height: 1.6;
+    color: var(--text-muted);
+    max-width: var(--measure);
+}
+
+.alsoChecked strong {
+    color: var(--foreground);
+    font-weight: 600;
+}

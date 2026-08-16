@@ -44,6 +44,21 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <!--
+      Dictating a question instead of typing it. Requested at the moment the
+      microphone button is pressed, never at launch — see DictateButton, which
+      shows what the audio is used for before the prompt appears.
+
+      Both are needed, and both are requested by Capacitor's own
+      BridgeWebChromeClient when the page asks for the microphone — it handles
+      the runtime prompt and grants the WebView itself, so no MainActivity
+      override is wanted here. What it cannot do is request a permission the
+      manifest never declared: without these two lines the request fails before
+      any dialog appears, which is what "microphone not available" looked like.
+    -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+
+    <!--
       NOTE: no CAMERA or photo-library permissions. Nothing in the app captures or
       picks images yet, and both stores expect every declared permission to be
       justified — an unused one is a review question with no good answer. Re-add

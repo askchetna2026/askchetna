@@ -124,8 +124,26 @@ export default function PatternsPageContent() {
                         </p>
                     )}
 
+                    {/* Only what applies gets a card.
+                        Absent conditions used to get one each, at full size,
+                        explaining at length that they were not present — so a
+                        chart with one condition running showed four cards of
+                        "no". The negative answer still matters to someone who
+                        arrived asking "am I manglik", so it survives as the one
+                        line below rather than as four cards of clutter. */}
                     <ul className={styles.list}>
-                        {findings.map((f) => {
+                        {findings.filter((f) => f.present).length === 0 && (
+                            <li className={styles.noneCard}>
+                                <h2 className={styles.title}>None of these are in your chart</h2>
+                                <p className={styles.summary}>
+                                    Sade Sati is not running, and none of the well-known doshas or
+                                    yogas below are present. If you came here worried about one of
+                                    them, that is the answer.
+                                </p>
+                            </li>
+                        )}
+
+                        {findings.filter((f) => f.present).map((f) => {
                             const content = CONDITIONS[f.key];
                             if (!content) return null;
                             const isOpen = open === f.key;
@@ -203,6 +221,20 @@ export default function PatternsPageContent() {
                             );
                         })}
                     </ul>
+
+                    {/* One line, not four cards. Someone who searched a term
+                        and does not find it above needs to know it was looked
+                        at rather than left out. */}
+                    {findings.some((f) => !f.present) && (
+                        <p className={styles.alsoChecked}>
+                            <strong>Also checked, and not present in your chart:</strong>{' '}
+                            {findings
+                                .filter((f) => !f.present)
+                                .map((f) => CONDITIONS[f.key]?.title ?? f.name)
+                                .join(', ')}
+                            .
+                        </p>
+                    )}
 
                     <DisclaimerNote />
                 </>

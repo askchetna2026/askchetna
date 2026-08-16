@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { Mic, Square } from 'lucide-react';
-import { isSpeechSupported, startDictation } from '@/lib/voice/speech';
+import { ensureMicrophoneAccess, isSpeechSupported, startDictation } from '@/lib/voice/speech';
 import type { Dictation, SpeechStatus } from '@/lib/voice/speech';
+import { isClientNativeApp } from '@/lib/platform';
 import styles from './DictateButton.module.css';
 
 /**
@@ -64,7 +65,17 @@ export default function DictateButton({
 
     if (!supported) return null;
 
-    const begin = () => {
+    const begin = async () => {
+        // Ask for the microphone properly first. Recognition does not reliably
+        // raise the prompt itself — it can fail with `not-allowed` without ever
+        // having asked, which looks to the user like a refusal they never made.
+        // This is also what triggers Android's permission flow inside the app.
+        const access = await ensureMicrophoneAccess();
+        if (access === 'denied') {
+            setStatus('denied');
+            return;
+        }
+
         session.current = startDictation(language, {
             onTranscript: (text, final) => {
                 // Interim results rewrite themselves as the engine changes its
@@ -96,7 +107,7 @@ export default function DictateButton({
             return;
         }
 
-        begin();
+        void begin();
     };
 
     const accept = () => {
@@ -106,7 +117,7 @@ export default function DictateButton({
             // Not fatal — they will be asked again next time.
         }
         setAsking(false);
-        begin();
+        void begin();
     };
 
     return (
@@ -129,10 +140,13 @@ export default function DictateButton({
                 </span>
             )}
 
+            {/* Two messages, because the fix is in two different places and
+                the app has no address bar to send anybody to. */}
             {status === 'denied' && (
                 <span className={styles.hint}>
-                    Your browser is blocking the microphone. Allow it for this site in the
-                    address bar, then try again.
+                    {isClientNativeApp()
+                        ? 'The microphone is turned off for AskChetna. Turn it on in your phone’s Settings under AskChetna, then try again.'
+                        : 'Your browser is blocking the microphone. Allow it for this site from the icon in the address bar, then try again.'}
                 </span>
             )}
 

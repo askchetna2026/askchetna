@@ -1,7 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
+import { getProfiles, primaryProfile } from '@/lib/profileStore';
+import type { StoredProfile } from '@/lib/profileStore';
 import { Loader2 } from 'lucide-react';
 import { CALCULATORS, CALCULATOR_ORDER } from '@/lib/astrology/calculators';
 import type { CalculatorContent } from '@/lib/astrology/calculators';
@@ -25,12 +28,42 @@ interface QuickResult {
  * is done either way.
  */
 export default function QuickCalculator({ content }: { content: CalculatorContent }) {
+    const { status } = useSession();
+
     const [dob, setDob] = useState('');
     const [tob, setTob] = useState('');
     const [place, setPlace] = useState('');
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [result, setResult] = useState<QuickResult | null>(null);
+
+    /**
+     * Charts this seeker has already given us.
+     *
+     * Asking a signed-in user to retype their birth date, time and city — the
+     * three things they typed at onboarding and which the app is holding — is
+     * the app admitting it has not looked. The form stays for signed-out
+     * visitors, because answering without an account is the entire purpose of
+     * these pages.
+     */
+    const [profiles, setProfiles] = useState<StoredProfile[]>([]);
+    const [profileId, setProfileId] = useState<string>('');
+
+    useEffect(() => {
+        if (status !== 'authenticated') return;
+        let cancelled = false;
+
+        (async () => {
+            const payload = await getProfiles();
+            if (cancelled || !payload?.profiles?.length) return;
+            setProfiles(payload.profiles);
+            setProfileId(primaryProfile(payload)?.id ?? payload.profiles[0].id);
+        })();
+
+        return () => { cancelled = true; };
+    }, [status]);
+
+    const usingSaved = profiles.length > 0 && profileId !== 'manual';
 
     const submit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -41,33 +74,46 @@ export default function QuickCalculator({ content }: { content: CalculatorConten
         setResult(null);
 
         try {
-            const geoRes = await fetch(
-                `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(place)}&limit=1`
-            );
-            const geo = await geoRes.json();
+            let year: number, month: number, day: number, hour: number, minute: number;
+            let lat: number, lng: number;
 
-            if (!Array.isArray(geo) || geo.length === 0) {
-                setError('Could not find that place. Try the nearest large city.');
-                return;
+            if (usingSaved) {
+                const chosen = profiles.find((p) => p.id === profileId);
+                if (!chosen || typeof chosen.latitude !== 'number' || typeof chosen.longitude !== 'number') {
+                    setError('That saved chart is missing its birth place. Please pick another.');
+                    return;
+                }
+
+                // The stored date is an ISO string; take the calendar parts off
+                // the front rather than through a Date, which shifts the day
+                // backwards in any timezone behind UTC.
+                [year, month, day] = chosen.dateOfBirth.slice(0, 10).split('-').map(Number);
+                [hour, minute] = (chosen.timeOfBirth || '12:00').split(':').map(Number);
+                lat = chosen.latitude;
+                lng = chosen.longitude;
+            } else {
+                const geoRes = await fetch(
+                    `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(place)}&limit=1`
+                );
+                const geo = await geoRes.json();
+
+                if (!Array.isArray(geo) || geo.length === 0) {
+                    setError('Could not find that place. Try the nearest large city.');
+                    return;
+                }
+
+                // Split rather than `new Date(...)`: parsing "1990-05-15" as a
+                // date shifts it a day backwards in any timezone behind UTC.
+                [year, month, day] = dob.split('-').map(Number);
+                [hour, minute] = tob.split(':').map(Number);
+                lat = parseFloat(geo[0].lat);
+                lng = parseFloat(geo[0].lon);
             }
-
-            // Split rather than `new Date(...)`: parsing "1990-05-15" as a date
-            // shifts it a day backwards in any timezone behind UTC.
-            const [year, month, day] = dob.split('-').map(Number);
-            const [hour, minute] = tob.split(':').map(Number);
 
             const res = await fetch('/api/astrology/quick', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    year,
-                    month,
-                    day,
-                    hour,
-                    minute,
-                    lat: parseFloat(geo[0].lat),
-                    lng: parseFloat(geo[0].lon),
-                }),
+                body: JSON.stringify({ year, month, day, hour, minute, lat, lng }),
             });
 
             const data = await res.json();
@@ -107,6 +153,30 @@ export default function QuickCalculator({ content }: { content: CalculatorConten
             </header>
 
             <form className={styles.form} onSubmit={submit}>
+                {profiles.length > 0 && (
+                    <div className={styles.field}>
+                        <label htmlFor="qc-profile">Whose chart?</label>
+                        <select
+                            id="qc-profile"
+                            className={styles.select}
+                            value={profileId}
+                            onChange={(e) => setProfileId(e.target.value)}
+                        >
+                            {profiles.map((p) => (
+                                <option key={p.id} value={p.id}>
+                                    {p.name} · {p.dateOfBirth.slice(0, 10)}
+                                </option>
+                            ))}
+                            {/* Still offered, because someone may want to check
+                                a chart they have not saved — a friend's, or one
+                                they are only curious about. */}
+                            <option value="manual">Someone else — enter details</option>
+                        </select>
+                    </div>
+                )}
+
+                {!usingSaved && (
+                  <>
                 <div className={styles.field}>
                     <label htmlFor="qc-dob">Date of birth</label>
                     <input
@@ -147,6 +217,8 @@ export default function QuickCalculator({ content }: { content: CalculatorConten
                         required
                     />
                 </div>
+                  </>
+                )}
 
                 <button type="submit" className={styles.submit} disabled={busy}>
                     {busy ? (

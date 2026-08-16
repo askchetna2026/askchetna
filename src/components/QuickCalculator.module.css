@@ -71,6 +71,7 @@
     color: var(--text-muted);
 }
 
+.select,
 .field input {
     padding: 11px 14px;
     border: 1px solid var(--card-border);

@@ -28,6 +28,7 @@ type Status = {
     status: string;
     astrologer: { displayName: string; photoUrl: string | null };
     remainingSeconds: number;
+    clockStarted: boolean;
     expired: boolean;
     creditsCharged: number;
     secondsPerBlock: number;
@@ -45,7 +46,14 @@ type Message = {
 
 const POLL_MS = 4000;
 
-export default function ChatSession({ consultationId }: { consultationId: string }) {
+export default function ChatSession({
+    consultationId,
+    /** Lets the room own the viewport height and flex this into the remainder. */
+    className,
+}: {
+    consultationId: string;
+    className?: string;
+}) {
     const router = useRouter();
     const [status, setStatus] = useState<Status | null>(null);
     const [messages, setMessages] = useState<Message[]>([]);
@@ -55,6 +63,8 @@ export default function ChatSession({ consultationId }: { consultationId: string
     const [extendError, setExtendError] = useState<string | null>(null);
     const [promptDismissed, setPromptDismissed] = useState(false);
     const [notice, setNotice] = useState<string | null>(null);
+    /** The seeker's message, shown before the server has confirmed it. */
+    const [pending, setPending] = useState<{ id: string; body: string } | null>(null);
 
     const lastMessageAt = useRef<string | null>(null);
     const scrollRef = useRef<HTMLDivElement>(null);
@@ -103,14 +113,30 @@ export default function ChatSession({ consultationId }: { consultationId: string
     // Stick to the newest message.
     useEffect(() => {
         scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
-    }, [messages.length]);
+        // Also when the pending bubble or the thinking indicator appears —
+        // otherwise the thing telling you it worked is below the fold.
+    }, [messages.length, pending, sending]);
 
     const send = async () => {
         const body = draft.trim();
         if (!body || sending || isOver) return;
 
+        // Clear the box NOW, and show the message immediately.
+        //
+        // The request behind this waits on a model, which for an AI persona is
+        // several seconds. Clearing only after `res.ok` meant the text a seeker
+        // had already sent sat in the input the whole time, with no sign it had
+        // gone anywhere — so the natural reading was that the send had failed,
+        // and the natural response was to press send again.
+        //
+        // The optimistic bubble carries a temporary id. refresh() reconciles
+        // against the server and drops it once the real one arrives.
+        const optimisticId = `pending-${Date.now()}`;
+        setDraft('');
+        setPending({ id: optimisticId, body });
         setSending(true);
         setNotice(null);
+
         try {
             const res = await fetch(`/api/consultations/${consultationId}/messages`, {
                 method: 'POST',
@@ -123,14 +149,26 @@ export default function ChatSession({ consultationId }: { consultationId: string
                 // already closed the session; reflect that rather than pretending.
                 const data = await res.json();
                 setNotice(data.message ?? 'This consultation has ended.');
+                setPending(null);
                 await refresh();
                 return;
             }
 
             if (res.ok) {
-                setDraft('');
                 await refresh();
+                setPending(null);
+                return;
             }
+
+            // Anything else failed. Give the seeker their words back rather
+            // than losing them to a cleared box.
+            setPending(null);
+            setDraft(body);
+            setNotice('That did not send. Try again.');
+        } catch {
+            setPending(null);
+            setDraft(body);
+            setNotice('That did not send. Check your connection.');
         } finally {
             setSending(false);
         }
@@ -178,7 +216,7 @@ export default function ChatSession({ consultationId }: { consultationId: string
     const showPrompt = status.shouldPromptExtend && !promptDismissed && !isOver;
 
     return (
-        <div className={styles.session}>
+        <div className={`${styles.session} ${className ?? ''}`}>
             <header className={styles.header}>
                 {/* photoUrl has been carried through the API since the session
                     endpoint was written; this is the first thing to render it. */}
@@ -200,6 +238,7 @@ export default function ChatSession({ consultationId }: { consultationId: string
                         serverRemaining={status.remainingSeconds}
                         warnAtSeconds={60}
                         onReachedZero={onReachedZero}
+                        started={status.clockStarted}
                     />
                 )}
 
@@ -211,9 +250,13 @@ export default function ChatSession({ consultationId }: { consultationId: string
             </header>
 
             <div className={styles.transcript} ref={scrollRef}>
-                {messages.length === 0 && (
+                {/* Also hidden while a message is in flight: the pending bubble is
+                    already on screen, so "say hello" beside it contradicts itself. */}
+                {messages.length === 0 && !pending && !sending && (
                     <p className={styles.empty}>
-                        Say hello — your consultation has started and the clock is running.
+                        {status.clockStarted
+                            ? 'Say hello — the clock is running.'
+                            : 'Say hello. Your time starts when you send your first message.'}
                     </p>
                 )}
 
@@ -225,6 +268,31 @@ export default function ChatSession({ consultationId }: { consultationId: string
                         {m.body}
                     </div>
                 ))}
+
+                {/* The seeker's message, already on screen before the server has
+                    acknowledged it. Faded so it reads as in-flight rather than
+                    delivered. */}
+                {pending && (
+                    <div className={`${styles.bubble} ${styles.mine} ${styles.pendingBubble}`}>
+                        {pending.body}
+                    </div>
+                )}
+
+                {/* Says who is thinking, by name. A generic spinner during a
+                    several-second model call reads as a stall; a name reads as
+                    someone composing an answer. */}
+                {sending && (
+                    <div className={`${styles.bubble} ${styles.theirs} ${styles.thinking}`} role="status">
+                        <span className={styles.thinkingText}>
+                            {status.astrologer.displayName} is thinking
+                        </span>
+                        <span className={styles.dots} aria-hidden="true">
+                            <i />
+                            <i />
+                            <i />
+                        </span>
+                    </div>
+                )}
             </div>
 
             {isOver && (
@@ -272,7 +340,11 @@ export default function ChatSession({ consultationId }: { consultationId: string
                         placeholder="Type your message…"
                         maxLength={4000}
                         aria-label="Message"
-                        disabled={sending}
+                        /* Not disabled while sending. The box is already empty,
+                           and a seeker who thinks of the next thing while the
+                           reply is composing should be able to type it. The
+                           send button below is what prevents a second in-flight
+                           request. */
                     />
                     <button
                         type="submit"

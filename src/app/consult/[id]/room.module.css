@@ -1,0 +1,29 @@
+/* The consultation room owns the viewport height; the chat fills what is left.
+ *
+ * ChatSession used to size itself with `calc(100dvh - 140px)`, which was right
+ * while it was the only thing on the page. It stopped being right the moment
+ * the memory panel was added above it: two elements, one of them a full
+ * viewport tall, so the composer was pushed below the fold by exactly the
+ * height of the panel — worse on a phone, and worse again with the panel open.
+ *
+ * Owning the height here and letting the chat flex into the remainder means
+ * anything else added above it later cannot push the composer off screen.
+ */
+.room {
+    display: flex;
+    flex-direction: column;
+    /* dvh rather than vh: mobile browser chrome collapses and the usable
+       height changes with it. */
+    height: calc(100dvh - 140px);
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+/* min-height: 0 is what allows a flex child to be SMALLER than its content and
+   scroll internally. Without it the transcript expands to fit every message and
+   pushes the composer out of the viewport again. */
+.chat {
+    flex: 1;
+    min-height: 0;
+}

@@ -4,6 +4,7 @@ import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
 import ChatSession from '@/components/consultations/ChatSession';
 import ConsultationMemory from '@/components/consultations/ConsultationMemory';
+import styles from './room.module.css';
 
 export const metadata: Metadata = {
     title: 'Consultation | AskChetna',
@@ -47,7 +48,7 @@ export default async function ConsultationPage({
     const viewerIsAstrologer = consultation.astrologer.userId === session.user.id;
 
     return (
-        <>
+        <div className={styles.room}>
             {/* What carried over from earlier sessions with this pairing.
                 Renders nothing on a first session. The astrologer is passed the
                 seeker's id because they are looking at someone else's memory;
@@ -56,7 +57,7 @@ export default async function ConsultationPage({
                 astrologerId={consultation.astrologerId}
                 seekerId={viewerIsAstrologer ? consultation.userId : undefined}
             />
-            <ChatSession consultationId={id} />
-        </>
+            <ChatSession consultationId={id} className={styles.chat} />
+        </div>
     );
 }

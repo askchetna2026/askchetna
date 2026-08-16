@@ -1,13 +1,15 @@
+/* Height, max-width and padding now belong to the ROOM that wraps this (see
+   consult/[id]/room.module.css). They lived here while the chat was the only
+   thing on the page; once a memory panel sat above it, an element claiming a
+   full viewport for itself pushed the composer below the fold by exactly the
+   panel's height.
+
+   min-height: 0 is what lets the transcript inside scroll instead of growing
+   the whole column past the screen. */
 .session {
     display: flex;
     flex-direction: column;
-    /* Fills the viewport minus the header, so the composer sits at the bottom
-       without the page scrolling behind it. dvh rather than vh because mobile
-       browser chrome changes the usable height as it collapses. */
-    height: calc(100dvh - 140px);
-    max-width: 780px;
-    margin: 0 auto;
-    padding: 0 16px;
+    min-height: 0;
 }
 
 .loading {
@@ -196,4 +198,70 @@
 .sendBtn:disabled {
     opacity: 0.45;
     cursor: default;
+}
+
+/* ── In-flight states ────────────────────────────────────────────────────────
+   The composer clears the moment a message is sent, so these two are what tell
+   the seeker it went somewhere. Without them an empty box and a several-second
+   model call read as a failed send — and the natural response is to send it
+   again. */
+
+/* The seeker's own message, on screen before the server has confirmed it. */
+.pendingBubble {
+    opacity: 0.6;
+}
+
+.thinking {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.thinkingText {
+    font-size: var(--text-14);
+}
+
+/* Three dots, staggered. Named rather than generic: a spinner says "busy",
+   a name says "someone is composing an answer". */
+.dots {
+    display: inline-flex;
+    gap: 3px;
+    align-items: center;
+}
+
+.dots i {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    animation: chat-dot 1.2s infinite ease-in-out;
+}
+
+.dots i:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.dots i:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+@keyframes chat-dot {
+    0%, 60%, 100% {
+        opacity: 0.25;
+        transform: translateY(0);
+    }
+    30% {
+        opacity: 1;
+        transform: translateY(-2px);
+    }
+}
+
+/* The dots are decoration; the name beside them already carries the meaning. */
+@media (prefers-reduced-motion: reduce) {
+    .dots i {
+        animation: none;
+        opacity: 0.5;
+    }
 }

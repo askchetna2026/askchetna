@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react';
 import { Loader2, Moon } from 'lucide-react';
 import { HORIZONS } from '@/lib/astrology/forecast';
 import type { ForecastResult, Horizon } from '@/lib/astrology/forecast';
+import type { Observance } from '@/lib/astrology/calendar';
 import DisclaimerNote from '@/components/DisclaimerNote';
 import styles from './ForecastContent.module.css';
 
@@ -39,8 +40,25 @@ export default function ForecastContent() {
     const { status } = useSession();
     const [horizon, setHorizon] = useState<Horizon>('week');
     const [data, setData] = useState<Payload | null>(null);
+    const [calendar, setCalendar] = useState<Observance[] | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    // Fetched once, not per horizon: the lunar calendar does not change when
+    // the reader switches between "this week" and "this year".
+    useEffect(() => {
+        if (status !== 'authenticated') return;
+        let cancelled = false;
+        fetch('/api/astrology/calendar')
+            .then((res) => (res.ok ? res.json() : null))
+            .then((json) => {
+                if (!cancelled && json?.observances) setCalendar(json.observances);
+            })
+            .catch(() => {
+                // No calendar is an acceptable outcome; the forecast stands alone.
+            });
+        return () => { cancelled = true; };
+    }, [status]);
 
     useEffect(() => {
         if (status !== 'authenticated') return;
@@ -167,6 +185,33 @@ export default function ForecastContent() {
                                 </li>
                             ))}
                         </ol>
+                    )}
+
+                    {/* The lunar calendar, here rather than on a page of its
+                        own. A festival directory is a different product; what
+                        belongs beside a forecast is the handful of days a
+                        practising person already watches for. */}
+                    {calendar && calendar.length > 0 && (
+                        <section className={styles.calendar}>
+                            <h2 className={styles.calendarHead}>Days ahead</h2>
+                            <ul className={styles.observances}>
+                                {calendar.map((o, i) => (
+                                    <li key={`${o.kind}-${o.date}-${i}`} className={styles.observance}>
+                                        <time className={styles.obsDate} dateTime={o.date}>
+                                            {longDate(o.date)}
+                                        </time>
+                                        <span className={styles.obsName}>{o.name}</span>
+                                        <span className={styles.obsDetail}>{o.detail}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                            <p className={styles.calendarNote}>
+                                Computed from the Sun and Moon at your coordinates, so these hold
+                                in any year. Named festivals are not listed: they depend on the
+                                lunar month, which is reckoned differently across India and needs
+                                a rule reviewed by someone qualified before it goes on a screen.
+                            </p>
+                        </section>
                     )}
 
                     <p className={styles.method}>

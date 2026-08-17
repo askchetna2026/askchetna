@@ -141,11 +141,26 @@ export default function DictateButton({
             )}
 
             {/* Two messages, because the fix is in two different places and
-                the app has no address bar to send anybody to. */}
+                the app has no address bar to send anybody to.
+
+                The native one used to say "turn it on in Settings under
+                AskChetna", which was a dead end for the case people actually
+                hit. Android lists a permission only if the INSTALLED build
+                declared it, and RECORD_AUDIO was added to the manifest after
+                the current builds shipped — so the permissions screen reads
+                "No permissions denied" with no microphone row and nothing to
+                switch on. We sent people to look for a toggle that was not
+                there.
+
+                Both real cases are covered now: a build that declares the
+                permission will prompt on the next tap (Capacitor's
+                BridgeWebChromeClient requests RECORD_AUDIO when the WebView
+                asks for AUDIO_CAPTURE), and a build that does not will never
+                prompt no matter what the seeker does in Settings. */}
             {status === 'denied' && (
                 <span className={styles.hint}>
                     {isClientNativeApp()
-                        ? 'The microphone is turned off for AskChetna. Turn it on in your phone’s Settings under AskChetna, then try again.'
+                        ? 'Could not open the microphone. Tap it again and choose Allow when Android asks. If no prompt appears, update AskChetna — earlier versions were installed without microphone access, so there is nothing to switch on in Settings.'
                         : 'Your browser is blocking the microphone. Allow it for this site from the icon in the address bar, then try again.'}
                 </span>
             )}

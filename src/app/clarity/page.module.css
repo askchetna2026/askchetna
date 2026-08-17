@@ -11,7 +11,14 @@
     z-index: 1;
 }
 
-html.native-app .pageContainer {
+/* :global() is load-bearing. `native-app` is a plain class on <html>, set by the
+   app shell — but inside a CSS Module an unscoped class name gets HASHED, so
+   `html.native-app` compiled to `html.page_native-app__6Rlla` and matched
+   nothing, ever. Both this rule and the .inputContainer one below were dead in
+   the app for as long as they have existed, which is why the composer sat under
+   the tab bar with its send button clipped. Twenty-one other rules across the
+   codebase already write it as :global; these two were the exceptions. */
+:global(html.native-app) .pageContainer {
     padding-bottom: calc(180px + var(--app-tabbar-height) + env(safe-area-inset-bottom, 0px));
 }
 
@@ -118,8 +125,9 @@ html.native-app .pageContainer {
     box-shadow: 0 -6px 24px rgba(var(--foreground-rgb), 0.10);
 }
 
-/* Clear of the app's bottom tab bar, which would otherwise sit on top of it. */
-html.native-app .inputContainer {
+/* Clear of the app's bottom tab bar, which would otherwise sit on top of it —
+   and did, because this selector was hashed. See the note above .pageContainer. */
+:global(html.native-app) .inputContainer {
     bottom: calc(16px + var(--app-tabbar-height) + env(safe-area-inset-bottom, 0px));
 }
 

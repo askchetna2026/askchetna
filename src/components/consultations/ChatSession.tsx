@@ -352,7 +352,7 @@ export default function ChatSession({
                     </div>
                 )}
 
-                <div ref={endRef} className={styles.end} aria-hidden="true" />
+                <div ref={endRef} className={styles.scrollAnchor} aria-hidden="true" />
             </div>
 
             {isOver && (

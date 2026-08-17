@@ -8,6 +8,7 @@ import { getProfiles, primaryProfile } from '@/lib/profileStore';
 import { CONDITIONS } from '@/lib/astrology/conditions';
 import type { YogaFinding } from '@/lib/astrology/conditions';
 import DisclaimerNote from '@/components/DisclaimerNote';
+import ProfilePicker from '@/components/ProfilePicker';
 import styles from './PatternsPageContent.module.css';
 
 /**
@@ -31,20 +32,37 @@ export default function PatternsPageContent() {
     const [error, setError] = useState<string | null>(null);
     const [open, setOpen] = useState<string | null>(null);
 
+    // Which chart is being read. Empty until the profiles resolve; the fetch
+    // below waits for it rather than racing ahead with the newest profile.
+    const [profileId, setProfileId] = useState<string>('');
+
     useEffect(() => {
         if (status !== 'authenticated') return;
+        let cancelled = false;
+
+        void getProfiles()
+            .then((payload) => {
+                if (cancelled) return;
+                const first = primaryProfile(payload);
+                if (!first) { setError('NO_PROFILE'); return; }
+                setProfileId(first.id);
+            })
+            .catch(() => { if (!cancelled) setError('FAILED'); });
+
+        return () => { cancelled = true; };
+    }, [status]);
+
+    useEffect(() => {
+        if (status !== 'authenticated' || !profileId) return;
 
         let cancelled = false;
         (async () => {
+            // Clear first, so switching profiles cannot show the previous
+            // person's doshas under the new person's name.
+            setFindings(null);
+            setError(null);
             try {
-                const payload = await getProfiles();
-                const profile = primaryProfile(payload);
-                if (!profile) {
-                    if (!cancelled) setError('NO_PROFILE');
-                    return;
-                }
-
-                const res = await fetch(`/api/astrology/conditions?profileId=${profile.id}`);
+                const res = await fetch(`/api/astrology/conditions?profileId=${profileId}`);
                 if (!res.ok) {
                     if (!cancelled) setError('FAILED');
                     return;
@@ -62,7 +80,7 @@ export default function PatternsPageContent() {
         return () => {
             cancelled = true;
         };
-    }, [status]);
+    }, [status, profileId]);
 
     return (
         <main className={styles.page}>
@@ -74,7 +92,9 @@ export default function PatternsPageContent() {
                     and usually somewhere that wanted them frightened. This checks your own
                     chart and tells you plainly what is there and what is not.
                 </p>
-                <details className={styles.explainer}>
+                {/* Open by default, like the other explainers — these names are
+                    the whole reason someone lands here uncertain. */}
+                <details className={styles.explainer} open>
                     <summary>What these names actually mean</summary>
                     <p>
                         Indian astrology has names for particular arrangements of planets. Some
@@ -101,6 +121,11 @@ export default function PatternsPageContent() {
                         they are selling a remedy for it.
                     </p>
                 </details>
+
+                {/* Renders nothing unless there is more than one chart saved.
+                    Whose reading this is was previously decided silently — the
+                    newest profile won, and nothing on the page said so. */}
+                <ProfilePicker value={profileId} onChange={setProfileId} />
             </header>
 
             {status === 'loading' && (

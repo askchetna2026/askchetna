@@ -1,0 +1,35 @@
+.wrap {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin: 20px 0 4px;
+}
+
+.label {
+    font-size: var(--text-13);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.select {
+    /* 44px, matching every other control the audit brought up to size. */
+    min-height: 44px;
+    flex: 1 1 220px;
+    max-width: 340px;
+    padding: 0 14px;
+    font-family: var(--font-main);
+    font-size: var(--text-15);
+    color: var(--foreground);
+    background: var(--bg-panel);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+}
+
+.select:focus-visible {
+    outline: 2px solid var(--accent-gold);
+    outline-offset: 2px;
+}

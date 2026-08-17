@@ -79,8 +79,13 @@ export default function MuhuratContent() {
                     Pick what you are about to do, and this shows you the better and worse
                     hours for it today.
                 </p>
-                <details className={styles.explainer}>
-                    <summary>How this works, in plain English</summary>
+                {/* Open by default: the explanation is the point of the
+                    section, and a reader who already knows it can fold it away.
+                    "In plain English" was the INSTRUCTION for writing this, never
+                    a label for readers — as a title it quietly told them the rest
+                    of the page might not be. */}
+                <details className={styles.explainer} open>
+                    <summary>How this works</summary>
                     <p>
                         Indian tradition splits the daylight — sunrise to sunset — into eight
                         equal stretches, and gives each one a name and a character. Which name

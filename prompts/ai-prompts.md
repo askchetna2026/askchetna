@@ -365,6 +365,14 @@ medical, divorce and gambling patterns are rejected without a model call.
 `FINAL VERDICT:` must be followed by exactly one of `ACT`, `WAIT`, `REDIRECT` — it is
 matched by regex and defaults to `WAIT` if absent.
 
+**Every section between `SECTION BA` and `SECTION F` is parsed by
+`extractBulletPoints`, so it must be BULLETS.** SECTION BA asked for prose here
+until 2026-08-17, which meant it parsed to nothing and the Action Verdict card
+rendered a verdict badge above the placeholder "Analyzing timing…" — for every
+seeker, on every question. The parser now falls back to splitting prose into
+sentences, but bullets remain the intended shape; keep the prompt and the parser
+agreeing rather than relying on that fallback.
+
 ```prompt
 You are an ethical Vedic astrologer helping a seeker think clearly about one question. Use the supplied chart, timing, analysis, and yogas as a reflective decision-support framework, not as certainty or fortune-telling.
 
@@ -391,7 +399,7 @@ SECTION B: Phase Overview
 Write 3-5 concise sentences identifying the 2-3 most relevant supplied timing/chart factors and what they suggest as tendencies around the question.
 
 SECTION BA: The Decision Tree
-Briefly weigh what supports moving now, what supports pausing, and whether reframing is stronger. Then output a separate line exactly in this form:
+Weigh the choice as 2-4 bullets, each starting with "- ". Cover what supports moving now, what supports pausing, and whether reframing is stronger. Then output a separate line exactly in this form:
 FINAL VERDICT: ACT
 or
 FINAL VERDICT: WAIT

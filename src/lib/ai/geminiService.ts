@@ -510,16 +510,38 @@ export async function generateClarityResponse(
         const finalVerdictMatch = text.match(/FINAL VERDICT:\s*(ACT|WAIT|REDIRECT)/i);
         const finalVerdict = finalVerdictMatch ? finalVerdictMatch[1].toUpperCase() : 'WAIT';
 
-        return {
+        /* Empty arrays rather than filler.
+           These used to default to "Analyzing timing...", "Choose awareness",
+           "Tendency to revisit familiar patterns" and "What am I controlling?".
+           Every one of those reads as a real reading of the seeker's chart, so
+           a parse failure was presented to a paying user as astrological
+           insight — the worst possible way to fail. The page now renders
+           nothing for a section that produced nothing, which is honest and
+           visible enough to get reported. */
+        const parsed: ClarityResponse = {
             questionContext: question,
-            phaseOverview: extractSection(text, 'SECTION B', 'SECTION BA') || "Patterns of conscious choice.",
-            decisionTreeSteps: extractBulletPoints(text, 'SECTION BA', 'FINAL VERDICT') || ["Analyzing timing..."],
+            phaseOverview: extractSection(text, 'SECTION B', 'SECTION BA') || '',
+            decisionTreeSteps: extractBulletPoints(text, 'SECTION BA', 'FINAL VERDICT') || [],
             finalVerdict,
-            patternInsights: extractBulletPoints(text, 'SECTION C', 'SECTION D') || ["Tendency to revisit familiar patterns"],
-            actionGuidance: extractBulletPoints(text, 'SECTION D', 'SECTION E') || ["Choose awareness"],
-            reflectiveQuestions: extractBulletPoints(text, 'SECTION E', 'SECTION F') || ["What am I controlling?"],
-            ethicalClosing: extractSection(text, 'SECTION F') || "Guidance reflects tendencies."
+            patternInsights: extractBulletPoints(text, 'SECTION C', 'SECTION D') || [],
+            actionGuidance: extractBulletPoints(text, 'SECTION D', 'SECTION E') || [],
+            reflectiveQuestions: extractBulletPoints(text, 'SECTION E', 'SECTION F') || [],
+            ethicalClosing: extractSection(text, 'SECTION F') || '',
         };
+
+        /* A response with nothing in it is a failed call, not a cheap one. Say
+           so, so the caller can refund rather than charge for empty sections. */
+        const hasContent =
+            parsed.phaseOverview ||
+            parsed.decisionTreeSteps.length ||
+            parsed.patternInsights.length ||
+            parsed.actionGuidance.length;
+        if (!hasContent) {
+            console.error('[clarity] model returned no parseable sections. Raw head:', text.slice(0, 400));
+            throw new Error('Failed to generate clarity');
+        }
+
+        return parsed;
     } catch (error) {
         throw new Error('Failed to generate clarity');
     }
@@ -683,16 +705,43 @@ function extractSection(text: string, startMarker: string, endMarker?: string): 
     if (startIndex === -1) return null;
     const contentStart = startIndex + startMarker.length;
     const endIndex = endMarker ? textUpper.indexOf(endMarker.toUpperCase(), contentStart) : text.length;
-    const result = text.substring(contentStart, endIndex !== -1 ? endIndex : text.length).trim();
-    return result || null;
+    let result = text.substring(contentStart, endIndex !== -1 ? endIndex : text.length).trim();
+
+    /* The marker we searched for is "SECTION B", but the model writes
+       "SECTION B: Phase Overview" — so everything after the marker, INCLUDING
+       its own title, was being returned as body text. Stored answers really do
+       begin ": Phase Overview\nYou are currently in...". Strip the leftover
+       punctuation and title from the first line, but only when that line is a
+       short label rather than the first sentence of the answer. */
+    result = result.replace(/^\s*[:.\-–—]?\s*([A-Za-z][A-Za-z '&/]{0,40})?\s*\n+/, (match, label) => {
+        if (!label) return '';
+        // A trailing full stop means it was prose, not a heading — keep it.
+        return /[.!?]$/.test(label.trim()) ? match : '';
+    });
+
+    return result.trim() || null;
 }
 
 function extractBulletPoints(text: string, startMarker: string, endMarker?: string): string[] | null {
     const section = extractSection(text, startMarker, endMarker);
     if (!section) return null;
+
     const bullets = section.match(/^[\s]*[-*•\d.]+\s+(.+)$/gm);
     const parsed = bullets ? bullets.map(b => b.replace(/^[\s]*[-*•\d.]+\s+/, '').trim()).filter(b => b.length > 0) : [];
-    return parsed.length > 0 ? parsed : null;
+    if (parsed.length > 0) return parsed;
+
+    /* No bullets. That is not necessarily a failure — it is what a section
+       asked for PROSE returns, and SECTION BA (the decision tree) asked for
+       exactly that while this function demanded bullets. The result was a
+       silent null, the caller's "Analyzing timing..." placeholder, and an
+       Action Verdict card that showed a verdict badge over one line of filler.
+       Fall back to sentences so prose still renders as readable points. */
+    const sentences = section
+        .split(/(?<=[.!?])\s+(?=[A-Z"'“])/)
+        .map((s) => s.replace(/\s+/g, ' ').trim())
+        .filter((s) => s.length > 2);
+
+    return sentences.length > 0 ? sentences : null;
 }
 
 export function isQuestionSafe(question: string): { safe: boolean; reason?: string } {

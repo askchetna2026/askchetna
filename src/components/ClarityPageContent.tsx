@@ -568,49 +568,66 @@ export default function ClarityPageContent() {
                                         {result.finalVerdict}
                                     </div>
                                 </div>
-                                <p className={styles.verdictSubtitle}>Celestial Decision Matrix Analysis:</p>
-                                <ul className={styles.treeList}>
-                                    {result.decisionTreeSteps.map((step, i) => (
-                                        <li key={i} className={styles.treeStep}>{step}</li>
-                                    ))}
-                                </ul>
+                                {/* Each section renders only when it has
+                                    something to say. A heading over an empty
+                                    list is how "Celestial Decision Matrix
+                                    Analysis:" came to sit above a single line
+                                    of placeholder text. */}
+                                {result.decisionTreeSteps.length > 0 && (
+                                    <>
+                                        <p className={styles.verdictSubtitle}>Celestial Decision Matrix Analysis:</p>
+                                        <ul className={styles.treeList}>
+                                            {result.decisionTreeSteps.map((step, i) => (
+                                                <li key={i} className={styles.treeStep}>{step}</li>
+                                            ))}
+                                        </ul>
+                                    </>
+                                )}
                             </motion.div>
 
                             {/* Section B: Current Phase Overview */}
-                            <motion.div className={`${styles.section} ${styles.phaseSection}`} variants={itemVariants}>
-                                <h2 className={styles.sectionTitle}>Timing of the Soul</h2>
-                                <p>{result.phaseOverview}</p>
-                            </motion.div>
+                            {result.phaseOverview && (
+                                <motion.div className={`${styles.section} ${styles.phaseSection}`} variants={itemVariants}>
+                                    <h2 className={styles.sectionTitle}>Timing of the Soul</h2>
+                                    <p>{result.phaseOverview}</p>
+                                </motion.div>
+                            )}
 
                             {/* Section C: Pattern Insights */}
-                            <motion.div className={styles.section} variants={itemVariants}>
-                                <h2 className={styles.sectionTitle}>Forces at Play</h2>
-                                <ul className={styles.insightList}>
-                                    {result.patternInsights.map((insight: string, i: number) => (
-                                        <li key={i}>{insight}</li>
-                                    ))}
-                                </ul>
-                            </motion.div>
+                            {result.patternInsights.length > 0 && (
+                                <motion.div className={styles.section} variants={itemVariants}>
+                                    <h2 className={styles.sectionTitle}>Forces at Play</h2>
+                                    <ul className={styles.insightList}>
+                                        {result.patternInsights.map((insight: string, i: number) => (
+                                            <li key={i}>{insight}</li>
+                                        ))}
+                                    </ul>
+                                </motion.div>
+                            )}
 
                             {/* Section D: Action Guidance */}
-                            <motion.div className={`${styles.section} ${styles.guidanceSection}`} variants={itemVariants}>
-                                <h2 className={styles.sectionTitle}>Path to Awareness</h2>
-                                <ul className={styles.actionList}>
-                                    {result.actionGuidance.map((action: string, i: number) => (
-                                        <li key={i}>{action}</li>
-                                    ))}
-                                </ul>
-                            </motion.div>
+                            {result.actionGuidance.length > 0 && (
+                                <motion.div className={`${styles.section} ${styles.guidanceSection}`} variants={itemVariants}>
+                                    <h2 className={styles.sectionTitle}>Path to Awareness</h2>
+                                    <ul className={styles.actionList}>
+                                        {result.actionGuidance.map((action: string, i: number) => (
+                                            <li key={i}>{action}</li>
+                                        ))}
+                                    </ul>
+                                </motion.div>
+                            )}
 
                             {/* Section E: Reflective Questions */}
-                            <motion.div className={styles.section} variants={itemVariants}>
-                                <h2 className={styles.sectionTitle}>Contemplations</h2>
-                                <ul className={styles.reflectionList}>
-                                    {result.reflectiveQuestions.map((q: string, i: number) => (
-                                        <li key={i}>{q}</li>
-                                    ))}
-                                </ul>
-                            </motion.div>
+                            {result.reflectiveQuestions.length > 0 && (
+                                <motion.div className={styles.section} variants={itemVariants}>
+                                    <h2 className={styles.sectionTitle}>Contemplations</h2>
+                                    <ul className={styles.reflectionList}>
+                                        {result.reflectiveQuestions.map((q: string, i: number) => (
+                                            <li key={i}>{q}</li>
+                                        ))}
+                                    </ul>
+                                </motion.div>
+                            )}
 
                             {/* Free-will closing line (8.3) */}
                             <motion.p className={styles.freeWillClosing} variants={itemVariants}>

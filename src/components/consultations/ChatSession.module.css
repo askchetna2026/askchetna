@@ -284,10 +284,19 @@
    viewport — and the composer is fixed over the bottom of it, so without a
    scroll margin the newest message lands underneath the box you type into.
    Matches the room's bottom padding. */
-.end {
+/* Named `.scrollAnchor`, not `.end`.
+
+   It WAS `.end` — the same class as the "End consultation" button further up
+   this file, which is a 38px circle with a coral border. CSS Modules compile
+   one class per name, so both rule blocks landed on both elements and this
+   zero-content, aria-hidden anchor painted an empty coral ring in the middle
+   of the transcript, directly above the ended card. Two selectors that look
+   unrelated because they are hundreds of lines apart are still the same
+   selector. */
+.scrollAnchor {
     scroll-margin-bottom: calc(104px + env(safe-area-inset-bottom, 0px));
 }
 
-:global(html.native-app) .end {
+:global(html.native-app) .scrollAnchor {
     scroll-margin-bottom: calc(104px + var(--app-tabbar-height) + env(safe-area-inset-bottom, 0px));
 }

@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react';
 import { Loader2 } from 'lucide-react';
 import { DOSHAS, DOSHA_CONTENT } from '@/lib/astrology/prakriti';
 import type { Contribution, Dosha, PrakritiResult } from '@/lib/astrology/prakriti';
+import ProfilePicker from '@/components/ProfilePicker';
 import styles from './PrakritiContent.module.css';
 
 type Payload = PrakritiResult & { name?: string };
@@ -24,13 +25,25 @@ export default function PrakritiContent() {
     const [data, setData] = useState<Payload | null>(null);
     const [error, setError] = useState<string | null>(null);
 
+    /* Which chart to read.
+       The route has always accepted ?profileId — this component simply never
+       sent one, so the API fell back to the oldest active profile while
+       /calculators, sitting one menu item away, let you choose. Same data, two
+       different answers about whose constitution you were looking at. */
+    const [profileId, setProfileId] = useState<string>('');
+
     useEffect(() => {
         if (status !== 'authenticated') return;
         let cancelled = false;
 
         (async () => {
+            setData(null);
+            setError(null);
             try {
-                const res = await fetch('/api/astrology/prakriti');
+                const url = profileId
+                    ? `/api/astrology/prakriti?profileId=${encodeURIComponent(profileId)}`
+                    : '/api/astrology/prakriti';
+                const res = await fetch(url);
                 if (!res.ok) {
                     const body = await res.json().catch(() => ({}));
                     if (!cancelled) setError(body.code === 'PROFILE_MISSING' ? 'NO_PROFILE' : 'FAILED');
@@ -44,7 +57,7 @@ export default function PrakritiContent() {
         })();
 
         return () => { cancelled = true; };
-    }, [status]);
+    }, [status, profileId]);
 
     const content = data ? DOSHA_CONTENT[data.primary] : null;
 
@@ -58,8 +71,13 @@ export default function PrakritiContent() {
                     than the others. This works out which one leads in you, from your birth
                     chart — and shows you exactly how it got there.
                 </p>
-                <details className={styles.explainer}>
-                    <summary>How this works, in plain English</summary>
+                {/* Open by default: the explanation is the point of the
+                    section, and a reader who already knows it can fold it away.
+                    "In plain English" was the INSTRUCTION for writing this, never
+                    a label for readers — as a title it quietly told them the rest
+                    of the page might not be. */}
+                <details className={styles.explainer} open>
+                    <summary>How this works</summary>
                     <p>
                         The three natures are Vata, Pitta and Kapha. Roughly: Vata is movement
                         and quickness, Pitta is heat and focus, Kapha is steadiness and
@@ -81,6 +99,9 @@ export default function PrakritiContent() {
                         see precisely where this one differs from yours.
                     </p>
                 </details>
+
+                {/* Hidden unless a second chart exists. */}
+                <ProfilePicker value={profileId} onChange={setProfileId} />
             </header>
 
             {status === 'unauthenticated' && (

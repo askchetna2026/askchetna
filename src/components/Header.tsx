@@ -9,6 +9,7 @@ import styles from './Header.module.css';
 import Logo from './Logo';
 import ProfileMenu from './ProfileMenu';
 import NavDropdown from './NavDropdown';
+import MobileNavSection from './MobileNavSection';
 import { Menu, X, CreditCard, LayoutDashboard, LogOut, Info, BookOpen, MessageSquare, Sparkles, Users, UserCog, Settings, Compass, Orbit, Bookmark, CalendarClock, Clock, ShieldCheck } from 'lucide-react';
 import { PAYMENTS_ENABLED } from '@/lib/paymentConfig';
 import { isClientNativeApp } from '@/lib/platform';
@@ -38,6 +39,98 @@ export default function Header() {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  /**
+   * The signed-in drawer, as data.
+   *
+   * Ordered by the question someone arrives with, not by the shape of the
+   * codebase: what does my chart say -> when -> who can I ask -> my own things
+   * -> teach me -> the small print. Legal is last and, until now, absent: the
+   * drawer offered "App Info" and nothing else, so the privacy policy, terms,
+   * refund policy and disclaimer existed only in the footer — which the native
+   * apps do not show. Both stores expect a privacy policy reachable inside the
+   * app, so this was a compliance gap as much as a navigation one.
+   */
+  const mobileGroups = [
+    {
+      title: 'Your chart',
+      items: [
+        // Chart, Timing, Ask, Dashboard and Account are bottom-bar tabs in the
+        // app; repeating them here leaves two menus answering the same thing.
+        ...(isAppShell ? [] : [{ href: '/chart', label: 'Birth chart', icon: Orbit }]),
+        { href: '/prakriti', label: 'Your nature', icon: Sparkles },
+        { href: '/patterns', label: 'Sade Sati & doshas', icon: ShieldCheck },
+      ],
+    },
+    {
+      title: 'Timing',
+      items: [
+        ...(isAppShell ? [] : [{ href: '/timing', label: 'Your life chapters', icon: Clock }]),
+        { href: '/forecast', label: "What's coming up", icon: CalendarClock },
+        { href: '/muhurat', label: 'Good times today', icon: Clock },
+      ],
+    },
+    {
+      title: 'Ask someone',
+      items: [
+        ...(isAppShell ? [] : [{ href: '/clarity', label: 'Ask Chetna AI', icon: MessageSquare }]),
+        { href: '/consult', label: 'Talk to an astrologer', icon: Users, match: '/consult' },
+        { href: '/synastry', label: 'Two charts together', icon: Users },
+      ],
+    },
+    {
+      title: 'Yours',
+      items: [
+        { href: '/journal', label: 'Journal', icon: BookOpen },
+        { href: '/saved', label: 'Saved insights', icon: Bookmark },
+        ...(isAppShell ? [] : [
+          { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+          { href: '/account', label: 'Account', icon: UserCog },
+        ]),
+        ...(PAYMENTS_ENABLED ? [{ href: '/pricing', label: 'Credits', icon: CreditCard }] : []),
+      ],
+    },
+    {
+      title: 'Learn',
+      items: [
+        { href: '/learn', label: 'Start here', icon: Compass },
+        { href: '/calculators/moon-sign', label: 'Free calculators', icon: Orbit, match: '/calculators' },
+        { href: '/blog', label: 'Writing', icon: BookOpen, match: '/blog' },
+        { href: '/glossary', label: 'Glossary', icon: BookOpen },
+      ],
+    },
+    {
+      title: 'About & legal',
+      items: [
+        { href: '/about', label: 'About AskChetna', icon: Info },
+        { href: '/contact', label: 'Contact us', icon: MessageSquare },
+        { href: '/privacy', label: 'Privacy policy', icon: ShieldCheck },
+        { href: '/terms', label: 'Terms of use', icon: Info },
+        ...(PAYMENTS_ENABLED ? [{ href: '/refund', label: 'Refund policy', icon: CreditCard }] : []),
+        { href: '/disclaimer', label: 'Disclaimer', icon: Info },
+        // Meaningful in the app, meaningless in a browser.
+        ...(isAppShell ? [{ href: '/app-info', label: 'App info', icon: Settings }] : []),
+      ],
+    },
+  ].filter((g) => g.items.length > 0);
+
+  /**
+   * Which group is expanded. One at a time, and the one holding the current
+   * page starts open — so the drawer says where you are before you touch it.
+   *
+   * Derived during render rather than in an effect, and re-derived when the
+   * route changes, which is the same pattern ProfileMenu and NavDropdown use.
+   */
+  const groupForPath = mobileGroups.find((g) =>
+    g.items.some((i) => (i.match ? pathname.startsWith(i.match) : pathname === i.href))
+  )?.title ?? null;
+
+  const [openGroup, setOpenGroup] = useState<string | null>(groupForPath);
+  const [lastPath, setLastPath] = useState(pathname);
+  if (pathname !== lastPath) {
+    setLastPath(pathname);
+    setOpenGroup(groupForPath);
+  }
 
   return (
     // The plain class is a stable hook for globals.css, which cannot see a CSS
@@ -115,7 +208,11 @@ export default function Header() {
                   ]}
                 />
 
-                <Link href="/clarity" className={`${styles.navCta} ${pathname === '/clarity' ? styles.navCtaActive : ''}`}>Ask Chetna AI</Link>
+                {/* A plain nav link like its neighbours. It used to carry
+                    .navCta — a filled pill — which made one destination in the
+                    bar look like a call to action while the other eight were
+                    text. The bar is navigation; the CTA belongs on the page. */}
+                <Link href="/clarity" className={`${styles.navLink} ${pathname === '/clarity' ? styles.activeLink : ''}`}>Ask Chetna AI</Link>
                 {/* Human astrologers, as distinct from the AI above. Placed
                     beside it so the two routes to an answer sit together. */}
                 <Link href="/consult" className={`${styles.navLink} ${pathname.startsWith('/consult') ? styles.activeLink : ''}`}>Astrologers</Link>
@@ -201,114 +298,68 @@ export default function Header() {
                 <nav className={styles.mobileNavLinks}>
                   {status === 'authenticated' ? (
                     <>
-                      {/* GROUPED, because this reached seventeen flat rows and
-                          became a wall to scroll rather than a menu to read.
-                          The headings are the questions people arrive with —
-                          "what does my chart say", "when should I do this",
-                          "who can I ask" — not the shape of the codebase. */}
+                      {/* COLLAPSED BY DEFAULT, one group open at a time.
 
-                      <Link href="/" className={`${styles.mobileNavLink} ${pathname === '/' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                          Grouping alone did not fix this. Seventeen rows under
+                          five always-expanded headings is the same wall with
+                          labels on it — reported as "very clustered" after the
+                          grouping shipped. Now the drawer opens as six headings
+                          on one screen, and the group holding the current page
+                          is the one already open.
+
+                          Driven from MOBILE_NAV rather than written out inline:
+                          the previous version repeated the same Link markup
+                          seventeen times, which is how /journal and /saved came
+                          to exist here and nowhere else. */}
+                      <Link
+                        href="/"
+                        className={`${styles.mobileNavLink} ${pathname === '/' ? styles.mobileActiveLink : ''}`}
+                        onClick={() => setIsMenuOpen(false)}
+                      >
                         <Sparkles size={20} /> Home
                       </Link>
 
-                      <p className={styles.mobileGroup}>Your chart</p>
-                      <div className={styles.mobileGroupLinks}>
-                        {/* Chart is a tab in the app — see isAppShell. */}
-                        {!isAppShell && (
-                          <Link href="/chart" className={`${styles.mobileNavLink} ${pathname === '/chart' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                            <Orbit size={20} /> Birth chart
-                          </Link>
-                        )}
-                        <Link href="/prakriti" className={`${styles.mobileNavLink} ${pathname === '/prakriti' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                          <Sparkles size={20} /> Your nature
-                        </Link>
-                        <Link href="/patterns" className={`${styles.mobileNavLink} ${pathname === '/patterns' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                          <ShieldCheck size={20} /> Sade Sati &amp; doshas
-                        </Link>
-                      </div>
+                      {mobileGroups.map((group) => (
+                        <MobileNavSection
+                          key={group.title}
+                          title={group.title}
+                          open={openGroup === group.title}
+                          onToggle={() => setOpenGroup(openGroup === group.title ? null : group.title)}
+                        >
+                          {group.items.map((item) => {
+                            const Icon = item.icon;
+                            const active = item.match
+                              ? pathname.startsWith(item.match)
+                              : pathname === item.href;
+                            return (
+                              <Link
+                                key={item.href}
+                                href={item.href}
+                                className={`${styles.mobileNavLink} ${active ? styles.mobileActiveLink : ''}`}
+                                onClick={() => setIsMenuOpen(false)}
+                              >
+                                <Icon size={20} /> {item.label}
+                              </Link>
+                            );
+                          })}
+                        </MobileNavSection>
+                      ))}
 
-                      <p className={styles.mobileGroup}>Timing</p>
-                      <div className={styles.mobileGroupLinks}>
-                        {!isAppShell && (
-                          <Link href="/timing" className={`${styles.mobileNavLink} ${pathname === '/timing' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                            <Clock size={20} /> Your life chapters
-                          </Link>
-                        )}
-                        <Link href="/forecast" className={`${styles.mobileNavLink} ${pathname === '/forecast' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                          <CalendarClock size={20} /> What&rsquo;s coming up
-                        </Link>
-                        <Link href="/muhurat" className={`${styles.mobileNavLink} ${pathname === '/muhurat' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                          <Clock size={20} /> Good times today
-                        </Link>
-                      </div>
-
-                      <p className={styles.mobileGroup}>Ask someone</p>
-                      <div className={styles.mobileGroupLinks}>
-                        {!isAppShell && (
-                          <Link href="/clarity" className={`${styles.mobileNavLink} ${styles.mobileCtaLink} ${pathname === '/clarity' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                            <MessageSquare size={20} /> Ask Chetna AI
-                          </Link>
-                        )}
-                        <Link href="/consult" className={`${styles.mobileNavLink} ${pathname.startsWith('/consult') ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                          <Users size={20} /> Talk to an astrologer
-                        </Link>
-                        <Link href="/synastry" className={`${styles.mobileNavLink} ${pathname === '/synastry' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                          <Users size={20} /> Two charts together
-                        </Link>
-                      </div>
-
-                      <p className={styles.mobileGroup}>Yours</p>
-                      <div className={styles.mobileGroupLinks}>
-                        <Link href="/journal" className={`${styles.mobileNavLink} ${pathname === '/journal' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                          <BookOpen size={20} /> Journal
-                        </Link>
-                        <Link href="/saved" className={`${styles.mobileNavLink} ${pathname === '/saved' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                          <Bookmark size={20} /> Saved insights
-                        </Link>
-                        {/* Dashboard is the "Today" tab and Account is the "Me"
-                            tab in the app.
-
-                            Account deletion lives behind /account, which both
-                            stores require to stay reachable in-app. Hiding this
-                            entry does NOT weaken that: in the app the Me tab is
-                            a permanent bottom-bar destination pointing at the
-                            same page, which is more prominent than a link
-                            buried in a drawer, not less. On the web there is no
-                            tab bar, so the entry stays. */}
-                        {!isAppShell && (
-                          <>
-                            <Link href="/dashboard" className={`${styles.mobileNavLink} ${pathname === '/dashboard' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                              <LayoutDashboard size={20} /> Dashboard
-                            </Link>
-                            <Link href="/account" className={`${styles.mobileNavLink} ${pathname === '/account' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                              <UserCog size={20} /> Account
-                            </Link>
-                          </>
-                        )}
-                        {PAYMENTS_ENABLED && (
-                          <Link href="/pricing" className={`${styles.mobileNavLink} ${pathname === '/pricing' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                            <CreditCard size={20} /> Credits
-                          </Link>
-                        )}
-                      </div>
-
-                      <p className={styles.mobileGroup}>Learn</p>
-                      <div className={styles.mobileGroupLinks}>
-                        <Link href="/learn" className={`${styles.mobileNavLink} ${pathname === '/learn' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                          <Compass size={20} /> Start here
-                        </Link>
-                        <Link href="/blog" className={`${styles.mobileNavLink} ${pathname === '/blog' ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
-                          <BookOpen size={20} /> Writing
-                        </Link>
-                      </div>
-
-                      {/* Kept out of the groups: neither is something a seeker
-                          is looking for, and both belong at the bottom. */}
-                      <Link href="/astrologer/register" className={`${styles.mobileNavLink} ${pathname.startsWith('/astrologer') ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                      {/* Outside the groups deliberately: not something a
+                          seeker came looking for, and it belongs at the end. */}
+                      <Link
+                        href="/astrologer/register"
+                        className={`${styles.mobileNavLink} ${pathname.startsWith('/astrologer') ? styles.mobileActiveLink : ''}`}
+                        onClick={() => setIsMenuOpen(false)}
+                      >
                         <Sparkles size={20} /> Become an astrologer
                       </Link>
                       {session?.user?.isAdmin && (
-                        <Link href="/admin" className={`${styles.mobileNavLink} ${pathname.startsWith('/admin') ? styles.mobileActiveLink : ''}`} onClick={() => setIsMenuOpen(false)}>
+                        <Link
+                          href="/admin"
+                          className={`${styles.mobileNavLink} ${pathname.startsWith('/admin') ? styles.mobileActiveLink : ''}`}
+                          onClick={() => setIsMenuOpen(false)}
+                        >
                           <UserCog size={20} /> Admin
                         </Link>
                       )}

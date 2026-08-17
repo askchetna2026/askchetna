@@ -1,0 +1,58 @@
+.section {
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    /* 52px, comfortably past the 44 minimum — this is the control the whole
+       drawer is now operated through. */
+    min-height: 52px;
+    padding: 0 4px;
+    background: none;
+    border: none;
+    font-family: var(--font-main);
+    color: var(--foreground);
+    cursor: pointer;
+    text-align: left;
+}
+
+.headerOpen .title {
+    color: var(--accent-gold);
+}
+
+.title {
+    font-size: var(--text-12);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    transition: color 0.2s ease;
+}
+
+.chevron,
+.chevronOpen {
+    flex-shrink: 0;
+    color: var(--text-muted);
+    transition: transform 0.2s ease;
+}
+
+.chevronOpen {
+    transform: rotate(180deg);
+    color: var(--accent-gold);
+}
+
+.panel {
+    display: flex;
+    flex-direction: column;
+    padding: 2px 0 10px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .chevron,
+    .chevronOpen {
+        transition: none;
+    }
+}

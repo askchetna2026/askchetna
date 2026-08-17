@@ -160,7 +160,9 @@ html.native-app .inputContainer {
     border: none;
     cursor: pointer;
     transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 15px rgba(181, 137, 46, 0.4);
+    /* Coral button, so a coral shadow — this was gold, left over from when the
+       button itself was gold. */
+    box-shadow: 0 4px 15px rgba(var(--accent-coral-rgb), 0.35);
     z-index: 2;
 }
 
@@ -171,17 +173,28 @@ html.native-app .inputContainer {
    parchment that is very nearly invisible, and the button is disabled until the
    question reaches ten characters, so someone arriving at an empty box could
    not see a send control at all. Muted, but present. */
+/* Disabled, but still legibly a button.
+
+   --bg-soft on a parchment card is a pale disc on a pale ground with a muted
+   arrow inside it: reported as "the send button is not clearly visible", and
+   it is the state the box is in every time you arrive, because the field
+   starts empty. It now keeps the coral fill and dims it, so the control reads
+   as the same button throughout — present, and obviously not yet usable. */
 .askBtn:disabled {
     cursor: not-allowed;
-    background: var(--bg-soft);
-    color: var(--text-muted);
+    background: var(--btn-bg);
+    color: var(--btn-fg);
+    opacity: 0.42;
     box-shadow: none;
 }
 
 @media (hover: hover) and (pointer: fine) {
     .askBtn:not(:disabled):hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(181, 137, 46, 0.3);
+        /* Must repeat the -50% — this is the same `transform` property that
+           vertically centres the button, so a bare translateY(-2px) here
+           dropped it half its own height on hover. */
+        transform: translateY(calc(-50% - 2px));
+        box-shadow: 0 8px 25px rgba(var(--accent-coral-rgb), 0.3);
         filter: brightness(1.1);
     }
 }

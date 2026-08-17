@@ -1,4 +1,5 @@
 ﻿"Date","Type","Area","What was implemented","Version","Commit"
+"2026-08-17","Bug fix","Ask Chetna AI","The tab-bar offset was a hashed selector, so it never ran","v3.5.90","05ece53"
 "2026-08-17","Bug fix","admin","A successful credit grant left no trace on screen","v3.5.89","713d47c"
 "2026-08-17","Feature","admin","Direct credit grants, AI astrologer creation, parchment palette","v3.5.88","861c1a4"
 "2026-08-17","Bug fix","","Every Action Verdict since launch showed a placeholder","v3.5.87","b382850"

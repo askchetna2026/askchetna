@@ -176,8 +176,19 @@ export default function AdminDashboard({ activeTab }: { activeTab: AdminTab }) {
     const [runningLifecycle, setRunningLifecycle] = useState<string | null>(null);
     const [lifecycleMessage, setLifecycleMessage] = useState<string | null>(null);
 
-    const fetchData = useCallback(async () => {
-        setLoading(true);
+    /**
+     * `quiet` refetches without blanking the console.
+     *
+     * `loading` swaps the entire tab for "Loading Admin Dashboard…", which
+     * unmounts whatever is on screen. When a child called this to refresh
+     * balances after an action, that child was destroyed mid-sentence and came
+     * back blank — so a credit grant succeeded, the form vanished and
+     * reappeared empty, and the admin was left with no confirmation that
+     * anything had happened. On an action that moves money, silence reads as
+     * failure and invites doing it twice.
+     */
+    const fetchData = useCallback(async (quiet = false) => {
+        if (!quiet) setLoading(true);
         setError(null);
         try {
             // Build query params for users
@@ -477,7 +488,7 @@ export default function AdminDashboard({ activeTab }: { activeTab: AdminTab }) {
                     <div className={styles.section}>
                         <div className={styles.sectionToolbar}>
                             <h3>User Management</h3>
-                            <button className={`${styles.saveBtn} ${styles.compactBtn}`} onClick={fetchData}>Refresh</button>
+                            <button className={`${styles.saveBtn} ${styles.compactBtn}`} onClick={() => fetchData()}>Refresh</button>
                         </div>
 
                         {/* Filters Bar */}
@@ -565,7 +576,7 @@ export default function AdminDashboard({ activeTab }: { activeTab: AdminTab }) {
                         {/* Above the queue, because the queue only covers
                             credits somebody asked for. Refreshing on success
                             keeps the balances in the picker honest. */}
-                        <AdminCreditGrant users={users} onGranted={fetchData} />
+                        <AdminCreditGrant users={users} onGranted={() => fetchData(true)} />
 
                         <div className={styles.sectionToolbar}>
                             <h3>Credit Request Approvals</h3>
@@ -580,7 +591,7 @@ export default function AdminDashboard({ activeTab }: { activeTab: AdminTab }) {
                                     <option value="REJECTED">Rejected</option>
                                     <option value="ALL">All Requests</option>
                                 </select>
-                                <button className={`${styles.saveBtn} ${styles.compactBtn}`} onClick={fetchData}>
+                                <button className={`${styles.saveBtn} ${styles.compactBtn}`} onClick={() => fetchData()}>
                                     Refresh
                                 </button>
                             </div>
@@ -992,7 +1003,7 @@ export default function AdminDashboard({ activeTab }: { activeTab: AdminTab }) {
                         <div className={styles.section}>
                             <div className={styles.sectionToolbar}>
                                 <h3>Recent Lifecycle Emails</h3>
-                                <button className={`${styles.saveBtn} ${styles.compactBtn}`} onClick={fetchData}>
+                                <button className={`${styles.saveBtn} ${styles.compactBtn}`} onClick={() => fetchData()}>
                                     Refresh
                                 </button>
                             </div>

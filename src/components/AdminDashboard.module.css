@@ -31,6 +31,11 @@
 }
 
 .navItem {
+    display: flex;
+    align-items: center;
+    /* 0.75rem of padding around a 15px label lands on 42px. Stated rather than
+       left to arithmetic, so it survives the next font-size change. */
+    min-height: 44px;
     text-align: left;
     background: transparent;
     border: none;
@@ -52,7 +57,7 @@
 
 .navItem.active {
     background-color: var(--accent-gold);
-    color: #1a1a1a;
+    color: var(--bg-primary);
     /* Improved contrast */
 }
 
@@ -96,7 +101,7 @@
 }
 
 .mutedError {
-    color: #f44336;
+    color: var(--error);
     margin-bottom: 1rem;
 }
 
@@ -309,7 +314,7 @@
 .saveBtn,
 .sendBtn {
     background-color: var(--accent-gold);
-    color: #1a1a1a;
+    color: var(--bg-primary);
     /* Improved contrast */
     border: none;
     padding: 0.75rem 2rem;
@@ -359,14 +364,14 @@
 
 .deleteBtn {
     background: var(--card-bg);
-    color: #f44336;
-    border-color: rgba(244, 67, 54, 0.2);
+    color: var(--error);
+    border-color: rgba(var(--error-rgb), 0.25);
 }
 
 @media (hover: hover) and (pointer: fine) {
     .deleteBtn:hover {
-        background: #f44336;
-        color: #fff;
+        background: var(--error);
+        color: var(--btn-fg);
     }
 }
 
@@ -397,15 +402,15 @@
 }
 
 .approvedBadge {
-    background: rgba(76, 175, 80, 0.12);
-    color: #4caf50;
-    border: 1px solid rgba(76, 175, 80, 0.2);
+    background: rgba(var(--success-rgb), 0.12);
+    color: var(--success);
+    border: 1px solid rgba(var(--success-rgb), 0.25);
 }
 
 .rejectedBadge {
     background: var(--card-bg);
-    color: #f44336;
-    border: 1px solid rgba(244, 67, 54, 0.2);
+    color: var(--error);
+    border: 1px solid rgba(var(--error-rgb), 0.25);
 }
 
 .approveBtn,
@@ -420,28 +425,28 @@
 }
 
 .approveBtn {
-    background: rgba(76, 175, 80, 0.12);
-    color: #4caf50;
-    border-color: rgba(76, 175, 80, 0.2);
+    background: rgba(var(--success-rgb), 0.12);
+    color: var(--success);
+    border-color: rgba(var(--success-rgb), 0.25);
 }
 
 @media (hover: hover) and (pointer: fine) {
     .approveBtn:hover {
-        background: #4caf50;
-        color: #fff;
+        background: var(--success);
+        color: var(--btn-fg);
     }
 }
 
 .rejectBtn {
     background: var(--card-bg);
-    color: #f44336;
-    border-color: rgba(244, 67, 54, 0.2);
+    color: var(--error);
+    border-color: rgba(var(--error-rgb), 0.25);
 }
 
 @media (hover: hover) and (pointer: fine) {
     .rejectBtn:hover {
-        background: #f44336;
-        color: #fff;
+        background: var(--error);
+        color: var(--btn-fg);
     }
 }
 

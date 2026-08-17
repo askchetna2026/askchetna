@@ -135,6 +135,11 @@
      fixed once here rather than per component. */
   --success: #1B4F1F;
   --success-bg: rgba(46, 125, 50, 0.12);
+  /* Same convention as --error-rgb below: the ORIGINAL hue, not the darkened
+     text value, because this is only ever used for a tint behind other text.
+     Added because the admin console was writing its own rgba(76, 175, 80, …) —
+     Material Design's green — for exactly that job. */
+  --success-rgb: 46, 125, 50;
   --warning: #B26A00;
   --warning-bg: rgba(178, 106, 0, 0.12);
   /* Same correction as --success: 3.89:1 against the darkest grain of a card,

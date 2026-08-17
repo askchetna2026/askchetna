@@ -61,7 +61,7 @@
 
 .inputGroup input,
 .inputGroup textarea {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--bg-panel);
     border: 1px solid var(--card-border);
     padding: 16px;
     border-radius: 12px;
@@ -74,7 +74,7 @@
 .inputGroup textarea:focus {
     outline: none;
     border-color: var(--accent-gold);
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--bg-soft);
 }
 
 .submitBtn {
@@ -116,15 +116,15 @@
 }
 
 .success {
-    background: rgba(34, 197, 94, 0.1);
-    color: #22c55e;
-    border: 1px solid rgba(34, 197, 94, 0.2);
+    background: rgba(var(--success-rgb), 0.12);
+    color: var(--success);
+    border: 1px solid rgba(var(--success-rgb), 0.25);
 }
 
 .error {
-    background: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
-    border: 1px solid rgba(239, 68, 68, 0.2);
+    background: rgba(var(--error-rgb), 0.10);
+    color: var(--error);
+    border: 1px solid rgba(var(--error-rgb), 0.25);
 }
 
 .loading {

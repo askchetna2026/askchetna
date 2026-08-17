@@ -1,0 +1,215 @@
+.wrap {
+    margin-bottom: 32px;
+    padding: 24px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-md);
+}
+
+.head {
+    margin-bottom: 18px;
+}
+
+.title {
+    margin: 0 0 4px;
+    font-family: var(--font-heading);
+    font-size: var(--text-20);
+    font-weight: 400;
+    color: var(--foreground);
+}
+
+.sub {
+    margin: 0;
+    max-width: var(--measure);
+    font-size: var(--text-14);
+    line-height: 1.55;
+    color: var(--text-muted);
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.field,
+.fieldWide {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.field { flex: 1 1 200px; }
+.fieldWide { flex: 2 1 300px; }
+
+.form label {
+    font-size: var(--text-12);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.control {
+    min-height: 44px;
+    padding: 10px 12px;
+    font-family: var(--font-main);
+    font-size: var(--text-15);
+    color: var(--foreground);
+    background: var(--bg-panel);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-sm);
+}
+
+.area {
+    min-height: 72px;
+    line-height: 1.5;
+    resize: vertical;
+}
+
+.control:focus-visible,
+.file:focus-visible {
+    outline: 2px solid var(--accent-gold);
+    outline-offset: 1px;
+}
+
+.file {
+    min-height: 44px;
+    padding: 9px 12px;
+    font-family: var(--font-main);
+    font-size: var(--text-14);
+    color: var(--foreground);
+    background: var(--bg-panel);
+    border: 1px dashed var(--card-border);
+    border-radius: var(--radius-sm);
+}
+
+.hint {
+    font-size: var(--text-12);
+    line-height: 1.45;
+    color: var(--text-muted);
+}
+
+.promptBox {
+    padding: 16px;
+    background: var(--bg-soft);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-sm);
+}
+
+.promptHead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.promptLabel {
+    font-size: var(--text-12);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent-gold);
+}
+
+.copy {
+    min-height: 32px;
+    padding: 0 14px;
+    font-family: var(--font-main);
+    font-size: var(--text-13);
+    font-weight: 600;
+    color: var(--accent-gold);
+    background: transparent;
+    border: 1px solid var(--card-border);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .copy:hover {
+        background: rgba(var(--accent-gold-rgb), 0.08);
+    }
+}
+
+/* The brief is long and pre-formatted; it scrolls in its own box rather than
+   stretching the console. */
+.prompt {
+    max-height: 260px;
+    margin: 0 0 12px;
+    padding: 12px;
+    overflow: auto;
+    font-family: var(--font-mono);
+    font-size: var(--text-12);
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: var(--foreground);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-sm);
+}
+
+.reveal {
+    padding: 0;
+    font-family: var(--font-main);
+    font-size: var(--text-13);
+    color: var(--accent-gold);
+    background: none;
+    border: none;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.submit {
+    align-self: flex-start;
+    min-height: 44px;
+    padding: 0 24px;
+    font-family: var(--font-main);
+    font-size: var(--text-15);
+    font-weight: 600;
+    color: var(--btn-fg);
+    background: var(--btn-bg);
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.submit:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .submit:not(:disabled):hover {
+        background: var(--btn-bg-hover);
+    }
+}
+
+.ok,
+.bad {
+    margin: 16px 0 0;
+    padding: 10px 14px;
+    font-size: var(--text-14);
+    border-radius: var(--radius-sm);
+}
+
+.ok {
+    color: var(--success);
+    background: rgba(var(--success-rgb), 0.12);
+    border: 1px solid rgba(var(--success-rgb), 0.25);
+}
+
+.bad {
+    color: var(--error);
+    background: rgba(var(--error-rgb), 0.10);
+    border: 1px solid rgba(var(--error-rgb), 0.25);
+}

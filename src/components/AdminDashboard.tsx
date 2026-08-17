@@ -3,6 +3,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import AdminCreditGrant from './admin/AdminCreditGrant';
 import styles from './AdminDashboard.module.css';
 
 /** Sections of this page. Selected by ?tab= and rendered by AdminNav. */
@@ -561,6 +562,11 @@ export default function AdminDashboard({ activeTab }: { activeTab: AdminTab }) {
 
                 {activeTab === 'creditRequests' && (
                     <div className={styles.section}>
+                        {/* Above the queue, because the queue only covers
+                            credits somebody asked for. Refreshing on success
+                            keeps the balances in the picker honest. */}
+                        <AdminCreditGrant users={users} onGranted={fetchData} />
+
                         <div className={styles.sectionToolbar}>
                             <h3>Credit Request Approvals</h3>
                             <div className={styles.toolbarActions}>

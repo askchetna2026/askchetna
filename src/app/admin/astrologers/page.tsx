@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { checkAdminAccess } from '@/lib/admin';
 import AdminAstrologerReview from '@/components/consultations/AdminAstrologerReview';
+import AdminCreateAiAstrologer from '@/components/admin/AdminCreateAiAstrologer';
 import styles from './page.module.css';
 
 // Approval state changes constantly and must never be served from a cache.
@@ -27,6 +28,12 @@ export default async function AdminAstrologersPage() {
                     Applications.
                 </p>
             </header>
+
+            {/* Above the roster: creating a persona is a deliberate act, and
+                burying it under a list of existing profiles is how a feature
+                ends up unused. AI personas need no screening — there is no
+                human to verify — so this does not belong in Applications. */}
+            <AdminCreateAiAstrologer />
 
             <AdminAstrologerReview />
         </div>
